@@ -2,15 +2,15 @@
 Revision history for Log::Log4perl
 ##################################################
 
-0.37 (not yet released)
+0.37 (09/14/2003)
     * (kg) adjusting tests for XML::Parser 2.32 having broken
       XML::DOM 1.42 and lower
     * (ms) Added signal handling to init_and_watch
     * (ms) renamed l4p-internal DEBUG constant to avoid confusion with
       DEBUG() and $DEBUG as suggested by Jim Cromie <jcromie@divsol.com>.
     * (ms) Applied patch by Mac Yang <mac@proofpoint.com> for 
-      Log::Log4perl::DateFormat to calculate the timezone for 'Z' the
-      placeholder.
+      Log::Log4perl::DateFormat to calculate the timezone for the 'Z'
+      conversion specifier.
 
 0.36 (07/22/2003)
     * (ms) Matthew Keene <mkeene@netspace.net.au> suggested to have
