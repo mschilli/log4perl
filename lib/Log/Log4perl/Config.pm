@@ -214,10 +214,9 @@ sub _init {
             $filter = Log::Log4perl::Filter->new($filter_name, $type);
         } else {
                 # Filter class
-                eval "require $type";
-                if($@) { 
-                    die "$type doesn't exist";
-                }
+                die "Filter class '$type' doesn't exist" unless
+                     Log::Log4perl::Util::module_available($type);
+                eval "require $type" or die "Require of $type failed ($!)";
 
                 # Invoke with all defined parameter
                 # key/values (except the key 'value' which is the entry 
@@ -438,33 +437,21 @@ sub add_layout_by_name {
 
     $layout_class =~ s/org.apache.log4j./Log::Log4perl::Layout::/;
 
-    eval {
-        eval "require $layout_class";
-        if($@) {
-            my $old_err = $@;
-            eval "require Log::Log4perl::Layout::$layout_class";
-
-            if($@) {
-                # If it failed again, revert to the old error message
-                $@ = $old_err;
-            } else {
-                # If it succeeded, leave $@ as "", which indicates success
-                # downstream. And, fix the layout name.
-                $layout_class = "Log::Log4perl::Layout::$layout_class";
-            }
+        # Check if we have this layout class
+    if(!Log::Log4perl::Util::module_available($layout_class)) {
+        if(Log::Log4perl::Util::module_available(
+           "Log::Log4perl::Layout::$layout_class")) {
+            # Someone used the layout shortcut, use the fully qualified
+            # module name instead.
+            $layout_class = "Log::Log4perl::Layout::$layout_class";
+        } else {
+            die "ERROR: trying to set layout for $appender_name to " .
+                "'$layout_class' failed";
         }
-        die $@ if $@;
-           # Eval erroneously succeeds on unknown appender classes if
-           # the eval string just consists of valid perl code (e.g. an
-           # appended ';' in $appenderclass variable). Fail if we see
-           # anything in there that can't be class name.
-        die "Unknown layout '$layout_class'" if $layout_class =~ /[^:\w]/;
-    };
-
-    if ($@) {
-        die "ERROR: trying to set layout for $appender_name to " .
-            "'$layout_class' failed\n$@";
     }
+
+    eval "require $layout_class" or 
+        die "Require to $layout_class failed ($!)";
 
     $appender->layout($layout_class->new(
         $data->{appender}->{$appender_name}->{layout},
@@ -543,8 +530,12 @@ sub config_read {
 
     #TBD
     }elsif ($config =~ m|^ldap://|){
-       eval { require Net::LDAP; require Log::Log4perl::Config::LDAPConfigurator; };
-       if ($@){die "Log4perl: missing Net::LDAP needed to parse LDAP urls\n$@\n"}
+       if(! Log::Log4perl::Util::module_available("Net::LDAP")) {
+           die "Log4perl: missing Net::LDAP needed to parse LDAP urls\n$@\n";
+       }
+
+       require Net::LDAP;
+       require Log::Log4perl::Config::LDAPConfigurator;
 
        return Log::Log4perl::Config::LDAPConfigurator::parse($config);
 
@@ -553,21 +544,19 @@ sub config_read {
         if ($config =~ /^(https?|ftp|wais|gopher|file):/){
             my ($result, $ua);
     
-            eval {
-                require LWP::UserAgent;
-                unless (defined $LWP_USER_AGENT) {
-                    $LWP_USER_AGENT = LWP::UserAgent->new;
-    
-                    # Load proxy settings from environment variables, i.e.:
-                    # http_proxy, ftp_proxy, no_proxy etc (see LWP::UserAgent)
-                    # You need these to go thru firewalls.
-                    $LWP_USER_AGENT->env_proxy;
-                }
-                $ua = $LWP_USER_AGENT;
-            };
+            die "LWP::UserAgent not available" unless
+                Log::Log4perl::Util::module_available("LWP::UserAgent");
 
-            $@ && die "Log4perl cannot load $config, \n".
-                        "reason: LWP::UserAgent didn't load\nerror: $@";
+            require LWP::UserAgent;
+            unless (defined $LWP_USER_AGENT) {
+                $LWP_USER_AGENT = LWP::UserAgent->new;
+    
+                # Load proxy settings from environment variables, i.e.:
+                # http_proxy, ftp_proxy, no_proxy etc (see LWP::UserAgent)
+                # You need these to go thru firewalls.
+                $LWP_USER_AGENT->env_proxy;
+            }
+            $ua = $LWP_USER_AGENT;
 
             my $req = new HTTP::Request GET => $config;
             my $res = $ua->request($req);
@@ -593,8 +582,13 @@ sub config_read {
     print "Reading $config: [@text]\n" if _INTERNAL_DEBUG;
 
     if ($text[0] =~ /^<\?xml /) {
-        eval { require XML::DOM; require Log::Log4perl::Config::DOMConfigurator; };
-        if ($@){die "Log4perl: missing XML::DOM needed to parse xml config files\n$@\n"}
+
+        die "XML::DOM not available" unless
+                Log::Log4perl::Util::module_available("XML::DOM");
+
+        require XML::DOM; 
+        require Log::Log4perl::Config::DOMConfigurator;
+
         XML::DOM->VERSION($Log::Log4perl::DOM_VERSION_REQUIRED);
         my $parser = Log::Log4perl::Config::DOMConfigurator->new();
         $data = $parser->parse(\@text);

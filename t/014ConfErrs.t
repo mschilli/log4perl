@@ -68,7 +68,7 @@ EOL
 eval{
     Log::Log4perl->init(\$conf);
 };
-ok($@, '/Unknown layout \'Log::Log4perl::Layout::SimpleLayout;\'/');
+ok($@, "/trying to set layout for myAppender to 'Log::Log4perl::Layout::SimpleLayout;' failed/");
 
 # *****************************************************
 # Relative Layout class

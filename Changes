@@ -22,6 +22,10 @@
            appenders. Should anyone not like this, it can be turned
            off by setting $L4p::Config::CONFIG_INTEGRITY_CHECK = 0
            before calling init().
+    * (ms) Fixed bug reported by Johannes Kilian <jok@vitronic.com>
+           with __DIE__ handler and "PatternLayout" shortcut. Replaced
+           'eval { require ... }' by L4p::Util::module_available in
+           L4p::Config.pm.
 
 0.47 (07/11/2004)
     * (ms) Added suggestion by Hutton Davidson <Davidson.Hutton@ftid.com>
