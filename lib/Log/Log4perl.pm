@@ -827,6 +827,7 @@ replaced by the logging engine when it's time to log the message:
     %C Fully qualified package (or class) name of the caller
     %d Current date in yyyy/mm/dd hh:mm:ss format
     %F File where the logging event occurred
+    %H Hostname
     %l Fully qualified name of the calling method followed by the
        callers source the file name and line number between 
        parentheses.

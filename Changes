@@ -5,7 +5,7 @@ Revision history for Log::Log4perl
 0.26 10/28/2002
     * (kg) enabled %l (was missing from PatternLayout::define)
     * (kg) got rid of "Use of uninitialized value in join or string" message
-          when some of $logger->debug(@array) when some of @array are undef 
+           when some of $logger->debug(@array) when some of @array are undef 
     * (ms) Stealth loggers and documentation
     * (kg) Better error message for case reported by Hai Wu
     * (ms) Added Log/Log4perl/FAQ.pm, which the homepage links to
@@ -17,7 +17,8 @@ Revision history for Log::Log4perl
            to the priority of the message instead of the default "DEBUG" 
            setting
     * (ms) Added %P process ID to PatternLayout as suggested by
-           Paul Harrington <Paul-Harrington@deshaw.com>
+           Paul Harrington <Paul-Harrington@deshaw.com>. Also added 
+           %H as hostname
 
 0.25 10/06/2002
     * (ms) backwards-compatibility with perl 5.00503

@@ -10,7 +10,7 @@ use strict;
 # change 'tests => 1' to 'tests => last_test_to_print';
 #########################
 use Test;
-BEGIN { plan tests => 12 };
+BEGIN { plan tests => 13 };
 
 use Log::Log4perl;
 use Log::Log4perl::Layout;
@@ -142,3 +142,13 @@ $app->layout($layout);
 $logger->debug("That's the message\n");
 
 ok($app->buffer() =~ /^\d+:That's the message$/);
+
+############################################################
+# Test if the hostname placeholder %H works
+############################################################
+$app->buffer("");
+$layout = Log::Log4perl::Layout::PatternLayout->new("%H:%m");
+$app->layout($layout);
+$logger->debug("That's the message\n");
+
+ok($app->buffer() =~ /^[^:]+:That's the message$/);

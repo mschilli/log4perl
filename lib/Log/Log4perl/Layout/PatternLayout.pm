@@ -11,6 +11,7 @@ use File::Spec;
 
 our $TIME_HIRES_AVAILABLE;
 our $TIME_HIRES_AVAILABLE_WARNED = 0;
+our $HOSTNAME;
 our $PROGRAM_START_TIME;
 
 BEGIN {
@@ -25,6 +26,11 @@ BEGIN {
         $TIME_HIRES_AVAILABLE = 1;
         $PROGRAM_START_TIME = [Time::HiRes::gettimeofday()];
     }
+
+    # Check if we've got Sys::Hostname. If not, just punt.
+    $HOSTNAME = "unknown.host";
+    eval { require Sys::Hostname; };
+    $HOSTNAME = Sys::Hostname::hostname() unless $@;
 }
 
 ##################################################
@@ -90,7 +96,7 @@ sub define {
 
     # Parse the format
     $format =~ s/%(-*\d*)
-                       ([cCdfFIlLmMnpPrtxX%])
+                       ([cCdfFHIlLmMnpPrtxX%])
                        (?:{(.*?)})*/
                        rep($self, $1, $2, $3);
                       /gex;
@@ -172,6 +178,7 @@ sub render {
     $info{n} = "\n";
     $info{p} = $priority;
     $info{P} = $$;
+    $info{H} = $HOSTNAME;
 
     if($self->{info_needed}->{r}) {
         if($TIME_HIRES_AVAILABLE) {
@@ -281,6 +288,7 @@ replaced by the logging engine when it's time to log the message:
     %C Fully qualified package (or class) name of the caller
     %d Current date in yyyy/mm/dd hh:mm:ss format
     %F File where the logging event occurred
+    %H Hostname
     %l Fully qualified name of the calling method followed by the
        callers source the file name and line number between 
        parentheses.
