@@ -148,8 +148,32 @@ die "fork failed" unless defined $pid;
 
 if($pid) {
    #parent
-   #print STDERR "Waiting for child\n";
+   #print "Waiting for child\n";
    $locker->shlock();
+
+   {
+       my $client = IO::Socket::INET->new( PeerAddr => 'localhost',
+                                           PeerPort => 12345,
+                                         );
+
+       #print "Checking connection\n";
+
+       if(defined $client) {
+           #print "Client defined, sending test\n";
+           eval { $client->send("test\n") };
+           if($@) {
+               #print "Send failed ($!), retrying ...\n";
+               sleep(1);
+               redo;
+           }
+       } else {
+           #print  "Server not responding yet ($!) ... retrying\n";
+           sleep(1);
+           redo;
+       }
+       $client->close();
+   }
+
    #print "Done\n";
 
    Log::Log4perl::init(\$conf);
@@ -169,19 +193,19 @@ if($pid) {
 
    die "Cannot start server: $!" unless defined $sock;
        # Ready to receive
-   #print "Listener ready\n";
-   sleep(5);
+   #print "Server started\n";
    $locker->shunlock();
+
+   my $nof_messages = 2;
 
    open FILE, ">$logfile" or die "Cannot open $logfile";
    while(my $client = $sock->accept()) {
        #print "Client connected\n";
        while(<$client>) {
            print FILE "$_\n";
-               # Only wait for one line
            last;
        }
-       last;
+       last unless --$nof_messages;
    }
 
    close FILE;
