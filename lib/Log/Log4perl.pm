@@ -65,7 +65,7 @@ package ([1]) in pure Perl.
 
 A WORD OF CAUTION: THIS LIBRARY IS STILL UNDER CONSTRUCTION -- ON
 http://log4perl.sourceforge.net YOU'LL GET THE LATEST SCOOP.
-THE API HAS REACHED A MATURE STATE, WE WILL NOT CHANGE UNLESS FOR
+THE API HAS REACHED A MATURE STATE, WE WILL NOT CHANGE IT UNLESS FOR
 A GOOD REASON.
 
 Logging beats a debugger when you want to know what's going on 
@@ -584,6 +584,9 @@ replaced by the logging engine when it's time to log the message:
     %% A literal percent (%) sign
 
 =back
+
+All placeholders are quantifiable, just like in I<printf>. Following this 
+tradition, C<%-20c> will reserve 20 chars for the category and right-justify it.
 
 Layouts are objects, here's how you create them:
 
