@@ -89,9 +89,6 @@ sub rep {
 ##################################################
     my($self, $num, $op, $curlies) = @_;
 
-        # There seems to be a bug in the regex engine
-        # causing an infinite loop if we return "%%" here.
-        # Just return " percent" for now to work around this.
     return "%%" if $op eq "%";
 
     push @{$self->{stack}}, [$op, $curlies];
