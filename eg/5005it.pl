@@ -41,8 +41,12 @@ sub process_file {
         # Replace 'use 5.006' lines
     $data =~ s/^use\s+5\.006/use 5.00503/mg;
 
-        # Delete 'use warnings;'
-    $data =~ s/^use warnings;//mg;
+        # Delete 'no/use warnings;'
+    $data =~ s/^\s*use warnings;//mg;
+    $data =~ s/^\s*no warnings;//mg;
+
+        # 5.00503 can't handle constants that start with a _
+    $data =~ s/_INTERNAL_DEBUG/INTERNAL_DEBUG/g;
 
     open FILE, ">$file" or die "Cannot open $file";
     print FILE $data;
