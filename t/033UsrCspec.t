@@ -223,4 +223,29 @@ if($@ and $@ =~ /prohibits/) {
     ok(0);
 }
 
-BEGIN { plan tests => 14, }
+################################################################
+# Test if cspecs are passing the correct caller level
+################################################################
+Log::Log4perl::Config::allow_code(1);
+Log::Log4perl::Appender::TestBuffer->reset();
+
+$config = <<'EOL';
+log4perl.category.some = DEBUG, appndr
+
+    # This should be evaluated at config parse time
+log4perl.appender.appndr = Log::Log4perl::Appender::TestBuffer
+log4perl.appender.appndr.layout = Log::Log4perl::Layout::PatternLayout
+log4perl.appender.appndr.layout.ConversionPattern = %K %m %n
+log4perl.appender.appndr.layout.cspec.K = sub { return (caller($_[4]))[1] }
+EOL
+
+Log::Log4perl::init(\$config);
+
+my $some = Log::Log4perl::get_logger('some');
+$some->debug("blah");
+
+my $somebuffer = Log::Log4perl::Appender::TestBuffer->by_name("appndr");
+
+ok($somebuffer->buffer(), "033UsrCspec.t blah \n");
+
+BEGIN { plan tests => 15, }
