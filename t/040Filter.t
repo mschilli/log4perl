@@ -281,7 +281,7 @@ $buffer->reset();
 eval {
     Log::Log4perl->init(\ <<'EOT');
         log4perl.logger = INFO, A1
-        log4perl.filter.Match1      = sub { blubber };
+        log4perl.filter.Match1      = sub { */+- };
         log4perl.appender.A1        = Log::Log4perl::Appender::TestBuffer
         log4perl.appender.A1.Filter = Match1
         log4perl.appender.A1.layout = Log::Log4perl::Layout::SimpleLayout
