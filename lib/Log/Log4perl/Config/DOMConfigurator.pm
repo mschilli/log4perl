@@ -1,23 +1,24 @@
 package Log::Log4perl::Config::DOMConfigurator;
 #todo
 # DONE(param-text) some params not attrs but values, like <sql>...</sql>
-# see DEBUG!!!  below
+# DONE see DEBUG!!!  below
 # appender-ref in <appender>
 # DONE check multiple appenders in a category
-# need docs in Config.pm re URL loading, steal from XML::DOM
-# see PropConfigurator re importing unlog4j, eval_if_perl
-# need to handle 0/1, true/false?
-# see Config, need to check version of XML::DOM
+# DONE in Config.pm re URL loading, steal from XML::DOM
+# DONE, OK see PropConfigurator re importing unlog4j, eval_if_perl
+# NO - is specified in DTD - need to handle 0/1, true/false?
+# DONEsee Config, need to check version of XML::DOM
 # user defined levels? see below
-# make sure 2nd test is using log4perl constructs, not log4j
+# OK make sure 2nd test is using log4perl constructs, not log4j
+# handle new filter stuff
 
 use XML::DOM;
 use Log::Log4perl::Level;
 use strict;
 
-use constant DEBUG => 0;
+use constant DEBUG => 1;
 
-our $VERSION = 0.02;
+our $VERSION = 0.03;
 
 our $APPENDER_TAG = qr/((log4j|log4perl):)?appender/;
 
@@ -34,53 +35,58 @@ sub parse {
     my $doc = $parser->parse (join('',@$text));
 
 
-     my $l4p_tree = {};
+    my $l4p_tree = {};
     
-     my $config = $doc->getElementsByTagName('log4j:configuration')->item(0)||
-                  $doc->getElementsByTagName('log4perl:configuration')->item(0);
+    my $config = $doc->getElementsByTagName('log4j:configuration')->item(0)||
+                 $doc->getElementsByTagName('log4perl:configuration')->item(0);
 
-     $l4p_tree->{threshold}{value} = uc($config->getAttribute('threshold'));
+    my $threshold = uc($config->getAttribute('threshold'));
+    if ($threshold) {
+        $l4p_tree->{threshold}{value} = $threshold;
+    }
 
-     if ($config->getAttribute('oneMessagePerAppender') eq 'true') {
-         $l4p_tree->{oneMessagePerAppender}{value} = 1;
-     }
+    if ($config->getAttribute('oneMessagePerAppender') eq 'true') {
+        $l4p_tree->{oneMessagePerAppender}{value} = 1;
+    }
 
-     for my $kid ($config->getChildNodes){
+    for my $kid ($config->getChildNodes){
 
-         next unless $kid->getNodeType == ELEMENT_NODE;
+        next unless $kid->getNodeType == ELEMENT_NODE;
 
-         my $tag_name = $kid->getTagName;
+        my $tag_name = $kid->getTagName;
 
-         if ($tag_name =~ $APPENDER_TAG) {
-             &parse_appender($l4p_tree, $kid);
+        if ($tag_name =~ $APPENDER_TAG) {
+            &parse_appender($l4p_tree, $kid);
 
-         }elsif ($tag_name eq 'category' || $tag_name eq 'logger'){
-             &parse_category($l4p_tree, $kid);
-             #treating them the same is not entirely accurate, 
-             #the dtd says 'logger' doesn't accept
-             #a 'class' attribute while 'category' does
+        }elsif ($tag_name eq 'category' || $tag_name eq 'logger'){
+            &parse_category($l4p_tree, $kid);
+            #Treating them the same is not entirely accurate, 
+            #the dtd says 'logger' doesn't accept
+            #a 'class' attribute while 'category' does.
+            #But that's ok, log4perl doesn't do anything with that attribute
 
-         }elsif ($tag_name eq 'root'){
-             &parse_root($l4p_tree, $kid);
+        }elsif ($tag_name eq 'root'){
+            &parse_root($l4p_tree, $kid);
 
-         }elsif ($tag_name eq 'renderer'){
-             warn "Log4perl: ignoring renderer tag in config, unimplemented";
-             #"log4j will render the content of the log message according to 
-             # user specified criteria. For example, if you frequently need 
-             # to log Oranges, an object type used in your current project, 
-             # then you can register an OrangeRenderer that will be invoked 
-             # whenever an orange needs to be logged. "
+        }elsif ($tag_name eq 'renderer'){
+            warn "Log4perl: ignoring renderer tag in config, unimplemented";
+            #"log4j will render the content of the log message according to 
+            # user specified criteria. For example, if you frequently need 
+            # to log Oranges, an object type used in your current project, 
+            # then you can register an OrangeRenderer that will be invoked 
+            # whenever an orange needs to be logged. "
          
-         }elsif ($tag_name eq 'PatternLayout'){#log4perl only
-             &parse_patternlayout($l4p_tree, $kid);
-         }
-     }
+        }elsif ($tag_name eq 'PatternLayout'){#log4perl only
+            &parse_patternlayout($l4p_tree, $kid);
+        }
+    }
+    $doc->dispose;
 
-     $doc->dispose;
-
-     return $l4p_tree;
+    return $l4p_tree;
 }
 
+#this is just for toplevel log4perl.PatternLayout tags
+#holding the custome cspecs
 sub parse_patternlayout {
     my ($l4p_tree, $node) = @_;
 
@@ -94,19 +100,18 @@ sub parse_patternlayout {
 
         foreach my $grandkid ($child->getChildNodes){
             if ($grandkid->getNodeType == TEXT_NODE) {
-                $value = $grandkid->getData;
-                last;
+                $value .= $grandkid->getData;
             }
         }
-
+        $value =~ s/^ +//;  #just to make the unit tests pass
+        $value =~ s/ +$//;
         $l4p_branch->{$name}{value} = $value;
     }
     $l4p_tree->{PatternLayout}{cspec} = $l4p_branch;
-
-
-
 }
 
+
+#for parsing the root logger, if any
 sub parse_root {
     my ($l4p_tree, $node) = @_;
 
@@ -119,7 +124,7 @@ sub parse_root {
 }
 
    
-
+#for parsing a category/logger element
 sub parse_category {
     my ($l4p_tree, $node) = @_;
 
@@ -225,36 +230,13 @@ sub parse_appender {
         my $name = unlog4j($child->getAttribute('name'));
 
 
-        if ($tag_name eq 'param') {
-            my $value = $child->getAttribute('value');
-            print "parse_appender: got param $name = $value\n"  if DEBUG;
+        if ($tag_name =~ /^(param|param-nested|param-text)$/) {
 
-            #e.g. Threshold
-            if ($value =~ /^(all|debug|info|warn|error|fatal|off|null)$/) {
-                $value = uc $value;
-            }
+            &parse_any_param($l4p_branch, $child);
 
-            $value = eval_if_perl($value) if $name !~ /\.(cspec\.)|warp_message/;
-
-            $l4p_branch->{$name} = {value => $value};
-
-        }elsif ($tag_name eq 'param-nested'){ #log4perl only
-
-            $l4p_branch->{$name} = &parse_param_nested($child);
-
-        }elsif ($tag_name eq 'param-text'){ #log4perl only
             my $value;
-            foreach my $grandkid ($child->getChildNodes){
-                if ($grandkid->getNodeType == TEXT_NODE) {
-                    $value = $grandkid->getData;
-                    last;
-                }
-            }
-            $value = eval_if_perl($value) if $name !~ /\.(cspec\.)|warp_message/;
 
-            $l4p_branch->{$name} = {value => $value};
-
-        }elsif ($tag_name eq 'layout'){
+        }elsif ($tag_name =~ /(log4perl:)?layout/){
             $l4p_branch->{layout} = parse_layout($child);
 
         }elsif ($tag_name eq 'filter'){
@@ -273,80 +255,88 @@ sub parse_appender {
 }
 
 
+sub parse_any_param {
+    my ($l4p_branch, $child) = @_;
+
+    my $tag_name = $child->getTagName();
+    my $name = $child->getAttribute('name');
+    my $value;
+
+    print "parse_any_param: <$tag_name name=$name\n" if DEBUG;
+
+    #<param-nested>
+    #note we don't set it to { value => $value }
+    #and we don't test for multiple values
+    if ($tag_name eq 'param-nested'){
+        
+        if ($l4p_branch->{$name}){
+            die "Log4perl: in config file, multiple param-nested tags for $name not supported";
+        }
+        $l4p_branch->{$name} = &parse_param_nested($child); 
+
+        return;
+
+    #<param>
+    }elsif ($tag_name eq 'param') {
+
+         $value = $child->getAttribute('value');
+
+         print "parse_param_nested: got param $name = $value\n"  if DEBUG;
+        
+         if ($value =~ /^(all|debug|info|warn|error|fatal|off|null)$/) {
+             $value = uc $value;
+         }
+
+         if ($name !~ /warp_message|filter/ &&
+            $child->getParentNode->getAttribute('name') ne 'cspec') {
+            $value = eval_if_perl($value);
+         }
+    #<param-text>
+    }elsif ($tag_name eq 'param-text'){
+
+        foreach my $grandkid ($child->getChildNodes){
+            if ($grandkid->getNodeType == TEXT_NODE) {
+                $value .= $grandkid->getData;
+            }
+        }
+        if ($name !~ /warp_message|filter/ &&
+            $child->getParentNode->getAttribute('name') ne 'cspec') {
+            $value = eval_if_perl($value);
+        }
+    }
+    
+
+     #multiple values for the same param name
+     if (defined $l4p_branch->{$name}{value} ) {
+         if (ref $l4p_branch->{$name}{value} ne 'ARRAY'){
+             my $temp = $l4p_branch->{$name}{value};
+             $l4p_branch->{$name}{value} = [$temp];
+         }
+         push @{$l4p_branch->{$name}{value}}, $value;
+     }else{
+         $l4p_branch->{$name} = {value => $value};
+     }
+}
+
+#handles an appender's <param-nested> elements
 sub parse_param_nested {
     my ($node) = shift;
 
     my $l4p_branch = {};
 
-    my @value;
-
     for my $child ($node->getChildNodes) {
         next unless $child->getNodeType == ELEMENT_NODE;
 
         my $tag_name = $child->getTagName();
-        my $name = $child->getAttribute('name');
-        if ($tag_name eq 'param') {
 
-            die "Log4perl: error in config, can't mix param-item with param ($name)"
-                if (@value);
-
-             my $value = $child->getAttribute('value');
-            
-             if ($value =~ /^(all|debug|info|warn|error|fatal|off|null)$/) {
-                 $value = uc $value;
-             }
-
-             if ($name ne 'warp_message' &&
-                $node->getAttribute('name') ne 'cspec') {
-                $value = eval_if_perl($value);
-             }
-            
-             $l4p_branch->{$name} = {value => $value};
-
-        }elsif ($tag_name eq 'param-item'){
-            my $value;
-            foreach my $grandkid ($child->getChildNodes){
-                if ($grandkid->getNodeType == TEXT_NODE) {
-                    $value = $grandkid->getData;
-                    last;
-                }
-            }
-            if ($name ne 'warp_message' &&
-                $node->getAttribute('name') ne 'cspec') {
-                $value = eval_if_perl($value);
-            }
-            push @value, $value; 
-
-        }elsif ($tag_name eq 'param-text'){
-            my $value;
-            foreach my $grandkid ($child->getChildNodes){
-                if ($grandkid->getNodeType == TEXT_NODE) {
-                    $value = $grandkid->getData;
-                    last;
-                }
-            }
-            if ($name ne 'warp_message' &&
-                $node->getAttribute('name') ne 'cspec') {
-                $value = eval_if_perl($value);
-            }
-
-            $l4p_branch->{$name} = {value => $value};
-
-        
-        }elsif ($tag_name eq 'param-nested'){
-            die "Log4perl: error in config, can't mix param-item with param ($name)"
-                if (@value);
-
-            $l4p_branch->{$name} = &parse_param_nested($child);
+        if ($tag_name =~ /^param|param-nested|param-text$/) {
+            &parse_any_param($l4p_branch, $child);
         }
     }
 
-    if (@value) {
-        return {value => \@value};
-    }else{
-        return $l4p_branch;
-    }
+    return $l4p_branch;
 }
+
 
 sub parse_layout {
     my $node = shift;
@@ -367,7 +357,19 @@ sub parse_layout {
                 $value = uc $value;
             }
             print "\tparse_layout: got param $name = $value\n"  if DEBUG;
-            $layout_tree->{$name}{value} = $value;  #DEBUG!!! --is this right in cases other than ConversionPattern?
+            $layout_tree->{$name}{value} = $value;  
+
+        }elsif ($child->getTagName() eq 'cspec') {
+            my $name = $child->getAttribute('name');
+            my $value;
+            foreach my $grandkid ($child->getChildNodes){
+                if ($grandkid->getNodeType == TEXT_NODE) {
+                    $value .= $grandkid->getData;
+                }
+            }
+            $value =~ s/^ +//;
+            $value =~ s/ +$//;
+            $layout_tree->{cspec}{$name}{value} = $value;  
         }
     }
     return $layout_tree;
@@ -429,8 +431,9 @@ This parses an XML file that conforms to the log4j.dtd, q.v.  It currently
 does B<not> handle any of the log4perl extensions we've been coming 
 up with, but that should hopefully follow shortly.
 
-You use it just like you would a properties config but if the data starts 
-with an xml declaration C<<\?xml ...> then it gets parsed by this DOMConfigurator instead of the PropertiesConfigurator.
+You can handle an xml config just like you would a properties config but 
+if the data starts with an xml declaration C<<\?xml ...> then it gets 
+parsed by this DOMConfigurator instead of the PropertiesConfigurator.
 
 Note that you need XML::DOM installed.
 
@@ -438,11 +441,19 @@ The code is brazenly modeled on log4j's DOMConfigurator class, (by
 Christopher Taylor, Ceki Gülcü and Anders Kristensen) and any
 perceived similarity is not coincidental.
 
-=head1 CAVEAT
+=head1 CAVEATS
 
 It is still (version 0.02 Jan-2002) very fresh, alpha software, please 
 check it out thoroughly before use and let me know if you find
 any problems.
+
+You can't mix a multiple param-nesteds with the same name, I'm going to
+leave that for now, there's no need for a list of data structures
+in the config.
+
+=head2 CHANGES
+
+0.03 2/26/2003 Added support for log4perl extensions to the log4j dtd
 
 =head1 SEE ALSO
 
