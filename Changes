@@ -7,7 +7,8 @@ Revision history for Log::Log4perl
     * Added documentation to Log::Log4perl::Appender
     * Made Time::HiRes optional. If it's missing, PatternLayout will
       just use full seconds as %r.
-    * SimpleDateFormat added
+    * SimpleDateFormat "%d{HH:SS}" added
+    * Added another cut-and-paste example to the docs (EXAMPLE)
 
 0.22 8/17/2002
     * Threshold settings of appenders: 
@@ -185,6 +186,7 @@ Revision history for Log::Log4perl
 
 TODO:
 ##################################################
+    * Make Log::Log4perl::Layout:: optional and accept just "PatternLayout"
     * BasicConfigurator() vs. :easy, PropertyConfigurator()
     * Log/throw exception (either warn/die or real exceptions)
     * get_logger() thread safety (two try to create it at the same time)
@@ -241,6 +243,7 @@ they're reused in the config file?
 
 Mike:
 ##################################################
+    * localtime() called twice on %d{HH}
     * Kevin says:
       >WARN in the config file
       >   init_and_watch(...);
