@@ -218,7 +218,7 @@ Log::Log4perl::Level - Predefined log levels
 
 This package simply exports a predefined set of I<Log4perl> log
 levels into the caller's name space. It is used internally by 
-C<Log::Log4perl. After
+C<Log::Log4perl>. After
 
     use Log::Log4perl::Level;
 
