@@ -1543,6 +1543,55 @@ Use a different logfile for every process like in
 
 =back
 
+=head2 My program already uses warn() and die(). How can I switch to Log4perl?
+
+If your program already uses Perl's C<warn()> function to spew out 
+error messages and you'd like to channel those into the Log4perl world,
+just define a C<__WARN__> handler where your program or module resides:
+
+    use Log::Log4perl qw(:easy);
+
+    $SIG{__WARN__} = sub {
+        local $Log::Log4perl::caller_depth;
+        $Log::Log4perl::caller_depth++;
+        WARN @_;
+    };
+
+Why the C<local> setting of C<$Log::Log4perl::caller_depth>? 
+If you leave that out,
+C<PatternLayout> conversion specifiers like C<%M> or C<%F> (printing
+the current function/method and source filename) will refer
+to where the __WARN__ handler resides, not the environment 
+Perl's C<warn()> function was issued from. Increasing C<caller_depth> 
+adjusts for this offset. Having it C<local>, makes sure the level 
+gets set back after the handler exits.
+
+Once done, if your program does something like 
+
+    sub some_func {
+        warn "Here's a warning";
+    }
+
+you'll get (depending on your Log::Log4perl configuration) something like
+
+    2004/02/19 20:41:02-main::some_func: Here's a warning at ./t line 25.
+
+in the appropriate appender instead of having a screen full of STDERR
+messages. It also works with the C<Carp> module and its C<carp()>
+and C<cluck()> functions.
+
+If, on the other hand, catching C<die()> and friends is 
+required, a C<__DIE__> handler is appropriate:
+
+    $SIG{__DIE__} = sub {
+        $Log::Log4perl::caller_depth++;
+        LOGDIE @_;
+    };
+
+This will call Log4perl's C<LOGDIE()> function, which will log a fatal
+error and then call die() internally, causing the program to exit. Works
+equally well with C<Carp>'s C<croak()> and C<confess()> functions.
+
 =cut
 
 =head1 SEE ALSO
