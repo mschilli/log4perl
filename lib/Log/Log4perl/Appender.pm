@@ -344,7 +344,7 @@ it will overwrite an existing log file C<test.log> and start from scratch.
 Instead of simple strings, certain appenders are expecting multiple fields
 as log messages. If a statement like 
 
-    $logger->debug("%d", $user, "signed in");
+    $logger->debug($ip, $user, "signed in");
 
 causes an off-the-shelf C<Log::Log4perl::Screen> 
 appender to fire, the appender will 
