@@ -9,13 +9,13 @@ use warnings;
 use Log::Log4perl::Logger;
 use Log::Log4perl::Config;
 
-our $VERSION = '0.16';
+our $VERSION = '0.17';
 
 ##################################################
 sub new {
 ##################################################
     die "THIS CLASS ISN'T FOR DIRECT USE. " .
-        "PLEASE CHECK 'perldoc __PACKAGE__'.";
+        "PLEASE CHECK 'perldoc " . __PACKAGE__ . "'.";
 }
 
 ##################################################
@@ -326,7 +326,7 @@ all of them at once if you desire to do so.
 Here's the list of appender modules currently available via C<Log::Dispatch>:
 
        Log::Dispatch::ApacheLog
-       Log::Dispatch::DBI
+       Log::Dispatch::DBI (by Tatsuhiko Miyagawa)
        Log::Dispatch::Email,
        Log::Dispatch::Email::MailSend,
        Log::Dispatch::Email::MailSendmail,
@@ -335,7 +335,7 @@ Here's the list of appender modules currently available via C<Log::Dispatch>:
        Log::Dispatch::Handle
        Log::Dispatch::Screen
        Log::Dispatch::Syslog
-       Log::Dispatch::Tk
+       Log::Dispatch::Tk (by Dominique Dumont)
 
 Now let's assume that we want to go overboard and log C<info()> or
 higher prioritized messages in the C<My::Category> class

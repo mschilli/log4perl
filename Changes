@@ -2,6 +2,9 @@
 Revision history for Log::Log4perl
 ##################################################
 
+0.17 07/11/2002
+    * Updated documentation according to Dave Rolsky's suggestions
+
 0.16 07/10/2002
     * Updated documentation for CPAN release
     * Applied Kevin's patch to limit it to one Log::Dispatcher
