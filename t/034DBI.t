@@ -17,7 +17,7 @@ BEGIN {
         $no_DBD = 1;
         plan tests => 1;
     }else{
-        plan tests => 10;
+        plan tests => 12;
     }
 }
 
@@ -94,7 +94,8 @@ Log::Log4perl::init(\$config);
 my $logger = Log::Log4perl->get_logger("groceries.beer");
 
 
-$logger->fatal('fatal message',1234,'foo','bar');
+#$logger->fatal('fatal message',1234,'foo','bar');
+$logger->fatal('fatal message',1234,'foo',{aaa => 'aaa'});
 $logger->warn('warning message',3456,'foo','bar');
 $logger->debug('debug message',99,'foo','bar');
 
@@ -107,6 +108,8 @@ ok($row->[1], 'fatal message');
 ok($row->[3], '1234');
 ok($row->[4], 'groceries.beer');
 ok($row->[5], 'main');
+ok($row->[6], 'foo');
+ok($row->[7], '/HASH/'); #verifying param checking for "filter=>sub{...} stuff
 
 $row = $sth->fetchrow_arrayref;
 ok($row->[0], 'WARN');
