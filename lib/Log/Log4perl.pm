@@ -14,7 +14,7 @@ use Log::Log4perl::Appender;
 
 use constant _INTERNAL_DEBUG => 1;
 
-our $VERSION = '0.45';
+our $VERSION = '0.46';
 
    # set this to '1' if you're using a wrapper
    # around Log::Log4perl
@@ -105,9 +105,8 @@ sub import {
 
             # Define default logger object in caller's package
         my $logger = get_logger("$caller_pkg");
-        my $string = "\$${caller_pkg}::_default_logger = \$logger";
-        eval $string or die "$@";
-
+        ${$caller_pkg . '::_default_logger'} = $logger;
+        
             # Define DEBUG, INFO, etc. routines in caller's package
         for(qw(DEBUG INFO WARN ERROR FATAL)) {
             my $level   = $_;
