@@ -43,6 +43,13 @@ sub new {
 
     $params{name} = unique_name() unless exists $params{name};
 
+    # If it's a Log::Dispatch::File appender, default to append 
+    # mode (Log::Dispatch::File defaults to 'clobber') -- consensus 9/2002
+    if ($appenderclass eq 'Log::Dispatch::File' &&
+        ! exists $params{mode}) {
+        $params{mode} = 'append';
+    }
+
     my $appender = $appenderclass->new(
             # Set min_level to default, *we* are controlling this now
         min_level => 'debug', 
@@ -262,6 +269,30 @@ C<Log4perl> doesn't care which ones you use, they're all handled in
 the same way via the C<Log::Log4perl::Appender> interface.
 Please check the well-written manual pages of the 
 C<Log::Dispatch> hierarchy on how to use each one of them.
+
+=head1 Pitfalls
+
+Since the C<Log::Dispatch::File> appender truncates log files by default,
+and most of the time this is I<not> what you want, we've instructed 
+C<Log::Log4perl> to change this behaviour by slipping it the 
+C<mode =E<gt> append> parameter behind the scenes. So, effectively
+with C<Log::Log4perl> 0.23, a configuration like
+
+    log4j.category = INFO, FileAppndr
+    log4j.appender.FileAppndr          = Log::Dispatch::File
+    log4j.appender.FileAppndr.filename = test.log
+    log4j.appender.FileAppndr.layout   = Log::Log4perl::Layout::SimpleLayout
+
+will always I<append> to an existing logfile C<test.log> while if you 
+specifically request clobbering like in
+
+    log4j.category = INFO, FileAppndr
+    log4j.appender.FileAppndr          = Log::Dispatch::File
+    log4j.appender.FileAppndr.filename = test.log
+    log4j.appender.FileAppndr.mode     = write
+    log4j.appender.FileAppndr.layout   = Log::Log4perl::Layout::SimpleLayout
+
+it will overwrite an existing log file C<test.log> and start from scratch.
 
 =head1 SEE ALSO
 
