@@ -29,7 +29,8 @@ my $xmlconfig = <<EOL;
 <?xml version="1.0" encoding="UTF-8"?> 
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 
-<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
+    threshold="debug">
   
   <appender name="A1" class="Log::Log4perl::Appender::TestBuffer">
         <layout class="Log::Log4perl::Layout::SimpleLayout"/>
@@ -39,7 +40,7 @@ my $xmlconfig = <<EOL;
   </appender>   
   <appender name="BUF0" class="Log::Log4perl::Appender::TestBuffer">
         <layout class="Log::Log4perl::Layout::SimpleLayout"/>   
-        <param name="Threshold" value="ERROR"/>
+        <param name="Threshold" value="error"/>
   </appender>   
   <appender name="FileAppndr1" class="org.apache.log4j.FileAppender">
         <layout class="Log::Log4perl::Layout::PatternLayout">
@@ -50,9 +51,10 @@ my $xmlconfig = <<EOL;
         <param name="Append" value="false"/>                
    </appender>
    
-   <category name="a.b.c.d">
-           <priority value="warn"/>  <!-- note lowercase! -->
+   <category name="a.b.c.d" additivity="false">
+           <level value="warn"/>  <!-- note lowercase! -->
            <appender-ref ref="A1"/>
+           
    </category>
    <category name="a.b">
            <priority value="info"/>  
@@ -81,13 +83,6 @@ my $xmlconfig = <<EOL;
            <appender-ref ref="FileAppndr1"/>
    </root>
    
-<!-- right? DEBUG!!!--> 
- <!-- <threshold value="ERROR"/>           -->
-
-<!-- like this? DEBUG!!!-->
- <!-- <additivity> 
-        <category name="Twix.Bar" value="false"/> 
-  </additivity> -->
 
 </log4j:configuration>
 
@@ -125,6 +120,10 @@ log4j.category.animal = INFO, FileAppndr1
 log4j.category.animal.dog = INFO, FileAppndr1,A2
 
 log4j.category = WARN, FileAppndr1
+
+log4j.threshold = DEBUG
+
+log4j.additivity.a.b.c.d = 0
 
 EOL
 

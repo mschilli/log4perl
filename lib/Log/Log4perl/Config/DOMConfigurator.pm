@@ -1,21 +1,21 @@
 package Log::Log4perl::Config::DOMConfigurator;
 #todo
-# appender-ref -- dup'd or ref'd?
 # some params not attrs but values, like <sql>...</sql>
 # see DEBUG!!!  below
+# appender-ref in <appender>
 # check multiple appenders in a category
 # need docs in Config.pm re URL loading, steal from XML::DOM
 # see PropConfigurator re importing unlog4j, eval_if_perl
-#  need to handle 0/1, true/false?
+# need to handle 0/1, true/false?
+# see Config, need to check version of XML::DOM
 
 use XML::DOM;
 use Log::Log4perl::Level;
 use strict;
 
-print STDERR __PACKAGE__."is a work in progress, this is an intermediate CVS check-in\n";
-print STDERR "DO NOT USE\n";
-
 use constant DEBUG => 1;
+
+our $VERSION = 0.02;
 
 
 sub parse {
@@ -28,19 +28,34 @@ sub parse {
      my $l4p_tree = {};
     
      my $config = $doc->getElementsByTagName('log4j:configuration')->item(0);
+
+     $l4p_tree->{threshold}{value} = uc($config->getAttribute('threshold'));
+
      for my $kid ($config->getChildNodes){
          next unless $kid->getNodeType == ELEMENT_NODE;
          my $tag_name = $kid->getTagName;
-         print "got $tag_name\n" if DEBUG;
+         print "parse: got $tag_name\n" if DEBUG;
          if ($tag_name eq 'appender') {
              &parse_appender($l4p_tree, $kid);
-         }elsif ($tag_name eq 'category'){
+
+         }elsif ($tag_name eq 'category' || $tag_name eq 'logger'){
              &parse_category($l4p_tree, $kid);
+             #not entirely accurate, the dtd says 'logger' doesn't accept
+             #a 'class' attribute
+
          }elsif ($tag_name eq 'root'){
              &parse_root($l4p_tree, $kid);
+
+         }elsif ($tag_name eq 'renderer'){
+             warn "Log4perl: ignoring renderer tag in config, unimplemented";
+             #"log4j will render the content of the log message according to 
+             # user specified criteria. For example, if you frequently need 
+             # to log Oranges, an object type used in your current project, 
+             # then you can register an OrangeRenderer that will be invoked 
+             # whenever an orange needs to be logged. "
          }
      }
-    
+
      $doc->dispose;
 
      return $l4p_tree;
@@ -65,6 +80,7 @@ sub parse_category {
     my $name = $node->getAttribute('name');
 
     $l4p_tree->{category} ||= {};
+    $l4p_tree->{additivity} ||= {};
  
     my $ptr = $l4p_tree->{category};
 
@@ -82,8 +98,19 @@ sub parse_category {
        $class ne 'org.apache.log4j.Logger' &&
        warn "setting category $name to class $class ignored, only Log::Log4perl implemented";
 
+    #this is kind of funky, additivity has its own spot in the tree
     my $additivity = $node->getAttribute('additivity');
-    $additivity && ($l4p_branch->{additivity} = $additivity);
+    print "addt is --$additivity--\n";
+    if (length $additivity > 0) {
+        my $add_ptr = $l4p_tree->{additivity};
+
+        for my $part (split /\.|::/, $name) {
+            print "+++pqrt is $part\n";
+            $add_ptr->{$part} = {} unless exists $add_ptr->{$part};
+            $add_ptr = $add_ptr->{$part};
+        }
+        $add_ptr->{value} = &parse_boolean($additivity);
+    }
 
     &parse_children_of_logger_element($l4p_branch, $node);
 
@@ -104,15 +131,16 @@ sub parse_children_of_logger_element {
         if ($tag_name eq 'param') {
             my $name = $child->getAttribute('name');
             my $value = $child->getAttribute('value');
-            print "got param $name = $value\n"  if DEBUG;
+            if ($value =~ /(all|debug|info|warn|error|fatal|off|null)/) {
+                $value = uc $value;
+            }
+            print "parse cole: got param $name = $value\n"  if DEBUG;
             $l4p_branch->{$name} = {value => $value};
         }elsif ($tag_name eq 'appender-ref'){
             push @appenders, $child->getAttribute('ref');
             #DEBUG!!!! q.v.
-        }elsif ($tag_name eq 'level'){
+        }elsif ($tag_name eq 'level' || $tag_name eq 'priority'){
             $priority = &parse_level($child);
-        }elsif ($tag_name eq 'priority'){
-            $priority = &parse_priority($child);
         }
     }
     $l4p_branch->{value} = $priority.', '.join(',', @appenders);
@@ -123,23 +151,12 @@ sub parse_children_of_logger_element {
 sub parse_level {
     my $node = shift;
 
-    my $level = $node->getAttribute('value');
+    my $level = uc ($node->getAttribute('value'));
 
-    my $level_str = Log::Log4perl::Level::to_level($level);
+    die "Log4perl: invalid level in config: $level"
+        unless Log::Log4perl::Level::is_valid($level);
 
-    print "*** got level $level_str***\n"  if DEBUG;
-    return $level_str;
-}
-
-sub parse_priority {
-    my $node = shift;
-
-    my $priority = uc($node->getAttribute('value'));
-
-    Log::Log4perl::Level::to_priority($priority);  #will croak if invalid
-
-    print "*** got priority $priority***\n"  if DEBUG;
-    return $priority;
+    return $level;
 }
 
 
@@ -165,7 +182,12 @@ sub parse_appender {
         if ($tag_name eq 'param') {
             my $name = $child->getAttribute('name');
             my $value = $child->getAttribute('value');
-            print "got param $name = $value\n"  if DEBUG;
+            print "parse_appender: got param $name = $value\n"  if DEBUG;
+
+            if ($value =~ /(all|debug|info|warn|error|fatal|off|null)/) {
+                $value = uc $value;
+            }
+
             $l4p_branch->{$name} = {value => $value};
         }elsif ($tag_name eq 'layout'){
             $l4p_branch->{layout} = parse_layout($child);
@@ -174,7 +196,9 @@ sub parse_appender {
         }elsif ($tag_name eq 'errorHandler'){
             die "errorHandlers not supported yet";
         }elsif ($tag_name eq 'appender-ref'){
-            #DEBUG!!! hey, are these dup'd or ref'd?
+            #dtd: Appenders may also reference (or include) other appenders. -->
+            #TDB DEBUG!!!
+            die "Log4perl: in config file, appender-ref unsupported in <appender>";
 
         }
     }
@@ -196,13 +220,63 @@ sub parse_layout {
         if ($child->getTagName() eq 'param') {
             my $name = $child->getAttribute('name');
             my $value = $child->getAttribute('value');
-            print "\tgot param $name = $value\n"  if DEBUG;
+            if ($value =~ /(all|debug|info|warn|error|fatal|off|null)/) {
+                $value = uc $value;
+            }
+            print "\tparse_layout: got param $name = $value\n"  if DEBUG;
             $layout_tree->{$name}{value} = $value;  #DEBUG!!! --is this right in cases other than ConversionPattern?
         }
     }
     return $layout_tree;
 }
 
+sub parse_boolean {
+    my $a = shift;
+
+    if ($a eq '0' || lc $a eq 'false') {
+        return '0';
+    }elsif ($a eq '1' || lc $a eq 'true'){
+        return '1';
+    }else{
+        return $a; #probably an error, punt
+    }
+}
+
 1;
 
 __END__
+
+=head1 NAME
+
+Log::Log4perl::Config::DOMConfigurator - reads xml
+
+=head1 SYNOPSIS
+
+This is an internal class.
+
+    Log::Log4perl::Config::DOMConfigurator::parse($text);
+    
+
+=head1 DESCRIPTION
+
+This parses an XML file that conforms to the log4j.dtd, q.v..  It currently
+does B<not> handle any of the log4perl extensions we've been coming 
+up with, but that should hopefully follow shortly.
+
+It is brazenly modeled on log4j's DOMConfigurator class, (by 
+Christopher Taylor, Ceki Gulcu and Anders Kristensen) and any
+perceived similarity is not coincidental.
+
+It is still (version 0.02 Jan-2002) very fresh, alpha software, please 
+check it out thoroughly before use and let me know if you find
+any problems.
+
+=head1 SEE ALSO
+
+Log::Log4perl::Config::PropertyConfigurator
+
+=head1 AUTHOR
+
+Kevin Goess, <cpan@goess.org> Jan-2003
+
+=cut
