@@ -8,6 +8,8 @@ Revision history for Log::Log4perl
     DONE:
     * (ms) Added Log4perl custom filters
     * (kg) added url support to init(), finally documenting it
+    * (ms) Corrected DateFormat inconsistencies as reported by
+           Roger Perttu <roger.perttu@easit.se>
 
 0.29 01/30/2003
     * (kg) Removing debugging from 0.28, big woops
