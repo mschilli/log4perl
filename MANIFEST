@@ -15,6 +15,7 @@ ldap/log4perl-2.ldif
 ldap/log4perl-unittest.ldif
 lib/Log/Log4perl.pm
 lib/Log/Log4perl/Appender.pm
+lib/Log/Log4perl/Appender/Buffer.pm
 lib/Log/Log4perl/Appender/DBI.pm
 lib/Log/Log4perl/Appender/File.pm
 lib/Log/Log4perl/Appender/Limit.pm
@@ -111,6 +112,7 @@ t/045Composite.t
 t/046RRDs.t
 t/048lwp.t
 t/049Unhide.t
+t/050Buffer.t
 t/compare.pl
 t/deeper1.expected
 t/deeper6.expected
