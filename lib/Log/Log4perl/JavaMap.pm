@@ -16,6 +16,10 @@ our %translate = (
         'Log::Log4perl::JavaMap::TestBuffer',
      'org.apache.log4j.jdbc.JDBCAppender'    => 
         'Log::Log4perl::JavaMap::JDBCAppender',
+     'org.apache.log4j.SyslogAppender'    => 
+        'Log::Log4perl::JavaMap::SyslogAppender',
+     'org.apache.log4j.NTEventLogAppender'    => 
+        'Log::Log4perl::JavaMap::NTEventLogAppender',
 );
 
 sub get {
@@ -69,29 +73,33 @@ the log4j options into Log::Dispatch parameters..
 
 =head2 What's Implemented
 
+(Note that you can always use the Log::Dispatch::* module.  By 'implemented'
+I mean having a translation class that translates log4j options into
+the Log::Dispatch options so you can use log4j rather than log4perl 
+syntax in your config file.)
+
 Here's the list of appenders I see on the current (6/2002) log4j site.
 
 These are implemented
 
-    ConsoleAppender - Log::Dispatch::Screen
-    FileAppender    - Log::Dispatch::File
+    ConsoleAppender     - Log::Dispatch::Screen
+    FileAppender        - Log::Dispatch::File
     RollingFileAppender - Log::Dispatch::FileRotate (by Mark Pfeiffer)
+    JDBCAppender        - Log::Log4perl::Appender::DBI
+    SyslogAppender      - Log::Dispatch::Syslog
+    NTEventLogAppender  - Log::Dispatch::Win32EventLog
 
 
 These should/will/might be implemented
-
+    
     DailyRollingFileAppender - 
     SMTPAppender     - Log::Dispatch::Email::MailSender
-    SyslogAppender - Log::Dispatch::Syslog
-    SocketAppender - (pass a socket to Log::Dispatch)
-    JDBCAppender - Log::Dispatch::DBI
     
 
 These might be implemented but they don't have corresponding classes
 in Log::Dispatch (yet):
 
     NullAppender
-    NTEventLogAppender
     TelnetAppender
 
 These might be simulated
@@ -103,6 +111,7 @@ These will probably not be implemented
 
     AsyncAppender
     JMSAppender
+    SocketAppender - (ships a serialized LoggingEvent to the server side)
     SocketHubAppender
 
 
