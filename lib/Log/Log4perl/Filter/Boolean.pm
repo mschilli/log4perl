@@ -34,7 +34,7 @@ sub new {
 }
 
 ##################################################
-sub decide {
+sub ok {
 ##################################################
      my ($self, %p) = @_;
 
@@ -95,9 +95,9 @@ sub eval_logic {
         # in the code (although the order of keys is
         # not predictable, it is consistent :)
     for my $param (keys %{$self->{params}}) {
-            # Call the decider and map the result to 1 or 0
+            # Call ok() and map the result to 1 or 0
         print "Calling filter $param\n" if DEBUG;
-        push @plist, ($self->{params}->{$param}->decide(%$p) ? 1 : 0);
+        push @plist, ($self->{params}->{$param}->ok(%$p) ? 1 : 0);
     }
 
         # Now pipe the parameters into the canned function,

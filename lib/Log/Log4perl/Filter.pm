@@ -25,7 +25,7 @@ sub new {
 
     if(ref($action) eq "CODE") {
         # it's a code ref
-        $self->{decider} = $action;
+        $self->{ok} = $action;
     } else {
         # it's something else
         die "Code for ($name/$action) not properly defined";
@@ -66,17 +66,17 @@ sub reset {
 }
 
 ##################################################
-sub decide {
+sub ok {
 ##################################################
     my($self, %p) = @_;
 
-    print "Calling $self->{name}'s decider\n" if DEBUG;
+    print "Calling $self->{name}'s ok method\n" if DEBUG;
 
         # Force filter classes to define their own
-        # deciders. Exempt are only sub {..} deciders
+        # ok(). Exempt are only sub {..} ok functions,
         # defined in the conf file.
     die "This is to be overridden by the filter" unless
-         defined $self->{decider};
+         defined $self->{ok};
 
     # What should we set the message in $_ to? The most logical
     # approach seems to be to concat all parts together. If some
@@ -88,9 +88,9 @@ sub decide {
                      Log::Log4perl::JOIN_MSG_ARRAY_CHAR, @{$p{message}};
     print "\$_ is '$_'\n" if DEBUG;
 
-    my $decision = $self->{decider}->(%p);
+    my $decision = $self->{ok}->(%p);
 
-    print "$self->{name}'s decided: ", 
+    print "$self->{name}'s ok'ed: ", 
           ($decision ? "yes" : "no"), "\n" if DEBUG;
 
     return $decision;
@@ -149,19 +149,19 @@ time the same message has been submitted -- and come to a log/no log
 decision based upon these circumstantial facts.
 
 Filters have names and can be specified in two different ways in the Log4perl
-configuration file: As decider subroutines or as filter classes. Here's a 
+configuration file: As subroutines or as filter classes. Here's a 
 simple filter named C<MyFilter> which just verifies that the 
 oncoming message matches the regular expression C</let this through/i>:
 
     log4perl.filter.MyFilter        = sub { /let this through/i }
 
-It exploits the fact that when the decider is called on a message,
+It exploits the fact that when C<ok()> is called on a message,
 Perl's special C<$_> variable will be set to the message text (prerendered,
 i.e. concatenated but not layouted) to be logged. 
-The decider subroutine is expected to return a true value 
+The C<ok()> subroutine is expected to return a true value 
 if it wants the message to be logged or a false value if doesn't.
 
-Also, Log::Log4perl will pass a hash to the decider
+Also, Log::Log4perl will pass a hash to the C<ok()> method,
 containing all key/value pairs that it would pass to the corresponding 
 appender, as the Log::Dispatch specification requires. Here's an
 example of a filter checking the priority of the oncoming message:
@@ -268,7 +268,7 @@ Operator precedence follows standard Perl conventions. Here's a bunch of example
 If none of Log::Log4perl's predefined filter classes fits your needs,
 you can easily roll your own: Just define a new class,
 derive it from the baseclass C<Log::Log4perl::Filter>,
-and define its C<new> and C<decide> methods like this:
+and define its C<new> and C<ok> methods like this:
 
     package Log::Log4perl::Filter::MyFilter;
 
@@ -285,7 +285,7 @@ and define its C<new> and C<decide> methods like this:
         return $self;
     }
 
-    sub decide {
+    sub ok {
          my ($self, %p) = @_;
 
          # ... decide and return 1 or 0
@@ -307,7 +307,7 @@ like this:
 
 which in turn should be used by the custom filter class to set the
 object's attributes, which later on can be retrieved inside the
-C<decide()> call to support decision making.
+C<ok()> call to support decision making.
 
 =head2 A Practical Example: Level Matching
 

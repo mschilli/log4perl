@@ -122,12 +122,12 @@ sub log { # Relay this call to Log::Dispatch::Whatever
     }
 
     # Run against the (yes only one) customized filter (which in turn
-    # might call other filters via the Boolean filter) and check if it 
-    # decides if it lets our message pass or blocks.
+    # might call other filters via the Boolean filter) and check if its
+    # ok() method approves the message or blocks it.
     if($self->{filter}) {
-        if($self->{filter}->decide(%$p,
-                                   log4p_category => $category,
-                                   log4p_level    => $level )) {
+        if($self->{filter}->ok(%$p,
+                               log4p_category => $category,
+                               log4p_level    => $level )) {
             print "Filter $self->{filter}->{name} passes\n" if DEBUG;
         } else {
             print "Filter $self->{filter}->{name} blocks\n" if DEBUG;
