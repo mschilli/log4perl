@@ -6,6 +6,7 @@ use 5.006;
 use strict;
 use warnings;
 use Carp;
+use Log::Log4perl::Util;
 use Log::Log4perl::Level;
 use Log::Log4perl::DateFormat;
 use Log::Log4perl::NDC;
@@ -27,18 +28,20 @@ BEGIN {
     # just set a flag so we know later on that we can't have fine-grained
     # time stamps
     $TIME_HIRES_AVAILABLE = 0;
-    eval { require Time::HiRes; };
-    if($@) {
-        $PROGRAM_START_TIME = time();
-    } else {
+    if(Log::Log4perl::Util::module_available("Time::HiRes")) {
+        require Time::HiRes;
         $TIME_HIRES_AVAILABLE = 1;
         $PROGRAM_START_TIME = [Time::HiRes::gettimeofday()];
+    } else {
+        $PROGRAM_START_TIME = time();
     }
 
     # Check if we've got Sys::Hostname. If not, just punt.
     $HOSTNAME = "unknown.host";
-    eval { require Sys::Hostname; };
-    $HOSTNAME = Sys::Hostname::hostname() unless $@;
+    if(Log::Log4perl::Util::module_available("Sys::Hostname")) {
+        require Sys::Hostname;
+        $HOSTNAME = Sys::Hostname::hostname();
+    }
 }
 
 ##################################################
