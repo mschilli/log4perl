@@ -267,6 +267,7 @@ sub unlog4j {
 
     $string =~ s#^org\.apache\.##;
     $string =~ s#^log4j\.##;
+    $string =~ s#^log4perl\.##;
 
     $string =~ s#\.#::#g;
 
