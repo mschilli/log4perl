@@ -50,7 +50,7 @@ sub init_and_watch {
 
     defined ($delay) or $delay = $DEFAULT_WATCH_DELAY;  
 
-    $delay =~ /\D/ && die "illegal non-numerica value for delay: $delay";
+    $delay =~ /\D/ && die "illegal non-numerical value for delay: $delay";
 
     if (ref $config) {
         die "Log4perl can only watch a file, not a string of configuration information";
