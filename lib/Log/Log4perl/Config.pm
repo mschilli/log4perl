@@ -371,6 +371,7 @@ sub config_read {
         }
         if(my($key, $val) = /(\S+?)\s*=\s*(.*)/) {
             $val =~ s/\s+$//;
+            $val = eval_if_perl($val) if $key !~ /\.cspec\./;
             $key = unlog4j($key);
             my $how_deep = 0;
             my $ptr = $data;
@@ -448,6 +449,20 @@ sub leaf_paths {
         }
     }
     return \@result;
+}
+
+###########################################
+sub eval_if_perl {
+###########################################
+    my($value) = @_;
+
+    if($value =~ /^\s*sub\s*{/) {
+        my $cref = eval "package main; $value" or 
+            die "Can't evaluate '$value'";
+        $value = $cref->();
+    }
+
+    return $value;
 }
 
 1;

@@ -1190,6 +1190,35 @@ a reference to it:
 
     Log::Log4perl->init( \%key_value_pairs );
 
+=head2 Perl Hooks in the Configuration File
+
+If some of the values used in the Log4perl configuration file 
+need to be dynamically modified by the program, use Perl hooks:
+
+    log4perl.appender.File.filename = \
+        sub { return getLogfileName(); }
+
+Each value starting with the string C<sub {...> is interpreted as Perl code to
+be executed at the time the application parses the configuration
+via C<Log::Log4perl::init()>. The return value of the subroutine
+is used by Log::Log4perl as the configuration value.
+
+The Perl code is executed in the C<main> package, functions in
+other packages have to be called in fully-qualified notation.
+
+Here's another example, utilizing an environment variable as a
+username for a DBI appender:
+
+    log4perl.appender.DB.username = \
+        sub { $ENV{DB_USER_NAME } }
+
+However, please note the difference between these code snippets and those
+used for user-defined conversion specifiers as discussed in
+L<Log::Log4perl::PatternLayout>: While the snippets above are run I<once>
+when C<Log::Log4perl::init()> is called, the conversion specifier
+snippets are executed I<each time> a message is rendered according to
+the PatternLayout.
+
 =head2 Incrementing and Decrementing the Log Levels
 
 Log4perl provides some internal functions for quickly adjusting the
