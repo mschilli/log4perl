@@ -2012,7 +2012,20 @@ and the script will run nevertheless (but of course without logging):
     # ...
     ###l4p INFO "Really!";
 
-because everything's a regular comment now.
+because everything's a regular comment now. Alternatively, put the
+magic Log::Log4perl comment resurrection line into your shell's 
+PERL5OPT environment variable, e.g. for bash:
+
+    set PERL5OPT=-MLog::Log4perl=:resurrect,:easy
+    export PERL5OPT
+
+This will awaken the giant within an otherwise silent script like
+the following:
+
+    #!/usr/bin/perl
+
+    ###l4p Log::Log4perl->easy_init($DEBUG);
+    ###l4p DEBUG "It works!";
 
 =head2 Access defined appenders
 
