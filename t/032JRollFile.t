@@ -21,7 +21,6 @@ unless (-e "$WORK_DIR"){
     mkdir("$WORK_DIR", 0755) || die "can't create $WORK_DIR ($!)";
 }
 
-my $WORK_DIR = File::Spec->catfile(qw(t tmp));
 use vars qw(@outfiles); @outfiles = (File::Spec->catfile($WORK_DIR, 'rolltest.log'),
                                      File::Spec->catfile($WORK_DIR, 'rolltest.log.1'),
                                      File::Spec->catfile($WORK_DIR, 'rolltest.log.2'),);
