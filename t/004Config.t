@@ -156,4 +156,8 @@ EOT
 
 eval { Log::Log4perl->init(\$conf); };
 
-ok($@, '/No ConversionPattern given for PatternLayout/'); 
+
+#actually, it turns out that log4j handles this, if no ConversionPattern
+#specified is uses DEFAULT_LAYOUT_PATTERN, %m%n
+#ok($@, '/No ConversionPattern given for PatternLayout/'); 
+ok($@, ''); 
