@@ -849,7 +849,7 @@ C<ColorScreenAppender>, which logs messages
 to the screen in a configurable color. Just create a new class 
 in C<ColorScreenAppender.pm>:
 
-    package ColorScreen;
+    package ColorScreenAppender;
 
 Now let's assume that your Log::Log4perl
 configuration file C<test.conf> looks like this:
