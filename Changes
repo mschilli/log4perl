@@ -10,6 +10,8 @@
            protect applications who are tinkering with $/. It is set
            to "\n" now locally when L4p is reading the conf file. Added
            a test case to t/004Config.t.
+    * (ms) Fixed a documentation error with initialized(), pointed 
+           out by Victor Felix <vfelix@tigr.org>.
 
 0.44 (04/25/2004)
     * (ms) added filename() method to L4P::Appender::File as suggested 

@@ -1160,12 +1160,15 @@ that it will leave a potentially existing configuration alone and
 will only call C<init()> if Log::Log4perl hasn't been initialized yet.
 
 If you're just curious if Log::Log4perl has been initialized yet, the
+check
 
     if(Log::Log4perl->initialized()) {
-        # Not initialized yet ...
+        # Yes, Log::Log4perl has already been initialized
+    } else {
+        # No, not initialized yet ...
     }
 
-check can be used.
+can be used.
 
 If you're afraid that the components of your system are stepping on 
 each other's toes or if you are thinking that different components should
