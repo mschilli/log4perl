@@ -99,7 +99,8 @@ sub level {
 
         # 'Set' function
     if(defined $level) {
-        $self->{level} = $level;
+        $self->{level} = $level;   #need to do validation here !!!
+        $self->{level_str} = Log::Log4perl::Level::to_string($level);
         return $level;
     }
 
@@ -126,6 +127,46 @@ sub level {
     # have a level defined
     die "We should never get here.";
 }
+
+##################################################
+sub level_str {
+##################################################
+    my($self, $level_str) = @_;
+
+        # 'Set' function
+    if($level_str) {
+        $self->{level_str} = $level_str;  #need to do validation here !!!
+        $self->{level} = Log::Log4perl::Level::to_level($level_str);
+        return $level_str;
+    }
+
+        # 'Get' function
+    if($self->{level_str}) {
+        return $self->{level_str};
+        #maybe it hasn't been set yet, so do it, this is a kludge
+    }elsif(defined $self->{level}){
+        $self->{level_str} = Log::Log4perl::Level::to_string($self->{level});;
+    }
+
+    for(my $logger = $self; $logger; $logger = parent_logger($logger)) {
+
+        # Does the current logger have the level defined?
+
+        if($logger->{logger_class} eq "") {
+            # It's the root logger
+            return $ROOT_LOGGER->{level_str};
+        }
+            
+        if(defined $LOGGERS_BY_STRING->{$logger->{logger_class}}->{level_str}) {
+            return $LOGGERS_BY_STRING->{$logger->{logger_class}}->{level_str};
+        }
+    }
+
+    # We should never get here because at least the root logger should
+    # have a level defined
+    die "We should never get here.";
+}
+
 
 ##################################################
 sub parent_logger {
@@ -242,6 +283,7 @@ sub warn  { &log($_[0], $WARN,  @_[1,]); }
 sub error { &log($_[0], $ERROR, @_[1,]); }
 sub fatal { &log($_[0], $FATAL, @_[1,]); }
 ##################################################
+
 
 1;
 
