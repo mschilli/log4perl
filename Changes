@@ -8,6 +8,7 @@ Revision history for Log::Log4perl
           when some of $logger->debug(@array) when some of @array are undef 
     * (ms) Stealth loggers and documentation
     * (kg) Better error message for case reported by Hai Wu
+    * (ms) Added Log/Log4perl/FAQ.pm
 
 0.25 10/06/2002
     * (ms) backwards-compatibility with perl 5.00503
