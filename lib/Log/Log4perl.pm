@@ -1224,6 +1224,30 @@ a reference to it:
 
     Log::Log4perl->init( \%key_value_pairs );
 
+=head1 Using LWP to parse URLs
+
+(This section borrowed from XML::DOM::Parser by T.J. Mather).
+
+The init() function now also supports URLs, e.g. I<http://www.erols.com/enno/xsa.xml>.
+It uses LWP to download the file and then calls parse() on the resulting string.
+By default it will use a L<LWP::UserAgent> that is created as follows:
+
+ use LWP::UserAgent;
+ $LWP_USER_AGENT = LWP::UserAgent->new;
+ $LWP_USER_AGENT->env_proxy;
+
+Note that env_proxy reads proxy settings from environment variables, which is what I need to
+do to get thru our firewall. If you want to use a different LWP::UserAgent, you can 
+set it with
+
+    Log::Log4perl::Config::set_LWP_UserAgent($my_agent);
+
+Currently, LWP is used when the filename (passed to parsefile) starts with one of
+the following URL schemes: http, https, ftp, wais, gopher, or file (followed by a colon.)
+
+Don't use this feature with init_and_watch().
+
+
 =head2 Perl Hooks in the Configuration File
 
 If some of the values used in the Log4perl configuration file 
