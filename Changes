@@ -2,6 +2,9 @@
 Revision history for Log::Log4perl
 ##################################################
 
+0.30 (not officially released yet)
+    * (ms) Added Log4perl custom filters
+
 0.29 01/30/2003
     * (kg) Removing debugging from 0.28, big woops
     * (kg) Fixing 036JSyslog.t, Syslog implementations are too often broken
