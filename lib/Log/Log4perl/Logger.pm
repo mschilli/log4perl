@@ -35,6 +35,14 @@ sub reset {
     $ROOT_LOGGER        = __PACKAGE__->_new("", $DEBUG);
 #    $LOGGERS_BY_NAME    = {};  #leave this alone, it's used by 
                                 #reset_all_output_methods when the config changes
+
+
+    #we've got a circular reference thing going on somewhere
+    foreach my $appendername (keys %APPENDER_BY_NAME){
+        delete $APPENDER_BY_NAME{$appendername}->{appender} 
+                if (exists $APPENDER_BY_NAME{$appendername} &&
+                    exists $APPENDER_BY_NAME{$appendername}->{appender});
+    }
     %APPENDER_BY_NAME   = ();
     $DISPATCHER         = Log::Dispatch->new();
     undef $INITIALIZED;
