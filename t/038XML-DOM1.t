@@ -25,7 +25,7 @@ BEGIN {
     if ($@) {
         plan skip_all => "only with XML::DOM > $dvrq";
     }else{
-        plan tests => 1;
+        plan tests => 2;
     }
 }
 
@@ -160,6 +160,103 @@ ok(Compare($xmldata, $propsdata)) ||
               print STDERR "expected: ", Data::Dump::dump($propsdata),"\n";
           }
         };
+
+
+# =======================================================\
+# test variable substitutions
+# more brute force
+
+$xmlconfig = <<'EOL';
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
+    threshold="${rootthreshold}">
+  
+  <appender name="${A1}" class="${testbfr}">
+        <layout class="${simplelayout}"/>
+  </appender>   
+  <appender name="${A2}" class="${testbfr}">
+        <layout class="Log::Log4perl::Layout::SimpleLayout"/>   
+  </appender>   
+  <appender name="BUF0" class="Log::Log4perl::Appender::TestBuffer">
+        <layout class="Log::Log4perl::Layout::SimpleLayout"/>   
+        <param name="${appthreshold}" value="${appthreshlevel}"/>
+  </appender>   
+  <appender name="FileAppndr1" class="org.apache.log4j.FileAppender">
+        <layout class="Log::Log4perl::Layout::PatternLayout">
+                <param name="${convpatt}" 
+                                      value="${thepatt}"/>
+        </layout>
+        <param name="${pfile}" value="${pfileval}"/>
+        <param name="Append" value="false"/>                
+   </appender>
+   
+   <category name="${abcd}" additivity="${abcd_add}">
+           <level value="${abcd_level}"/>  <!-- note lowercase! -->
+           <appender-ref ref="A1"/>
+           
+   </category>
+   <category name="a.b">
+           <priority value="info"/>  
+           <appender-ref ref="A1"/>
+   </category>
+   <category name="animal.dog">
+           <priority value="info"/>
+           <appender-ref ref="FileAppndr1"/>
+           <appender-ref ref="A2"/>
+   </category>
+   <category name="animal">
+           <priority value="info"/>
+           <appender-ref ref="FileAppndr1"/>
+   </category>
+   <category name="xa.b.c.d">
+           <priority value="info"/>
+           <appender-ref ref="A2"/>
+   </category>
+   <category name="xa.b">
+           <priority value="warn"/>
+           <appender-ref ref="A2"/>
+   </category>
+   
+   <root>
+           <priority value="warn"/>
+           <appender-ref ref="FileAppndr1"/>
+   </root>
+   
+
+</log4j:configuration>
+
+EOL
+
+
+$ENV{rootthreshold} = 'debug';
+$ENV{A1} = 'A1';
+$ENV{A2} = 'A2';
+$ENV{testbfr} = 'Log::Log4perl::Appender::TestBuffer';
+$ENV{simplelayout} = 'Log::Log4perl::Layout::SimpleLayout';
+$ENV{appthreshold} = 'Threshold';
+$ENV{appthreshlevel} = 'error';
+$ENV{convpatt} = 'ConversionPattern';
+$ENV{thepatt} = '%d %4r [%t] %-5p %c %t - %m%n';
+$ENV{pfile} = 'File';
+$ENV{pfileval} = 't/tmp/DOMtest';
+$ENV{abcd} = 'a.b.c.d';
+$ENV{abcd_add} = 'false';
+$ENV{abcd_level} = 'warn';
+$ENV{a1_appenderref} = 'A1';
+
+my $varsubsdata = Log::Log4perl::Config::config_read(\$xmlconfig);
+
+ok(Compare($varsubsdata, $xmldata)) || 
+        do {
+          if ($dump_available) {
+              print STDERR "got: ",Data::Dump::dump($varsubsdata),"\n";
+              print STDERR "================\n";
+              print STDERR "expected: ", Data::Dump::dump($xmldata),"\n";
+          }
+        };
+
 
 
 

@@ -20,7 +20,7 @@ BEGIN {
     if ($@) {
         plan skip_all => "only with XML::DOM > $dvrq";
     }else{
-        plan tests => 3;
+        plan tests => 4;
     }
 }
 
@@ -259,6 +259,85 @@ EOL
 
 $xmldata = Log::Log4perl::Config::config_read(\$xmlconfig);
 $propsdata = Log::Log4perl::Config::config_read(\$propsconfig);
+
+ok(Compare($xmldata, $propsdata)) || 
+        do {
+          if ($dump_available) {
+              print STDERR "got: ",Data::Dump::dump($xmldata),"\n================\n";
+              print STDERR "expected: ", Data::Dump::dump($propsdata),"\n";
+          }
+        };
+
+
+
+#now we test variable substitution
+#brute force again
+my $varsubstconfig = <<'EOL';
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE log4perl:configuration SYSTEM "log4perl.dtd">
+
+<log4perl:configuration xmlns:log4perl="http://log4perl.sourceforge.net/"
+    threshold="debug" oneMessagePerAppender="${onemsgperappnder}">
+    
+<log4perl:appender name="jabbender" class="${jabberclass}">
+          <param-nested name="${paramnestedname}">
+                <param name="${hostname}" value="${hostnameval}"/>
+                <param name="${password}" value="${passwordval}"/>
+                <param name="port" value="5222"/>
+                <param name="resource" value="logger"/>
+                <param name="username" value="bobjones"/>
+         </param-nested>
+         <param name="to" value="bob@a.jabber.server"/>
+         <param-text name="to">${topcdata}</param-text>
+          <layout class="Log::Log4perl::Layout::SimpleLayout"/>
+         
+</log4perl:appender>
+<log4perl:appender name="DBAppndr2" class="Log::Log4perl::Appender::DBI">
+          <param name="warp_message" value="0"/>
+          <param name="datasource" value="DBI:CSV:f_dir=t/tmp"/>
+          <param name="bufferSize" value="2"/>
+          <param name="password" value="sub { $ENV{PWD} }"/>
+           <param name="username" value="bobjones"/>
+          
+          <param-text name="sql">insert into ${tablename} (loglevel, message, shortcaller, thingid, category, pkg, runtime1, runtime2) values (?,?,?,?,?,?,?,?)</param-text> 
+           <param-nested name="params">
+                <param name="1" value="%p"/>
+                <param name="3" value="%5.5l"/>
+                <param name="5" value="%c"/>
+                <param name="6" value="%C"/>
+           </param-nested>
+                
+           <layout class="Log::Log4perl::Layout::NoopLayout"/>
+         
+</log4perl:appender>
+<category name="animal.dog">
+           <priority value="info"/>
+           <appender-ref ref="jabbender"/>
+</category>
+
+<PatternLayout>
+    <cspec name="${cspecname}"><![CDATA[sub { ${perlcode} }]]></cspec>
+</PatternLayout>
+
+
+</log4perl:configuration>
+EOL
+
+$ENV{onemsgperappnder} = 'true';
+$ENV{jabberclass} = 'Log::Dispatch::Jabber';
+$ENV{paramnestedname} = 'login';
+$ENV{hostname} = 'hostname';
+$ENV{hostnameval} = 'a.jabber.server';
+$ENV{password} = 'password';
+$ENV{passwordval} = '12345';
+$ENV{topcdata} = 'mary@another.jabber.server';
+$ENV{tablename} = 'log4perltest';
+$ENV{cspecname} = 'G';
+$ENV{perlcode} = 'return "UID $< GID $(";';
+
+my $varsubstdata = Log::Log4perl::Config::config_read(\$varsubstconfig);
+
+
 
 ok(Compare($xmldata, $propsdata)) || 
         do {
