@@ -19,12 +19,12 @@ use constant FATAL_INT => 50000;
 use constant OFF_INT   => (2 ** 31) - 1;
 
 no strict qw(refs);
-use vars qw(%PRIORITY %LEVELS);
+use vars qw(%PRIORITY %LEVELS %SYSLOG %L4P_TO_LD);
 
-our %PRIORITY = (); # unless (%PRIORITY);
-our %LEVELS = () unless (%LEVELS);
-our %SYSLOG = () unless (%SYSLOG);
-our %L4P_TO_LD = () unless (%L4P_TO_LD);
+%PRIORITY = (); # unless (%PRIORITY);
+%LEVELS = () unless (%LEVELS);
+%SYSLOG = () unless (%SYSLOG);
+%L4P_TO_LD = () unless (%L4P_TO_LD);
 
 sub add_priority {
   my ($prio, $intval, $syslog, $log_dispatch_level) = @_;
