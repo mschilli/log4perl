@@ -698,7 +698,7 @@ but if thought through properly, it turns out that Log4perl behaves
 as advertised. But, don't despair, of course there's a number of 
 ways to avoid message duplication in your logs.
 
-Here's an example Log4perl configuration file that produces the
+Here's a sample Log4perl configuration file that produces the
 phenomenon:
 
     log4perl.logger.Cat        = ERROR, Screen
@@ -718,7 +718,7 @@ Now imagine the following code in your program:
     $logger->warn("Warning!");
 
 What do you think will happen? An unexperienced Log4perl user
-might think: "Well, the message is logged with level WARN, so the 
+might think: "Well, the message is being sent with level WARN, so the 
 C<Cat::Subcat> logger will accept it and forward it to the 
 attached C<Screen> appender. Then, the message will percolate up 
 the logger hierarchy, find
@@ -734,11 +734,11 @@ to the screen:
 What happened? The culprit is that once the logger C<Cat::Subcat> 
 decides to fire, it will forward the message I<unconditionally> 
 to all directly or indirectly attached appenders. The C<Cat> logger 
-will never be asked if it wants the message or not -- it will just 
-be pushed through to the appender attached to C<Cat>.
+will never be asked if it wants the message or not -- the message 
+will just be pushed through to the appender attached to C<Cat>.
 
 One way to prevent the message from bubbling up the logger
-hierarchy is to set the C<additivity> flag of a sub logger to
+hierarchy is to set the C<additivity> flag of the subordinate logger to
 C<0>:
 
     log4perl.logger.Cat            = ERROR, Screen
