@@ -109,6 +109,9 @@ sub log_message {
     #%p is
     #    { name    => \$appender_name,
     #      level   => \$Log: DBI.pm,v $
+    #      level   => \Revision 1.4  2002/12/28 01:02:01  kgoess
+    #      level   => \some defensive checking
+    #      level   => \
     #      level   => \Revision 1.3  2002/12/28 00:01:59  kgoess
     #      level   => \moving stuff out of _init to new so subclassing is easier
     #      level   => \
@@ -221,6 +224,12 @@ sub check_buffer {
 
             $prev_stmt = $stmt;
 
+        }
+
+        my $dbh = $self->{dbh};
+
+        if (! $dbh->{AutoCommit}) {
+            $dbh->commit;
         }
     }
 }
