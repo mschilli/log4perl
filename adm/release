@@ -5,7 +5,7 @@
 ###########################################
 # RELEASE checklist:
 # * Update log4perl project download page
-    Upload to upload.sourceforge.net
+#   Upload to upload.sourceforge.net
 #   https://sourceforge.net/project/admin/newrelease.php?package_id=52323&group_id=56939
 # * Notify log4perl-devel
 # * Check 5.00503 compatibility
