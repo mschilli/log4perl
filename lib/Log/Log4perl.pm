@@ -310,11 +310,19 @@ sub infiltrate_lwp {  #
 ##################################################
     no warnings qw(redefine);
 
-    *LWP::Debug::trace =
+    my $l4p_wrapper = sub {
+        my($prio, @message) = @_;
+        $Log::Log4perl::caller_depth += 2;
+        get_logger(caller(1))->log($prio, @message);
+        $Log::Log4perl::caller_depth -= 2;
+    };
+
+    *LWP::Debug::trace = sub { 
+        $l4p_wrapper->($INFO, @_); 
+    };
     *LWP::Debug::conns =
-    *LWP::Debug::debug = sub {
-        my $logger = Log::Log4perl::get_logger("LWP::UserAgent");
-        $logger->debug(@_);
+    *LWP::Debug::debug = sub { 
+        $l4p_wrapper->($DEBUG, @_); 
     };
 }
 
@@ -2068,8 +2076,9 @@ would even play along in the Log::Log4perl framework.
 
 A call to C<Log::Log4perl-E<gt>infiltrate_lwp()> does exactly this. 
 In a very rude way, it pulls the rug from under LWP::UserAgent and transforms
-its debug messages into C<debug()> calls of loggers of the category
-C<"LWP::UserAgent">.
+its C<debug/conn> messages into C<debug()> calls of loggers of the category
+C<"LWP::UserAgent">. Similarily, C<LWP::UserAgent>'s C<trace> messages 
+are turned into C<Log::Log4perl>'s C<info()> method calls.
 
 =back
 
