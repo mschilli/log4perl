@@ -63,6 +63,8 @@ sub to_level {
 
     if(exists $PRIORITY{$string}) {
         $priority = $PRIORITY{$string};
+    }else{
+        die "level '$string' is not a valid error level (".join ('|', keys %PRIORITY),')';
     }
          
     return $priority;
