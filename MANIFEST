@@ -36,6 +36,7 @@ t/012Deeper.t
 t/013Bench.t
 t/014ConfErrs.t
 t/016Export.t
+t/017Watch.t
 t/deeper1.expected
 t/deeper6.expected
 t/deeper7.expected
