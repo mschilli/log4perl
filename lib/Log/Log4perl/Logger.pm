@@ -813,24 +813,3 @@ sub dec_level {
 1;
 
 __END__
-
-=head1 NAME
-
-Log::Log4perl::Logger - Main Logger
-
-=head1 SYNOPSIS
-
-  use Log::Log4perl::Logger;
-
-  my $log =  Log::Log4perl::Logger();
-  $log->debug("Debug Message");
-
-=head1 DESCRIPTION
-
-=head1 SEE ALSO
-
-=head1 AUTHOR
-
-Mike Schilli, E<lt>m@perlmeister.comE<gt>
-
-=cut
