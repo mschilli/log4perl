@@ -2,16 +2,23 @@ use Log::Log4perl;
 use Test::More;
 use File::Spec;
 
+#
+# We skip all tests for this module until it has stabilized.
+#
 BEGIN {
-    eval {
-        require Log::Dispatch::FileRotate;
-    };
-    if ($@ or $Log::Dispatch::FileRotate::VERSION < 1.09) {
-        plan skip_all => "only with Log::Dispatch::FileRotate 1.09";
-    } else {
-        plan tests => 2;
-    }
+    plan skip_all => "Log::Dispatch::FileRotate tests skipped";
 }
+
+#BEGIN {
+#    eval {
+#        require Log::Dispatch::FileRotate;
+#    };
+#    if ($@ or $Log::Dispatch::FileRotate::VERSION < 1.10) {
+#        plan skip_all => "only with Log::Dispatch::FileRotate 1.10";
+#    } else {
+#        plan tests => 2;
+#    }
+#}
 
 my $WORK_DIR = "tmp";
 if(-d "t") {
