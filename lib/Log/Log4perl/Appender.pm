@@ -34,8 +34,11 @@ sub new {
 
         # Pull in the specified Log::Log4perl::Appender object
     eval {
+        no strict 'refs';
         # see 'perldoc -f require' for why two evals
-        eval "require $appenderclass";  
+        eval "require $appenderclass"
+             unless ${$appenderclass.'::IS_LOADED'};  #for unit tests, see 004Config
+             ;
         die $@ if $@;
 
            # Eval erroneously succeeds on unknown appender classes if
