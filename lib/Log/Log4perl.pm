@@ -273,6 +273,8 @@ sub easy_init { # Initialize the root logger with a screen appender
         $log->level($logger->{level});
         $log->add_appender($app);
     }
+
+    $Log::Log4perl::INITIALIZED = 1;
 }
 
 ##################################################
@@ -301,6 +303,19 @@ sub get_logger {  # Get an instance (shortcut)
 sub appenders {  # Get all defined appenders hashref
 ##################################################
     return \%Log::Log4perl::Logger::APPENDER_BY_NAME;
+}
+
+##################################################
+sub infiltrate_lwp {  # 
+##################################################
+    no warnings qw(redefine);
+
+    *LWP::Debug::trace =
+    *LWP::Debug::conns =
+    *LWP::Debug::debug = sub {
+        my $logger = Log::Log4perl::get_logger("LWP::UserAgent");
+        $logger->debug(@_);
+    };
 }
 
 1;
@@ -2037,6 +2052,24 @@ To find out which appenders are currently defined (not only
 for a particular logger, but overall), a C<appenders()>
 method is available to return a reference to a hash mapping appender
 names to their Log::Log4perl::Appender object references.
+
+=back
+
+=head1 Dirty Tricks
+
+=over 4
+
+=item infiltrate_lwp()
+
+The famous LWP::UserAgent module isn't Log::Log4perl-enabled. Often, though,
+especially when tracing Web-related problems, it would be helpful to get
+some insight on what's happening inside LWP::UserAgent. Ideally, LWP::UserAgent
+would even play along in the Log::Log4perl framework.
+
+A call to C<Log::Log4perl-E<gt>infiltrate_lwp()> does exactly this. 
+In a very rude way, it pulls the rug from under LWP::UserAgent and transforms
+its debug messages into C<debug()> calls of loggers of the category
+C<"LWP::UserAgent">.
 
 =back
 
