@@ -1108,6 +1108,64 @@ which gets called at object destruction time:
 This will ensure that none of the buffered messages are lost. 
 Happy buffering!
 
+=head2 I want to log ERROR and WARN messages to different files! How can I do that?
+
+Let's assume you wanted to have each logging statement written to a
+different file, based on the statement's priority. Messages with priority
+C<WARN> are supposed to go to C</tmp/app.warn>, events prioritized
+as C<ERROR> should end up in C</tmp/app.error>.
+
+Now, if you define two appenders C<AppWarn> and C<AppError>
+and assign them both to the root logger,
+messages bubbling up from any loggers below will be logged by both
+appenders because of Log4perl's message propagation feature. If you limit
+their exposure via the appender threshold mechanism and set 
+C<AppWarn>'s threshold to C<WARN> and C<AppError>'s to C<ERROR>, you'll
+still get C<ERROR> messages in C<AppWarn>, because C<AppWarn>'s C<WARN>
+setting will just filter out messages with a I<lower> priority than
+C<WARN> -- C<ERROR> is higher and will be allowed to pass through.
+
+What we need for this is a Log4perl I<Custom Filter>, newly available with 
+Log::Log4perl 0.30, which, at the time of this writing, is available as 
+a development release.
+
+Both appenders need to verify that
+the priority of the oncoming messages exactly I<matches> the priority 
+the appender is supposed to log messages of. To accomplish this task,
+let's define two custom filters, C<MatchError> and C<MatchWarn>, which,
+when attached to their appenders, will limit messages passed on to them
+to those matching a given priority: 
+
+    log4perl.logger = WARN, AppWarn, AppError
+
+        # Filter to match level ERROR
+    log4perl.filter.MatchError = Log::Log4perl::Filter::LevelMatch
+    log4perl.filter.MatchError.LevelToMatch  = ERROR
+    log4perl.filter.MatchError.AcceptOnMatch = true
+
+        # Filter to match level WARN
+    log4perl.filter.MatchWarn  = Log::Log4perl::Filter::LevelMatch
+    log4perl.filter.MatchWarn.LevelToMatch  = WARN
+    log4perl.filter.MatchWarn.AcceptOnMatch = true
+
+        # Error appender
+    log4perl.appender.AppError = Log::Dispatch::File
+    log4perl.appender.AppError.filename = /tmp/app.err
+    log4perl.appender.AppError.layout   = SimpleLayout
+    log4perl.appender.AppError.Filter   = MatchError
+
+        # Warning appender
+    log4perl.appender.AppWarn = Log::Dispatch::File
+    log4perl.appender.AppWarn.filename = /tmp/app.warn
+    log4perl.appender.AppWarn.layout   = SimpleLayout
+    log4perl.appender.AppWarn.Filter   = MatchWarn
+
+The appenders C<AppWarn> and C<AppError> defined above are logging to C</tmp/app.warn> and
+C</tmp/app.err> respectively and have the custom filters C<MatchWarn> and C<MatchError>
+attached.
+This setup will direct all WARN messages, issued anywhere in the system, to /tmp/app.warn (and 
+ERROR messages to /tmp/app.error) -- without any overlaps.
+
 =cut
 
 =head1 SEE ALSO

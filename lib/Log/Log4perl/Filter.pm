@@ -186,7 +186,7 @@ it otherwise. The statement can be negated by saying
   log4perl.filter.M1.AcceptOnMatch = false
 
 instead. This way, the message will be logged if its priority is
-everything but INFO.
+anything but INFO.
 
 On a similar note, Log4perl's C<StringMatch> filter will check the 
 oncoming message for strings or regular expressions:
@@ -196,15 +196,17 @@ oncoming message for strings or regular expressions:
   log4perl.filter.M1.AcceptOnMatch = true
 
 This will open the gate for messages like C<blah blah> because the 
-regular expression set in the C<StringToMatch> matches them. Again,
+regular expression in the C<StringToMatch> matches them. Again,
 the setting of C<AcceptOnMatch> determines if the filter is defined
-positive or negative.
+in a positive or negative way.
 
-All class filters have to adhere to the following rule:
-Only after a filter has been defined by name and class,
-its values can be
-assigned to its attributes, just as the C<true> value to the 
-C<AcceptOnMatch> attribute above.
+All class filter entries in the configuration file
+have to adhere to the following rule:
+Only after a filter has been defined by name and class/subroutine,
+its attribute values can be
+assigned, just like the C<true> value above gets assigned to the
+C<AcceptOnMatch> attribute I<after> the
+filter C<M1> has been defined.
 
 =head2 Attaching a filter to an appender
 
@@ -216,22 +218,22 @@ the appender's C<Filter> attribute:
 This will cause C<Log::Log4perl> to call the filter subroutine/method
 every time a message is supposed to be passed to the appender. Depending
 on the filter's return value, C<Log::Log4perl> will either continue as
-planned or withdraw.
+planned or withdraw immediately.
 
 =head2 Combining filters with Log::Log4perl::Filter::Bool
 
 Sometimes, it's useful to combine the output of various filters to
 arrive at a log/no log decision. While Log4j, Log4perl's mother ship,
-chose to implement this feature as a filter chain, similar to Linux' IP chains,
+has chosen to implement this feature as a filter chain, similar to Linux' IP chains,
 Log4perl tries a different approach. 
 
-Typically, filter results will not need to be passed along in chains but 
+Typically, filter results will not need to be bumped along chains but 
 combined in a programmatic manner using boolean logic. "Log if
 this filter says 'yes' and that filter says 'no'" 
-is a fairly common requirement but hard to implement as a chain.
+is a fairly common requirement, but hard to implement as a chain.
 
-C<Log::Log4perl::Filter::Bool> is a special predefined custom filter
-for Log4perl which combines the results of other custom filters 
+C<Log::Log4perl::Filter::Bool> is a specially predefined custom filter
+for Log4perl. It combines the results of other custom filters 
 in arbitrary ways, using boolean expressions:
 
     log4perl.logger = WARN, AppWarn, AppError
@@ -247,8 +249,8 @@ in arbitrary ways, using boolean expressions:
 
 C<Log::Log4perl::Filter::Bool>'s boolean expressions allow for combining
 different appenders by name using AND (&& or &), OR (|| or |) and NOT (!) as
-logical expressions. Parentheses are used for grouping. Precedence follows
-standard Perl. Here's a bunch of examples:
+logical expressions. Also, parentheses can be used for defining precedences. 
+Operator precedence follows standard Perl conventions. Here's a bunch of examples:
 
     Match1 && !Match2            # Match1 and not Match2
     !(Match1 || Match2)          # Neither Match1 nor Match2
@@ -294,54 +296,12 @@ like this:
                                           color => "red" );
 
 which in turn should be used by the custom filter class to set the
-object's attributes, which later on can be consulted inside the
-C<decide> call.
+object's attributes, which later on can be retrieved inside the
+C<decide()> call to support decision making.
 
 =head2 A Practical Example: Level Matching
 
-Let's assume you wanted to have each logging statement written to a
-different file, based on the statement's priority. Messages with priority
-C<WARN> are supposed to go to C</tmp/app.warn>, events prioritized
-as C<ERROR> should end up in C</tmp/app.error>, and so forth.
-
-Now, if you define two appenders C<AppWarn> and C<AppError>
-and assign them both to the root logger,
-messages bubbling up from any loggers below will be logged by both
-appenders because of Log4perl's message propagation feature. If you limit
-their exposure via the appender threshold mechanism and set 
-C<AppWarn>'s threshold to C<WARN> and C<AppError>'s to C<ERROR>, you'll
-still get C<ERROR> messages in C<AppWarn>, because C<AppWarn>'s C<WARN>
-setting will just filter out messages with a I<lower> priority than
-C<WARN> -- C<ERROR> is higher and will be allowed to pass through.
-
-What we need is a custom filter for both appenders verifying that
-the priority of the oncoming messages exactly I<matches> the priority 
-the appender is supposed to log messages of:
-
-    log4perl.logger = WARN, AppWarn, AppError
-
-        # Filter to match level ERROR
-    log4perl.filter.MatchError = Log::Log4perl::Filter::LevelMatch
-    log4perl.filter.MatchError.LevelToMatch = ERROR
-
-        # Filter to match level WARN
-    log4perl.filter.MatchWarn  = Log::Log4perl::Filter::LevelMatch
-    log4perl.filter.MatchWarn.LevelToMatch = WARN
-
-        # Error appender
-    log4perl.appender.AppError = Log::Dispatch::File
-    log4perl.appender.AppError.filename = /tmp/app.err
-    log4perl.appender.AppError.layout   = SimpleLayout
-    log4perl.appender.AppError.Filter   = MatchError
-
-        # Warning appender
-    log4perl.appender.AppWarn = Log::Dispatch::File
-    log4perl.appender.AppWarn.filename = /tmp/app.warn
-    log4perl.appender.AppWarn.layout   = SimpleLayout
-    log4perl.appender.AppWarn.Filter   = MatchWarn
-
-This will direct WARN messages and /tmp/app.warn and ERROR messages
-to /tmp/app.error without overlaps.
+See L<Log::Log4perl::FAQ> for this.
 
 =head1 SEE ALSO
 
