@@ -76,6 +76,7 @@ t/035JDBCAppender.t
 t/036JSyslog.t
 t/037JWin32Event.t
 t/038XML-DOM1.t
+t/compare.pl
 t/deeper1.expected
 t/deeper6.expected
 t/deeper7.expected
