@@ -21,6 +21,7 @@ lib/Log/Log4perl/Appender/TestArrayBuffer.pm
 lib/Log/Log4perl/Appender/TestBuffer.pm
 lib/Log/Log4perl/Appender/TestFileCreeper.pm
 lib/Log/Log4perl/Config.pm
+lib/Log/Log4perl/Config/BaseConfigurator.pm
 lib/Log/Log4perl/Config/DOMConfigurator.pm
 lib/Log/Log4perl/Config/PropertyConfigurator.pm
 lib/Log/Log4perl/Config/Watch.pm
