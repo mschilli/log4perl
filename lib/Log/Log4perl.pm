@@ -168,6 +168,13 @@ sub reset { # Mainly for debugging/testing
 }
 
 ##################################################
+sub init_once { # Call init only if it hasn't been
+                # called yet.
+##################################################
+    init(@_) unless $Log::Log4perl::Logger::INITIALIZED;
+}
+
+##################################################
 sub init { # Read the config file
 ##################################################
     my($class, @args) = @_;
@@ -1130,6 +1137,40 @@ C<new()> always gets the
 real class name as an argument and all other methods can determine it 
 via C<ref($self)>), so it shouldn't be a problem to get the right class
 every time.
+
+=head2 Initialize once and only once
+
+It's important to realize that Log::Log4perl gets initialized once and only
+once, typically at the start of a program or system. Calling C<init()>
+more than once will cause it to clobber the existing configuration and
+I<replace> it by the new one.
+
+If you're in a traditional CGI environment, where every request is
+handeled by a new process, calling C<init()> every time is fine. In
+persistent environments like C<mod_perl>, however, Log::Log4perl
+should be initialized either at system startup time (Apache offers
+startup handlers for that) or via
+
+        # Init or skip if already done
+    Log::Log4perl->init_once($conf_file);
+
+C<init_once()> is identical to C<init()>, just with the exception
+that it will leave a potentially existing configuration alone and 
+will only call C<init()> if Log::Log4perl hasn't been initialized yet.
+
+If you're just curious if Log::Log4perl has been initialized yet, the
+
+    if(Log::Log4perl->initialized()) {
+        # Not initialized yet ...
+    }
+
+check can be used.
+
+If you're afraid that the components of your system are stepping on 
+each other's toes or if you are thinking that different components should
+initialize Log::Log4perl seperately, try to consolidate your system
+to use a centralized Log4perl configuration file and use 
+Log4perl's I<categories> to separate your components.
 
 =head1 Custom Filters
 
