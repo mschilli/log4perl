@@ -12,6 +12,7 @@ BEGIN { plan tests => 2 };
 
 use Log::Log4perl;
 use Log::Log4perl::TestBuffer;
+use File::Spec;
 
 my $EG_DIR = "eg";
 $EG_DIR = "../eg" unless -d $EG_DIR;
@@ -31,4 +32,5 @@ my $data = <FILE>;
 close FILE;
 
 unlink $LOGFILE;
-ok($data, "/t.005Config-Perl.t 27 DEBUG N/A  - Gurgel\n/");
+ok($data, "/" . File::Spec->catfile(qw(t 005Config-Perl.t)) . 
+          " 28 DEBUG N/A  - Gurgel\n/");

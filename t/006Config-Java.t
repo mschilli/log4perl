@@ -12,6 +12,7 @@ BEGIN { plan tests => 2 };
 
 use Log::Log4perl;
 use Log::Log4perl::TestBuffer;
+use File::Spec;
 
 my $EG_DIR = "eg";
 $EG_DIR = "../eg" unless -d $EG_DIR;
@@ -34,12 +35,14 @@ open FILE, "<$LOGFILE" or die "Cannot open $LOGFILE";
 my $data = join '', <FILE>;
 close FILE;
 
+my $file = File::Spec->catfile(qw(t 006Config-Java.t));
+
 my $exp = <<EOT;
-t.006Config-Java.t 27 DEBUG N/A  - Gurgel
-t.006Config-Java.t 28 INFO N/A  - Gurgel
-t.006Config-Java.t 29 WARN N/A  - Gurgel
-t.006Config-Java.t 30 ERROR N/A  - Gurgel
-t.006Config-Java.t 31 FATAL N/A  - Gurgel
+$file 28 DEBUG N/A  - Gurgel
+$file 29 INFO N/A  - Gurgel
+$file 30 WARN N/A  - Gurgel
+$file 31 ERROR N/A  - Gurgel
+$file 32 FATAL N/A  - Gurgel
 EOT
 
 unlink $LOGFILE;
