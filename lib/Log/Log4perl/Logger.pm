@@ -280,8 +280,8 @@ sub generate_watch_code {
                  my $methodname = lc($level);
                  $logger->$methodname($message); # send the message
                                                  # to the new configuration
+                 return;        #and return, we're done with this incarnation
              }
-             return;
         }
 EOL
 }
