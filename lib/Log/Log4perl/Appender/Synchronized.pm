@@ -17,7 +17,7 @@ our @ISA = qw(Log::Log4perl::Appender);
 use IPC::Shareable qw(:lock);
 use IPC::Semaphore;
 
-our $CVSVERSION   = '$Revision: 1.2 $';
+our $CVSVERSION   = '$Revision: 1.3 $';
 our ($VERSION)    = ($CVSVERSION =~ /(\d+\.\d+)/);
 
 ###########################################
@@ -152,10 +152,8 @@ __END__
     log4perl.appender.Logfile.layout    = SimpleLayout
     
         # Synchronizing appender, using the file appender above
-    log4perl.category.Bogus             = WARN, Logfile
     log4perl.appender.Syncer            = Log::Log4perl::Appender::Synchronized
     log4perl.appender.Syncer.appender   = Logfile
-    log4perl.appender.Syncer.layout     = SimpleLayout
 );
 
     Log::Log4perl->init(\$conf);
@@ -195,12 +193,57 @@ atomic operations. It defaults to C<_l4p>. If you define more than
 one C<Log::Log4perl::Appender::Synchronized> appender, it is 
 important to specify different keys for them, as otherwise every
 new C<Log::Log4perl::Appender::Synchronized> appender will nuke
-previously defined semaphores.
+previously defined semaphores. The maximum key length is four
+characters, longer keys will be truncated to 4 characters -- 
+C<mylongkey1> and C<mylongkey2> are interpreted to be the same:
+C<mylo> (thanks to David Viner E<lt>dviner@yahoo-inc.comE<gt> for
+pointing this out).
 
 =back
 
 C<Log::Log4perl::Appender::Synchronized> uses C<IPC::Shareable>
-internally.
+internally to perform locking with semaphores provided by the
+operating system used.
+
+=head2 Performance tips
+
+The C<Log::Log4perl::Appender::Synchronized> serializes access to a
+protected resource globally, slowing down actions otherwise performed in
+parallel.
+
+Unless specified otherwise, all instances of 
+C<Log::Log4perl::Appender::Synchronized> objects in the system will
+use the same global IPC key C<_l4p>.
+
+To control access to different appender instances, it often makes sense
+to define different keys for different synchronizing appenders. In this
+way, Log::Log4perl serializes access to each appender instance separately:
+
+    log4perl.category                   = WARN, Syncer
+    
+        # File appender 1 (unsynchronized)
+    log4perl.appender.Logfile1           = Log::Log4perl::Appender::File
+    log4perl.appender.Logfile1.filename  = test1.log
+    log4perl.appender.Logfile1.layout    = SimpleLayout
+    
+        # File appender 2 (unsynchronized)
+    log4perl.appender.Logfile2           = Log::Log4perl::Appender::File
+    log4perl.appender.Logfile2.filename  = test2.log
+    log4perl.appender.Logfile2.layout    = SimpleLayout
+    
+        # Synchronizing appender, using the file appender above
+    log4perl.appender.Syncer1            = Log::Log4perl::Appender::Synchronized
+    log4perl.appender.Syncer1.appender   = Logfile1
+    log4perl.appender.Syncer1.key        = l4p1
+
+        # Synchronizing appender, using the file appender above
+    log4perl.appender.Syncer2            = Log::Log4perl::Appender::Synchronized
+    log4perl.appender.Syncer2.appender   = Logfile2
+    log4perl.appender.Syncer2.key        = l4p2
+
+Without the C<.key = l4p1> and C<.key = l4p2> lines, both Synchronized 
+appenders would be using the default C<_l4p> key, causing unnecessary
+serialization of output written to different files.
 
 =head1 DEVELOPMENT NOTES
 
