@@ -1,0 +1,32 @@
+Intel(R) Pentium(R) 4 CPU 1.60GHz
+Linux straylight 2.4.18 #1 SMP Thu Mar 28 09:24:05 PST 2002 i686 unknown
+
+Iterations: 100000
+
+no logging:  
+2 wallclock secs ( 1.06 usr +  0.00 sys =  1.06 CPU) @ 94339.62/s (n=100000)
+
+pattern logging: 
+39 wallclock secs (19.67 usr +  0.38 sys = 20.05 CPU) @ 4987.53/s (n=100000)
+
+one level inheritance, no logging:  
+8 wallclock secs ( 3.66 usr +  0.00 sys =  3.66 CPU) @ 27322.40/s (n=100000)
+
+one level inheritance, logging: 
+52 wallclock secs (25.54 usr +  0.25 sys = 25.79 CPU) @ 3877.47/s (n=100000)
+
+two level inheritance, no logging: 
+12 wallclock secs ( 5.68 usr +  0.00 sys =  5.68 CPU) @ 17605.63/s (n=100000)
+
+two level inheritance, logging 
+59 wallclock secs (29.04 usr +  0.33 sys = 29.37 CPU) @ 3404.83/s (n=100000)
+
+two appenders: 
+63 wallclock secs (30.92 usr +  0.62 sys = 31.54 CPU) @ 3170.58/s (n=100000)
+
+three appenders, one level of inheritance: 
+102 wallclock secs (49.20 usr +  0.91 sys = 50.11 CPU) @ 1995.61/s (n=100000)
+
+same appenders, two levels of inheritance: 
+118 wallclock secs (54.26 usr +  1.13 sys = 55.39 CPU) @ 1805.38/s (n=100000)
+
