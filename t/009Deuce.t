@@ -37,14 +37,16 @@ ok($Log::Log4perl::TestBuffer::POPULATION[1]->buffer(),
 ######################################################################
 Log::Log4perl->reset();
 
+
+$Log::Log4perl::TestBuffer::POPULATION[1]->buffer('');
+
 Log::Log4perl->init("$EG_DIR/log4j-manual-3.conf");
 
 $logger = Log::Log4perl->get_logger("foo");
 $logger->debug("Gurgel");
 
-   # POPULATION[1] because it created another buffer behind our back
 ok($Log::Log4perl::TestBuffer::POPULATION[1]->buffer(),
-    'm#^\S+\s+N/A \'\' - Gurgel$#'); 
+    'm#^\S+\s+N/A \'foo\' - Gurgel\n#'); 
 ok($Log::Log4perl::TestBuffer::POPULATION[1]->buffer(),
-    'm#^\S+\s+N/A \'\' - Gurgel$#'); 
+    'm#^\S+\s+N/A \'foo\' - Gurgel\n$#'); 
 #print "BUFFER= '", $Log::Log4perl::TestBuffer::POPULATION[1]->buffer(), "'\n";
