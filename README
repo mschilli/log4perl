@@ -564,6 +564,7 @@ How to use it
             %C Fully qualified package (or class) name of the caller
             %d Current date in yyyy/mm/dd hh:mm:ss format
             %F File where the logging event occurred
+            %H Hostname
             %l Fully qualified name of the calling method followed by the
                callers source the file name and line number between 
                parentheses.
@@ -572,6 +573,7 @@ How to use it
             %M Method or function where the logging request was issued
             %n Newline (OS-independent)
             %p Priority of the logging event
+            %P pid of the current process
             %r Number of milliseconds elapsed from program start to logging 
                event
             %% A literal percent (%) sign
