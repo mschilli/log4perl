@@ -5,6 +5,8 @@ use strict;
 
 package Log::Log4perl::Config::Watch;
 
+our $NEXT_CHECK_TIME;
+
 ###########################################
 sub new {
 ###########################################
@@ -56,6 +58,10 @@ sub change_detected {
        
     my $new_timestamp = (stat($self->{file}))[9];
     $self->{_last_checked_at} = $time;
+
+    # Set global var for optimizations in case we just have one watcher
+    # (like in Log::Log4perl)
+    $NEXT_CHECK_TIME = $time + $self->{check_interval};
 
     if($new_timestamp > $self->{_last_timestamp}) {
         $self->{_last_timestamp} = $new_timestamp;
