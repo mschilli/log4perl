@@ -1795,6 +1795,48 @@ As you would expect, this will print
 because the very appender used by Log4perl is modified dynamically at
 runtime.
 
+=head2 I don't know if Log::Log4perl is installed. How can I prepare my script?
+
+In case your script needs to be prepared for environments that may or may 
+not have Log::Log4perl installed, there's a trick.
+
+If you put the following BEGIN blocks at the top of the program,
+you'll be able to use the DEBUG(), INFO(), etc. macros in
+Log::Log4perl's C<:easy> mode.
+If Log::Log4perl
+is installed in the target environment, the regular Log::Log4perl rules
+apply. If not, all of DEBUG(), INFO(), etc. are "stubbed" out, i.e. they
+turn into no-ops:
+
+    use warnings;
+    use strict;
+
+    BEGIN {
+        eval { require Log::Log4perl; };
+    
+        if($@) {
+            print "Log::Log4perl not installed - stubbing.\n";
+            no strict qw(refs);
+            *{"main::$_"} = sub { } for qw(DEBUG INFO WARN ERROR FATAL);
+        } else {
+            no warnings;
+            print "Log::Log4perl installed - life is good.\n";
+            require Log::Log4perl::Level;
+            Log::Log4perl::Level->import(__PACKAGE__);
+            Log::Log4perl->import(qw(:easy));
+            Log::Log4perl->easy_init($main::DEBUG);
+        }
+    }
+
+        # The regular script begins ...
+    DEBUG "Hey now!";
+
+This snippet will first probe for Log::Log4perl, and if it can't be found,
+it will alias DEBUG(), INFO(), with empty subroutines via typeglobs.
+If Log::Log4perl is available, its level constants are first imported
+(C<$DEBUG>, C<$INFO>, etc.) and then C<easy_init()> gets called to initialize
+the logging system.
+
 =cut
 
 =head1 SEE ALSO

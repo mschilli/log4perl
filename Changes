@@ -13,6 +13,8 @@
            on Unix. Changed tests to only verify file name, not path.
     * (ms) Added 'appender_by_name()' to retrieve an appender defined
            in the configuration file by name later.
+    * (ms) Added FAQ on "stubbing out" L4p macros in environments
+           that don't have L4p installed.
 
 0.49 (11/07/2004)
     * (ms) init_and_watch() no longer die()s on reloading syntactically 
