@@ -7,7 +7,7 @@
 # change 'tests => 1' to 'tests => last_test_to_print';
 #########################
 use Test;
-BEGIN { plan tests => 3 };
+BEGIN { plan tests => 5 };
 
 use Log::Log4perl;
 use Log::Log4perl::TestBuffer;
@@ -35,6 +35,45 @@ ok($Log::Log4perl::TestBuffer::POPULATION[0]->buffer(),
 Log::Log4perl::TestBuffer->reset();
 
 Log::Log4perl->init("$EG_DIR/log4j-manual-1.conf");
+
+$logger = Log::Log4perl->get_logger("foo");
+$logger->debug("Gurgel");
+
+ok($Log::Log4perl::TestBuffer::POPULATION[0]->buffer(),
+    'm#^\d+\s+\[N/A\] DEBUG foo N/A - Gurgel$#'); 
+
+######################################################################
+# Test init with a string
+######################################################################
+Log::Log4perl::TestBuffer->reset();
+
+Log::Log4perl->init(\ <<EOT);
+log4j.rootLogger=DEBUG, A1
+log4j.appender.A1=Log::Log4perl::TestBuffer
+log4j.appender.A1.layout=org.apache.log4j.PatternLayout
+log4j.appender.A1.layout.ConversionPattern=%-4r [%t] %-5p %c %x - %m%n
+EOT
+
+$logger = Log::Log4perl->get_logger("foo");
+$logger->debug("Gurgel");
+
+ok($Log::Log4perl::TestBuffer::POPULATION[0]->buffer(),
+    'm#^\d+\s+\[N/A\] DEBUG foo N/A - Gurgel$#'); 
+
+######################################################################
+# Test init with a hashref
+######################################################################
+Log::Log4perl::TestBuffer->reset();
+
+my %hash = (
+    "log4j.rootLogger"         => "DEBUG, A1",
+    "log4j.appender.A1"        => "Log::Log4perl::TestBuffer",
+    "log4j.appender.A1.layout" => "org.apache.log4j.PatternLayout",
+    "log4j.appender.A1.layout.ConversionPattern" => 
+                                  "%-4r [%t] %-5p %c %x - %m%n"
+    );
+
+Log::Log4perl->init(\%hash);
 
 $logger = Log::Log4perl->get_logger("foo");
 $logger->debug("Gurgel");
