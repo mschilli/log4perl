@@ -100,7 +100,6 @@ sub level {
         # 'Set' function
     if(defined $level) {
         $self->{level} = $level;   #need to do validation here !!!
-        $self->{level_str} = Log::Log4perl::Level::to_string($level);
         return $level;
     }
 
@@ -128,44 +127,6 @@ sub level {
     die "We should never get here.";
 }
 
-##################################################
-sub level_str {
-##################################################
-    my($self, $level_str) = @_;
-
-        # 'Set' function
-    if($level_str) {
-        $self->{level_str} = $level_str;  #need to do validation here !!!
-        $self->{level} = Log::Log4perl::Level::to_level($level_str);
-        return $level_str;
-    }
-
-        # 'Get' function
-    if($self->{level_str}) {
-        return $self->{level_str};
-        #maybe it hasn't been set yet, so do it, this is a kludge
-    }elsif(defined $self->{level}){
-        $self->{level_str} = Log::Log4perl::Level::to_string($self->{level});;
-    }
-
-    for(my $logger = $self; $logger; $logger = parent_logger($logger)) {
-
-        # Does the current logger have the level defined?
-
-        if($logger->{logger_class} eq "") {
-            # It's the root logger
-            return $ROOT_LOGGER->{level_str};
-        }
-            
-        if(defined $LOGGERS_BY_STRING->{$logger->{logger_class}}->{level_str}) {
-            return $LOGGERS_BY_STRING->{$logger->{logger_class}}->{level_str};
-        }
-    }
-
-    # We should never get here because at least the root logger should
-    # have a level defined
-    die "We should never get here.";
-}
 
 
 ##################################################
@@ -252,11 +213,11 @@ sub has_appenders {
 ##################################################
 sub log {
 ##################################################
-    my($self, $level, @message) = @_;
+    my($self, $level, $priority, @message) = @_;
 
     my $message = join '', @message;
 
-    if($level <= $self->level()) {
+    if($priority <= $self->level()) {
         # Call the dispatchers up the hierarchy
         for(my $logger = $self; $logger; $logger = parent_logger($logger)) {
 
@@ -265,11 +226,11 @@ sub log {
 
                 # If we have a layout, use it.
             if($logger->{layout}) {
-                $message = $logger->{layout}->render($logger, $message, 2);
+                $message = $logger->{layout}->render($logger, $message, $level, 2);
             }
                 # Dispatch the (formatted) message
             $logger->{dispatcher}->log(
-                level   => lc(Log::Log4perl::Level::to_string($level)),
+                level   => lc(Log::Log4perl::Level::to_string($priority)),
                 message => $message);
             last unless $logger->{additivity};
         }
@@ -277,11 +238,11 @@ sub log {
 }
 
 ##################################################
-sub debug { &log($_[0], $DEBUG, @_[1,]); }
-sub info  { &log($_[0], $INFO,  @_[1,]); }
-sub warn  { &log($_[0], $WARN,  @_[1,]); }
-sub error { &log($_[0], $ERROR, @_[1,]); }
-sub fatal { &log($_[0], $FATAL, @_[1,]); }
+sub debug { &log($_[0], 'DEBUG', $DEBUG, @_[1,]); }
+sub info  { &log($_[0], 'INFO',  $INFO,  @_[1,]); }
+sub warn  { &log($_[0], 'WARN',  $WARN,  @_[1,]); }
+sub error { &log($_[0], 'ERROR', $ERROR, @_[1,]); }
+sub fatal { &log($_[0], 'FATAL', $FATAL, @_[1,]); }
 ##################################################
 
 

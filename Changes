@@ -12,7 +12,7 @@ Kevin:
 * Create new module negotiating between Java-style config files
   and perl-style appenders
 * Module for reading XML-style config files
-* Level.pm - discriminating: priorities are 1-4, levels are 'info','debug',etc
+
 
 
 Mike:
@@ -30,9 +30,15 @@ Mike:
   instead Log::Log4perl::Logger->blah() as suggested by Kevin
 
 ##################################################
+0.10 07/05/2002
+    * %p should return level name of the calling function, so 
+      $logger->warn('bad thing!!') should print 'WARN - bad thing'
+      even if the category is set to debug, so took level_str out of
+      Logger.pm (kg)
 
 0.09 07/03/2002
-    * %p should return level name, not number, adding level_str to Logger.pm
+    * %p should return level name, not number, adding level_str to Logger.pm (kg)
+    * Level.pm - discriminating: priorities are 1-4, levels are 'info','debug',etc (kg)
 
 0.08  07/03/2002
     * Non-root loggers are working now off the config file

@@ -8,6 +8,7 @@ use strict;
 use warnings;
 use Time::HiRes qw(gettimeofday tv_interval);
 use Data::Dump qw(dump);
+use Log::Log4perl::Level;
 
 no strict qw(refs);
 
@@ -64,7 +65,7 @@ sub rep {
 ##################################################
 sub render {
 ##################################################
-    my($self, $logger, $message, $caller_level) = @_;
+    my($self, $logger, $message, $priority, $caller_level) = @_;
 
     $caller_level = 0 unless defined  $caller_level;
 
@@ -94,7 +95,7 @@ sub render {
 
     $info{c} = $logger->{logger_class};
     $info{n} = "\n";
-    $info{p} = $logger->level_str();
+    $info{p} = $priority;
     $info{r} = int((tv_interval ( $PROGRAM_START_TIME ))*1000);
 
         # As long as they're not implemented yet ..
