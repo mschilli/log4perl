@@ -917,6 +917,41 @@ and try it with a test script like
 
 to see the new colored output. Is this cool or what?
 
+=head2 How can I drill down on references before logging them?
+
+If you've got a reference to a nested structure or object, then 
+you probably don't want to log it as C<HASH(0x81141d4)> but rather
+dump it as something like
+
+    $VAR1 = {
+              'a' => 'b',
+              'd' => 'e'
+            };
+
+via a module like Data::Dumper. While it's syntactically correct to say
+
+    $logger->debug(Data::Dumper::Dumper($ref));
+
+this call imposes a huge performance penalty on your application
+if the message is suppressed by Log::Log4perl, because Data::Dumper
+will perform its expensive operations in any case, because it doesn't
+know that its output will be thrown away immediately.
+
+As of Log::Log4perl 0.28, there's a better way: Use the 
+message output filter format as in
+
+    $logger->debug( {filter => \&Data::Dumper::Dumper,
+                     value  => $ref} );
+
+and Log::Log4perl won't call the filter function unless the message really
+gets written out to an appender. Just make sure to pass the whole slew as a
+reference to a hash specifying a filter function (as a sub reference)
+under the key C<filter> and the value to be passed to the filter function in
+C<value>). 
+When it comes to logging, Log::Log4perl will call the filter function,
+pass the C<value> as an argument and log the return value.
+Saves you serious cycles.
+
 =cut
 
 =head1 SEE ALSO
