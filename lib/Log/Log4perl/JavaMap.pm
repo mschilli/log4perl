@@ -14,6 +14,8 @@ our %translate = (
         'Log::Log4perl::JavaMap::RollingFileAppender',
     'org.apache.log4j.TestBuffer'    => 
         'Log::Log4perl::JavaMap::TestBuffer',
+     'org.apache.log4j.jdbc.JDBCAppender'    => 
+        'Log::Log4perl::JavaMap::JDBCAppender',
 );
 
 sub get {
