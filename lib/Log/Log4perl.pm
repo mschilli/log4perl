@@ -986,6 +986,62 @@ choice. Think about the people taking over your code one day: The
 class hierarchy is probably what they know right up front, so it's easy
 for them to tune the logging to their needs.
 
+=head2 Pitfalls with Categories
+
+Be careful with just blindly reusing the system's packages as
+categories. If you do, you'll get into trouble with inherited methods.
+Imagine the following class setup:
+
+    use Log::Log4perl;
+
+    ###########################################
+    package Bar;
+    ###########################################
+    sub new {
+        my($class) = @_;
+        my $logger = Log::Log4perl::get_logger(__PACKAGE__);
+        $logger->debug("Creating instance");
+        bless {}, $class;
+    }
+    ###########################################
+    package Bar::Twix;
+    ###########################################
+    our @ISA = qw(Bar);
+
+    ###########################################
+    package main;
+    ###########################################
+    Log::Log4perl->init(\ qq{
+    log4perl.category.Bar.Twix = DEBUG, Screen
+    log4perl.appender.Screen = Log::Dispatch::Screen
+    log4perl.appender.Screen.layout = SimpleLayout
+    });
+
+    my $bar = Bar::Twix->new();
+
+C<Bar::Twix> just inherits everything from C<Bar>, including the constructor
+C<new()>.
+Contrary to what you might be thinking at first, this won't log anything. 
+Reason for this is the C<get_logger()> call in package C<Bar>, which
+will always get a logger of the C<Bar> category, even if we call C<new()> via
+the C<Bar::Twix> package, which will make perl go up the inheritance 
+tree to actually execute C<Bar::new()>. Since we've only defined logging
+behaviour for C<Bar::Twix> in the configuration file, nothing will happen.
+
+This can be fixed by changing the C<get_logger()> method in C<Bar::new()>
+to obtain a logger of the category matching the
+I<actual> class of the object, like in
+
+        # ... in Bar::new() ...
+    my $logger = Log::Log4perl::get_logger($class);
+
+This way, you'll make sure the logger logs appropriately, 
+no matter if the method is inherited or called directly.
+C<new()> always gets the
+real class name as an argument and all other methods can determine it 
+via C<ref($self)>), so it shouldn't be a problem to get the right class
+every time.
+
 =head1 Cool Tricks
 
 =head2 Shortcuts
