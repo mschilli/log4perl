@@ -74,11 +74,10 @@ log4j.appender.DBAppndr.params.6 = %C
 #-----------------------------#7,8 are also runtime
 
 log4j.appender.DBAppndr.bufferSize=3
-
-log4j.appender.DBAppndr.layout.dontCollapseArrayRefs=1
+log4j.appender.DBAppndr.filter_message=0
     
-log4j.appender.DBAppndr.layout    = Log::Log4perl::Layout::PatternLayout
-
+#noop layout to pass it through
+log4j.appender.DBAppndr.layout    = Log::Log4perl::Layout::NoopLayout
 
 #a console appender for debugging
 log4j.appender.console = Log::Dispatch::Screen
@@ -94,9 +93,9 @@ Log::Log4perl::init(\$config);
 
 my $logger = Log::Log4perl->get_logger("groceries.beer");
 
-$logger->fatal(['fatal message',1234,'foo','bar']);
-$logger->warn(['warning message',3456,'foo','bar']);
-$logger->debug(['debug message',99,'foo','bar']);
+$logger->fatal('fatal message',1234,'foo','bar');
+$logger->warn('warning message',3456,'foo','bar');
+$logger->debug('debug message',99,'foo','bar');
 
 my $sth = $dbh->prepare('select * from log4perltest');
 $sth->execute;
