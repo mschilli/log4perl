@@ -310,7 +310,7 @@ Whenever you encounter a fatal error in your application, instead of saying
 something like
 
     open FILE, "<blah" or die "Can't open blah -- bailing out!";
-    
+
 just use Log::Log4perl's fatal functions instead:
 
     my $log = get_logger("Some::Package");
@@ -441,7 +441,7 @@ Here's a complete program:
     package main;
     my $ua = LWP::UserAgent->new();
     my $resp = $ua->request(GET "http://amazon.com");
-    
+
     if($resp->is_success()) {
         print "Success: Received ", 
               length($resp->content()), "\n";
