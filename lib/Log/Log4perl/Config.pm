@@ -548,7 +548,12 @@ sub config_read {
             }
         }else{
             open FILE, "<$config" or die "Cannot open config file '$config'";
-            @text = <FILE>;
+            {
+                   # Dennis Gregorovic <dgregor@redhat.com> added this
+                   # to protect apps which are tinkering with $/ globally.
+               local $/ = "\n";
+               @text = <FILE>;
+            }
             close FILE;
         }
     }

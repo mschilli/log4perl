@@ -6,6 +6,10 @@
     * (ms) fix for t/045Composite.t on perl 5.6.1 by Jeff Macdonald 
            <jeff.macdonald@e-dialog.com> (specify number of test cases,
            getting rid of no_plan).
+    * (ms) Dennis Gregorovic <dgregor@redhat.com> provided a patch to 
+           protect applications who are tinkering with $/. It is set
+           to "\n" now locally when L4p is reading the conf file. Added
+           a test case to t/004Config.t.
 
 0.44 (04/25/2004)
     * (ms) added filename() method to L4P::Appender::File as suggested 

@@ -2148,6 +2148,7 @@ our
     Contributors:
     Chris R. Donnelly <cdonnelly@digitalmotorworks.com>
     James FitzGibbon <james.fitzgibbon@target.com>
+    Dennis Gregorovic <dgregor@redhat.com>
     Paul Harrington <Paul-Harrington@deshaw.com>
     David Hull <hull@paracel.com>
     Jeff Macdonald <jeff.macdonald@e-dialog.com>

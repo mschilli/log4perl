@@ -7,7 +7,7 @@
 # change 'tests => 1' to 'tests => last_test_to_print';
 #########################
 use Test;
-BEGIN { plan tests => 10 };
+BEGIN { plan tests => 11 };
 
 use Log::Log4perl;
 use Log::Log4perl::Appender::TestBuffer;
@@ -161,3 +161,17 @@ eval { Log::Log4perl->init(\$conf); };
 #specified is uses DEFAULT_LAYOUT_PATTERN, %m%n
 #ok($@, '/No ConversionPattern given for PatternLayout/'); 
 ok($@, ''); 
+
+######################################################################
+# Test with $/ set to undef
+######################################################################
+$/ = undef;
+Log::Log4perl->init("$EG_DIR/log4j-manual-1.conf");
+
+$logger = Log::Log4perl->get_logger("");
+$logger->debug("Gurgel");
+
+
+ok(Log::Log4perl::Appender::TestBuffer->by_name("A1")->buffer(), 
+   'm#^\d+\s+\[N/A\] DEBUG  N/A - Gurgel$#'); 
+
