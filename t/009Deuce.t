@@ -35,9 +35,7 @@ ok($Log::Log4perl::TestBuffer::POPULATION[1]->buffer(),
 # Test the root logger via inheritance (discovered by Kevin Goess)
 ######################################################################
 Log::Log4perl->reset();
-
-
-$Log::Log4perl::TestBuffer::POPULATION[1]->buffer('');
+Log::Log4perl::TestBuffer->reset();
 
 Log::Log4perl->init("$EG_DIR/log4j-manual-3.conf");
 
