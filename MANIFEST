@@ -61,6 +61,7 @@ t/029SysWide.t
 t/030LDLevel.t
 t/031NDC.t
 t/032JRollFile.t
+t/033UsrCspec.t
 t/deeper1.expected
 t/deeper6.expected
 t/deeper7.expected
