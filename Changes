@@ -2,7 +2,7 @@
 Revision history for Log::Log4perl
 ##################################################
 
-0.24 09/17/2002
+0.24 09/26/2002
     * (kg) Fix for init_and_watch and test cases
     * (ms) Added documentation for Log::Log4perl::Config
     * (ms) Added log4perl.additivity.loggerName conf file syntax
