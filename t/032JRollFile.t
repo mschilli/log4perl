@@ -35,7 +35,7 @@ log4j.category.cat1      = INFO, myAppender
 log4j.appender.myAppender=org.apache.log4j.RollingFileAppender
 log4j.appender.myAppender.File=@{[File::Spec->catfile($WORK_DIR, 'rolltest.log')]}
 #this will roll the file after one write
-log4j.appender.myAppender.MaxFileSize=@{[1/1024]}
+log4j.appender.myAppender.MaxFileSize=1024
 log4j.appender.myAppender.MaxBackupIndex=2
 log4j.appender.myAppender.layout=org.apache.log4j.PatternLayout
 log4j.appender.myAppender.layout.ConversionPattern=%-5p %c - %m%n
