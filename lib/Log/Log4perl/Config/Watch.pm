@@ -143,6 +143,8 @@ have elapsed since the last physical check. If the file's modification
 date has changed since the last physical check, it will return a true 
 value, otherwise a false value is returned.
 
+=back
+
 Bottom line: C<check_interval> allows you to call the function
 C<change_detected()> as often as you like, without paying the performing
 a significant performance penalty because file system operations 
@@ -184,8 +186,6 @@ will be installed, setting a globally accessible variable
 C<Log::Log4perl::Config::Watch::SIGNAL_CAUGHT> to a true value when
 the signal arrives. Comes with all the problems that signal handlers
 go along with.
-
-=back
 
 =head1 SEE ALSO
 
