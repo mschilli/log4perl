@@ -83,6 +83,8 @@ Initializes log4perl from a properties file, stuff like
 
 =head1 SEE ALSO
 
+Log::Log4perl::Config
+
 Log::Log4perl::Config::DOMConfigurator
 
 Log::Log4perl::Config::LDAPConfigurator (tbd!)

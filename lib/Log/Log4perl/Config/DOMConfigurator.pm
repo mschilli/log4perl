@@ -277,6 +277,8 @@ any problems.
 
 =head1 SEE ALSO
 
+Log::Log4perl::Config
+
 Log::Log4perl::Config::PropertyConfigurator
 
 Log::Log4perl::Config::LDAPConfigurator (coming soon!)
