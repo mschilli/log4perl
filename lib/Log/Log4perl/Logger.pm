@@ -17,6 +17,7 @@ our $ROOT_LOGGER;
 our $LOGGERS_BY_NAME;
 our %LAYOUT_BY_APPENDER;
 our %APPENDER_BY_NAME = ();
+our $DISPATCHER = Log::Dispatch->new();
 
 __PACKAGE__->reset();
 
@@ -32,7 +33,9 @@ sub init {
 sub reset {
 ##################################################
     our $ROOT_LOGGER        = __PACKAGE__->_new("", $DEBUG);
+    our $DISPATCHER         = Log::Dispatch->new();
     our $LOGGERS_BY_NAME    = {};
+    our %APPENDER_BY_NAME   = ();
 }
 
 ##################################################
@@ -55,7 +58,7 @@ sub _new {
         num_appenders => 0,
         additivity    => 1,
         level         => $level,
-        dispatcher    => Log::Dispatch->new(),
+        dispatcher    => $DISPATCHER,
         layout        => undef,
                 };
 
@@ -191,7 +194,7 @@ sub get_logger {
 ##################################################
 sub add_appender {
 ##################################################
-    my($self, $appender) = @_;
+    my($self, $appender, $not_to_dispatcher) = @_;
 
     my $appender_name = $appender->name();
 
@@ -202,9 +205,13 @@ sub add_appender {
                                         $appender_name];
     }
 
-    $APPENDER_BY_NAME{$appender_name} = $appender;
+    #ugly, but while we want to track the names of
+    #all the appenders in a category, we only
+    #want to add it to log_dispatch *once*
+    $self->{dispatcher}->add($appender)
+        unless $APPENDER_BY_NAME{$appender_name};
 
-    $self->{dispatcher}->add($appender);    
+    $APPENDER_BY_NAME{$appender_name} = $appender;
 }
 
 ##################################################
