@@ -2,6 +2,13 @@
 Revision history for Log::Log4perl
 ##################################################
 
+0.20 
+    * Refactored Logger.pm for speed, defined the logging behavior when 
+      the logger is created, not when a message is logged
+    * Fixing test suites so that SimpleFormat newline is accounted for
+    * Fixed a bug with root inheritance where the category name wasn't coming 
+      through
+
 0.19 07/16/2002
     * Added Log::Log4perl::TestBuffer back in the distribution, otherwise
       regression test suite would fail.
@@ -126,6 +133,9 @@ TODO:
       false-but-is-defined errors I think that's what log4j uses
     * Should we canonicalize on a level is a string and a priority is an
       int? might make maintenance easier
+    * permission problems, init() creates the files, maybe read later by
+      different uid, no way to set umask?
+    * what happens when init() is called twice?
 
 Kevin:
 ##################################################
