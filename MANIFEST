@@ -2,6 +2,7 @@ Changes
 LICENSE
 MANIFEST
 MANIFEST.SKIP
+META.yml			Module meta-data (added by MakeMaker)
 Makefile.PL
 README
 eg/5005it.pl
@@ -50,6 +51,7 @@ lib/Log/Log4perl/Level.pm
 lib/Log/Log4perl/Logger.pm
 lib/Log/Log4perl/MDC.pm
 lib/Log/Log4perl/NDC.pm
+lib/Log/Log4perl/Util.pm
 t/001Level.t
 t/002Logger.t
 t/003Layout.t
@@ -102,4 +104,3 @@ t/deeper7.expected
 t/testdisp.pl
 xml/log4j-1.2.dtd
 xml/log4perl.dtd
-META.yml                                 Module meta-data (added by MakeMaker)
