@@ -302,8 +302,8 @@ Log::Log4perl - Log4j implementation for Perl
     $logger->fatal('..');
     
     #####/etc/log4perl.conf###################
-    log4perl.category.house              = WARN,  FileAppndr1
-    log4perl.category.house.bedroom.desk = DEBUG,  FileAppndr1
+    log4perl.logger.house              = WARN,  FileAppndr1
+    log4perl.logger.house.bedroom.desk = DEBUG,  FileAppndr1
     
     log4perl.appender.FileAppndr1          = Log::Dispatch::File
     log4perl.appender.FileAppndr1.filename = desk.log 
