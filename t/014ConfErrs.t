@@ -209,8 +209,9 @@ EOL
 Log::Log4perl->init_once(\$conf);
 my $logger = Log::Log4perl::get_logger("");
 $logger->error("foobar");
-my $buffer = Log::Log4perl::Appender::TestBuffer->by_name("myAppender");
+$buffer = Log::Log4perl::Appender::TestBuffer->by_name("myAppender");
 
+#print "BUFFER: [", $buffer->buffer(), "]\n";
 ok($buffer->buffer(),"ERROR - foobar\n");
 
 $conf = <<EOL;
@@ -224,13 +225,14 @@ EOL
    # settings.
 $buffer->buffer("");
 Log::Log4perl->init_once(\$conf);
-my $logger = Log::Log4perl::get_logger("");
+$logger = Log::Log4perl::get_logger("");
 $logger->error("foobar");
 my $buffer = Log::Log4perl::Appender::TestBuffer->by_name("myAppender");
 
+#print "BUFFER: [", $buffer->buffer(), "]\n";
 ok($buffer->buffer(),"ERROR - foobar\n");
 
-BEGIN { plan tests => 12, }
+BEGIN { plan tests => 13, }
 
 END{   
      unlink $testfile if (-e $testfile);
