@@ -1268,6 +1268,7 @@ our log4perl development mailing list:
     Log::Log4perl Contributors:
     Chris R. Donnelly <cdonnelly@digitalmotorworks.com>
     Erik Selberg <erik@selberg.com>
+    Aaron Straup Cope <asc@vineyard.net>
 
 =head1 COPYRIGHT AND LICENSE
 
