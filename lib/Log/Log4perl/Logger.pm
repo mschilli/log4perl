@@ -113,8 +113,7 @@ sub level {
         # 'Set' function
     if(defined $level) {
         croak "invalid level '$level'" 
-                unless $Log::Log4perl::Level::LEVELS{$level};
-                #maybe that's encroachment, but it's fast
+                unless Log::Log4perl::Level::is_valid($level);
         $self->{level} = $level;   
         return $level;
     }
