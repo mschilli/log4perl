@@ -2,6 +2,10 @@
  Revision history for Log::Log4perl
 ##################################################
 
+0.49 (not yet released)
+    * (ms) init() now also accepts an open file handle (passed in as a glob) to
+           a configuration file or a ref to an IO::File object.
+
 0.48 (08/20/2004)
     * (ms) fixed bug reported by Chip Salzenberg <chip@pobox.com>: logdie()
            and logwarn() are now compliant with the warn() and die() 
