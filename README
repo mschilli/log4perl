@@ -755,6 +755,60 @@ Categories
     hierarchy is probably what they know right up front, so it's easy for
     them to tune the logging to their needs.
 
+  Pitfalls with Categories
+    Be careful with just blindly reusing the system's packages as
+    categories. If you do, you'll get into trouble with inherited methods.
+    Imagine the following class setup:
+
+        use Log::Log4perl;
+
+        ###########################################
+        package Bar;
+        ###########################################
+        sub new {
+            my($class) = @_;
+            my $logger = Log::Log4perl::get_logger(__PACKAGE__);
+            $logger->debug("Creating instance");
+            bless {}, $class;
+        }
+        ###########################################
+        package Bar::Twix;
+        ###########################################
+        our @ISA = qw(Bar);
+
+        ###########################################
+        package main;
+        ###########################################
+        Log::Log4perl->init(\ qq{
+        log4perl.category.Bar.Twix = DEBUG, Screen
+        log4perl.appender.Screen = Log::Dispatch::Screen
+        log4perl.appender.Screen.layout = SimpleLayout
+        });
+
+        my $bar = Bar::Twix->new();
+
+    "Bar::Twix" just inherits everything from "Bar", including the
+    constructor "new()". Contrary to what you might be thinking at first,
+    this won't log anything. Reason for this is the "get_logger()" call in
+    package "Bar", which will always get a logger of the "Bar" category,
+    even if we call "new()" via the "Bar::Twix" package, which will make
+    perl go up the inheritance tree to actually execute "Bar::new()". Since
+    we've only defined logging behaviour for "Bar::Twix" in the
+    configuration file, nothing will happen.
+
+    This can be fixed by changing the "get_logger()" method in "Bar::new()"
+    to obtain a logger of the category matching the *actual* class of the
+    object, like in
+
+            # ... in Bar::new() ...
+        my $logger = Log::Log4perl::get_logger($class);
+
+    This way, you'll make sure the logger logs appropriately, no matter if
+    the method is inherited or called directly. "new()" always gets the real
+    class name as an argument and all other methods can determine it via
+    "ref($self)"), so it shouldn't be a problem to get the right class every
+    time.
+
 Cool Tricks
   Shortcuts
     When getting an instance of a logger, instead of saying
