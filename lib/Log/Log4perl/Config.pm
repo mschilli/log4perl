@@ -484,8 +484,8 @@ sub config_read {
 
     if ($text[0] =~ /^<\?xml /) {
         eval { require XML::DOM; require Log::Log4perl::Config::DOMConfigurator; };
-        #need to check version of XML::DOM! DEBUG!!!
         if ($@){die "Log4perl: missing XML::DOM needed to parse xml config files\n$@\n"}
+        XML::DOM->VERSION("1.29");
         $data = Log::Log4perl::Config::DOMConfigurator::parse(\@text);
     }else{
         $data = Log::Log4perl::Config::PropertyConfigurator::parse(\@text)
