@@ -3,8 +3,14 @@ Revision history for Log::Log4perl
 ##################################################
 
 0.24 09/17/2002
-    * Added documentation for Log::Log4perl::Config
-    * Added log4perl.additivity.loggerName conf file syntax
+    * (kg) Fix for init_and_watch and test cases [in progress]
+    * (ms) Added documentation for Log::Log4perl::Config
+    * (ms) Added log4perl.additivity.loggerName conf file syntax
+    * (ms) Assume Log::Log4perl::Layout prefix of 'relative'
+           layout class names in conf file (say 'SimpleLayout'
+           instead of 'Log::Log4perl::Layout::SimpleLayout').
+    * (ms) accidently appending a ';' at the end of an appender
+      class in a conf file now spits out a reasonable error message
 
 0.23 09/14/2002
     * Both Log4perl/log4perl is now accepted in conf file
@@ -242,8 +248,6 @@ TODO Kevin:
 
 TODO Mike:
 ##################################################
-    * accidental ";" at the end of config line results in confusing 
-      error messages
     * Turning on DEBUG in Logger.pm results in broken test cases and
       warnings
     * %20.30d
