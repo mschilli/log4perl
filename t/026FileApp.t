@@ -195,3 +195,5 @@ for(qw(1 2)) {
 
     ok($content, "INFO - File$_\n");
 }
+
+ok($app->filename(), "${testfile}_2");

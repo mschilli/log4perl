@@ -2,6 +2,10 @@
  Revision history for Log::Log4perl
 ##################################################
 
+0.44 (not yet released)
+    * (ms) added filename() method to L4P::Appender::File as suggested 
+           by Lee Carmichael <lecar_red@yahoo.com>
+
 0.43 (03/22/2004)
     * (ms) Applied patch by Markus Peter <warp@spin.de> for 'pipe'
            mode in Log::Log4perl::Appender::File
