@@ -6,6 +6,7 @@ use 5.006;
 use strict;
 use warnings;
 
+use Log::Dispatch::Base;
 use Log::Log4perl::Logger;
 use Log::Log4perl::Level;
 use Log::Log4perl::Config;
@@ -14,7 +15,7 @@ use Log::Log4perl::Appender;
 
 use constant DEBUG => 1;
 
-our $VERSION = '0.30';
+our $VERSION = '0.31';
 
    # set this to '1' if you're using a wrapper
    # around Log::Log4perl
