@@ -72,7 +72,7 @@ $layout = Log::Log4perl::Layout::SimpleLayout->new();
 $app->layout($layout);
 $logger->debug("That's the message");
 
-ok($app->buffer(), 'DEBUG - That\'s the message'); 
+ok($app->buffer(), "DEBUG - That\'s the message\n"); 
 
 ############################################################
 # Check depth level of %M - with debug(...)

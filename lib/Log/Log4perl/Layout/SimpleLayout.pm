@@ -35,7 +35,7 @@ sub render {
 ##################################################
     my($self, $logger, $message, $category, $priority, $caller_level) = @_;
 
-    return "$priority - $message";
+    return "$priority - $message\n";
 }
 
 1;
