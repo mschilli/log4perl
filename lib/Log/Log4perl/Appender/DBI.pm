@@ -5,6 +5,7 @@ use Carp;
 use strict;
 use Log::Log4perl::Layout::PatternLayout;
 use Params::Validate qw(validate SCALAR ARRAYREF CODEREF);
+use DBI;
 
 
 use base qw(Log::Dispatch::Output);
