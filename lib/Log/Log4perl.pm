@@ -774,7 +774,7 @@ how it works:
     log4j.rootLogger=DEBUG, A1
     log4j.appender.A1=org.apache.log4j.ConsoleAppender
     log4j.appender.A1.layout=org.apache.log4j.PatternLayout
-    log4j.appender.A1.layout.ConversionPattern=%-4r [%t] %-5p %c %x - %m%n
+    log4j.appender.A1.layout.ConversionPattern=%-4r %-5p %c %x - %m%n
 
 This enables messages of priority C<debug> or higher in the root
 hierarchy and has the system write them to the console. 
@@ -787,7 +787,7 @@ Second example:
     log4perl.rootLogger=DEBUG, A1
     log4perl.appender.A1=Log::Dispatch::Screen
     log4perl.appender.A1.layout=PatternLayout
-    log4perl.appender.A1.layout.ConversionPattern=%d [%t] %-5p %c - %m%n
+    log4perl.appender.A1.layout.ConversionPattern=%d %-5p %c - %m%n
     log4perl.logger.com.foo=WARN
 
 This defines two loggers: The root logger and the C<com.foo> logger.
@@ -806,11 +806,11 @@ Third example:
     log4j.rootLogger=debug, stdout, R
     log4j.appender.stdout=org.apache.log4j.ConsoleAppender
     log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
-    log4j.appender.stdout.layout.ConversionPattern=%5p [%t] (%F:%L) - %m%n
+    log4j.appender.stdout.layout.ConversionPattern=%5p (%F:%L) - %m%n
     log4j.appender.R=org.apache.log4j.RollingFileAppender
     log4j.appender.R.File=example.log
     log4j.appender.R.layout=org.apache.log4j.PatternLayout
-    log4j.appender.R.layout.ConversionPattern=%p %t %c - %m%n
+    log4j.appender.R.layout.ConversionPattern=%p %c - %m%n
 
 The root logger defines two appenders here: C<stdout>, which uses 
 C<org.apache.log4j.ConsoleAppender> (ultimately mapped by C<Log::Log4perl>
