@@ -31,7 +31,6 @@ sub log
 }
 
 
-
 sub new {
     my($proto, %p) = @_;
     my $class = ref $proto || $proto;
@@ -69,8 +68,6 @@ sub new {
         "in your appender '$p{name}'--\n".
         "I'm going to ignore bufferSize and just use a prepared stmt\n";
     }
-
-
     return $self;
 }
 
@@ -96,9 +93,8 @@ sub create_statement {
 
     $stmt || croak "Log4perl: sql not set in Log4perl::Appender::DBI";
 
-    my $sth = $self->{dbh}->prepare($stmt) || croak "Log4perl: DBI->prepare failed $DBI::errstr\n$stmt";
+    return $self->{dbh}->prepare($stmt) || croak "Log4perl: DBI->prepare failed $DBI::errstr\n$stmt";
 
-    return $sth;
 }
 
 
@@ -107,21 +103,9 @@ sub log_message {
     my %p = @_;
 
     #%p is
-    #    { name    => \$appender_name,
-    #      level   => \$Log: DBI.pm,v $
-    #      level   => \Revision 1.4  2002/12/28 01:02:01  kgoess
-    #      level   => \some defensive checking
-    #      level   => \
-    #      level   => \Revision 1.3  2002/12/28 00:01:59  kgoess
-    #      level   => \moving stuff out of _init to new so subclassing is easier
-    #      level   => \
-    #      level   => \Revision 1.2  2002/12/27 00:21:43  kgoess
-    #      level   => \tweaking docs
-    #      level   => \
-    #      level   => \Revision 1.1  2002/12/27 00:03:28  kgoess
-    #      level   => \initial version
-    #      level   => \level},   
-    #      message => \$message,
+    #    { name    => $appender_name,
+    #      level   => loglevel
+    #      message => $message,
     #      log4p_category => $category,
     #      log4p_level  => $level,);
     #    },
@@ -215,6 +199,7 @@ sub check_buffer {
 
                 #reuse the sth if the stmt doesn't change
             if ($stmt ne $prev_stmt) {
+                $sth->finish if $sth;
                 $sth = $self->create_statement($stmt);
             }
 
@@ -225,6 +210,8 @@ sub check_buffer {
             $prev_stmt = $stmt;
 
         }
+
+        $sth->finish;
 
         my $dbh = $self->{dbh};
 
