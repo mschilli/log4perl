@@ -211,7 +211,7 @@ sub generate_coderef {
       #     => coderef()
       #
 
-      \$message   = [map { ref \$_ eq "HASH" ?
+      \$message   = [map { ref \$_ eq "HASH" && exists \$_->{filter} && \$_->{filter} eq 'CODE' ?
                                \$_->{filter}->(\$_->{value}) :
                            ref \$_ eq "CODE" ?
                                \$_->() : \$_ 
