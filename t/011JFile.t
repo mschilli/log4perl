@@ -2,9 +2,9 @@ use Log::Log4perl;
 use Test;
 
 my $WORK_DIR = 't/tmp';
-our @outfiles = ("$WORK_DIR/test2.log",);
+use vars qw(@outfiles); @outfiles = ("$WORK_DIR/test2.log",);
 unless (-e "$WORK_DIR"){
-    mkdir("$WORK_DIR", 0644) || die "can't create $WORK_DIR $!";
+    mkdir("$WORK_DIR", 0755) || die "can't create $WORK_DIR $!";
 }
 foreach my $f (@outfiles){
     unlink $f if (-e $f);
