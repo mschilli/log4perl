@@ -246,6 +246,6 @@ $some->debug("blah");
 
 my $somebuffer = Log::Log4perl::Appender::TestBuffer->by_name("appndr");
 
-ok($somebuffer->buffer(), "033UsrCspec.t blah \n");
+ok($somebuffer->buffer(), "t/033UsrCspec.t blah \n");
 
 BEGIN { plan tests => 15, }
