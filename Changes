@@ -15,6 +15,13 @@ Revision history for Log::Log4perl
            in PatternLayout.pm triggered the __DIE__ handler. Now there's
            a function module_available() in L4p::Util to check if a 
            module is installed.
+    * (ms) Fixed %M cspec in PatternLayout in case a logging
+           method is called within one (or more) eval {} block(s). 
+           caller(n+m) will be called repeatedly if necessary
+           to get the next real subroutine. Anonymous subroutines will 
+           still be called __ANON__, but this can be overridden by defining
+               local *__ANON__ = "subroutine_name";
+           in them explicitely (thanks, Perlmonks :).
 
 0.41 (12/12/2003)
     * (ms) Applied documentation update for Synchronized appender, suggested
