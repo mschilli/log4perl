@@ -263,6 +263,49 @@ For more details on the MDC, please refer to
 L<Log::Log4perl/"Mapped Diagnostic Context (MDC)"> and
 L<Log::Log4perl::MDC>.
 
+=head2 My application is already logging to a file. How can I duplicate all messages to also go to the screen?
+
+Assuming that you already have a Log4perl configuration file like
+
+    log4perl.logger                    = DEBUG, FileApp
+
+    log4perl.appender.FileApp          = Log::Dispatch::File
+    log4perl.appender.FileApp.filename = test.log
+    log4perl.appender.FileApp.layout   = PatternLayout
+    log4perl.appender.FileApp.layout.ConversionPattern = %d> %m%n
+
+and log statements all over your code,
+it's very easy with Log4perl to have the same messages both printed to
+the logfile and the screen. No reason to change your code, of course, 
+just add another appender to the configuration file and you're done:
+
+    log4perl.logger                    = DEBUG, FileApp, ScreenApp
+
+    log4perl.appender.FileApp          = Log::Dispatch::File
+    log4perl.appender.FileApp.filename = test.log
+    log4perl.appender.FileApp.layout   = PatternLayout
+    log4perl.appender.FileApp.layout.ConversionPattern = %d> %m%n
+
+    log4perl.appender.ScreenApp          = Log::Dispatch::Screen
+    log4perl.appender.ScreenApp.stderr   = 0
+    log4perl.appender.ScreenApp.layout   = PatternLayout
+    log4perl.appender.ScreenApp.layout.ConversionPattern = %d> %m%n
+
+The configuration file above is assuming that both appenders are
+active in the same logger hierarchy, in this case the C<root> category.
+But even if you've got file loggers defined in several parts of your system,
+belonging to different logger categories,
+each logging to different files, you can gobble up all logged messages
+by defining a root logger with a screen appender, which would duplicate 
+messages from all your file loggers to the screen due to Log4perl's 
+appender inheritance. Check 
+
+    http://www.perl.com/pub/a/2002/09/11/log4perl.html
+
+for details. Have fun!
+
+=cut
+
 =head1 SEE ALSO
 
 Log::Log4perl
