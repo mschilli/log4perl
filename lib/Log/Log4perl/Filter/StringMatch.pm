@@ -66,6 +66,15 @@ Log::Log4perl::Filter::StringMatch - Filter to match the log level exactly
     log4perl.filter.Match1.StringToMatch = blah blah
     log4perl.filter.Match1.AcceptOnMatch = true
 
+=head1 DESCRIPTION
+
+This Log4perl custom filter checks if the currently submitted message
+matches a predefined regular expression, as set in the C<StringToMatch>
+parameter. It uses common Perl 5 regexes.
+
+The additional parameter C<AcceptOnMatch> defines if the filter
+is supposed to pass or block the message on a match (C<true> or C<false>).
+
 =head1 SEE ALSO
 
 =head1 AUTHOR

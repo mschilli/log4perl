@@ -25,6 +25,7 @@ lib/Log/Log4perl/FAQ.pm
 lib/Log/Log4perl/Filter.pm
 lib/Log/Log4perl/Filter/Bool.pm
 lib/Log/Log4perl/Filter/LevelMatch.pm
+lib/Log/Log4perl/Filter/LevelRange.pm
 lib/Log/Log4perl/Filter/StringMatch.pm
 lib/Log/Log4perl/JavaMap.pm
 lib/Log/Log4perl/JavaMap/ConsoleAppender.pm

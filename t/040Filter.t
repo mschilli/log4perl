@@ -5,7 +5,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 19;
+use Test::More tests => 29;
 
 use Log::Log4perl;
 
@@ -249,6 +249,126 @@ $buffer->buffer("");
     # Block
 $logger->info("block this");
 is($buffer->buffer(), "", "StringMatch - blocked");
+$buffer->buffer("");
+
+Log::Log4perl->reset();
+$buffer->reset();
+
+#############################################
+# Non-existing filter class
+#############################################
+eval {
+    Log::Log4perl->init(\ <<'EOT');
+        log4perl.logger = INFO, A1
+        log4perl.filter.Match1      = Log::Log4perl::Filter::GobbleDeGook
+        log4perl.appender.A1        = Log::Log4perl::Appender::TestBuffer
+        log4perl.appender.A1.Filter = Match1
+        log4perl.appender.A1.layout = Log::Log4perl::Layout::SimpleLayout
+EOT
+};
+
+like($@, qr/Log::Log4perl::Filter::GobbleDeGook/, "Unknown Filter");
+
+Log::Log4perl->reset();
+$buffer->reset();
+
+#############################################
+# Syntax error in subroutine
+#############################################
+eval {
+    Log::Log4perl->init(\ <<'EOT');
+        log4perl.logger = INFO, A1
+        log4perl.filter.Match1      = sub { blubber };
+        log4perl.appender.A1        = Log::Log4perl::Appender::TestBuffer
+        log4perl.appender.A1.Filter = Match1
+        log4perl.appender.A1.layout = Log::Log4perl::Layout::SimpleLayout
+EOT
+};
+
+like($@, qr/Can't evaluate/, "Detect flawed filter subroutine");
+
+Log::Log4perl->reset();
+$buffer->reset();
+
+#############################################
+# LevelRangeFilter
+#############################################
+Log::Log4perl->init(\ <<'EOT');
+    log4perl.logger = DEBUG, A1
+    log4perl.filter.Range1      = Log::Log4perl::Filter::LevelRange
+    log4perl.filter.Range1.LevelMin = INFO
+    log4perl.filter.Range1.LevelMax = WARN
+    log4perl.filter.Range1.AcceptOnMatch = true
+    log4perl.appender.A1        = Log::Log4perl::Appender::TestBuffer
+    log4perl.appender.A1.Filter = Range1
+    log4perl.appender.A1.layout = Log::Log4perl::Layout::SimpleLayout
+EOT
+
+$buffer = Log::Log4perl::Appender::TestBuffer->by_name("A1");
+
+    # Define a logger
+$logger = Log::Log4perl->get_logger("Some.Where");
+
+    # Block
+$logger->debug("blah");
+is($buffer->buffer(), "", "Outside Range");
+$buffer->buffer("");
+
+    # Let through
+$logger->info("let this through");
+like($buffer->buffer(), qr(let this through), "Matched Range");
+$buffer->buffer("");
+
+    # Let through
+$logger->warn("let this through");
+like($buffer->buffer(), qr(let this through), "Matched Range");
+$buffer->buffer("");
+
+    # Block
+$logger->error("blah");
+is($buffer->buffer(), "", "Outside Range");
+$buffer->buffer("");
+
+Log::Log4perl->reset();
+$buffer->reset();
+
+#############################################
+# LevelRangeFilter - negative
+#############################################
+Log::Log4perl->init(\ <<'EOT');
+    log4perl.logger = DEBUG, A1
+    log4perl.filter.Range1      = Log::Log4perl::Filter::LevelRange
+    log4perl.filter.Range1.LevelMin = INFO
+    log4perl.filter.Range1.LevelMax = WARN
+    log4perl.filter.Range1.AcceptOnMatch = false
+    log4perl.appender.A1        = Log::Log4perl::Appender::TestBuffer
+    log4perl.appender.A1.Filter = Range1
+    log4perl.appender.A1.layout = Log::Log4perl::Layout::SimpleLayout
+EOT
+
+$buffer = Log::Log4perl::Appender::TestBuffer->by_name("A1");
+
+    # Define a logger
+$logger = Log::Log4perl->get_logger("Some.Where");
+
+    # Let through
+$logger->debug("debug msg");
+like($buffer->buffer(), qr(debug msg), "Outside Range - negative");
+$buffer->buffer("");
+
+    # Block
+$logger->info("block this");
+is($buffer->buffer(), "", "Matched Range - negative");
+$buffer->buffer("");
+
+    # Block
+$logger->warn("block this");
+is($buffer->buffer(), "", "Matched Range - negative");
+$buffer->buffer("");
+
+    # Let through
+$logger->error("error msg");
+like($buffer->buffer(), qr(error msg), "Outside Range - negative");
 $buffer->buffer("");
 
 Log::Log4perl->reset();
