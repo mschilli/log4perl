@@ -357,7 +357,7 @@ prepared statement handle at the beginning and just reuse it
     #---------------------------------------------------
 
     log4j.appender.DBAppndr.layout    = Log::Log4perl::Layout::NoopLayout
-    log4j.appender.DBAppndr.filter_message = 1
+    log4j.appender.DBAppndr.filter_message = 0
     
     log4j.appender.DBAppndr.usePreparedStmt = 1
     
