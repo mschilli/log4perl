@@ -96,7 +96,7 @@ sub _init {
         
         # Continue with lower level loggers. Both 'logger' and 'category'
         # are valid keywords. Also 'additivity' is one, having a logger
-        # attached. We'll differeniate between the two further down.
+        # attached. We'll differenciate between the two further down.
     for my $key (qw(logger category additivity)) {
 
         if(exists $data->{$key}) {
