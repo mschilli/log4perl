@@ -1,5 +1,5 @@
 ######################################################################
-    Log::Log4perl 0.23
+    Log::Log4perl 0.23beta2
 ######################################################################
 
 NAME
@@ -590,7 +590,7 @@ How to use it
 
     All placeholders are quantifiable, just like in *printf*. Following this
     tradition, "%-20c" will reserve 20 chars for the category and
-    right-justify it.
+    left-justify it.
 
     Layouts are objects, here's how you create them:
 

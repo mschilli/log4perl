@@ -792,7 +792,7 @@ See L<Log::Log4perl::Layout::PatternLayout> for details.
 =back
 
 All placeholders are quantifiable, just like in I<printf>. Following this 
-tradition, C<%-20c> will reserve 20 chars for the category and right-justify it.
+tradition, C<%-20c> will reserve 20 chars for the category and left-justify it.
 
 Layouts are objects, here's how you create them:
 
