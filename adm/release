@@ -9,8 +9,17 @@ use strict;
     # Available at http://perlmeister.com/scripts
 use lib "$ENV{HOME}/perl-modules";
 use ModDevUtils;
+use Test::Pod;
+use Test::More;
+use File::Find;
+use Test::Harness;
 
 my($devprod) = @ARGV;
+
+    # Check if all the POD complies with the standard
+my $admdir = ".";
+$admdir = "adm" if -d "lib";
+runtests("$admdir/podok");
 
 ModDevUtils::release(1) or exit 0;
 

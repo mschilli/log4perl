@@ -1,0 +1,37 @@
+#!/usr/bin/perl
+###########################################
+# Mike Schilli, 2002 (m@perlmeister.com)
+###########################################
+use warnings;
+use strict;
+
+use Test::Pod;
+use Test::More;
+use File::Find;
+
+podok(@ARGV);
+0;
+
+##################################################
+sub podok {
+##################################################
+    my ($dir) = @_;
+
+    $dir ||= ".";
+
+    my @pms = ();
+
+    File::Find::find( sub {
+        return unless -f $_;
+        return unless /\.pm$/;
+        push @pms, "$File::Find::name";
+    }, $dir);
+
+    my $nof_tests = scalar @pms;
+
+    plan tests => $nof_tests;
+
+    for(@pms) {
+        pod_ok($_);
+    }
+}
