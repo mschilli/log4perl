@@ -126,7 +126,12 @@ sub render {
     }
 
     $info{c} = $category;
-    $info{n} = "\n";
+        # %n means \n only if $message doesn't have a trailing newline already.
+    if($message =~ /\n\Z/) {
+        $info{n} = "";
+    } else {
+        $info{n} = "\n";
+    }
     $info{p} = $priority;
     $info{r} = int((tv_interval ( $PROGRAM_START_TIME ))*1000);
 
