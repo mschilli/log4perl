@@ -8,7 +8,8 @@ Revision history for Log::Log4perl
         log4j.appender.A.Threshold = ERROR
     * Chris R. Donnelly <cdonnelly@digitalmotorworks.com>
       submitted two patches: 
-      - extended init() to take obj references
+      - extended init() to take obj references (added, also added a test
+        case and documentation)
       - fixed %F and %L if Log4perl is used by a wrapper class (accepted,
         but changed variable name to Log::Log4perl::caller_depth as
         a tribute to Log::Dispatch::Config, added test case 022Wrap
