@@ -952,6 +952,42 @@ When it comes to logging, Log::Log4perl will call the filter function,
 pass the C<value> as an argument and log the return value.
 Saves you serious cycles.
 
+=head2 How can I collect all FATAL messages in an extra log file?
+
+Suppose you have employed Log4perl all over your system and you've already
+activated logging in various subsystems. On top of that, without disrupting
+any other settings, how can you collect all FATAL messages all over the system
+and send them to a separate log file? 
+
+If you define a root logger like this:
+
+    log4perl.logger                  = FATAL, File
+    log4perl.appender.File           = Log::Dispatch::File
+    log4perl.appender.File.filename  = /tmp/fatal.txt
+    log4perl.appender.File.layout    = PatternLayout
+    log4perl.appender.File.layout.ConversionPattern= %d %m %n
+        # !!! Something's missing ...
+
+you'll be surprised to not only receive all FATAL messages
+issued anywhere in the system,
+but also everything else -- gazillions of 
+ERROR, WARN, INFO and even DEBUG messages will end up in
+your fatal.txt logfile!
+Reason for this is Log4perl's (or better: Log4j's) appender additivity. 
+Once a 
+lower-level logger decides to fire, the message is going to be forwarded
+to all appenders upstream -- without further priority checks with their
+attached loggers.
+
+There's a way to prevent this, however: If your appender defines a
+minimum threshold, only messages of this priority or higher are going
+to be logged. So, just add
+
+    log4perl.appender.File.Threshold = FATAL 
+
+to the configuration above, and you'll get what you wanted in the 
+first place: An overall system FATAL message collector.
+
 =cut
 
 =head1 SEE ALSO
