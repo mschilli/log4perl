@@ -104,7 +104,7 @@ Log::Log4perl::Appender::TestBuffer - Appender class for testing
 
   use Log::Log4perl::Appender::TestBuffer;
 
-  my $appender = Log::Dispatch::Screen->new( 
+  my $appender = Log::Log4perl::Appender::TestBuffer->new( 
       name      => 'buffer',
       min_level => 'debug',
       );
