@@ -327,8 +327,8 @@ log4j spec:
 
     Format   Equivalent                 Example
     ABSOLUTE "HH:mm:ss,SSS"             "15:49:37,459"
-    DATE     "dd MMM YYYY HH:mm:ss,SSS" "06 Nov 1994 15:49:37,459"
-    ISO8601  "YYYY-MM-dd HH:mm:ss,SSS"  "1999-11-27 15:49:37,459"
+    DATE     "dd MMM yyyy HH:mm:ss,SSS" "06 Nov 1994 15:49:37,459"
+    ISO8601  "yyyy-MM-dd HH:mm:ss,SSS"  "1999-11-27 15:49:37,459"
 
 So, instead of passing 
 
