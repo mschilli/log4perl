@@ -2,6 +2,9 @@
 Revision history for Log::Log4perl
 ##################################################
 
+0.38
+    * (kg) fixed bug where custom_levels beneath DEBUG didn't work
+
 0.37 (09/14/2003)
     * (kg) adjusting tests for XML::Parser 2.32 having broken
       XML::DOM 1.42 and lower
