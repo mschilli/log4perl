@@ -103,13 +103,13 @@ sub rep {
 
     # If it's a %d{...} construct, initialize a simple date
     # format formatter, so that we can quickly render later on.
-    # If it's just %d, assume %d{yyyy/MM/dd HH:mm::ss,SSS}
+    # If it's just %d, assume %d{yyyy/MM/dd HH:mm::ss}
     my $sdf;
     if($op eq "d") {
         if(defined $curlies) {
             $sdf = Log::Log4perl::DateFormat->new($curlies);
         } else {
-            $sdf = Log::Log4perl::DateFormat->new("yyyy/MM/dd HH:mm:ss,SSS");
+            $sdf = Log::Log4perl::DateFormat->new("yyyy/MM/dd HH:mm:ss");
         }
     }
 

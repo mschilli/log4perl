@@ -15,7 +15,7 @@ use Log::Log4perl::TestBuffer;
 my $EG_DIR = "eg";
 $EG_DIR = "../eg" unless -d $EG_DIR;
 
-my $date_regex = qr(\d{4}/\d\d/\d\d \d\d:\d\d:\d\d,\d\d\d);
+my $date_regex = qr(\d{4}/\d\d/\d\d \d\d:\d\d:\d\d);
 
 ok(1); # If we made it this far, we're ok.
 
