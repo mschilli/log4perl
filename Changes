@@ -4,6 +4,10 @@ Revision history for Log::Log4perl
 
 0.29 01/30/2003
     * (kg) Removing debugging from 0.28, big woops
+    * (kg) Fixing 036JSyslog.t, Syslog implementations are too often broken
+           to base any results on.
+    * (kg) Fixing XML-DOM tests, Data::Dumper doesn't return data exactly the
+           same way.
 
 0.28 (01/28/2003)
     * (ms) '#' in the conf file are now interpreted as comment starters only
