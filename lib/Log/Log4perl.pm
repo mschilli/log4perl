@@ -225,17 +225,14 @@ higher prioritized messages to the C</tmp/my.log> logfile:
 
   use Log::Log4perl;
   use Log::Dispatch::File;
-  use Log::Log4perl::Layout;
+  use Log::Log4perl::Appender;
 
-  my $disp   = Log::Dispatch::File->new(
-                   name      => "screenlog",
-                   filename  => "/tmp/my.log",
-                   min_level => "debug",
-               );
+  my $app = Log::Log4perl::Appender->new("Log::Dispatch::Screen");
+  my $layout = Log::Log4perl::Layout::PatternLayout->new("%d> %F %L %n");
+  $app->layout($layout);
 
-  my $log = Log::Log4perl->get_logger(""); # root logger
-  $log->layout("[%r] %F %L %m%n");
-  $log->add_appender($disp);
+  my $logger = Log::Log4perl->get_logger("My.Component");
+  $logger->add_appender($app);
 
 And after this, we can, again, start logging I<anywhere> in the system
 like this (remember, we don't want to pass around references, so
@@ -324,7 +321,7 @@ logger has one.
 C<Log::Log4perl> utilizes I<Dave Rolskys> excellent C<Log::Dispatch>
 module to implement a wide variety of different appenders. You can have
 your messages written to STDOUT, to a file or to a database -- or to
-all of them at once if you desire so.
+all of them at once if you desire to do so.
 
 Here's the list of appender modules currently available via C<Log::Dispatch>:
 
@@ -345,52 +342,74 @@ higher prioritized messages in the C<My::Category> class
 to both STDOUT and to a log file, say C</tmp/my.log>.
 In the initialisation section of your system,
 just define two appenders using the readily available
-C<Log::Dispatch::File> and C<Log::Dispatch::Screen> modules:
+C<Log::Dispatch::File> and C<Log::Dispatch::Screen> modules
+via the C<Log::Log4perl::Appender> wrapper:
 
   ########################
   # Initialisation section
   ########################
   use Log::Log4perl;
-  use Log::Dispatch::File;
   use Log::Log4perl::Layout;
   use Log::Log4perl::Level;
 
+     # Define a category logger
   my $log = Log::Log4perl->get_logger("My::Category");
 
-  my $file_appender = Log::Dispatch::File->new(
-      name      => "filelog",
-      filename  => "/tmp/my.log",
-      min_level => "debug",
-  );
+     # Define a layout
+  my $layout = Log::Log4perl->new("[%r] %F %L %m%n");
 
-  my $stdout_appender = Log::Dispatch::Screen->new(
-      name      => "screenlog",
-      stderr    => 0,
-      min_level => "debug",
-  );
+     # Define a file appender
+  my $file_appender = Log::Log4perl::Appender->new(
+                          "Log::Dispatch::File",
+                          name      => "filelog",
+                          filename  => "/tmp/my.log");
 
+
+     # Define a stdout appender
+  my $stdout_appender =  Log::Log4perl::Appender->new(
+                          "Log::Dispatch::Screen",
+                          name      => "screenlog",
+                          stderr    => 0);
+
+     # Have both appenders use the same layout (could be different)
+  $stdout_appender->layout($layout);
+  $file_appender->layout($layout);
+
+  $log->add_appender($stdout_appender);
+  $log->add_appender($file_appender);
   $log->level($INFO);
-  $log->layout("screenlog", "[%r] %F %L %m%n");
-  $log->layout("filelog", "[%r] %F %L %m%n");
-  $log->add_appender("screenlog", $stdout_appender);
-  $log->add_appender("filelog", $file_appender);
 
-Please note that the constructor calls to the 
-C<Log::Dispatch> objects are all setting the mandatory 
-C<min_level> parameter to C<debug>. This is because we want the
+Please note the class of the C<Log::Dispatch> object is passed as a
+I<string> to C<Log::Log4perl::Appender> in the I<first> argument. 
+Behind the scenes, C<Log::Log4perl::Appender> will create the necessary
+C<Log::Dispatch::*> object and pass along the name value pairs we provided
+to C<Log::Log4perl::Appender->new()> after the first argument.
+
+The C<name> value is optional and if you don't provide one,
+C<Log::Log4perl::Appender->new()> will create a unique one for you.
+The names and values of additional parameters are dependent on the requirements
+of the particular C<Log::Dispatch::*> class and can be looked up in their
+manual pages.
+
+On a side note:
+In case you're wondering if C<Log::Log4perl::Appender->new()> will also take care
+of the C<min_level> argument to the C<Log::Dispatch::*> constructors called behind the 
+scenes -- yes, it does. This is because we want the
 C<Log::Dispatch> objects to blindly log everything we send them
 (C<debug> is their lowest setting) because I<we> in C<Log::Log4perl>
 want to call the shots and decide on when and what to log.
 
-The call to the I<layout()> method specifies the format in which the
-message is logged in the appender specified by name. The formats shown above 
-are logging not only the message but also the number of milliseconds since
+The call to the appender's I<layout()> method specifies the format (as a 
+previously created C<Log::Log4perl::PatternLayout> object) in which the
+message is being logged in the specified appender. The format shown above 
+is logging not only the message but also the number of milliseconds since
 the program has started (%r), the name of the file the call to the logger
 has happened and the line number there (%F and %L), the message itself
 (%m) and a OS-specific newline character (%n).
 For more detailed info on layout formats, see L<Layouts>.
-If you don't specify a layout, the logger will just log the plain
-message.
+If you don't specify a layout, the logger will fall back to 
+C<Log::Log4perl::SimpleLayout>, which logs the debug level, a hyphen (-) and the 
+log message.
 
 Once the initialisation shown above has happened once, typically in
 the startup code of your system, just use this logger anywhere in 
@@ -654,11 +673,6 @@ Yeah, I've seen it. I like it, but I think it is too dependent
 on defining everything in a configuration file.
 I've designed C<Log::Log4perl> to be more flexible.
 
-=head1 AUTHORS
-
-    Mike Schilli, <m@perlmeister.com>
-    Kevin Goess, <cpan@goess.org>
-
 =head1 INSTALLATION
 
 C<Log::Log4perl> needs C<Log::Dispatch> (2.00 or better) and
@@ -695,6 +709,11 @@ Vipan Singla, "Don't Use System.out.println! Use Log4j.",
 http://www.vipan.com/htdocs/log4jhelp.html
 
 =back
+
+=head1 AUTHORS
+
+    Mike Schilli, <m@perlmeister.com>
+    Kevin Goess, <cpan@goess.org>
 
 =head1 COPYRIGHT AND LICENSE
 
