@@ -1,0 +1,10 @@
+
+cp $1 /home/groups/l/lo/log4perl/htdocs/releases
+cd /home/groups/l/lo/log4perl/htdocs/releases
+tar zxfv $1
+dir=`echo $1 | sed 's/.tar.gz//'`
+rm -f Log-Log4perl
+ln -s $dir Log-Log4perl
+version=`echo $1 | sed 's/.\tar\.gz//' | sed 's/.*-//'`
+/home/users/m/ms/mschilli/bin/updindex $version $2
+/home/users/m/ms/mschilli/bin/upddoc

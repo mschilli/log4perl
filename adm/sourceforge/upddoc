@@ -1,0 +1,3 @@
+
+cd /home/groups/l/lo/log4perl/htdocs/releases/Log-Log4perl
+/home/users/m/ms/mschilli/bin/pod2htmltree /releases/Log-Log4perl

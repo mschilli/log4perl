@@ -1,0 +1,9 @@
+
+cd /home/groups/l/lo/log4perl/htdocs
+tar zxfv /home/users/m/ms/mschilli/ppm.tgz
+
+#PPMDIR=/home/groups/l/lo/log4perl/htdocs/ppm
+#echo "copying Log-Log4perl.tar.gz to $PPMDIR ..."
+#cp Log-Log4perl.tar.gz $PPMDIR
+#echo "copying Log-Log4perl.ppd to $PPMDIR ..."
+#cp Log-Log4perl.ppd $PPMDIR
