@@ -3,6 +3,7 @@ Revision history for Log::Log4perl
 ##################################################
 
 0.28 (not yet released)
+    * (kg) implemented JavaMaps for NTEventLogAppender, SyslogAppender
     * (kg) found and addressed circular ref problem in Logger->reset
     * (kg) moved TestBuffer under Appender/ directory along with DBI
     * (kg) fixed docs, Pattern layout, %f not supported, s/b %F
@@ -292,8 +293,11 @@ TODO Kevin:
 ##################################################
     * appender-by-name stuff?
     * Module for reading XML-style config files
-    * Dave Rolsky says: A couple other things: The JavaMap docs mention
-      that SocketAppender has no Log::Dispatch equivalent. You could
+    * DONE, CAN'T, SocketAppender actually ships a serialized LoggingEvent
+      object to the server side, we're not going to get into the business of
+      creating serialized Java objects! 
+       Dave Rolsky says: A couple other things: The JavaMap docs
+      mention that SocketAppender has no Log::Dispatch equivalent. You could
       create an IO::Socket object and pass it to Log::Dispatch::Handle.
     * DONE, added oneMessagePerAppender
       Bug: If the *same* appender is being attached to several loggers,
