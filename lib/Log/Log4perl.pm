@@ -573,21 +573,21 @@ That's called a I<singleton> if you're a Gamma fan.
 
 How does the logger know
 which messages it is supposed to log and which ones to suppress?
-C<Log::Log4perl> works with inheritence: The config file above didn't 
+C<Log::Log4perl> works with inheritance: The config file above didn't 
 specify anything about C<My::MegaPackage>. 
 And yet, we've defined a logger of the category 
 C<My::MegaPackage>.
 In this case, C<Log::Log4perl> will walk up the class hierarchy
 (C<My> and then the we're at the root) to figure out if a log level is
 defined somewhere. In the case above, the log level at the root
-(root I<always> defines a log level, but not necessary an appender)
+(root I<always> defines a log level, but not necessarily an appender)
 defines that 
 the log level is supposed to be C<ERROR> -- meaning that I<debug>
 and I<info> messages are suppressed.
 
 =head2 Log Levels
 
-There's five predefined log levels: C<FATAL>, C<ERROR>, C<WARN>, C<INFO> 
+There are five predefined log levels: C<FATAL>, C<ERROR>, C<WARN>, C<INFO> 
 and C<DEBUG> (in descending priority). Your configured logging level
 has to at least match the priority of the logging message.
 
@@ -895,7 +895,7 @@ debug level of the logger and others.
 
 There's currently two layouts defined in C<Log::Log4perl>: 
 C<Log::Log4perl::Layout::SimpleLayout> and
-C<Log::Log4perl::Layout::Patternlayout>:
+C<Log::Log4perl::Layout::PatternLayout>:
 
 =over 4 
 
@@ -905,7 +905,7 @@ formats a message in a simple
 way and just prepends it by the debug level and a hyphen:
 C<"$level - $message>, for example C<"FATAL - Can't open password file">.
 
-=item C<Log::Log4perl::PatternLayout> 
+=item C<Log::Log4perl::Layout::PatternLayout> 
 
 on the other hand is very powerful and 
 allows for a very flexible format in C<printf>-style. The format
@@ -1495,7 +1495,8 @@ username for a DBI appender:
 
 However, please note the difference between these code snippets and those
 used for user-defined conversion specifiers as discussed in
-L<Log::Log4perl::PatternLayout>: While the snippets above are run I<once>
+L<Log::Log4perl::Layout::PatternLayout>: 
+While the snippets above are run I<once>
 when C<Log::Log4perl::init()> is called, the conversion specifier
 snippets are executed I<each time> a message is rendered according to
 the PatternLayout.
@@ -2097,7 +2098,7 @@ C<Log::Dispatch> objects to blindly log everything we send them
 want to call the shots and decide on when and what to log.
 
 The call to the appender's I<layout()> method specifies the format (as a
-previously created C<Log::Log4perl::PatternLayout> object) in which the
+previously created C<Log::Log4perl::Layout::PatternLayout> object) in which the
 message is being logged in the specified appender. 
 If you don't specify a layout, the logger will fall back to
 C<Log::Log4perl::SimpleLayout>, which logs the debug level, a hyphen (-)
@@ -2110,7 +2111,7 @@ Layouts are objects, here's how you create them:
 
         # create a flexible layout:
         # ("yyyy/MM/dd hh:mm:ss (file:lineno)> message\n")
-    my $pattern = Log::Log4perl::PatternLayout("%d (%F:%L)> %m%n");
+    my $pattern = Log::Log4perl::Layout::PatternLayout("%d (%F:%L)> %m%n");
 
 Every appender has exactly one layout assigned to it. You assign
 the layout to the appender using the appender's C<layout()> object:
