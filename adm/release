@@ -20,7 +20,7 @@ system("ssh log4perl.sourceforge.net bin/rel $ball\n");
 
 # Win32 package
 print "Building Win32 ppm distribution ...\n";
-system("cd adm; ./mkppm");
+system("cd adm; ./mkppm; tar zcfv ppm.tgz ppm");
 
 print "Copying ppm to log4perl.sourceforge.net ...\n";
 system("scp adm/ppm.tgz log4perl.sourceforge.net:");
