@@ -87,6 +87,7 @@ sub _init {
     my $data = config_read($config);
     
     my @loggers = ();
+    my $system_wide_threshold;
 
         # Find all logger definitions in the conf file. Start
         # with root loggers.
@@ -94,6 +95,12 @@ sub _init {
         push @loggers, ["", $data->{rootLogger}->{value}];
     }
         
+        # Check if we've got a system-wide threshold setting
+    if(exists $data->{threshold}) {
+            # yes, we do.
+        $system_wide_threshold = $data->{threshold}->{value};
+    }
+
         # Continue with lower level loggers. Both 'logger' and 'category'
         # are valid keywords. Also 'additivity' is one, having a logger
         # attached. We'll differenciate between the two further down.
@@ -143,6 +150,8 @@ sub _init {
                                                      \%appenders_created);
             my $appender;
 
+            print "appenderclass=$appenderclass\n" if DEBUG;
+
             if (ref $appenderclass) {
 
                 $appender = $appenderclass;
@@ -150,7 +159,8 @@ sub _init {
 
             }else{
 
-                die "ERROR: you didn't tell me how to implement your appender '$appname'"
+                die "ERROR: you didn't tell me how to " .
+                    "implement your appender '$appname'"
                         unless $appenderclass;
 
                 if($appenderclass =~ /::/) {
@@ -165,20 +175,33 @@ sub _init {
                         map { $_ => $data->{appender}->{$appname}->{$_}->{value} 
                             } @params,
                     ); 
-                    my $threshold = 
-                       $data->{appender}->{$appname}->{Threshold}->{value};
-                    if(defined $threshold) {
-                            # Need to split into two lines because of CVS
-                        $appender->threshold($
-                            Log::Log4perl::Level::PRIORITY{$threshold});
-                    }
                     add_layout_by_name($data, $appender, $appname);
+
                 } else {
                     # It's Java. Try to map
+                    print "Trying to map Java $appname\n" if DEBUG;
                     $appender = Log::Log4perl::JavaMap::get($appname, 
                                                 $data->{appender}->{$appname});
                     add_layout_by_name($data, $appender, $appname);
                 }
+            }
+
+                # Check for appender thresholds
+            my $threshold = 
+               $data->{appender}->{$appname}->{Threshold}->{value};
+            if(defined $threshold) {
+                    # Need to split into two lines because of CVS
+                $appender->threshold($
+                    Log::Log4perl::Level::PRIORITY{$threshold});
+            }
+
+            if($system_wide_threshold) {
+                $appender->threshold($
+                    Log::Log4perl::Level::PRIORITY{$system_wide_threshold});
+            }
+
+            if($data->{appender}->{$appname}->{threshold}) {
+                    die "threshold keyword needs to be uppercase";
             }
 
             $logger->add_appender($appender, 'dont_reset_all');
