@@ -809,6 +809,16 @@ In this case, use this instead:
         }
     }
 
+If you're afraid that the way you're generating the parameters to the
+of the logging function is fairly expensive, use closures:
+
+        # Passed as subroutine ref
+    use Data::Dumper;
+    $Logger->debug(sub { Dumper($data) } );
+
+This won't unravel C<$data> via Dumper() unless it's actually needed
+because it's logged.
+
 =head1 Categories
 
 C<Log::Log4perl> uses I<categories> to determine if a log statement in

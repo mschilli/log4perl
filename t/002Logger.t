@@ -228,4 +228,19 @@ ERROR - 9 10
 FATAL - 11 12 13 
 EOT
 
-BEGIN { plan tests => 45 };
+    ##################################################
+    # Check several messages concatenated
+    ##################################################
+$app->buffer("");
+
+$log1->level($DEBUG);
+
+$log1->log($DEBUG, sub { "1" . " " . "2" } );
+$log1->info(sub { "3 " . "4 " }, sub { "5 " . "6 " });
+
+ok($app->buffer(), <<EOT);
+DEBUG - 1 2
+INFO - 3 4 5 6 
+EOT
+
+BEGIN { plan tests => 46 };
