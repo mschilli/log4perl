@@ -3,6 +3,11 @@ Revision history for Log::Log4perl
 ##################################################
 
 0.28 (not officially released yet)
+    * (kg) Split config bits into PropertyConfigurator and implemented
+           DOMConfigurator for XML configs.
+    * (kg) Adding appender.filter_message parameter as a help to DBI 
+           appender
+    * (kg) Added NoopLayout to help DBI appender
     * (ms) Added message output filters:
            log({filter => \&filter, value => $value})
     * (kg) t/024WarnDieCarp was assuming / as directory separator, failed
