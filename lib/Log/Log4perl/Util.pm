@@ -11,6 +11,8 @@ sub module_available {  # Check if a module is available
     my($full_name) = @_;
 
     my $relpath = File::Spec->catfile(split /::/, $full_name) . '.pm';
+
+    return 1 if exists $INC{$relpath};
     
     foreach my $dir (@INC) {
         if(ref $dir) {

@@ -16,7 +16,7 @@ use Log::Log4perl::Appender;
 
 use constant _INTERNAL_DEBUG => 1;
 
-our $VERSION = '0.50';
+our $VERSION = '0.51';
 
    # set this to '1' if you're using a wrapper
    # around Log::Log4perl

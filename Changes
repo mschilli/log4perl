@@ -2,7 +2,12 @@
  Revision history for Log::Log4perl
 ##################################################
 
+0.51 (not yet released)
 TODO: * remove_appender
+    * (ms) Added check to L4p::Util::module_available() returning true
+           if the pm file is available in %INC, indicating that it has
+           already been loaded. This fixes a problem when running L4p
+           in a PAR binary.
 
 0.50 (12/08/2004)
     * (ms) Added ':resurrect' source filter, which uncomments all lines
