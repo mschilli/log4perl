@@ -7,7 +7,7 @@ use strict;
 
 use Test;
 
-BEGIN { plan tests => 9 }
+BEGIN { plan tests => 1 }
 
 ##################################################
 package Wrapper::Log4perl;
@@ -51,7 +51,7 @@ $log0->level($DEBUG);
 my $app0 = Log::Log4perl::Appender->new(
     "Log::Log4perl::TestBuffer");
 my $layout = Log::Log4perl::Layout::PatternLayout->new(
-    "File: %F Line number: %L");
+    "File: %F Line number: %L package: %C");
 $app0->layout($layout);
 $log0->add_appender($app0);
 
@@ -59,6 +59,4 @@ $log0->add_appender($app0);
 my $rootlogger = Wrapper::Log4perl->get_logger("");
 $rootlogger->debug("Hello");
 
-ok($app0->buffer(), "File: 022Wrap.t Line number: 60");
-
-__END__
+ok($app0->buffer(), "File: 022Wrap.t Line number: 60 package: main");
