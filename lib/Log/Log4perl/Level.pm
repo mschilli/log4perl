@@ -156,7 +156,14 @@ sub to_LogDispatch_string {
 ###################################################
 sub is_valid {
 ###################################################
-    return $LEVELS{$_[0]};
+    my $q = shift;
+
+    if ($q =~ /[A-Z]/) {
+        return exists $PRIORITY{$q};
+    }else{
+        return $LEVELS{$q};
+    }
+    
 }
 
 sub get_higher_level {
