@@ -988,7 +988,7 @@ to be logged. So, just add
 to the configuration above, and you'll get what you wanted in the 
 first place: An overall system FATAL message collector.
 
-=head2 How can I bundle several message into one?
+=head2 How can I bundle several log messages into one?
 
 Would you like to tally the messages arriving at your appender and
 dump out a summary once they're exceeding a certain threshold?
