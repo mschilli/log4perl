@@ -1084,10 +1084,11 @@ than the buffered one, because then we need to dump the old stuff
 and store the new. Or, if the counter exceeds the threshold, as
 defined by the C<maxcount> configuration parameter.
 
-Please note that the appender always gets the prerendered message and
+Please note that the appender always gets the fully rendered message and
 just compares it as a whole -- so if there's a date/timestamp in there,
 that might confuse your logic. You can work around this by specifying
-%m %n as a layout and add the date later on in the appender.
+%m %n as a layout and add the date later on in the appender. Or, make
+the comparison smart enough to omit the date.
 
 At last, don't forget what happens if the program is being shut down.
 If there's still messages in the buffer, they should be printed out
@@ -1104,7 +1105,8 @@ which gets called at object destruction time:
         }
     }
 
-This will ensure that none of the messages are lost. Happy buffering!
+This will ensure that none of the buffered messages are lost. 
+Happy buffering!
 
 =cut
 
