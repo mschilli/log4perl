@@ -15,7 +15,7 @@ use Storable;
 
 our @ISA = qw(Log::Log4perl::Appender);
 
-our $CVSVERSION   = '$Revision: 1.4 $';
+our $CVSVERSION   = '$Revision: 1.5 $';
 our ($VERSION)    = ($CVSVERSION =~ /(\d+\.\d+)/);
 
 ###########################################
@@ -261,7 +261,7 @@ attached appender. Major trickery has applied to accomplish this (Cough!).
 
 =head1 DEVELOPMENT NOTES
 
-C<Log::Log4perl::Appender::Synchronized> is a I<composite> appender.
+C<Log::Log4perl::Appender::Limit> is a I<composite> appender.
 Unlike other appenders, it doesn't log any messages, it just
 passes them on to its attached sub-appender.
 For this reason, it doesn't need a layout (contrary to regular appenders).
