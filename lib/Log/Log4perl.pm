@@ -147,7 +147,7 @@ sub import {
         delete $tags{':nowarn'};
     }
 
-    if(exists $tags{':unhide'}) {
+    if(exists $tags{':resurrect'}) {
         my $FILTER_MODULE = "Filter::Util::Call";
         if(! Log::Log4perl::Util::module_available($FILTER_MODULE)) {
             die "$FILTER_MODULE required with :unhide" .
@@ -157,11 +157,11 @@ sub import {
         Filter::Util::Call::filter_add(
             sub {
                 my($status);
-                s/^\s*#\(l4p\)// if
+                s/^\s*###l4p// if
                     ($status = Filter::Util::Call::filter_read()) > 0;
                 $status;
                 });
-        delete $tags{':unhide'};
+        delete $tags{':resurrect'};
     }
 
     if(keys %tags) {
@@ -1914,6 +1914,48 @@ will log something like
 later on in the program.
 
 For details, please check L<Log::Log4perl::MDC>.
+
+=head2 Resurrecting hidden Log4perl Statements
+
+Sometimes scripts need to be deployed in environments without having
+Log::Log4perl installed yet. On the other hand, you dont't want to
+live without your Log4perl statements -- they're gonna come in
+handy later.
+
+So, just deploy your script with Log4perl statements commented out with the
+pattern C<###l4p>, like in
+
+    ###l4p DEBUG "It works!";
+    # ...
+    ###l4p INFO "Really!";
+
+If Log::Log4perl is available,
+use the C<:resurrect> tag to have Log4perl resurrect those burried 
+statements before the script starts running:
+
+    use Log::Log4perl qw(:resurrect :easy);
+
+    ###l4p Log::Log4perl->easy_init($DEBUG);
+    ###l4p DEBUG "It works!";
+    # ...
+    ###l4p INFO "Really!";
+
+This will have a source filter kick in and indeed print
+
+    2004/11/18 22:08:46 It works!
+    2004/11/18 22:08:46 Really!
+
+In environments lacking Log::Log4perl, just comment out the first line
+and the script will run nevertheless (but of course without logging):
+
+    # use Log::Log4perl qw(:resurrect :easy);
+
+    ###l4p Log::Log4perl->easy_init($DEBUG);
+    ###l4p DEBUG "It works!";
+    # ...
+    ###l4p INFO "Really!";
+
+because everything's a regular comment now.
 
 =head1 Advanced configuration within Perl
 

@@ -1,5 +1,5 @@
 ###########################################
-# Test Suite for ':unhide' tag
+# Test Suite for ':resurrect' tag
 # Mike Schilli, 2004 (m@perlmeister.com)
 ###########################################
 
@@ -21,7 +21,7 @@ BEGIN {
     }
 }
 
-use Log::Log4perl qw(:easy :unhide);
+use Log::Log4perl qw(:easy :resurrect);
 
 Log::Log4perl->easy_init($DEBUG);
 
@@ -35,9 +35,9 @@ Log::Log4perl->init(\ <<EOT);
 EOT
 
     # All of these should be activated
-#(l4p) DEBUG "first";
-   #(l4p) DEBUG "second";
+###l4p DEBUG "first";
+   ###l4p DEBUG "second";
 DEBUG "third";
 
 is(Log::Log4perl::Appender::TestBuffer->by_name("A1")->buffer(),
-    "first \nsecond \nthird \n", "Hidden statements via #(l4p)"); 
+    "first \nsecond \nthird \n", "Hidden statements via ###l4p"); 

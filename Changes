@@ -4,9 +4,10 @@
 
 0.50 (not yet released)
     * (ms) TODO: Fix Win32 problem
-    * (ms) Added ':unhide' source filter, which uncomments all lines
-           starting with "#(l4p)". Can be used for hidden L4p statements,
-           which are then activated by calling 'use Log::Log4perl qw(:unhide)'.
+    * (ms) Added ':resurrect' source filter, which uncomments all lines
+           starting with "###l4p". Can be used for hidden L4p statements,
+           which are then activated by calling 
+           'use Log::Log4perl qw(:resurrect)'.
 
 0.49 (11/07/2004)
     * (ms) init_and_watch() no longer die()s on reloading syntactically 
