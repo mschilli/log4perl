@@ -78,7 +78,7 @@ sub new {
                  appender => $appender,
                  name     => $params{name},
                  layout   => undef,
-                 level    => $DEBUG,
+                 level    => $ALL,
                };
 
         #whether to collapse arrays, etc.
