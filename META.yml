@@ -7,7 +7,6 @@ installdirs:  site
 requires:
     File::Spec:                    0.82
     Test::More:                    0.45
-    Test::Simple:                  0.43
 
 distribution_type: module
 generated_by: ExtUtils::MakeMaker version 6.17

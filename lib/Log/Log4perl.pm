@@ -708,6 +708,7 @@ logger has one.
 C<Log::Log4perl> already comes with a standard set of appenders:
 
     Log::Log4perl::Appender::Screen
+    Log::Log4perl::Appender::ScreenColoredLevels
     Log::Log4perl::Appender::File
     Log::Log4perl::Appender::Socket
     Log::Log4perl::Appender::DBI

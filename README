@@ -156,20 +156,20 @@ How to use it
     category. That's called a *singleton* if you're a Gamma fan.
 
     How does the logger know which messages it is supposed to log and which
-    ones to suppress? "Log::Log4perl" works with inheritence: The config
+    ones to suppress? "Log::Log4perl" works with inheritance: The config
     file above didn't specify anything about "My::MegaPackage". And yet,
     we've defined a logger of the category "My::MegaPackage". In this case,
     "Log::Log4perl" will walk up the class hierarchy ("My" and then the
     we're at the root) to figure out if a log level is defined somewhere. In
     the case above, the log level at the root (root *always* defines a log
-    level, but not necessary an appender) defines that the log level is
+    level, but not necessarily an appender) defines that the log level is
     supposed to be "ERROR" -- meaning that *debug* and *info* messages are
     suppressed.
 
   Log Levels
-    There's five predefined log levels: "FATAL", "ERROR", "WARN", "INFO" and
-    "DEBUG" (in descending priority). Your configured logging level has to
-    at least match the priority of the logging message.
+    There are five predefined log levels: "FATAL", "ERROR", "WARN", "INFO"
+    and "DEBUG" (in descending priority). Your configured logging level has
+    to at least match the priority of the logging message.
 
     If your configured logging level is "WARN", then messages logged with
     "info()" and "debug()" message will be suppressed. "fatal()", "error()"
@@ -283,6 +283,7 @@ How to use it
     "Log::Log4perl" already comes with a standard set of appenders:
 
         Log::Log4perl::Appender::Screen
+        Log::Log4perl::Appender::ScreenColoredLevels
         Log::Log4perl::Appender::File
         Log::Log4perl::Appender::Socket
         Log::Log4perl::Appender::DBI
@@ -463,14 +464,14 @@ How to use it
 
     There's currently two layouts defined in "Log::Log4perl":
     "Log::Log4perl::Layout::SimpleLayout" and
-    "Log::Log4perl::Layout::Patternlayout":
+    "Log::Log4perl::Layout::PatternLayout":
 
     "Log::Log4perl::SimpleLayout"
         formats a message in a simple way and just prepends it by the debug
         level and a hyphen: ""$level - $message", for example "FATAL - Can't
         open password file".
 
-    "Log::Log4perl::PatternLayout"
+    "Log::Log4perl::Layout::PatternLayout"
         on the other hand is very powerful and allows for a very flexible
         format in "printf"-style. The format string can contain a number of
         placeholders which will be replaced by the logging engine when it's
@@ -1026,8 +1027,8 @@ Cool Tricks
 
     However, please note the difference between these code snippets and
     those used for user-defined conversion specifiers as discussed in
-    Log::Log4perl::PatternLayout: While the snippets above are run *once*
-    when "Log::Log4perl::init()" is called, the conversion specifier
+    Log::Log4perl::Layout::PatternLayout: While the snippets above are run
+    *once* when "Log::Log4perl::init()" is called, the conversion specifier
     snippets are executed *each time* a message is rendered according to the
     PatternLayout.
 
@@ -1596,10 +1597,11 @@ Advanced configuration within Perl
     when and what to log.
 
     The call to the appender's *layout()* method specifies the format (as a
-    previously created "Log::Log4perl::PatternLayout" object) in which the
-    message is being logged in the specified appender. If you don't specify
-    a layout, the logger will fall back to "Log::Log4perl::SimpleLayout",
-    which logs the debug level, a hyphen (-) and the log message.
+    previously created "Log::Log4perl::Layout::PatternLayout" object) in
+    which the message is being logged in the specified appender. If you
+    don't specify a layout, the logger will fall back to
+    "Log::Log4perl::SimpleLayout", which logs the debug level, a hyphen (-)
+    and the log message.
 
     Layouts are objects, here's how you create them:
 
@@ -1608,7 +1610,7 @@ Advanced configuration within Perl
 
             # create a flexible layout:
             # ("yyyy/MM/dd hh:mm:ss (file:lineno)> message\n")
-        my $pattern = Log::Log4perl::PatternLayout("%d (%F:%L)> %m%n");
+        my $pattern = Log::Log4perl::Layout::PatternLayout("%d (%F:%L)> %m%n");
 
     Every appender has exactly one layout assigned to it. You assign the
     layout to the appender using the appender's "layout()" object:
