@@ -60,6 +60,9 @@ sub reset {
         $logger->{level} = undef;
         $logger->level();  #set it from the heirarchy
     }
+
+    # Clear all filters
+    Log::Log4perl::Filter::reset();
 }
 
 ##################################################
