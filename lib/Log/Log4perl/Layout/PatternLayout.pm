@@ -312,6 +312,8 @@ just like in I<printf>:
     %-20c  Same as %20c, but right-justify and fill the left side 
            with blanks
     %09r   Zero-pad the number of milliseconds to 9 digits
+    %.8c   Specify the maximum field with and have the formatter
+           cut off the rest of the value
 
 =head2 Fine-tuning with curlies
 
