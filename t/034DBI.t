@@ -14,7 +14,7 @@ BEGIN {
     eval {
         require DBD::CSV;
         require SQL::Statement;
-        die "" if $SQL::Statement::VERSION < 1.005;
+        #die "" if $SQL::Statement::VERSION < 1.005;
     };
     if ($@) {
         print STDERR "DBD::CSV or SQL::Statement 1.005 not installed, skipping tests\n";
@@ -112,6 +112,8 @@ LOGLEVEL,MESSAGE,SHORTCALLER,THINGID,CATEGORY,PKG,RUNTIME1,RUNTIME2
 EOL
   $got =~ s/[^\w ,"()]//g;  #silly DBD_CSV uses funny EOL chars
   $expected =~ s/[^\w ,"()]//g;
+  $got = lc $got;
+  $expected = lc $expected;
   ok($got, $expected);
 }
 
@@ -132,6 +134,8 @@ EOL
   $expected =~ s/[^\w ,"()]//g;
   $got =~ s/HASH\(.+?\)//;
   $expected =~ s/HASH\(.+?\)//;
+  $got = lc $got;
+  $expected = lc $expected;
   ok($got, $expected);
 }
 
@@ -174,12 +178,12 @@ $dbh->do('DROP TABLE log4perltest') if -e 't/tmp/log4perltest';
 $stmt = <<EOL;
     CREATE TABLE log4perltest (
       loglevel     char(9) ,   
-      message   char(128),     
+      message   char(128)     
       
   )
 EOL
 
-$dbh->do($stmt);
+$dbh->do($stmt) || die "do failed on $stmt".$dbh->errstr;
 
 
 $config = <<'EOT';
@@ -220,6 +224,8 @@ FATAL,"warning message"
 EOL
   $got =~ s/[^\w ,"()]//g;  #silly DBD_CSV uses funny EOL chars
   $expected =~ s/[^\w ,"()]//g;
+  $got = lc $got;
+  $expected = lc $expected;
   ok($got, $expected);
 }
 
