@@ -624,13 +624,3 @@ Log::Log4perl
 Mike Schilli, E<lt>log4perl@perlmeister.comE<gt>
 
 =cut
-
-=head1 SEE ALSO
-
-Log::Log4perl
-
-=head1 AUTHOR
-
-Mike Schilli, E<lt>log4perl@perlmeister.comE<gt>
-
-=cut
