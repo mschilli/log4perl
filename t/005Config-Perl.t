@@ -9,7 +9,6 @@
 use Test::More;
 BEGIN { plan tests => 3 };
 
-
 use Log::Log4perl;
 use Log::Log4perl::Appender::TestBuffer;
 use File::Spec;
@@ -27,13 +26,12 @@ Log::Log4perl->init(File::Spec->catfile($EG_DIR, 'log4j-file-append-perl.conf'))
 my $logger = Log::Log4perl->get_logger("");
 $logger->debug("Gurgel");
 
-open FILE, "<$LOGFILE" or die "Cannot open $LOGFILE";
-my $data = <FILE>;
-close FILE;
+open LOG, "<$LOGFILE" or die "Cannot open $LOGFILE";
+my $data = <LOG>;
 
-unlink $LOGFILE;
-is($data, File::Spec->catfile(qw(t 005Config-Perl.t)) . 
-          " 28 DEBUG N/A  - Gurgel\n");
+END { close LOG; unlink $LOGFILE; }
+
+is($data, "005Config-Perl.t 27 DEBUG N/A  - Gurgel\n");
 
 ###############################################
 # Check reading a config file via a file handle
@@ -46,10 +44,6 @@ Log::Log4perl->init(\*FILE);
 $logger = Log::Log4perl->get_logger("");
 $logger->debug("Gurgel");
 
-open FILE, "<$LOGFILE" or die "Cannot open $LOGFILE";
-$data = <FILE>;
-close FILE;
+$data = <LOG>;
 
-unlink $LOGFILE;
-is($data, File::Spec->catfile(qw(t 005Config-Perl.t)) . 
-          " 47 DEBUG N/A  - Gurgel\n");
+is($data, "005Config-Perl.t 45 DEBUG N/A  - Gurgel\n");

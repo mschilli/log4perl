@@ -23,7 +23,7 @@ my $LOGFILE = "example.log";
 unlink $LOGFILE;
 
 Log::Log4perl->init(
-	File::Spec->catfile($EG_DIR, 'log4j-file-append-perl.conf'));
+        File::Spec->catfile($EG_DIR, 'log4j-file-append-perl.conf'));
 
 
 my $logger = Log::Log4perl->get_logger("");
@@ -37,7 +37,7 @@ open FILE, "<$LOGFILE" or die "Cannot open $LOGFILE";
 my $data = join '', <FILE>;
 close FILE;
 
-my $file = File::Spec->catfile(qw(t 007LogPrio.t));
+my $file = "007LogPrio.t";
 
 my $exp = <<EOT;
 $file 30 DEBUG N/A  - Gurgel

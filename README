@@ -1,5 +1,5 @@
 ######################################################################
-    Log::Log4perl 0.49
+    Log::Log4perl 0.50
 ######################################################################
 
 NAME
@@ -1469,6 +1469,45 @@ Cool Tricks
     later on in the program.
 
     For details, please check Log::Log4perl::MDC.
+
+  Resurrecting hidden Log4perl Statements
+    Sometimes scripts need to be deployed in environments without having
+    Log::Log4perl installed yet. On the other hand, you dont't want to live
+    without your Log4perl statements -- they're gonna come in handy later.
+
+    So, just deploy your script with Log4perl statements commented out with
+    the pattern "###l4p", like in
+
+        ###l4p DEBUG "It works!";
+        # ...
+        ###l4p INFO "Really!";
+
+    If Log::Log4perl is available, use the ":resurrect" tag to have Log4perl
+    resurrect those burried statements before the script starts running:
+
+        use Log::Log4perl qw(:resurrect :easy);
+
+        ###l4p Log::Log4perl->easy_init($DEBUG);
+        ###l4p DEBUG "It works!";
+        # ...
+        ###l4p INFO "Really!";
+
+    This will have a source filter kick in and indeed print
+
+        2004/11/18 22:08:46 It works!
+        2004/11/18 22:08:46 Really!
+
+    In environments lacking Log::Log4perl, just comment out the first line
+    and the script will run nevertheless (but of course without logging):
+
+        # use Log::Log4perl qw(:resurrect :easy);
+
+        ###l4p Log::Log4perl->easy_init($DEBUG);
+        ###l4p DEBUG "It works!";
+        # ...
+        ###l4p INFO "Really!";
+
+    because everything's a regular comment now.
 
 Advanced configuration within Perl
     Initializing Log::Log4perl can certainly also be done from within Perl.
