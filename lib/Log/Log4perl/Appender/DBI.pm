@@ -109,6 +109,9 @@ sub log_message {
     #%p is
     #    { name    => \$appender_name,
     #      level   => \$Log: DBI.pm,v $
+    #      level   => \Revision 1.3  2002/12/28 00:01:59  kgoess
+    #      level   => \moving stuff out of _init to new so subclassing is easier
+    #      level   => \
     #      level   => \Revision 1.2  2002/12/27 00:21:43  kgoess
     #      level   => \tweaking docs
     #      level   => \
@@ -197,6 +200,9 @@ sub calculate_bind_values {
 
 sub check_buffer {
     my $self = shift;
+
+    return unless ($self->{BUFFER} && ref $self->{BUFFER} eq 'ARRAY');
+
     if (scalar @{$self->{BUFFER}} >= $self->{BUFFERSIZE} * 2) {
 
         my ($sth, $stmt, $prev_stmt);
