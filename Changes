@@ -6,6 +6,11 @@ Revision history for Log::Log4perl
     * Synopsis shows code samples in Log4perl.pm/README
     * Slight Log4j incompatibility but useful: %F{n} lets you
       limit the number of entries the source file path is logged
+    * Erik W. Selberg (erik@selberg.com) suggested having PatternLayout.pm
+      suppress another \n if the messages already contains a \n and the
+      format requires a %n. Done.
+    * Erik W. Selberg (erik@selberg.com) suggested loggers should take
+      any number of messages and concatenate them. Done.
     * Fixed double-init problem and added a test case. Now the entire
       configuration is cleared before the second init(). However, this
       surfaced a problem with init_and_watch: If a program obtains
@@ -22,7 +27,7 @@ Revision history for Log::Log4perl
       (debugging won't work because of "eval"s). Both files define a 
       constant named DEBUG towards the top of the file, which will
       have perl optimize away the debug statements in case it's set to 0.
-    
+
 0.20 7/23/2002
     * Strip trailing spaces in config file
     * Accept line continuations in properties file
