@@ -1239,7 +1239,7 @@ as such:
 =head2 Custom Log Levels
 
 First off, let me tell you that creating custom levels is heavily
-deprechiated by the log4j folks. Indeed, instead of creating additional
+deprecated by the log4j folks. Indeed, instead of creating additional
 levels on top of the predefined DEBUG, INFO, WARN, ERROR and FATAL, 
 you should use categories to control the amount of logging smartly,
 based on the location of the log-active code in the system.
