@@ -610,9 +610,6 @@ sub create_log_level_methods {
 
   *{__PACKAGE__ . "::is_$lclevel"} = sub {
       $_[0]->{"is_" . $level}->($_[0], "is_" . $lclevel);
-#    return Log::Log4perl::Level::isGreaterOrEqual($_[0]->level(),
-#						  $$level
-#						  ); 
   };
   
   use strict qw(refs);
