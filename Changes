@@ -270,6 +270,7 @@ TODO Kevin:
 
 TODO Mike:
 ##################################################
+    * Separate INSTALL.TXT document
     * Perl-way (-file => blah) creates conf-style or xml-style conf files 
       (for transition).
     * index.html on sourceforge should be part of CVS
