@@ -1162,7 +1162,7 @@ Manual installation works as usual with
 =head1 DEVELOPMENT
 
 C<Log::Log4perl> is under heavy development. The latest CVS tarball
-can be obtained from SourceForge, check C<http://log4perl.sorceforge.net>
+can be obtained from SourceForge, check C<http://log4perl.sourceforge.net>
 for details. Bug reports and feedback are always welcome, just email
 to our mailing list shown in L<CONTACT>.
 
