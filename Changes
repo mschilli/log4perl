@@ -26,6 +26,9 @@
            with __DIE__ handler and "PatternLayout" shortcut. Replaced
            'eval { require ... }' by L4p::Util::module_available in
            L4p::Config.pm.
+    * (ms) Did away with $IS_LOADED internal variable.
+    * (ms) Fixed bug with L4p::INITIALIZED vs. L4P::Logger::INITIALIZED,
+           added t/020Easy2.t.
 
 0.47 (07/11/2004)
     * (ms) Added suggestion by Hutton Davidson <Davidson.Hutton@ftid.com>
