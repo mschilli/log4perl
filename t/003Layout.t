@@ -10,7 +10,7 @@ use strict;
 # change 'tests => 1' to 'tests => last_test_to_print';
 #########################
 use Test;
-BEGIN { plan tests => 6 };
+BEGIN { plan tests => 9 };
 
 use Log::Log4perl;
 use Log::Log4perl::Layout;
@@ -30,7 +30,7 @@ my $layout = Log::Log4perl::Layout::PatternLayout->new(
 $app->layout($layout);
 $logger->debug("That's the message");
 
-ok($app->buffer(), "bugo  percent def.ghi t/003Layout.t     31 hugo"); 
+ok($app->buffer(), "bugo % def.ghi t/003Layout.t     31 hugo"); 
 
 ############################################################
 # Log the message
@@ -73,3 +73,38 @@ $app->layout($layout);
 $logger->debug("That's the message");
 
 ok($app->buffer(), 'DEBUG - That\'s the message'); 
+
+############################################################
+# Check depth level of %M - with debug(...)
+############################################################
+
+sub mysubroutine {
+    $app->buffer("");
+    $layout = Log::Log4perl::Layout::PatternLayout->new("%M: %m");
+    $app->layout($layout);
+    $logger->debug("That's the message");
+}
+
+mysubroutine();
+ok($app->buffer(), 'main::mysubroutine: That\'s the message'); 
+
+############################################################
+# Check depth level of %M - with debug(...)
+############################################################
+
+$app->buffer("");
+$layout = Log::Log4perl::Layout::PatternLayout->new("%M: %m");
+$app->layout($layout);
+$logger->debug("That's the message");
+
+ok($app->buffer(), 'main::: That\'s the message'); 
+
+############################################################
+# Check Filename and Line #
+############################################################
+$app->buffer("");
+$layout = Log::Log4perl::Layout::PatternLayout->new("%F-%L %m");
+$app->layout($layout);
+$logger->debug("That's the message");
+
+ok($app->buffer(), 't/003Layout.t-108 That\'s the message'); 
