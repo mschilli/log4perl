@@ -15,7 +15,7 @@ use Storable;
 
 our @ISA = qw(Log::Log4perl::Appender);
 
-our $CVSVERSION   = '$Revision: 1.5 $';
+our $CVSVERSION   = '$Revision: 1.6 $';
 our ($VERSION)    = ($CVSVERSION =~ /(\d+\.\d+)/);
 
 ###########################################
@@ -34,7 +34,7 @@ sub new {
         %options,
     };
 
-        # Pass back the appender to be synchronized as a dependency
+        # Pass back the appender to be limited as a dependency
         # to the configuration file parser
     push @{$options{l4p_depends_on}}, $self->{appender};
 
@@ -79,8 +79,10 @@ sub log {
             # Message needs to be blocked for now.
         return if $discard;
 
-            # Save event time for later
-        $params{log4p_logtime} = $self->{app}->{layout}->{time_function}->();
+            # Save event time for later (if the appender renders the time)
+        $params{log4p_logtime} = 
+          $self->{app}->{layout}->{time_function}->() if exists
+          $self->{app}->{layout}->{time_function};
 
             # Save message and other parameters
         push @{$self->{buffer}}, \%params if $self->{accumulate};
@@ -267,7 +269,7 @@ passes them on to its attached sub-appender.
 For this reason, it doesn't need a layout (contrary to regular appenders).
 If it defines none, messages are passed on unaltered.
 
-Custom filters are also applied to the composite appender only
+Custom filters are also applied to the composite appender only.
 They are I<not> applied to the sub-appender. Same applies to appender
 thresholds. This behaviour might change in the future.
 
