@@ -234,7 +234,8 @@ $log1->warn("7 ", "8 ");
 $log1->error("9 ", "10 ");
 $log1->fatal("11 ", "12 ", "13 ");
 
-ok($app->buffer() eq <<EOT, "app buffer six lines");
+my $got = $app->buffer();
+my $expected = <<EOT;
 DEBUG - 1 2 
 DEBUG - 3 4 
 INFO - 5 6 
@@ -242,6 +243,18 @@ WARN - 7 8
 ERROR - 9 10 
 FATAL - 11 12 13 
 EOT
+
+ok($got eq $expected) || print STDERR "got $got\n expected $expected";
+
+
+#ok($app->buffer() eq <<EOT, "app buffer six lines");
+#DEBUG - 1 2 
+#DEBUG - 3 4 
+#INFO - 5 6 
+#WARN - 7 8 
+#ERROR - 9 10 
+#FATAL - 11 12 13 
+#EOT
 
     ##################################################
     # Check several messages concatenated
