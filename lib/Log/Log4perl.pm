@@ -206,6 +206,9 @@ sub easy_init { # Initialize the root logger with a screen appender
         unshift @args, $class;
     }
 
+    # Reset everything first
+    Log::Log4perl->reset();
+
     my @loggers = ();
 
     my %default = ( level    => $DEBUG,
