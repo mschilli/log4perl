@@ -44,7 +44,10 @@ sub import {
 
         for my $key (keys %Log::Log4perl::Level::PRIORITY) {
             my $name  = "$caller_pkg\::$key";
-            my $value = $Log::Log4perl::Level::PRIORITY{$key};
+               # Need to split this up in two lines, or CVS will
+               # mess it up.
+            my $value = $
+                        Log::Log4perl::Level::PRIORITY{$key};
             *{"$name"} = \$value;
         }
 
