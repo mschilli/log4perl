@@ -988,6 +988,124 @@ to be logged. So, just add
 to the configuration above, and you'll get what you wanted in the 
 first place: An overall system FATAL message collector.
 
+=head2 How can I bundle several message into one?
+
+Would you like to tally the messages arriving at your appender and
+dump out a summary once they're exceeding a certain threshold?
+So that something like
+
+    $logger->error("Blah");
+    $logger->error("Blah");
+    $logger->error("Blah");
+
+won't be logged as 
+
+    Blah
+    Blah
+    Blah
+
+but as
+
+    [3] Blah
+
+instead? If you'd like to hold off on logging a message until it has been
+sent a couple of times, you can roll that out by creating a buffered 
+appender.
+
+Let's define a new appender like
+
+    package Log::Dispatch::Tally;
+    use Log::Dispatch::Output;
+    use base qw( Log::Dispatch::Output );
+
+    sub new {
+        my($class, %options) = @_;
+    
+        my $self = { maxcount => 5,
+                     %options
+                   };
+    
+        bless $self, $class;
+    
+        $self->_basic_init( %options );
+    
+        $self->{last_message}        = "";
+        $self->{last_message_count}  = 0;
+    
+        return $self;
+    }
+
+with two additional instance variables C<last_message> and 
+C<last_message_count>, storing the content of the last message sent
+and a counter of how many times this has happened. Also, it features
+a configuration parameter C<maxcount> which defaults to 5 in the
+snippet above but can be set in the Log4perl configuration file like this:
+ 
+    log4perl.logger = INFO, A
+    log4perl.appender.A=Log::Dispatch::Tally
+    log4perl.appender.A.maxcount = 3
+
+The main tallying logic lies in the appender's C<log_message> method,
+which is called every time Log4perl thinks a message needs to get logged
+by our appender:
+
+    sub log_message {
+        my($self, %params) = @_;
+
+            # Message changed? Print buffer.
+        if($self->{last_message} and
+           $params{message} ne $self->{last_message}) {
+            print "[$self->{last_message_count}]: " .
+                  "$self->{last_message}";
+            $self->{last_message_count} = 1;
+            $self->{last_message} = $params{message};
+            return;
+        }
+
+        $self->{last_message_count}++;
+        $self->{last_message} = $params{message};
+
+            # Threshold exceeded? Print, reset counter
+        if($self->{last_message_count} >= 
+           $self->{maxcount}) {
+            print "[$self->{last_message_count}]: " .
+                  "$params{message}";
+            $self->{last_message_count} = 0;
+            $self->{last_message}       = "";
+            return;
+        }
+    }
+
+We basically just check if the oncoming message in C<$param{message}>
+is equal to what we've saved before in the C<last_message> instance
+variable. If so, we're increasing C<last_message_count>.
+We print the message in two cases: If the new message is different
+than the buffered one, because then we need to dump the old stuff
+and store the new. Or, if the counter exceeds the threshold, as
+defined by the C<maxcount> configuration parameter.
+
+Please note that the appender always gets the prerendered message and
+just compares it as a whole -- so if there's a date/timestamp in there,
+that might confuse your logic. You can work around this by specifying
+%m %n as a layout and add the date later on in the appender.
+
+At last, don't forget what happens if the program is being shut down.
+If there's still messages in the buffer, they should be printed out
+at that point. That's easy to do in the appender's DESTROY method,
+which gets called at object destruction time:
+
+    sub DESTROY {
+        my($self) = @_;
+
+        if($self->{last_message_count}) {
+            print "[$self->{last_message_count}]: " .
+                  "$self->{last_message}";
+            return;
+        }
+    }
+
+This will ensure that none of the messages are lost. Happy buffering!
+
 =cut
 
 =head1 SEE ALSO
