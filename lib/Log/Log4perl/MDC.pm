@@ -21,7 +21,7 @@ sub get {
     if(exists $MDC_HASH{$key}) {
         return $MDC_HASH{$key};
     } else {
-        return "[undef]";
+        return undef;
     }
 }
 
