@@ -10,7 +10,7 @@ use strict;
 
 #########################
 # used Test::Simple to help debug the test script
-use Test::More tests => 54;
+use Test::More tests => 66;
 
 use Log::Log4perl;
 use Log::Log4perl::Level;
@@ -191,6 +191,29 @@ ok($log3->is_error(), "log3 is_error == 1");
 ok($log3->is_info(), "log3 is_info == 1");
 ok($log3->is_fatal(), "log3 is_fatal == 1");
 ok(!$log3->is_debug(), "log3 is_debug == 0");
+
+
+    ##################################################
+    # Check is_*() functions with text
+    ##################################################
+$log3->level('DEBUG');
+$log2->level('ERROR');
+$log1->level('INFO');
+
+ok($log3->is_error(), "log3 is_error == 1");
+ok($log3->is_info(), "log3 is_info == 1");
+ok($log3->is_fatal(), "log3 is_fatal == 1");
+ok($log3->is_debug(), "log3 is_debug == 1");
+
+ok($log2->is_error(), "log2 is_error == 1");
+ok(!$log2->is_info(), "log2 is_info == 0");
+ok($log2->is_fatal(), "log2 is_fatal == 1");
+ok(!$log2->is_debug(), "log2 is_debug == 0");
+
+ok($log1->is_error(), "log1 is_error == 1");
+ok($log1->is_info(), "log1 is_info == 1");
+ok($log1->is_fatal(), "log1 is_fatal == 1");
+ok(!$log1->is_debug(), "log1 is_debug == 0");
 
 
     ##################################################

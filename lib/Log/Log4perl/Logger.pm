@@ -386,6 +386,9 @@ sub level {
     if(defined $level) {
         croak "invalid level '$level'" 
                 unless Log::Log4perl::Level::is_valid($level);
+        if ($level =~ /\D/){
+            $level = Log::Log4perl::Level::to_priority($level);
+        }
         $self->{level} = $level;   
 
         &reset_all_output_methods

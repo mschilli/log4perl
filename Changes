@@ -2,6 +2,10 @@
 Revision history for Log::Log4perl
 ##################################################
 
+0.39
+    * (kg) fixed bug in interaction between Logger::Level and Level::is_valid
+      so that now you can do $logger->level('INFO') instead of just $INFO.
+
 0.38 (09/29/2003)
     * (kg) fixed bug where custom_levels beneath DEBUG didn't work
     * (ms) fixed 5.00305 incompatibility reported by 
