@@ -19,6 +19,8 @@ use Log::Log4perl::Appender::TestBuffer;
 ok(1); # If we made it this far, we're ok.
 
 Log::Log4perl::Logger::create_custom_level("LITEWARN", "WARN");
+#testing for bugfix of 9/19/03 before which custom levels beneath DEBUG didn't work
+Log::Log4perl::Logger::create_custom_level("DEBUG2", "DEBUG");
 
 # test insane creation of levels
 
@@ -73,6 +75,9 @@ log4j.category = LITEWARN, FileAppndr
 log4j.appender.FileAppndr          = Log::Log4perl::Appender::File
 log4j.appender.FileAppndr.filename = $LOGFILE
 log4j.appender.FileAppndr.layout   = Log::Log4perl::Layout::SimpleLayout
+
+log4j.category.debug2test = DEBUG2, FileAppndr
+log4j.additivity.debug2test= 0
 EOT
 
 
@@ -128,6 +133,18 @@ close FILE;
 my $result3 = "WARN - a warning message\nLITEWARN - a LITE warning message\n";
 ok($data, "$result1$result2$result3");
 
+# *********************
+# check debug2 level
+my $debug2 = Log::Log4perl->get_logger("debug2test");
+$debug2->debug2("this is a debug2 message");
+
+open FILE, "<$LOGFILE" or die "Cannot open $LOGFILE";
+$/ = undef;
+$data = <FILE>;
+close FILE;
+my $result4 = "DEBUG2 - this is a debug2 message\n";
+ok($data, "$result1$result2$result3$result4");
+
 #*********************
 #check the is_* methods
 ok($logger->is_warn);
@@ -150,8 +167,8 @@ open FILE, "<$LOGFILE" or die "Cannot open $LOGFILE";
 $/ = undef;
 $data = <FILE>;
 close FILE;
-my $result4 = "WARN - after bumping, warning message\n";
-ok($data, "$result1$result2$result3$result4");
+my $result5 = "WARN - after bumping, warning message\n";
+ok($data, "$result1$result2$result3$result4$result5");
 
 $logger->dec_level(2); #bump down from warn to litewarn to info
 
@@ -181,6 +198,6 @@ $logger->less_logging(150); # should be OFF now
 ok(!($logger->is_fatal() || $logger->is_error() || $logger->is_warn() ||
 	$logger->is_info() || $logger->is_debug()));
 
-BEGIN { plan tests => 50 };
+BEGIN { plan tests => 51 };
 
 unlink $LOGFILE;
