@@ -370,6 +370,177 @@ the ones of the signal handler.
 See L<Log::Log4perl/"Using Log::Log4perl from wrapper classes"> for more
 details.
 
+=head2 How can I hook up the LWP library with Log::Log4perl?
+
+Or, to put it more generally: How can you utilize a third-party
+library's embedded logging and debug statements in Log::Log4perl? 
+How can you make them print
+to configurable appenders, turn them on and off, just as if they 
+were regular Log::Log4perl logging statements?
+
+The easiest solution is to map the third-party library logging statements
+to Log::Log4perl's stealth loggers via a typeglob assignment.
+
+As an example, let's take LWP, one of the most popular Perl modules, 
+which makes handling WWW requests and responses a breeze.
+Internally, LWP uses its own logging and debugging system, 
+utilizing the following calls 
+inside the LWP code (from the LWP::Debug man page):
+
+        # Function tracing
+    LWP::Debug::trace('send()');
+
+        # High-granular state in functions
+    LWP::Debug::debug('url ok');
+
+        # Data going over the wire
+    LWP::Debug::conns("read $n bytes: $data");
+
+First, let's assign Log::Log4perl priorities 
+to these functions: I'd suggest that
+C<debug()> messages have priority C<INFO>, 
+C<trace()> uses C<DEBUG> and C<conns()> also logs with C<DEBUG> -- 
+although your mileage may certainly vary.
+
+Now, in order to transpartently hook up LWP::Debug with Log::Log4perl,
+all we have to do is say
+
+    package LWP::Debug;
+    use Log::Log4perl qw(:easy);
+
+    *trace = *INFO;
+    *conns = *DEBUG;
+    *debug = *DEBUG;
+
+    package main;
+    # ... go on with your regular program ...
+
+at the beginning of our program. In this way, every time the, say, 
+C<LWP::UserAgent> module calls C<LWP::Debug::trace()>, it will implicitely 
+call INFO(), which is the C<info()> method of a stealth logger defined for
+the Log::Log4perl category C<LWP::Debug>. Is this cool or what?
+
+Here's a complete program:
+
+    use LWP::UserAgent;
+    use HTTP::Request::Common;
+    use Log::Log4perl qw(:easy);
+
+    Log::Log4perl->easy_init(
+        { category => "LWP::Debug",
+          level    => $DEBUG,
+          layout   => "%r %p %M-%L %m%n",
+        });
+
+    package LWP::Debug;
+    use Log::Log4perl qw(:easy);
+    *trace = *INFO;
+    *conns = *DEBUG;
+    *debug = *DEBUG;
+
+    package main;
+    my $ua = LWP::UserAgent->new();
+    my $resp = $ua->request(GET "http://amazon.com");
+    
+    if($resp->is_success()) {
+        print "Success: Received ", 
+              length($resp->content()), "\n";
+    } else {
+        print "Error: ", $resp->code(), "\n";
+    }
+
+This will generate the following output on STDERR:
+
+    174 INFO LWP::UserAgent::new-164 ()
+    208 INFO LWP::UserAgent::request-436 ()
+    211 INFO LWP::UserAgent::send_request-294 GET http://amazon.com
+    212 DEBUG LWP::UserAgent::_need_proxy-1123 Not proxied
+    405 INFO LWP::Protocol::http::request-122 ()
+    859 DEBUG LWP::Protocol::collect-206 read 233 bytes
+    863 DEBUG LWP::UserAgent::request-443 Simple response: Found
+    869 INFO LWP::UserAgent::request-436 ()
+    871 INFO LWP::UserAgent::send_request-294 
+     GET http://www.amazon.com:80/exec/obidos/gateway_redirect
+    872 DEBUG LWP::UserAgent::_need_proxy-1123 Not proxied
+    873 INFO LWP::Protocol::http::request-122 ()
+    1016 DEBUG LWP::UserAgent::request-443 Simple response: Found
+    1020 INFO LWP::UserAgent::request-436 ()
+    1022 INFO LWP::UserAgent::send_request-294 
+     GET http://www.amazon.com/exec/obidos/subst/home/home.html/
+    1023 DEBUG LWP::UserAgent::_need_proxy-1123 Not proxied
+    1024 INFO LWP::Protocol::http::request-122 ()
+    1382 DEBUG LWP::Protocol::collect-206 read 632 bytes
+    ...
+    2605 DEBUG LWP::Protocol::collect-206 read 77 bytes
+    2607 DEBUG LWP::UserAgent::request-443 Simple response: OK
+    Success: Received 42584
+
+Of course, in this way, the embedded logging and debug statements within
+LWP can be utilized in any Log::Log4perl way you can think of. You can
+have them sent to different appenders, block them based on the
+category and everything else Log::Log4perl has to offer.
+
+Only drawback of this method: Steering logging behaviour via category 
+is always based on the C<LWP::Debug> package. Although the logging
+statements reflect the package name of the issuing module properly, 
+the stealth loggers in C<LWP::Debug> are all of the category C<LWP::Debug>.
+This implies that you can't control the logging behaviour based on the
+package that's I<initiating> a log request (e.g. LWP::UserAgent) but only
+based on the package that's actually I<executing> the logging statement, 
+C<LWP::Debug> in this case.
+
+To work around this conundrum, we need to write a wrapper function and
+plant it into the C<LWP::Debug> package. It will determine the caller and
+create a logger bound to a category with the same name as the caller's
+package:
+
+    package LWP::Debug;
+
+    use Log::Log4perl qw(:levels get_logger);
+
+    sub l4p_wrapper {
+        my($prio, @message) = @_;
+        $Log::Log4perl::caller_depth += 2;
+        get_logger(caller(1))->log($prio, @message);
+        $Log::Log4perl::caller_depth -= 2;
+    }
+
+    no warnings 'redefine';
+    *trace = sub { l4p_wrapper($INFO, @_); };
+    *debug = *conns = sub { l4p_wrapper($DEBUG, @_); };
+
+    package main;
+    # ... go on with your main program ...
+
+This is less performant than the previous approach, because every
+log request will request a reference to a logger first, then call
+the wrapper, which will in turn call the appropriate log function.
+
+This hierarchy shift has to be compensated for by increasing
+C<$Log::Log4perl::caller_depth> by 2 before calling the log function
+and decreasing it by 2 right afterwards. Also, the C<l4p_wrapper>
+function shown above calls C<caller(1)> which determines the name
+of the package I<two> levels down the calling hierarchy (and 
+therefore compensates for both the wrapper function and the
+anonymous subroutine calling it).
+
+C<no warnings 'redefine'> suppresses a warning Perl would generate
+otherwise
+upon redefining C<LWP::Debug>'s C<trace()>, C<debug()> and C<conns()>
+functions. In case you use a perl prior to 5.6.x, you need
+to manipulate C<$^W> instead.
+
+=cut
+
+=head1 SEE ALSO
+
+Log::Log4perl
+
+=head1 AUTHOR
+
+Mike Schilli, E<lt>log4perl@perlmeister.comE<gt>
+
+=cut
 =cut
 
 =head1 SEE ALSO
