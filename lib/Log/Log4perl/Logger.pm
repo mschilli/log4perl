@@ -78,6 +78,7 @@ sub reset {
     }
     %APPENDER_BY_NAME   = ();
     undef $INITIALIZED;
+    undef $NON_INIT_WARNED;
     Log::Log4perl::Appender::reset();
 
     #clear out all the existing appenders
