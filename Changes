@@ -21,6 +21,8 @@
     * (ms) Moved autoflush setting in L4p::Appender::File from log()
            to file_open(), running only once, not with every message.
     * (ms) Applied doc fixes suggested by Jon Bjornstad.
+    * (ms) Added ScreenANSIColor appender to colorize messages based on
+           their priority. See Log::Log4perl::Appender::ScreenANSIColor.
 
 0.49 (11/07/2004)
     * (ms) init_and_watch() no longer die()s on reloading syntactically 
