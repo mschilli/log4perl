@@ -9,7 +9,6 @@ $testfile = 't/tmp/test12.log';
 
 unlink $testfile if (-e $testfile);
 
-
 # *****************************************************
 # nonexistent appender class
 $conf = <<EOL;
@@ -136,15 +135,15 @@ ok($@,"/Layout not specified for appender myAppender/");
 
 # ************************************
 # check continuation chars, this should parse fine
-$conf = <<'EOL';
-log4j.category.simplelayout.test=\
-                        INFO, \
+$conf = <<EOL;
+log4j.category.simplelayout.test=\\
+                        INFO, \\
                         myAppender
 
-log4j.appender.myAppender        \
+log4j.appender.myAppender        \\
                     = Log::Log4perl::TestBuffer
-log4j.appender.myAppender.layout = Log::Log4perl::Lay\
-                        out::SimpleL\
+log4j.appender.myAppender.layout = Log::Log4perl::Lay\\
+                        out::SimpleL\\
                             ayout     #this is stupid, I know
 log4j.appender.myAppender.File   = $testfile
 EOL
@@ -154,8 +153,6 @@ eval{
 
 };
 ok($@,"");
-
-
 
 BEGIN { plan tests => 8, }
 
