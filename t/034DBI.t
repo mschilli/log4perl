@@ -31,7 +31,7 @@ if ($no_DBD){
 require DBI;
 my $dbh = DBI->connect('DBI:CSV:f_dir=t/tmp','testuser','testpw',{ PrintError => 1 });
 
-$dbh->do('DROP TABLE log4perltest') if -e '/t/tmp/log4perltest';
+$dbh->do('DROP TABLE log4perltest') if -e 't/tmp/log4perltest';
 
 my $stmt = <<EOL;
     CREATE TABLE log4perltest (
