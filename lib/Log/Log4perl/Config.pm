@@ -258,49 +258,4 @@ sub leaf_paths {
 
 1;
 
-###############################################
-# The following classes are for mapping log4j #
-# appenders to their Log::Dispatch collegues  #
-###############################################
 
-###########################################
-package ConsoleAppender;
-###########################################
-sub new {
-    my($class, $name) = @_;
-
-    my $disp = Log::Dispatch::Screen->new(
-        min_level => "debug",
-        name      => $name,
-        stderr    => 0,
-    );
-    return $disp;
-}
-
-###########################################
-package BufferAppender;
-###########################################
-sub new {
-    my($class, $name) = @_;
-
-    my $disp = Log::Dispatch::Buffer->new(
-        min_level => "debug",
-        name      => $name,
-    );
-    return $disp;
-}
-
-###########################################
-package FileAppender;
-###########################################
-sub new {
-    my($class, $name, $data) = @_;
-
-    my $disp = Log::Dispatch::File->new(
-        min_level => "debug",
-        name      => $name,
-        filename  => $data->{File}->{value},
-        mode      => "append",
-    );
-    return $disp;
-}

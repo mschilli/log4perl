@@ -16,7 +16,7 @@ Notes to Kevin:
 * the 'new Class' syntax creates some syntactic ambiguities,
   Class->new() is usually preferred (there's a funny paragraph
   about it in Conway's oo-programming with perl).
-* Config.pm, bottom: "The following classes are for mapping log4j"
+NOPE, GONE Config.pm, bottom: "The following classes are for mapping log4j"
   still needed?
 * Just had a wild idea: Could we possibly utilize the compiler
   frontend to eliminate log statements that are not going to be
