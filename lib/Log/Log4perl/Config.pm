@@ -16,6 +16,8 @@ use Log::Log4perl::Config::Watch;
 
 use constant DEBUG => 0;
 
+our $CONFIG_FILE_READS = 0;
+
 # How to map lib4j levels to Log::Dispatch levels
 my @LEVEL_MAP_A = qw(
  DEBUG  debug
@@ -435,6 +437,8 @@ sub config_read {
     my($config) = @_;
 
     my @text;
+
+    $CONFIG_FILE_READS++;  # Count for statistical purposes
 
     my $data = {};
 
