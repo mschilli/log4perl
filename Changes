@@ -2,6 +2,10 @@
 Revision history for Log::Log4perl
 ##################################################
 
+0.24 09/17/2002
+    * Added documentation for Log::Log4perl::Config
+    * Added log4perl.additivity.loggerName conf file syntax
+
 0.23 09/14/2002
     * Both Log4perl/log4perl is now accepted in conf file
     * Added documentation to Log::Log4perl::Appender
@@ -238,6 +242,10 @@ TODO Kevin:
 
 TODO Mike:
 ##################################################
+    * accidental ";" at the end of config line results in confusing 
+      error messages
+    * Turning on DEBUG in Logger.pm results in broken test cases and
+      warnings
     * %20.30d
     * Kevin says:
       >WARN in the config file
@@ -252,8 +260,6 @@ TODO Mike:
       and the config file sets the level to WARN?
     * Documentation of Log::Log4perl::Logger and Log::Log4perl::Config
     * Layout.pm: 't', 'x', 'X'
-    * Additivity flag -- set/get as API and in cfg file
-      (log4j.additivity.loggername = true|false)
     * README tests (Pod::Tests or something)
     * Thread safety
     * Just had a wild idea: Could we possibly utilize the compiler

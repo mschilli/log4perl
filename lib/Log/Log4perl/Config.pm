@@ -62,6 +62,8 @@ sub _init {
 ##################################################
     my($class, $config) = @_;
 
+    my %additivity = ();
+
     print "Calling _init\n" if DEBUG;
     $Log::Log4perl::Logger::INITIALIZED = 1;
 
@@ -74,7 +76,7 @@ sub _init {
     # config_read() reads the entire config file into a hash of hashes:
     #     log4j.logger.foo.bar.baz: WARN, A1
     # gets transformed into
-    #     $data->{$log4j}->{logger}->{foo}->{bar}->{baz} = "WARN, A1";
+    #     $data->{log4j}->{logger}->{foo}->{bar}->{baz} = "WARN, A1";
     # The code below creates the necessary loggers, sets the appenders
     # and the layouts etc.
     # In order to transform parts of this tree back into identifiers
@@ -93,13 +95,30 @@ sub _init {
     }
         
         # Continue with lower level loggers. Both 'logger' and 'category'
-        # are valid keywords.
-    for my $key (qw(logger category)) {
+        # are valid keywords. Also 'additivity' is one, having a logger
+        # attached. We'll differeniate between the two further down.
+    for my $key (qw(logger category additivity)) {
+
         if(exists $data->{$key}) {
+
             for my $path (@{leaf_paths($data->{$key})}) {
+
                 my $value = pop @$path;
+
+                    # Translate boolean to perlish
+                $value = 1 if $value =~ /^true$/i;
+                $value = 0 if $value =~ /^false$/i;
+
                 pop @$path; # Drop the 'value' keyword part
-                push @loggers, [join('.', @$path), $value];
+
+                if($key eq "additivity") {
+                    # This isn't a logger but an additivity setting.
+                    # Save it in a hash under the logger's name for later.
+                    $additivity{join('.', @$path)} = $value;
+                } else {
+                    # This is a regular logger
+                    push @loggers, [join('.', @$path), $value];
+                }
             }
         }
     }
@@ -113,6 +132,10 @@ sub _init {
         $logger->level(
             Log::Log4perl::Level::to_priority($level),
             'dont_reset_all');
+
+        if(exists $additivity{$name}) {
+            $logger->additivity($additivity{$name});
+        }
 
         for my $appname (@appnames) {
 
