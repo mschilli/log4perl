@@ -555,6 +555,9 @@ sub add_appender {
     &reset_all_output_methods
                 unless $dont_reset_all;  # keep us from getting overworked
                                          # if it's  the config file calling us
+
+        # For chaining calls ...
+    return $appender;
 }
 
 ##################################################
