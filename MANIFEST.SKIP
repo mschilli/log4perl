@@ -6,5 +6,4 @@ CVS
 ^t/bak
 ^t/tmp/
 .cvsignore
-lib/Log/Dispatch/Buffer.pm
 docs
