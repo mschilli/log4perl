@@ -13,6 +13,7 @@ Revision history for Log::Log4perl
       logcluck/logcroak/logconfess functions written by 
       Erik Selberg <erik@selberg.com>
     * Added PatternLayout documentation
+    * Changed suppression of duplicate newline in log message algorithm
 
 0.22 8/17/2002
     * Threshold settings of appenders: 
