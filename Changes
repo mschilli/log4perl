@@ -2,7 +2,7 @@
 Revision history for Log::Log4perl
 ##################################################
 
-0.36 (07/15/2003)
+0.36 (07/18/2003)
     * (ms) Matthew Keene <mkeene@netspace.net.au> suggested to have
       an accessor for all appenders currently defined -- added 
       appenders() method
