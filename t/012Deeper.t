@@ -32,7 +32,7 @@ log4j.appender.FileAppndr1        = org.apache.log4j.FileAppender
 log4j.appender.FileAppndr1.File   = t/tmp/deeper1.log
 
 log4j.appender.FileAppndr1.layout = org.apache.log4j.PatternLayout
-log4j.appender.FileAppndr1.layout.ConversionPattern=%d %4r [%t] %-5p %c %x - %m%n
+log4j.appender.FileAppndr1.layout.ConversionPattern=%d %4r [%t] %-5p %c %t - %m%n
 
 
 # ---------------------------------------------------

@@ -47,7 +47,7 @@ log4j.category.animal.dog   = DEBUG, myAppender
 
 log4j.appender.myAppender          = Log::Dispatch::File
 log4j.appender.myAppender.layout = org.apache.log4j.PatternLayout
-log4j.appender.myAppender.layout.ConversionPattern=%-5p %c %x - %m%n
+log4j.appender.myAppender.layout.ConversionPattern=%-5p %c %X - %m%n
 
 log4j.appender.myAppender.filename = $testfile
 log4j.appender.myAppender.mode     = append

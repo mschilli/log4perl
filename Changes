@@ -3,7 +3,8 @@ Revision history for Log::Log4perl
 ##################################################
 
 0.27 11/12/2002
-    * (ms) Updated FAQ with "Recipies of the Week"
+    * (ms) Updated FAQ with "Recipes of the Week"
+    * (ms) Added Log::Log4perl::NDC (Nested Diagnostic Contexts)
 
 0.26 11/11/2002
     * (kg) enabled %l (was missing from PatternLayout::define)
@@ -292,5 +293,7 @@ TODO Mike:
     * Just had a wild idea: Could we possibly utilize the compiler
       frontend to eliminate log statements that are not going to be
       triggered? This would be a HUGE performance increase!
+    * Write a bunch of useful appenders for Log::Dispatch like 
+      RollingLogFile
 
 ##################################################

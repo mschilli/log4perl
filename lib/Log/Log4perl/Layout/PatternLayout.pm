@@ -7,6 +7,7 @@ use strict;
 use warnings;
 use Log::Log4perl::Level;
 use Log::Log4perl::DateFormat;
+use Log::Log4perl::NDC;
 use File::Spec;
 
 our $TIME_HIRES_AVAILABLE;
@@ -173,6 +174,7 @@ sub render {
         }
     }
 
+    $info{x} = Log::Log4perl::NDC->get() if $self->{info_needed}->{x};
     $info{c} = $category;
     $info{d} = 1; # Dummy value, corrected later
     $info{n} = "\n";
@@ -195,7 +197,6 @@ sub render {
 
         # As long as they're not implemented yet ..
     $info{t} = "N/A";
-    $info{x} = "N/A";
     $info{X} = "N/A";
 
         # Iterate over all info fields on the stack

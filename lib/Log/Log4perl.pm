@@ -1331,6 +1331,44 @@ By the way, these convenience functions perform exactly as fast as the
 standard Log::Log4perl logger methods, there's I<no> performance penalty
 whatsoever.
 
+=head2 Nested Diagnostic Context (NDC)
+
+If you find that your application could use a global (thread-specific)
+data stack which your loggers throughout the system have easy access to,
+use Nested Diagnostic Contexts (NDCs).
+
+For example, when handling a request of a web client, it's probably 
+useful to have the user's IP address available in all log statements
+within code dealing with this particular request. Instead of passing
+this piece of data between your application functions, you can just
+use the global (but thread-specific) NDC mechanism. It allows you
+to push data pieces (scalars usually) onto its stack via
+
+    Log::Log4perl::NDC->push("data piece");
+
+and have your loggers retrieve them again via the "%x" placeholder in
+the PatternLayout. The stack mechanism allows for nested structures.
+Just make sure that at the end of the request, you decrease the stack
+by calling
+
+    Log::Log4perl::NDC->pop();
+
+Even if you should forget to do that, C<Log::Log4perl> won't grow the stack
+indefinitely, but limit it to a maximum, defined in C<Log::Log4perl::NDC>.
+
+To clear out the NDC stack, just call
+
+    Log::Log4perl::NDC->remove();
+
+Again, the top of the stack is always available via the "%x" placeholder
+in the Log::Log4perl::Layout::PatternLayout class whenever a logger
+fires. What it does is just call
+
+    Log::Log4perl::NDC->get();
+
+internally. See details on how this standard log4j feature is implemented
+in L<Log::Log4perl::NDC>.
+
 =head1 How about Log::Dispatch::Config?
 
 Tatsuhiko Miyagawa's C<Log::Dispatch::Config> is a very clever 
@@ -1481,6 +1519,7 @@ L<Log::Log4perl::Layout::PatternLayout|Log::Log4perl::Layout::PatternLayout>,
 L<Log::Log4perl::Layout::SimpleLayout|Log::Log4perl::Layout::SimpleLayout>,
 L<Log::Log4perl::Level|Log::Log4perl::Level>,
 L<Log::Log4perl::JavaMap|Log::Log4perl::JavaMap>
+L<Log::Log4perl::NDC|Log::Log4perl::NDC>,
 
 =head1 AUTHORS
 

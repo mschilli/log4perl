@@ -42,7 +42,7 @@ my $conf = <<EOL;
 log4j.rootLogger=DEBUG, A1
 log4j.appender.A1=Log::Log4perl::TestBuffer
 log4j.appender.A1.layout=org.apache.log4j.PatternLayout
-log4j.appender.A1.layout.ConversionPattern=%-4r [%t] %-5p %c %x - %m%n
+log4j.appender.A1.layout.ConversionPattern=%-4r [%t] %-5p %c %t - %m%n
 log4j.category.simplelayout.test=INFO, \
    myAppender
 log4j.appender.myAppender        = Log::Log4perl::Appender::FileAppenderx

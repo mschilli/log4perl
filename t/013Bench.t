@@ -27,19 +27,19 @@ log4j.category.multiappender.c1.c2   = INFO, 2ndPatternLayoutAppndr
 # PatternLayoutAppndr
 log4j.appender.PatternLayoutAppndr        = Log::Log4perl::TestBuffer
 log4j.appender.PatternLayoutAppndr.layout = org.apache.log4j.PatternLayout
-log4j.appender.PatternLayoutAppndr.layout.ConversionPattern=%d %4r [%t] %-5p %c %x - %m%n
+log4j.appender.PatternLayoutAppndr.layout.ConversionPattern=%d %4r [%t] %-5p %c %t - %m%n
 
 # ---------------------------------------------
 # 2ndPatternLayoutAppndr
 log4j.appender.2ndPatternLayoutAppndr        = Log::Log4perl::TestBuffer
 log4j.appender.2ndPatternLayoutAppndr.layout = org.apache.log4j.PatternLayout
-log4j.appender.2ndPatternLayoutAppndr.layout.ConversionPattern=%d %4r [%t] %-5p %c %x - %m%n
+log4j.appender.2ndPatternLayoutAppndr.layout.ConversionPattern=%d %4r [%t] %-5p %c %t - %m%n
 
 # ---------------------------------------------
 # 3rdPatternLayoutAppndr
 log4j.appender.3rdPatternLayoutAppndr        = Log::Log4perl::TestBuffer
 log4j.appender.3rdPatternLayoutAppndr.layout = org.apache.log4j.PatternLayout
-log4j.appender.3rdPatternLayoutAppndr.layout.ConversionPattern=%d %4r [%t] %-5p %c %x - %m%n
+log4j.appender.3rdPatternLayoutAppndr.layout.ConversionPattern=%d %4r [%t] %-5p %c %t - %m%n
 
 
 # ---------------------------------------------
