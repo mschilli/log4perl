@@ -7,6 +7,7 @@ eg/log4j-manual-1.conf
 eg/log4j-manual-2.conf
 eg/log4j-manual-3.conf
 eg/override_appender
+eg/prototype
 eg/syslog.pl
 eg/yamlparser
 ldap/log4perl-2.ldif
