@@ -959,7 +959,7 @@ http://www.vipan.com/htdocs/log4jhelp.html
 
 =item [3]
 
-The Log::Log4perl project home page: http://log4perl.sorceforge.net
+The Log::Log4perl project home page: http://log4perl.sourceforge.net
 
 =back
 
