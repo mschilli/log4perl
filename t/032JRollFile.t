@@ -6,8 +6,8 @@ BEGIN {
     eval {
         require Log::Dispatch::FileRotate;
     };
-    if ($@) {
-        plan skip_all => "only with Log::Dispatch::FileRotate";
+    if ($@ or $Log::Dispatch::FileRotate::VERSION < 1.09) {
+        plan skip_all => "only with Log::Dispatch::FileRotate 1.09";
     } else {
         plan tests => 2;
     }
