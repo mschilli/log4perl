@@ -118,6 +118,9 @@ TODO:
 
 Kevin:
 ##################################################
+    * Dave Rolsky says: A couple other things: The JavaMap docs mention that SocketAppender 
+      has no Log::Dispatch equivalent.  You could create an IO::Socket object and pass 
+      it to Log::Dispatch::Handle.
     * I think we should not install Log::Dispatch::Buffer, we only use
       it for our test cases, we shouldn't infringe on the Log::Dispatch
       namespace, should we?
