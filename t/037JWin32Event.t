@@ -1,17 +1,16 @@
 use Log::Log4perl;
-use Test;
+use Test::More;
 
 
 #skipping on non-win32 systems
-eval {
-	require Log::Dispatch::Win32EventLog;
+BEGIN {
+    eval {
+	    require Log::Dispatch::Win32EventLog;
+    };
+    if ($@){
+       plan skip_all => "only with Log::Dispatch::Win32EventLog";
+    }
 };
-if ($@){
-   print STDERR "Log::Dispatch::Win32EventLog not installed, skipping..\n";
-   ok(1);
-   exit;
-}
-
 
 print <<EOL;
 

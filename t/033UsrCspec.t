@@ -21,7 +21,7 @@ log4j.PatternLayout.cspec.U =       \
 # ********************
 # first appender
 log4j.appender.appndr1        = Log::Log4perl::Appender::TestBuffer
-#log4j.appender.appndr1        = Log::Dispatch::Screen
+#log4j.appender.appndr1        = Log::Log4perl::Appender::Screen
 log4j.appender.appndr1.layout = org.apache.log4j.PatternLayout
 log4j.appender.appndr1.layout.ConversionPattern = %K xx %G %U
 
@@ -36,7 +36,7 @@ log4j.appender.appndr1.layout.cspec.G = sub {return 'thisistheGcspec'}
 # ********************
 # second appender
 log4j.appender.appndr2        = Log::Log4perl::Appender::TestBuffer
-#log4j.appender.appndr2        = Log::Dispatch::Screen
+#log4j.appender.appndr2        = Log::Log4perl::Appender::Screen
 log4j.appender.appndr2.layout = org.apache.log4j.PatternLayout
 log4j.appender.appndr2.layout.ConversionPattern = %K %U
 

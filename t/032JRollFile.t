@@ -1,5 +1,5 @@
 use Log::Log4perl;
-use Test;
+use Test::More;
 use File::Spec;
 
 BEGIN {
@@ -7,12 +7,10 @@ BEGIN {
         require Log::Dispatch::FileRotate;
     };
     if ($@) {
-        plan tests => 1;
-        ok(1);
-        print STDERR "Log::Dispatch::FileRotate not installed, skipping...\n";
-        exit(0);
+        plan skip_all => "only with Log::Dispatch::FileRotate";
+    } else {
+        plan tests => 2;
     }
-    plan tests => 2;
 }
 
 my $WORK_DIR = File::Spec->catfile(qw(t tmp));
@@ -54,7 +52,7 @@ $logger->fatal("fatal message 1 ");
 open (F, File::Spec->catfile($WORK_DIR, 'rolltest.log.2'));
 my $result = <F>;
 close F;
-ok($result, "/^INFO  cat1 - info message 1/");
+like($result, qr/^INFO  cat1 - info message 1/);
 
 #MaxBackupIndex is 2, so this file shouldn't exist
 ok(! -e File::Spec->catfile($WORK_DIR, 'rolltest.log.3'));

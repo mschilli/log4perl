@@ -14,8 +14,8 @@ BEGIN { plan tests => 16 };
 
 use Log::Log4perl;
 use Log::Log4perl::Layout;
+
 use Log::Log4perl::Level;
-use Log::Dispatch;
 use Log::Log4perl::Appender::TestBuffer;
 use File::Spec;
 

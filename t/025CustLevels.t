@@ -70,7 +70,7 @@ unlink $LOGFILE;
 
 my $config = <<EOT;
 log4j.category = LITEWARN, FileAppndr
-log4j.appender.FileAppndr          = Log::Dispatch::File
+log4j.appender.FileAppndr          = Log::Log4perl::Appender::File
 log4j.appender.FileAppndr.filename = $LOGFILE
 log4j.appender.FileAppndr.layout   = Log::Log4perl::Layout::SimpleLayout
 EOT

@@ -91,7 +91,7 @@ ok($@, '');
 $conf = <<EOL;
 log4j.category.simplelayout.test=xxINFO, myAppender
 
-log4j.appender.myAppender        = Log::Dispatch::File
+log4j.appender.myAppender        = Log::Log4perl::Appender::File
 log4j.appender.myAppender.layout = Log::Log4perl::Layout::SimpleLayout
 log4j.appender.myAppender.File   = $testfile
 EOL

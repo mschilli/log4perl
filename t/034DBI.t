@@ -81,7 +81,7 @@ log4j.appender.DBAppndr.warp_message=0
 log4j.appender.DBAppndr.layout    = Log::Log4perl::Layout::NoopLayout
 
 #a console appender for debugging
-log4j.appender.console = Log::Dispatch::Screen
+log4j.appender.console = Log::Log4perl::Appender::Screen
 log4j.appender.console.layout = Log::Log4perl::Layout::SimpleLayout
 
 
@@ -120,5 +120,5 @@ ok($row->[3], '3456');
 ok($row->[4], 'groceries.beer');
 ok($row->[5], 'main');
 
-$dbh->do('DROP TABLE log4perltest');
+#$dbh->do('DROP TABLE log4perltest');
 

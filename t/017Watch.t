@@ -19,7 +19,7 @@ unlink $testconf if (-e $testconf);
 my $conf1 = <<EOL;
 log4j.category.animal.dog   = INFO, myAppender
 
-log4j.appender.myAppender          = Log::Dispatch::File
+log4j.appender.myAppender          = Log::Log4perl::Appender::File
 log4j.appender.myAppender.layout   = Log::Log4perl::Layout::SimpleLayout
 log4j.appender.myAppender.filename = $testfile
 log4j.appender.myAppender.mode     = append
@@ -46,7 +46,7 @@ sleep 3;
 my $conf2 = <<EOL;
 log4j.category.animal.dog   = DEBUG, myAppender
 
-log4j.appender.myAppender          = Log::Dispatch::File
+log4j.appender.myAppender          = Log::Log4perl::Appender::File
 log4j.appender.myAppender.layout = org.apache.log4j.PatternLayout
 log4j.appender.myAppender.layout.ConversionPattern=%-5p %c - %m%n
 
@@ -82,7 +82,7 @@ sleep 3;
 $conf2 = <<EOL;
 log4j.category.animal.dog   = INFO, myAppender
 
-log4j.appender.myAppender          = Log::Dispatch::File
+log4j.appender.myAppender          = Log::Log4perl::Appender::File
 log4j.appender.myAppender.layout   = Log::Log4perl::Layout::SimpleLayout
 log4j.appender.myAppender.filename = $testfile
 log4j.appender.myAppender.mode     = append

@@ -6,9 +6,19 @@
 #########################
 # change 'tests => 1' to 'tests => last_test_to_print';
 #########################
-use Test;
-BEGIN { plan tests => 2 };
+use Test::More;
 
+our $LOG_DISPATCH_PRESENT = 0;
+
+BEGIN { 
+    eval { require Log::Dispatch; };
+    if($@) {
+       plan skip_all => "only with Log::Dispatch";
+    } else {
+       $LOG_DISPATCH_PRESENT = 1;
+       plan tests => 2;
+    }
+};
 
 use Log::Log4perl;
 use Log::Log4perl::Appender::TestBuffer;
@@ -41,12 +51,12 @@ close FILE;
 my $file = File::Spec->catfile(qw(t 006Config-Java.t));
 
 my $exp = <<EOT;
-$file 31 DEBUG N/A  - Gurgel
-$file 32 INFO N/A  - Gurgel
-$file 33 WARN N/A  - Gurgel
-$file 34 ERROR N/A  - Gurgel
-$file 35 FATAL N/A  - Gurgel
+$file 41 DEBUG N/A  - Gurgel
+$file 42 INFO N/A  - Gurgel
+$file 43 WARN N/A  - Gurgel
+$file 44 ERROR N/A  - Gurgel
+$file 45 FATAL N/A  - Gurgel
 EOT
 
 unlink $LOGFILE;
-ok($data, "$exp");
+is($data, "$exp");

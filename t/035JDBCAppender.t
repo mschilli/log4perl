@@ -3,7 +3,7 @@
 # Kevin Goess <cpan@goess.org>
 ###########################################
 
-use Test;
+use Test::More;
 
 use Log::Log4perl;
 
@@ -12,21 +12,14 @@ our $no_DBD;
 BEGIN {
     eval {
         require DBD::CSV;
+        require Log::Dispatch;
     };
     if ($@) {
-        print STDERR "DBD::CSV not installed, skipping tests\n";
-        $no_DBD = 1;
-        plan tests => 1;
+        plan skip_all => "only with Log::Dispatch and DBD::CSV";
     }else{
         plan tests => 14;
     }
 }
-
-if ($no_DBD){
-    ok(1);
-    exit(0);
-}
-
 
 require DBI;
 my $dbh = DBI->connect('DBI:CSV:f_dir=t/tmp','testuser','testpw',{ PrintError => 1 });
@@ -80,7 +73,7 @@ log4j.appender.DBAppndr.warp_message=0
 log4j.appender.DBAppndr.layout    = Log::Log4perl::Layout::NoopLayout
 
 #a console appender for debugging
-log4j.appender.console = Log::Dispatch::Screen
+log4j.appender.console = Log::Log4perl::Appender::Screen
 log4j.appender.console.layout = Log::Log4perl::Layout::SimpleLayout
 
 EOT
@@ -102,28 +95,23 @@ my $sth = $dbh->prepare('select * from log4perltest');
 $sth->execute;
 
 my $row = $sth->fetchrow_arrayref;
-ok($row->[0], 'FATAL');
-ok($row->[1], 'fatal message');
-ok($row->[3], '1234');
-ok($row->[4], 'groceries.beer');
-ok($row->[5], 'main');
-ok($row->[6], 'foo');
-ok($row->[7], undef);
+is($row->[0], 'FATAL');
+is($row->[1], 'fatal message');
+is($row->[3], '1234');
+is($row->[4], 'groceries.beer');
+is($row->[5], 'main');
+is($row->[6], 'foo');
+is($row->[7], undef);
 
 $row = $sth->fetchrow_arrayref;
-ok($row->[0], 'WARN');
-ok($row->[1], 'warning message');
-ok($row->[3], '3456');
-ok($row->[4], 'groceries.beer');
-ok($row->[5], 'main');
-ok($row->[6], 'foo');
-ok($row->[7], 'bar');
+is($row->[0], 'WARN');
+is($row->[1], 'warning message');
+is($row->[3], '3456');
+is($row->[4], 'groceries.beer');
+is($row->[5], 'main');
+is($row->[6], 'foo');
+is($row->[7], 'bar');
 
 $dbh->do('DROP TABLE log4perltest');
 
-
-
-
-
-
-
+1;

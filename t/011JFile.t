@@ -1,6 +1,18 @@
 use Log::Log4perl;
-use Test;
+use Test::More;
 use File::Spec;
+
+our $LOG_DISPATCH_PRESENT = 0;
+
+BEGIN { 
+    eval { require Log::Dispatch; };
+    if($@) {
+       plan skip_all => "only with Log::Dispatch";
+    } else {
+       $LOG_DISPATCH_PRESENT = 1;
+       plan tests => 1;
+    }
+};
 
 my $WORK_DIR = File::Spec->catfile(qw(t tmp));
 use vars qw(@outfiles $test_logfile); 
@@ -46,13 +58,7 @@ EOL
  $result = <F>;
  close F;
 }
-ok ($result, $expected);
-
-
-
-BEGIN { plan tests => 1, }
-
-
+is ($result, $expected);
 
 foreach my $f (@outfiles){
     unlink $f if (-e $f);

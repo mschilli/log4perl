@@ -24,7 +24,7 @@ END { unlink $testfilea;
 ####################################################
 my $data = <<EOT;
 log4j.category = INFO, FileAppndr
-log4j.appender.FileAppndr          = Log::Dispatch::File
+log4j.appender.FileAppndr          = Log::Log4perl::Appender::File
 log4j.appender.FileAppndr.filename = $testfilea
 log4j.appender.FileAppndr.layout   = Log::Log4perl::Layout::SimpleLayout
 EOT
@@ -36,7 +36,7 @@ $log->info("Shu-wa-chi!");
 
 $data = <<EOT;
 log4j.category = INFO, FileAppndr
-log4j.appender.FileAppndr          = Log::Dispatch::File
+log4j.appender.FileAppndr          = Log::Log4perl::Appender::File
 log4j.appender.FileAppndr.filename = $testfileb
 log4j.appender.FileAppndr.layout   = Log::Log4perl::Layout::SimpleLayout
 EOT

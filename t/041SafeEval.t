@@ -18,7 +18,7 @@ unlink($example_log);
 Log::Log4perl::Config::allow_code(1);
 my $config = <<'END';
     log4perl.logger = INFO, Main
-    log4perl.appender.Main = Log::Dispatch::File
+    log4perl.appender.Main = Log::Log4perl::Appender::File
     log4perl.appender.Main.filename = sub { "example" . (stat($0))[9] . ".log" }
     log4perl.appender.Main.layout = Log::Log4perl::Layout::SimpleLayout
 END
@@ -127,7 +127,7 @@ $config = <<'END';
     log4perl.logger = INFO, Main
     #'U' a global user-defined cspec
     log4j.PatternLayout.cspec.U = sub { unlink 'quackquack'; }
-    log4perl.appender.Main = Log::Dispatch::Screen
+    log4perl.appender.Main = Log::Log4perl::Appender::Screen
     log4perl.appender.Main.layout = Log::Log4perl::Layout::SimpleLayout
 END
 Log::Log4perl::Config::allow_code('restrictive');
@@ -142,7 +142,7 @@ $config = <<'END';
     log4perl.logger = INFO, Main
     #'U' a global user-defined cspec
     log4j.PatternLayout.cspec.U = sub { 1; }
-    log4perl.appender.Main = Log::Dispatch::Screen
+    log4perl.appender.Main = Log::Log4perl::Appender::Screen
     log4perl.appender.Main.layout = Log::Log4perl::Layout::SimpleLayout
 END
 Log::Log4perl::Config->allow_code('restrictive');
@@ -154,7 +154,7 @@ ok($failed, 0, 'global cspec with legal code allowed on restrictive setting');
 # Local cspec with illegal code
 $config = <<'END';
     log4perl.logger = INFO, Main
-    log4perl.appender.Main = Log::Dispatch::Screen
+    log4perl.appender.Main = Log::Log4perl::Appender::Screen
     log4perl.appender.Main.layout = Log::Log4perl::Layout::PatternLayout
     log4perl.appender.Main.layout.cspec.K = sub { symlink("a", "b"); }
 END
@@ -167,7 +167,7 @@ ok($failed, 1, 'local cspec with harmful code rejected on restrictive setting');
 # Global cspec with legal code
 $config = <<'END';
     log4perl.logger = INFO, Main
-    log4perl.appender.Main = Log::Dispatch::Screen
+    log4perl.appender.Main = Log::Log4perl::Appender::Screen
     log4perl.appender.Main.layout = Log::Log4perl::Layout::PatternLayout
     log4perl.appender.Main.layout.cspec.K = sub { return sprintf "%1x", $$}
 END
