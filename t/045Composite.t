@@ -7,7 +7,19 @@ use warnings;
 use strict;
 
 use Test::More;
-BEGIN { plan tests => 13 }
+
+BEGIN {
+    eval {
+        require Storable;
+    };
+    if ($@) {
+        plan skip_all => "only with Storable"; # Limit.pm needs it and
+                                               # early Perl versions dont
+                                               # have it.
+    }else{
+        plan tests => 13;
+    }
+}
 
 use Log::Log4perl qw(get_logger);
 use Log::Log4perl::Level;
