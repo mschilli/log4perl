@@ -1437,7 +1437,7 @@ graphical log UI I<Chainsaw>.
 =for html
 <p>
 <TABLE><TR><TD>
-<A HREF="/images/chainsaw2.jpg"><IMG SRC="/images/chainsaw2s.jpg"></A>
+<A HREF="http://log4perl.sourceforge.net/images/chainsaw2.jpg"><IMG SRC="http://log4perl.sourceforge.net/images/chainsaw2s.jpg"></A>
 <TR><TD>
 <I>Figure 1: Chainsaw receives Log::Log4perl events</I>
 </TABLE>
