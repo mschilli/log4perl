@@ -108,7 +108,7 @@ sub to_priority {
     if(exists $PRIORITY{$string}) {
         return $PRIORITY{$string};
     }else{
-        die "level '$string' is not a valid error level (".join ('|', keys %PRIORITY),')';
+        croak "level '$string' is not a valid error level (".join ('|', keys %PRIORITY),')';
     }
 }
 
@@ -120,7 +120,7 @@ sub to_level {
     if (exists $LEVELS{$priority}) {
         return $LEVELS{$priority}
     }else {
-      die("priority '$priority' is not a valid error level number (",
+      croak("priority '$priority' is not a valid error level number (",
 	  join("|", sort numerically keys %LEVELS), "
           )");
     }
