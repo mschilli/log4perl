@@ -1185,7 +1185,7 @@ which itself depends on C<Attribute-Handlers> and
 C<Params-Validate>. 
 Everything's automatically fetched from CPAN if you're using the CPAN 
 shell (CPAN.pm), because they're listed as dependencies.
-Also, C<Test::Simple> and C<Test::Harness> are needed,
+Also, C<Test::Simple>, C<Test::Harness> and C<File::Spec> are needed,
 but they already come with fairly recent versions of perl.
 
 C<Time::HiRes> (1.20 or better) is required only if you need the

@@ -956,8 +956,8 @@ INSTALLATION
     itself depends on "Attribute-Handlers" and "Params-Validate".
     Everything's automatically fetched from CPAN if you're using the CPAN
     shell (CPAN.pm), because they're listed as dependencies. Also,
-    "Test::Simple" and "Test::Harness" are needed, but they already come
-    with fairly recent versions of perl.
+    "Test::Simple", "Test::Harness" and "File::Spec" are needed, but they
+    already come with fairly recent versions of perl.
 
     "Time::HiRes" (1.20 or better) is required only if you need the
     fine-grained time stamps of the %r parameter in
