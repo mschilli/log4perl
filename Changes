@@ -3,7 +3,7 @@ Revision history for Log::Log4perl
 ##################################################
 
 0.18 07/11/2002
-    * Added Log::Dispatch::Buffer back in the distribution, otherwise
+    * Added Log::Log4perl::TestBuffer back in the distribution, otherwise
       regression test suite would fail.
 
 0.17 07/11/2002
@@ -89,7 +89,7 @@ Revision history for Log::Log4perl
     * Bug discovered by Kevin Goess <cpan@goess.org>, revealed
       in 004-Config.t: Wrong layout used if Appender is inherited.
       Fixed.
-    * Changed Log::Dispatch::Buffer to keep track of the
+    * Changed Log::Log4perl::TestBuffer to keep track of the
       object population -- so we can easily reference them
       in the Log::Log4perl test cases. Got rid of get_buffer().
     * Added a reset() method to Log::Log4perl and Log::Log4perl::Logger
@@ -129,7 +129,7 @@ Kevin:
     * Dave Rolsky says: A couple other things: The JavaMap docs mention that SocketAppender 
       has no Log::Dispatch equivalent.  You could create an IO::Socket object and pass 
       it to Log::Dispatch::Handle.
-    * I think we should not install Log::Dispatch::Buffer, we only use
+    * I think we should not install Log::Log4perl::TestBuffer, we only use
       it for our test cases, we shouldn't infringe on the Log::Dispatch
       namespace, should we?
     * test cases should use platform independend directory separator
@@ -168,7 +168,7 @@ Mike:
 DONE Log::Dispatch wrapper for perl modules just like JavaMap?
 DONE Warning in testcase 002
 DONE Added Log::Log4perl::Appender class to wrap Log::Dispatch::*
-DONE Log::Dispatch::Buffer: Delete from MANIFEST
+DONE Log::Log4perl::TestBuffer: Delete from MANIFEST
 DONE Log::Log4perl->init()
 DONE Several appenders in one config line: log4j.rootLogger=debug, stdout, R
 DONE Define default if there's no layout:

@@ -12,7 +12,7 @@ BEGIN { plan tests => 2 };
 
 use Log::Log4perl;
 use Data::Dumper;
-use Log::Dispatch::Buffer;
+use Log::Log4perl::TestBuffer;
 
 my $EG_DIR = "eg";
 $EG_DIR = "../eg" unless -d $EG_DIR;

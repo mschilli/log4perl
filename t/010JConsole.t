@@ -1,5 +1,5 @@
 use Log::Log4perl;
-use Log::Dispatch::Buffer;
+use Log::Log4perl::TestBuffer;
 use Log::Dispatch::File;
 use Test;
 

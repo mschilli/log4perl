@@ -1,4 +1,5 @@
 Changes
+Makefile.PL
 LICENSE
 MANIFEST
 MANIFEST.SKIP
@@ -19,6 +20,7 @@ lib/Log/Log4perl/Layout/PatternLayout.pm
 lib/Log/Log4perl/Layout/SimpleLayout.pm
 lib/Log/Log4perl/Level.pm
 lib/Log/Log4perl/Logger.pm
+lib/Log/Log4perl/TestBuffer.pm
 t/001Level.t
 t/002Logger.t
 t/003Layout.t

@@ -23,7 +23,7 @@ ok(1);
 # Init logger
 ##################################################
 my $app = Log::Log4perl::Appender->new(
-    "Log::Dispatch::Buffer");
+    "Log::Log4perl::TestBuffer");
 my $logger = get_logger("abc.def");
 $logger->add_appender($app);
 $logger->level($DEBUG);

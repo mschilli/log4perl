@@ -11,7 +11,7 @@ BEGIN { plan tests => 3 };
 
 use Log::Log4perl;
 use Data::Dumper;
-use Log::Dispatch::Buffer;
+use Log::Log4perl::TestBuffer;
 
 my $EG_DIR = "eg";
 $EG_DIR = "../eg" unless -d $EG_DIR;
@@ -27,9 +27,9 @@ my $logger = Log::Log4perl->get_logger("");
 $logger->debug("Gurgel");
 
 
-ok($Log::Dispatch::Buffer::POPULATION[0]->buffer(), 
+ok($Log::Log4perl::TestBuffer::POPULATION[0]->buffer(), 
    'm#^\d+\s+\[N/A\] DEBUG  N/A - Gurgel$#'); 
-#print "BUFFER= '", $Log::Dispatch::Buffer::POPULATION[0]->buffer(), "'\n";
+#print "BUFFER= '", $Log::Log4perl::TestBuffer::POPULATION[0]->buffer(), "'\n";
 
 ######################################################################
 # Test the root logger via inheritance (discovered by Kevin Goess)
@@ -42,6 +42,6 @@ $logger = Log::Log4perl->get_logger("foo");
 $logger->debug("Gurgel");
 
    # POPULATION[1] because it created another buffer behind our back
-ok($Log::Dispatch::Buffer::POPULATION[1]->buffer(),
+ok($Log::Log4perl::TestBuffer::POPULATION[1]->buffer(),
     'm#^\d+\s+\[N/A\] DEBUG foo N/A - Gurgel$#'); 
-#print "BUFFER= '", $Log::Dispatch::Buffer::POPULATION[1]->buffer(), "'\n";
+#print "BUFFER= '", $Log::Log4perl::TestBuffer::POPULATION[1]->buffer(), "'\n";
