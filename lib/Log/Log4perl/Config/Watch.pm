@@ -8,6 +8,7 @@ package Log::Log4perl::Config::Watch;
 use constant DEBUG => 0;
 
 our $NEXT_CHECK_TIME;
+our $SIGNAL_CAUGHT;
 
 ###########################################
 sub new {
@@ -16,6 +17,7 @@ sub new {
 
     my $self = { file            => "",
                  check_interval  => 30,
+                 signal          => undef,
                  %options,
                  _last_checked_at => 0,
                  _last_timestamp  => 0,
@@ -23,8 +25,15 @@ sub new {
 
     bless $self, $class;
 
-        # Just called to initialize
-    $self->change_detected();
+    if($self->{signal}) {
+            # We're in signal mode, set up the handler
+        $SIG{$self->{signal}} = sub { $SIGNAL_CAUGHT = 1; };
+            # Reset the marker. The handler is going to modify it.
+        $SIGNAL_CAUGHT = 0;
+    } else {
+            # Just called to initialize
+        $self->change_detected();
+    }
 
     return $self;
 }
@@ -35,6 +44,14 @@ sub file {
     my($self) = @_;
 
     return $self->{file};
+}
+
+###########################################
+sub signal {
+###########################################
+    my($self) = @_;
+
+    return $self->{signal};
 }
 
 ###########################################
