@@ -13,7 +13,7 @@ use warnings;
 
 our @ISA = qw(Log::Log4perl::Appender);
 
-our $CVSVERSION   = '$Revision: 1.1 $';
+our $CVSVERSION   = '$Revision: 1.2 $';
 our ($VERSION)    = ($CVSVERSION =~ /(\d+\.\d+)/);
 
 ###########################################
@@ -116,13 +116,10 @@ sub level_trigger {
 ###########################################
     my($level) = @_;
 
-print "level trigger with $level\n";
-
+        # closure holding $level
     return sub {
         my($self, $params) = @_;
 
-        #use Data::Dumper;
-        #print Dumper(\@_);
         return Log::Log4perl::Level::to_priority(
                  $params->{log4p_level}) >= 
                Log::Log4perl::Level::to_priority($level);
