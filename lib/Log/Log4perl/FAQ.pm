@@ -1125,9 +1125,8 @@ still get C<ERROR> messages in C<AppWarn>, because C<AppWarn>'s C<WARN>
 setting will just filter out messages with a I<lower> priority than
 C<WARN> -- C<ERROR> is higher and will be allowed to pass through.
 
-What we need for this is a Log4perl I<Custom Filter>, newly available with 
-Log::Log4perl 0.30, which, at the time of this writing (Feb 2003), 
-is available as a development release from log4perl.sourceforge.net.
+What we need for this is a Log4perl I<Custom Filter>, available with 
+Log::Log4perl 0.30.
 
 Both appenders need to verify that
 the priority of the oncoming messages exactly I<matches> the priority 
