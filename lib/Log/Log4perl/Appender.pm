@@ -158,21 +158,24 @@ __END__
 
 =head1 NAME
 
-Log::Log4perl::Appender - Log appender object
+Log::Log4perl::Appender - Log appender class
 
 =head1 SYNOPSIS
 
-  use Log::Log4perl::Appender;
+  use Log::Log4perl;
 
       # Define a logger
   my $logger = Log::Log4perl->get_logger("abc.def.ghi");
 
       # Define a layout
-  my $layout = Log::Log4perl::Layout::PatternLayout->("%d (%F:%L)> %m");
+  my $layout = Log::Log4perl::Layout::PatternLayout->new(
+                   "%d (%F:%L)> %m");
 
       # Define an appender
-  my $appender = Log::Log4perl::Appender->new("Log::Dispatch::Screen"
-                                              name => 'dumpy');
+  my $appender = Log::Log4perl::Appender->new(
+                   "Log::Dispatch::Screen",
+                   name => 'dumpy');
+
       # Set the appender's layout
   $appender->layout($layout);
   $logger->add_appender($appender);
@@ -180,11 +183,16 @@ Log::Log4perl::Appender - Log appender object
 =head1 DESCRIPTION
 
 This class is a wrapper around the C<Log::Dispatch::*> collection of
-dispatchers. It hides the idiosyncrasies of C<Log::Dispatch>
-(every dispatcher gotta have a name, but there's no accessor to retrieve it)
+dispatchers, so they can be used by C<Log::Log4perl>. 
+The module hides the idiosyncrasies of C<Log::Dispatch>
+(e.g. every dispatcher gotta have a name, but there's no accessor to retrieve it)
 from C<Log::Log4perl> and yet re-uses the extremely useful 
 variety of dispatchers already created and tested
 in C<Log::Dispatch>.
+
+=head1 FUNCTIONS
+
+=head2 Log::Dispatch::Appender->new($dispatcher_class_name, ...);
 
 The constructor C<new()> takes the name of the C<Log::Dispatcher>
 class to be created as a I<string> (!) argument, optionally followed by 
@@ -202,15 +210,64 @@ the C<name()> method:
 
   print "The appender's name is ", $appender->name(), "\n";
 
-The C<Log::Log4perl::Appender> will relay the C<log_to()> method
-to the C<Log::Dispatch::*> object it carries in its womb and
-can therefore be used by C<Log::Log4perl> just like a 
-C<Log::Dispatch::*> appender.
+Other parameters are specific to the C<Log::Dispatch> module being used.
+In the case above, the C<file> parameter specifies the name of 
+the C<Log::Dispatch::File> dispatcher used. 
+
+However, if you're using a C<Log::Dispatch::Email> dispatcher to send you 
+email, you'll have to specify C<from> and C<to> email addresses.
+Every dispatcher is different.
+Please check the C<Log::Dispatch::*> documentation for the appender used
+for details on specific requirements.
+
+The C<new()> method will just pass these parameters on to a newly created
+C<Log::Dispatch::*> object of the specified type.
+
+When it comes to logging, the C<Log::Log4perl::Appender> will transparently
+relay all messages to the C<Log::Dispatch::*> object it carries 
+in its womb.
+
+=head2 $appender->layout($layout);
+
+The C<layout()> method sets the log layout
+used by the appender to the format specified by the 
+C<Log::Log4perl::Layout::*> object which is passed to it as a reference.
+Currently there's two layouts available:
+
+    Log::Log4perl::Layout::SimpleLayout
+    Log::Log4perl::Layout::PatternLayout
+
+Please check the L<Log::Log4perl::Layout::SimpleLayout> and 
+L<Log::Log4perl::Layout::PatternLayout> manual pages for details.
+
+=head1 Supported Appenders 
+
+Here's the list of appender modules currently available via C<Log::Dispatch>,
+if not noted otherwise, written by Dave Rolsky:
+
+       Log::Dispatch::ApacheLog
+       Log::Dispatch::DBI (by Tatsuhiko Miyagawa)
+       Log::Dispatch::Email,
+       Log::Dispatch::Email::MailSend,
+       Log::Dispatch::Email::MailSendmail,
+       Log::Dispatch::Email::MIMELite
+       Log::Dispatch::File
+       Log::Dispatch::Handle
+       Log::Dispatch::Screen
+       Log::Dispatch::Syslog
+       Log::Dispatch::Tk (by Dominique Dumont)
+
+C<Log4perl> doesn't care which ones you use, they're all handled in 
+the same way via the C<Log::Log4perl::Appender> interface.
+Please check the well-written manual pages of the 
+C<Log::Dispatch> hierarchy on how to use each one of them.
 
 =head1 SEE ALSO
 
+Log::Dispatch
+
 =head1 AUTHOR
 
-Mike Schilli, E<lt>m@perlmeister.comE<gt>
+Mike Schilli, E<lt>log4perl@perlmeister.comE<gt>
 
 =cut
