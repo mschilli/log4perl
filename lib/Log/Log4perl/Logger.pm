@@ -261,28 +261,27 @@ sub generate_watch_code {
 
     return <<'EOL';
         print "exe_watch_code:\n" if DEBUG;
+                       
+        # more closures here
+        if ( ($LAST_CHECKED_AT + $WATCH_DELAY) < time()){
+        
+             $LAST_CHECKED_AT = time();
 
-        #more closures here
-        if ( (($LAST_CHECKED_AT + $WATCH_DELAY) < time())
-                &&  ($LAST_CHANGED_AT < (stat($FILE_TO_WATCH))[9] )){
-                
-            print "  Config file has been modified\n" if DEBUG;
-
-            #these are now handled by the call to reset() in _init()
-            #%APPENDER_BY_NAME = ();
-            #$DISPATCHER = Log::Dispatch->new();
-            
-            Log::Log4perl->init_and_watch($FILE_TO_WATCH, $WATCH_DELAY);
-            
-            my $methodname = lc($level);
-            $logger->$methodname($message); # send the message 
-                                            # to the new configuration
-            
-            $LAST_CHECKED_AT = time();
-            
-            return;
-        }else{
-            $LAST_CHECKED_AT = time();
+             print "  Checking $FILE_TO_WATCH for changes ...\n" if DEBUG;
+        
+             if ($LAST_CHANGED_AT < (stat($FILE_TO_WATCH))[9] ){
+                       
+                 $LAST_CHANGED_AT = (stat(_))[9];
+                       
+                 print "  Config file has been modified\n" if DEBUG;
+                       
+                 Log::Log4perl->init_and_watch($FILE_TO_WATCH, $WATCH_DELAY);
+                       
+                 my $methodname = lc($level);
+                 $logger->$methodname($message); # send the message
+                                                 # to the new configuration
+             }
+             return;
         }
 EOL
 }
