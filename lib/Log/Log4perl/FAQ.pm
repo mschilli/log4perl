@@ -1401,7 +1401,7 @@ graphical log UI I<Chainsaw>.
 =for html
 <p>
 <TABLE><TR><TD>
-<A HREF=/images/chainsaw2.jpg"><IMG SRC="/images/chainsaw2s.jpg"></A>
+<A HREF="/images/chainsaw2.jpg"><IMG SRC="/images/chainsaw2s.jpg"></A>
 <TR><TD>
 <I>Figure 1: Chainsaw receives Log::Log4perl events</I>
 </TABLE>
@@ -1425,7 +1425,7 @@ C<Log::Log4perl::Layout::XMLLayout> from CPAN and install it:
 =item *
 
 Install and start Chainsaw, which is part of the C<log4j> distribution now
-(see http://jakarta.apache.org/log4j). Create a configuration file like
+(see http://jakarta.apache.org/log4j ). Create a configuration file like
 
   <log4j:configuration debug="true">
     <plugin name="XMLSocketReceiver" 
