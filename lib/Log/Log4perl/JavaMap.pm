@@ -3,26 +3,21 @@ package Log::Log4perl::JavaMap;
 use Carp;
 use strict;
 
+use constant DEBUG => 0;
+
 our %translate = (
     'org.apache.log4j.ConsoleAppender' => 
         'Log::Log4perl::JavaMap::ConsoleAppender',
     'org.apache.log4j.FileAppender'    => 
         'Log::Log4perl::JavaMap::FileAppender',
+    'org.apache.log4j.TestBuffer'    => 
+        'Log::Log4perl::JavaMap::TestBuffer',
 );
 
 sub get {
     my ($appender_name, $appender_data) = @_;
-    #appender_name is the user name like 'myAppender'
-    #appender_data will be a hashref that looks like this:
-    #    {
-    #      File   => { value => "t/tmp/test1.log" },
-    #      layout => {
-    #                  ConversionPattern => 
-    #                                  { value => "%r [%t] %-5p %c %x - %m%n" },
-    #                  value => "org.apache.log4j.PatternLayout",
-    #                },
-    #      value  => "org.apache.log4j.ConsoleAppender",
-    #    },
+
+    print "Trying to map $appender_name\n" if DEBUG;
 
     $appender_data->{value} ||
             die "ERROR: you didn't tell me how to implement your appender " .
