@@ -55,8 +55,19 @@ sub new {
 ##################################################
 sub log { # Relay this call to Log::Dispatch::Whatever
 ##################################################
-    my $self = shift;
-    return $self->{appender}->log(@_);
+    my ($self, $p, $category, $level) = @_;
+
+    $self->{layout} || $self->layout();  #set to default if not already
+                                         #can this be moved?
+
+    #doing the rendering in here 'cause this is 
+    #where we keep the layout
+    $p->{message} = $self->{layout}->render($p->{message}, 
+                                            $category,
+                                            $level,
+                                            3,
+                                            );
+    return $self->{appender}->log(%$p);
 }
 
 ##################################################
@@ -81,6 +92,12 @@ sub layout { # Set/Get the layout object
         # Somebody wants to *set* the layout?
     if($layout) {
         $self->{layout} = $layout;
+
+        # somebody wants a layout, but not set yet, so give 'em default
+    }elsif (! $self->{layout}) {
+        $self->{layout} = Log::Log4perl::Layout::SimpleLayout
+                                                ->new($self->{name})
+
     }
 
     return $self->{layout};
