@@ -34,6 +34,7 @@ sub import {
         # Lazy man's logger
     if(exists $tags{':easy'}) {
         $tags{':levels'} = 1;
+        $tags{':nowarn'} = 1;
         $tags{'get_logger'} = 1;
     }
 
@@ -80,6 +81,11 @@ sub import {
                 $logger->{$level}->($logger, @_, $level);
             };
         }
+    }
+
+    if(exists $tags{':nowarn'}) {
+        $Log::Log4perl::Logger::INITIALIZED = 1;
+        delete $tags{':nowarn'};
     }
 
     if(keys %tags) {
