@@ -197,8 +197,7 @@ or the parameter-style method with a complexity somewhat in between:
     Log::Log4perl->easy_init( { level   => $DEBUG,
                                 file    => ">>test.log" } );
 
-For more info, please check out the "Stealth Loggers" section
-in the main Log::Log4perl documentation page.
+For more info, please check out L<Log::Log4perl/"Stealth Loggers">.
 
 =head1 SEE ALSO
 

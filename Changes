@@ -3,6 +3,7 @@ Revision history for Log::Log4perl
 ##################################################
 
 0.27 11/12/2002
+    * (ms) Updated FAQ with "Recipies of the Week"
 
 0.26 11/11/2002
     * (kg) enabled %l (was missing from PatternLayout::define)
