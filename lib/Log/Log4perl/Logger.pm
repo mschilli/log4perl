@@ -192,8 +192,9 @@ sub generate_coderef {
       my (\$level)   = pop;
       my \$message;
       my \$appenders_fired = 0;
-
-      \$message = join('', map { ref \$_ eq "CODE" ? \$_->() : defined \$_ ? \$_ : '' } \@_);
+      
+      \$message = ref \$_[0] eq 'ARRAY' ? \$_[0] : 
+                  join('', map { ref \$_ eq "CODE" ? \$_->() : defined \$_ ? \$_ : '' } \@_);
       
       print("coderef: \$logger->{category}\n") if DEBUG;
 
@@ -204,7 +205,7 @@ sub generate_coderef {
 
           print("  Sending message '\$message' (\$level) " .
                 "to \$appender_name\n") if DEBUG;
-
+                
           \$appender->log(
               #these get passed through to Log::Dispatch
               { name    => \$appender_name,
