@@ -1,0 +1,40 @@
+#!/usr/bin/perl
+###########################################
+# urlchk -- check all URLs in the docs
+# Mike Schilli, 2003 (m@perlmeister.com)
+###########################################
+use warnings;
+use strict;
+
+use URI::Find;
+use File::Find::Rule;
+use LWP::Simple;
+
+my %URLS = ();
+
+for(File::Find::Rule->file()->in(".")) {
+
+    next if m#\./blib/#;
+
+    open FILE, "<$_" or die "Cannot open $_";
+    my $data = join '', <FILE>;
+    close FILE;
+
+    my $finder = URI::Find->new(sub { 
+                                      $URLS{$_[0]}->{$_}++;
+                                    });
+
+    if(my $howmany = $finder->find(\$data)) {
+        #print "$_ $howmany\n";
+    }
+}
+
+for my $url (keys %URLS) {
+    if(get($url)) {
+        next;
+    }
+    print "$url\n";
+    for my $file (sort keys %{$URLS{$url}}) {
+         print "    $file\n";
+    }
+}
