@@ -13,7 +13,7 @@ use Log::Log4perl::Appender;
 
 use constant _INTERNAL_DEBUG => 1;
 
-our $VERSION = '0.40';
+our $VERSION = '0.41';
 
    # set this to '1' if you're using a wrapper
    # around Log::Log4perl
@@ -2093,6 +2093,7 @@ our
     Chris R. Donnelly <cdonnelly@digitalmotorworks.com>
     James FitzGibbon <james.fitzgibbon@target.com>
     Paul Harrington <Paul-Harrington@deshaw.com>
+    David Hull <hull@paracel.com>
     Brett Rann <brettrann@mail.com>
     Erik Selberg <erik@selberg.com>
     Aaron Straup Cope <asc@vineyard.net>
@@ -2100,7 +2101,7 @@ our
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2002 by Mike Schilli E<lt>m@perlmeister.comE<gt> and Kevin Goess
+Copyright 2002-2004 by Mike Schilli E<lt>m@perlmeister.comE<gt> and Kevin Goess
 E<lt>cpan@goess.orgE<gt>.
 
 This library is free software; you can redistribute it and/or modify
