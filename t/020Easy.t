@@ -18,7 +18,7 @@ unless (-e "$WORK_DIR"){
 my $TMP_FILE = File::Spec->catfile(qw(t tmp easy));
 $TMP_FILE = "tmp/easy" if ! -d "t";
 
-BEGIN { plan tests => 9 }
+BEGIN { plan tests => 17 }
 
 END   { unlink $TMP_FILE;
         close IN;
@@ -107,6 +107,34 @@ like(readstderr(), qr/^[\d:\/ ]+logdie$/m);
 
 LOGWARN("logwarn");
 like(readstderr(), qr/logwarn/);
+
+############################################################
+# Test logdie/logwarn with and without "\n"s
+############################################################
+LOGWARN("message");
+like(readstderr(), qr/message at .*? line \d+/);
+
+LOGWARN("message\n");
+unlike(readstderr(), qr/message at .*? line \d+/);
+
+LOGWARN("message\nother");
+like(readstderr(), qr/other at .*? line \d+/);
+
+LOGWARN("message\nother\n");
+unlike(readstderr(), qr/other at .*? line \d+/);
+
+    # logdie
+eval { LOGDIE("logdie"); };
+like($@, qr/logdie at .*?020Easy.t line \d+/);
+
+eval { LOGDIE("logdie\n"); };
+unlike($@, qr/at .*?020Easy.t line \d+/);
+
+eval { LOGDIE("logdie\nother"); };
+like($@, qr/other at .*?020Easy.t line \d+/);
+
+eval { LOGDIE("logdie\nother\n"); };
+unlike($@, qr/at .*?020Easy.t line \d+/);
 
 ############################################################
 # Test %T stack traces

@@ -733,9 +733,7 @@ sub callerline {
 
   my $has_newline;
 
-  $has_newline++ if $message =~ /\n/;
-
-  chomp $message;
+  $has_newline++ if chomp $message;
 
   $message .= " at $file line $line" if !$has_newline;
 
