@@ -12,7 +12,7 @@ use Log::Log4perl::Config;
 use Log::Dispatch::Screen;
 use Log::Log4perl::Appender;
 
-our $VERSION = '0.23';
+our $VERSION = '0.24alpha';
 
    # set this to '1' if you're using a wrapper
    # around Log::Log4perl
@@ -731,6 +731,8 @@ C<R>, a C<org.apache.log4j.RollingFileAppender>
 C<Log::Dispatch::File> with the C<File> attribute specifying the
 log file.
 
+See L<Log::Log4perl::Config> for more examples and syntax explanations.
+
 =head2 Log Layouts
 
 If the logging engine passes a message to an appender, because it thinks
@@ -1192,7 +1194,7 @@ Manual installation works as usual with
 C<Log::Log4perl> is under heavy development. The latest CVS tarball
 can be obtained from SourceForge, check C<http://log4perl.sourceforge.net>
 for details. Bug reports and feedback are always welcome, just email
-to our mailing list shown in L<CONTACT>.
+to our mailing list shown in the AUTHORS section.
 
 =head1 REFERENCES
 
@@ -1220,20 +1222,27 @@ The Log::Log4perl project home page: http://log4perl.sourceforge.net
 
 =back
 
-=head1 CONTACT
+=head1 SEE ALSO
+
+L<Log::Log4perl::Config|Log::Log4perl::Config>,
+L<Log::Log4perl::Appender|Log::Log4perl::Appender>,
+L<Log::Log4perl::Layout::PatternLayout|Log::Log4perl::Layout::PatternLayout>,
+L<Log::Log4perl::Layout::SimpleLayout|Log::Log4perl::Layout::SimpleLayout>,
+L<Log::Log4perl::Level|Log::Log4perl::Level>,
+L<Log::Log4perl::JavaMap|Log::Log4perl::JavaMap>
+
+=head1 AUTHORS
 
 Please send bug reports or requests for enhancements to the authors via 
 our log4perl development mailing list: 
 
-log4perl-devel@lists.sourceforge.net
+    log4perl-devel@lists.sourceforge.net
 
-=head1 AUTHORS
-
+    Log::Log4perl Authors: 
     Mike Schilli <m@perlmeister.com>
     Kevin Goess <cpan@goess.org>
 
-    Contributors:
-
+    Log::Log4perl Contributors:
     Chris R. Donnelly <cdonnelly@digitalmotorworks.com>
     Erik Selberg <erik@selberg.com>
 
