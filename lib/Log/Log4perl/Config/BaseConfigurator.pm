@@ -96,8 +96,8 @@ splits at its newlines and transforms it into an array:
 C<$data> needs to point to the config data structure, which
 is a a hash of hashes:
 
-    $data->{log4perl}->{category}->{Bar}->{Twix} = "WARN, Logfile"
-    $data->{log4perl}->{appender}->{Logfile} = 
+    $data->{log4perl}->{category}->{Bar}->{Twix}->{value} = "WARN, Logfile"
+    $data->{log4perl}->{appender}->{Logfile}->{value} = 
         "Log::Log4perl::Appender::File";
     ...
 
