@@ -36,11 +36,11 @@ my $data = join '', <FILE>;
 close FILE;
 
 my $exp = <<EOT;
-t/006Config-Java.t 28 7 N/A  - Gurgel
-t/006Config-Java.t 29 7 N/A  - Gurgel
-t/006Config-Java.t 30 7 N/A  - Gurgel
-t/006Config-Java.t 31 7 N/A  - Gurgel
-t/006Config-Java.t 32 7 N/A  - Gurgel
+t/006Config-Java.t 28 DEBUG N/A  - Gurgel
+t/006Config-Java.t 29 DEBUG N/A  - Gurgel
+t/006Config-Java.t 30 DEBUG N/A  - Gurgel
+t/006Config-Java.t 31 DEBUG N/A  - Gurgel
+t/006Config-Java.t 32 DEBUG N/A  - Gurgel
 EOT
 
 unlink $LOGFILE;

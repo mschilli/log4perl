@@ -1,0 +1,109 @@
+package Log::Log4perl::JavaMap;
+
+use Carp;
+use strict;
+use Data::Dump qw(dump);
+
+
+
+our %translate = (
+    'org.apache.log4j.ConsoleAppender' => 'Log::Log4perl::JavaMap::ConsoleAppender',
+    'org.apache.log4j.FileAppender'    => 'Log::Log4perl::JavaMap::FileAppender',
+);
+
+
+sub get {
+    my ($appender_name, $appender_data) = @_;
+    #appender_name is the user name like 'myAppender'
+    #appender_data will be a hashref that looks like this:
+    #    {
+    #      File   => { value => "t/tmp/test1.log" },
+    #      layout => {
+    #                  ConversionPattern => { value => "%r [%t] %-5p %c %x - %m%n" },
+    #                  value => "org.apache.log4j.PatternLayout",
+    #                },
+    #      value  => "org.apache.log4j.ConsoleAppender",
+    #    },
+
+    my $perl_class = $translate{$appender_data->{value}} || 
+            die "ERROR:  I don't know how to make a '$appender_data->{value}' for your appender '$appender_name', that's not a supported class\n";
+
+    eval {
+        eval "require $perl_class";  #see 'perldoc -f require' for why two evals
+        die $@ if $@;
+    };
+    $@ and die "ERROR: trying to set appender for $appender_name to $appender_data->{value} using $perl_class failed\n$@  \n";
+
+    return new $perl_class $appender_name, $appender_data;
+    
+}
+
+
+1;
+
+
+=head1 NAME
+
+Log::Log4perl::JavaMap - maps java log4j appenders to Log::Dispatch classes
+
+=head1 SYNOPSIS
+
+
+=head1 DESCRIPTION
+
+If somebody wants to create an appender called C<org.apache.log4j.ConsoleAppender>,
+we want to translate it to Log::Dispatch::Screen, and then translate
+the log4j options into Log::Dispatch parameters..
+
+=head2 What's Implemented
+
+Here's the list of appenders I see on the current (6/2002) log4j site.
+
+These are implemented
+
+    ConsoleAppender - Log::Dispatch::Screen
+    FileAppender    - Log::Dispatch::File
+
+
+These should/will/might be implemented
+
+    RollingFileAppender - 
+    DailyRollingFileAppender - 
+    SMTPAppender     - Log::Dispatch::Email::MailSender
+    
+    SyslogAppender - Log::Dispatch::Syslog
+    
+
+These might be implemented but they don't have corresponding classes
+in Log::Dispatch (yet):
+
+    NullAppender
+    NTEventLogAppender
+    SocketAppender
+    TelnetAppender
+
+These might be simulated
+
+    LF5Appender - use Tk?
+    JDBCAppender - using DBI?
+    ExternallyRolledFileAppender - catch a HUP instead?
+
+These will probably not be implemented
+
+    AsyncAppender
+    JMSAppender
+    SocketHubAppender
+
+
+=head1 AUTHORS
+
+    Kevin Goess, <cpan@goess.org> 
+    Mike Schilli, <m@perlmeister.com>
+    
+    June, 2002
+
+=head1 SEE ALSO
+
+http://jakarta.apache.org/log4j/docs/
+
+=cut
