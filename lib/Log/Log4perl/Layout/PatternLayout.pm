@@ -481,10 +481,10 @@ with content after them:
     %c{2}  Just show the two right most category components
            (Foo::Baz::Bar -> Baz::Bar)
 
-    %f     Display source file including full path
-    %f{1}  Just display filename
-    %f{2}  Display filename and last path component (dir/test.log)
-    %f{3}  Display filename and last two path components (d1/d2/test.log)
+    %F     Display source file including full path
+    %F{1}  Just display filename
+    %F{2}  Display filename and last path component (dir/test.log)
+    %F{3}  Display filename and last two path components (d1/d2/test.log)
 
 In this way, you're able to shrink the displayed category or
 limit file/path components to save space in your logs.
