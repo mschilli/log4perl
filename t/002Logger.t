@@ -3,6 +3,8 @@
 # Mike Schilli, 2002 (m@perlmeister.com)
 ###########################################
 
+use Data::Dump qw(dump);
+
 use warnings;
 use strict;
 
@@ -55,7 +57,8 @@ $log1->add_appender($app);
 $log1->level($ERROR);
 $log1->error("Error Message");
 $log1->debug("Debug Message");
-ok($app->buffer(), "ERROR - Error Message");
+ok($app->buffer(), "ERROR - Error Message\n");
+
 
 ##################################################
 # Allow debug
@@ -64,7 +67,7 @@ $log1->level($DEBUG);
 $app->buffer("");
 $log1->error("Error Message");
 $log1->debug("Debug Message");
-ok($app->buffer(), "ERROR - Error MessageDEBUG - Debug Message");
+ok($app->buffer(), "ERROR - Error Message\nDEBUG - Debug Message\n");
 
 ##################################################
 # Multiple Appenders
@@ -81,8 +84,8 @@ $log1->add_appender($app2);
 $log1->level($ERROR);
 $log1->error("Error Message");
 #TODO
-ok($app->buffer(), "ERROR - Error Message");
-ok($app2->buffer(), "ERROR - Error Message");
+ok($app->buffer(), "ERROR - Error Message\n");
+ok($app2->buffer(), "ERROR - Error Message\n");
 
 ##################################################
 # Multiple Appenders in different hierarchy levels
@@ -97,15 +100,16 @@ $log3 = Log::Log4perl->get_logger("");
 
     # Root logger
 $log3->add_appender($app3);
+
 $log3->level($ERROR);
 
     ##################################################
     # Log to lower level, check if gets propagated up to root
     ##################################################
 $log1->error("Error Message");
-    # Should be distributed to root
-ok($app3->buffer(), "ERROR - Error Message");
 
+    # Should be distributed to root
+ok($app3->buffer(), "ERROR - Error Message\n");
     ##################################################
     # Log in lower levels and propagate to root
     ##################################################
@@ -117,9 +121,9 @@ $log1->add_appender($app);
 $log2->add_appender($app2);
 # log3 already has app3 attached
 $log1->error("Error Message");
-ok($app->buffer(), "ERROR - Error Message");
-ok($app2->buffer(), "ERROR - Error Message");
-ok($app3->buffer(), "ERROR - Error Message");
+ok($app->buffer(), "ERROR - Error Message\n");
+ok($app2->buffer(), "ERROR - Error Message\n");
+ok($app3->buffer(), "ERROR - Error Message\n");
 
     ##################################################
     # Block appenders via priority 
@@ -150,8 +154,8 @@ $log2->level($DEBUG);
 $log3->level($DEBUG);
 
 $log1->debug("Debug Message");
-ok($app->buffer(), "DEBUG - Debug Message");
-ok($app2->buffer(), "DEBUG - Debug Message");
+ok($app->buffer(), "DEBUG - Debug Message\n");
+ok($app2->buffer(), "DEBUG - Debug Message\n");
 ok($app3->buffer(), "");
 
     ##################################################
@@ -197,9 +201,9 @@ $log2->log($INFO,  "info message ");
 $log3->log($DEBUG, "debug message");
 $log3->log($INFO,  "info message ");
 
-ok($app->buffer(), 'DEBUG - debug messageINFO - info message ');
-ok($app2->buffer(),'DEBUG - debug messageINFO - info message ');
-ok($app3->buffer(),'INFO - info message ');
+ok($app->buffer(), "DEBUG - debug message\nINFO - info message \n");
+ok($app2->buffer(),"DEBUG - debug message\nINFO - info message \n");
+ok($app3->buffer(),"INFO - info message \n");
 
 
 BEGIN { plan tests => 44 };
