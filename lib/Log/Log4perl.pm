@@ -302,7 +302,7 @@ we just get the logger via the singleton-mechanism):
 =head2 Log Levels
 
 There's five predefined log levels: C<FATAL>, C<ERROR>, C<WARN>, C<INFO> 
-and <DEBUG> (in descending priority). Your configured logging level
+and C<DEBUG> (in descending priority). Your configured logging level
 has to at least match the priority of the logging message.
 
 If your configured logging level is C<WARN>, then messages logged 
