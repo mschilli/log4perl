@@ -123,6 +123,36 @@ __END__
 
 Log::Log4perl - Log4j implementation for Perl
 
+=head1 SYNOPSIS
+ 
+    Log::Log4perl::init('/etc/log4perl.conf');
+    
+    --or--
+    
+    Log::Log4perl::init_and_watch('/etc/log4perl.conf',10);
+    
+    --then--
+    
+    
+    $logger = Log::Log4perl->get_logger('house.bedrm.desk.topdrwr');
+    
+    $logger->debug('this is a debug message');
+    $logger->info('this is an info message');
+    $logger->warn('etc');
+    $logger->error('..');
+    $logger->fatal('..');
+    
+    #####/etc/log4perl.conf###################
+    log4j.category.house              = WARN,  FileAppndr1
+    log4j.category.house.bedroom.desk = DEBUG,  FileAppndr1
+    
+    log4j.appender.FileAppndr1          = Log::Dispatch::File
+    log4j.appender.FileAppndr1.filename = desk.log 
+    log4j.appender.FileAppndr1.layout   = \
+                            Log::Log4perl::Layout::SimpleLayout
+    ###########################################
+       
+
 =head1 DESCRIPTION
 
 C<Log::Log4perl> implements the widely popular C<Log4j> logging
