@@ -2,6 +2,8 @@
 Revision history for Log::Log4perl
 ##################################################
 
+0.26 10/07/2002
+
 0.25 10/06/2002
     * (ms) backwards-compatibility with perl 5.00503
     * (ms) added system-wide threshold, fixed java-app thresholds
@@ -222,6 +224,8 @@ Revision history for Log::Log4perl
 
 TODO (not assigned to anybody yet):
 ##################################################
+    * Get rid of Test::Simple and Test::More and the dependencies in
+      Makefile.PL
     * BasicConfigurator() vs. :easy, PropertyConfigurator()
     * get_logger() thread safety (two try to create it at the same time)
     * Object rendering
