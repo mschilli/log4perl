@@ -689,6 +689,108 @@ as a graveyard. If you deactivate the line (e.g. by commenting it out),
 the system will, upon config reload, snap back to normal operation, providing 
 logging messages according to the rest of the configuration file again.
 
+=head2 I keep getting duplicate log messages! What's wrong?
+
+Having several settings for related categories in the Log4perl 
+configuration file sometimes leads to a phenomenon called 
+"message duplication". It can be very confusing at first,
+but if thought through properly, it turns out that Log4perl behaves
+as advertised. But, don't despair, of course there's a number of 
+ways to avoid message duplication in your logs.
+
+Here's an example Log4perl configuration file that produces the
+phenomenon:
+
+    log4perl.logger.Cat        = ERROR, Screen
+    log4perl.logger.Cat.Subcat = WARN, Screen
+
+    log4perl.appender.Screen   = Log::Dispatch::Screen
+    log4perl.appender.Screen.layout = SimpleLayout
+
+It defines two loggers, one for category C<Cat> and one for
+C<Cat::Subcat>, which is obviously a subcategory of C<Cat>.
+The parent logger has a priority setting of ERROR, the child
+is set to the lower C<WARN> level.
+
+Now imagine the following code in your program:
+
+    my $logger = get_logger("Cat.Subcat");
+    $logger->warn("Warning!");
+
+What do you think will happen? An unexperienced Log4perl user
+might think: "Well, the message is logged with level WARN, so the 
+C<Cat::Subcat> logger will accept it and forward it to the 
+attached C<Screen> appender. Then, the message will percolate up 
+the logger hierarchy, find
+the C<Cat> logger, which will suppress the message because of its
+ERROR setting."
+But, perhaps surprisingly, what you'll get with the
+code snippet above is not one but two log messages written 
+to the screen:
+
+    WARN - Warning!
+    WARN - Warning!
+
+What happened? The culprit is that once the logger C<Cat::Subcat> 
+decides to fire, it will forward the message I<unconditionally> 
+to all directly or indirectly attached appenders. The C<Cat> logger 
+will never be asked if it wants the message or not -- it will just 
+be pushed through to the appender attached to C<Cat>.
+
+One way to prevent the message from bubbling up the logger
+hierarchy is to set the C<additivity> flag of a sub logger to
+C<0>:
+
+    log4perl.logger.Cat            = ERROR, Screen
+    log4perl.logger.Cat.Subcat     = WARN, Screen
+    log4perl.additivity.Cat.Subcat = 0
+
+    log4perl.appender.Screen   = Log::Dispatch::Screen
+    log4perl.appender.Screen.layout = SimpleLayout
+
+The message will now be accepted by the C<Cat::Subcat> logger,
+forwarded to its appender, but then C<Cat::Subcat> will suppress
+any further action. While this setting avoids duplicate messages
+as seen before, it is often not the desired behaviour. Messages
+percolating up the hierarchy are a useful Log4perl feature.
+
+If you're defining I<different> appenders for the two loggers,
+one other option is to define an appender threshold for the
+higher-level appender. Typically it is set to be 
+equal to the logger's level setting:
+
+    log4perl.logger.Cat           = ERROR, Screen1
+    log4perl.logger.Cat.Subcat    = WARN, Screen2
+
+    log4perl.appender.Screen1   = Log::Dispatch::Screen
+    log4perl.appender.Screen1.layout = SimpleLayout
+    log4perl.appender.Screen1.Threshold = ERROR
+
+    log4perl.appender.Screen2   = Log::Dispatch::Screen
+    log4perl.appender.Screen2.layout = SimpleLayout
+
+Since the C<Screen1> appender now blocks every message with
+a priority less than ERROR, even if the logger in charge
+lets it through, the message percolating up the hierarchy is
+being blocked at the last minute and I<not> appended to C<Screen1>.
+
+So far, we've been operating well within the boundaries of the 
+Log4j standard, which Log4perl adheres to. However, if 
+you would really, really like to use a single appender 
+and keep the message percolation intact without having to deal
+with message duplication, there's a non-standard solution for you:
+
+    log4perl.logger.Cat        = ERROR, Screen
+    log4perl.logger.Cat.Subcat = WARN, Screen
+
+    log4perl.appender.Screen   = Log::Dispatch::Screen
+    log4perl.appender.Screen.layout = SimpleLayout
+
+    log4perl.oneMessagePerAppender = 1
+
+The C<oneMessagePerAppender> flag will suppress duplicate messages
+to the same appender. Again, that's non-standard. But way cool :).
+
 =cut
 
 =head1 SEE ALSO
