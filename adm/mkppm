@@ -35,6 +35,7 @@ mkdir $PPM_DIR, 0755 or LOGDIE("Cannot mkdir $PPM_DIR");
 
 #doall("Log::Dispatch", "DROLSKY");
 #doall("Params::Validate", "DROLSKY");
+#doall("Log::Dispatch::FileRotate", "MARKPF");
 ppm_make("Log::Log4perl", $log4perl_tarball);
 
 ###########################################
