@@ -13,6 +13,8 @@ unless ($ENV{LOG4PERL_BENCH}) {
 $conf = <<EOL;
 
 #specify LOGLEVEL, appender1, appender2, ...
+log4j.category.simplelayout       = INFO, simpleLayoutAppndr
+
 log4j.category.patternlayout      = INFO,  PatternLayoutAppndr
 
 log4j.category.multiappender      = INFO, PatternLayoutAppndr, 2ndPatternLayoutAppndr,
@@ -40,10 +42,19 @@ log4j.appender.3rdPatternLayoutAppndr.layout = org.apache.log4j.PatternLayout
 log4j.appender.3rdPatternLayoutAppndr.layout.ConversionPattern=%d %4r [%t] %-5p %c %x - %m%n
 
 
+# ---------------------------------------------
+# a SimpleLayout
+log4j.appender.simpleLayoutAppndr        = Log::Dispatch::Buffer
+log4j.appender.simpleLayoutAppndr.layout = org.apache.log4j.SimpleLayout
+
+
+
+
 EOL
 
 Log::Log4perl::init(\$conf);
 
+$simplelayout = Log::Log4perl->get_logger('simplelayout');
 
 $basecategory = Log::Log4perl->get_logger('patternlayout');
 
@@ -53,11 +64,16 @@ $secondlevelcategory = Log::Log4perl->get_logger('patternlayout.foo.bar');
 
 print "Iterations: $count\n\n";
 
+
 print "no logging: \n";
 $t = timeit $count, sub{$basecategory->debug('debug message')};
 print timestr($t),"\n\n";
 
-print "pattern logging: \n";
+print "a simple layout: \n";
+$t = timeit $count, sub{$simplelayout->info('info message')};
+print timestr($t),"\n\n";
+
+print "pattern layout: \n";
 $t = timeit $count, sub {$basecategory->info('info message')};
 print timestr($t),"\n\n";
 
@@ -98,6 +114,7 @@ print timestr($t),"\n\n";
 print "same appenders, two levels of inheritance: \n";
 $t = timeit $count, sub {$multi3->info('info message')};
 print timestr($t),"\n\n";
+
 
 
 
