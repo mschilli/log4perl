@@ -3,7 +3,7 @@
 # Mike Schilli, 2002 (m@perlmeister.com)
 ###########################################
 
-use Data::Dump qw(dump);
+#use Data::Dump qw(dump);
 
 use warnings;
 use strict;

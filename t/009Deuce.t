@@ -11,7 +11,6 @@ use Test;
 BEGIN { plan tests => 5 };
 
 use Log::Log4perl;
-use Data::Dumper;
 use Log::Log4perl::TestBuffer;
 
 my $EG_DIR = "eg";
