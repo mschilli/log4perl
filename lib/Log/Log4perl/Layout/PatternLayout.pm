@@ -7,6 +7,7 @@ use strict;
 use warnings;
 use Log::Log4perl::Level;
 use Log::Log4perl::DateFormat;
+use File::Spec;
 
 our $TIME_HIRES_AVAILABLE;
 our $TIME_HIRES_AVAILABLE_WARNED = 0;
@@ -221,12 +222,12 @@ sub curly_action {
     } elsif($ops eq "d") {
         $data = $curlies->format(current_time());
     } elsif($ops eq "F") {
-        my @parts = split m#/#, $data;
+        my @parts = File::Spec->splitdir($data);
             # Limit it to max curlies entries
         if(@parts > $curlies) {
             splice @parts, 0, @parts - $curlies;
         }
-        $data = join '/', @parts;
+        $data = File::Spec->catfile(@parts);
     }
 
     return $data;
