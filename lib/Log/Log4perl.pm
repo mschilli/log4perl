@@ -201,7 +201,9 @@ Log::Log4perl - Log4j implementation for Perl
 
 Log::Log4perl lets you remote-control and fine-tune the logging behaviour
 of your system from the outside. It implements the widely popular 
-(Java-based) Log4j logging package in pure Perl ([1]).
+(Java-based) Log4j logging package in pure Perl. 
+
+B<For a detailed tutorial on Log::Log4perl usage, please read [1]>.
 
 A WORD OF CAUTION: THIS LIBRARY IS ALPHA SOFTWARE AND STILL 
 UNDER CONSTRUCTION -- ON
@@ -676,8 +678,8 @@ module's logging behaviour to their needs.
 
 C<Log::Log4perl> has been designed to understand C<Log4j> configuration
 files -- as used by the original Java implementation. Instead of 
-reiterating the format description in [1], let me just list three
-examples (also derived from [1]), which should also illustrate
+reiterating the format description in [2], let me just list three
+examples (also derived from [2]), which should also illustrate
 how it works:
 
     log4j.rootLogger=DEBUG, A1
@@ -1172,15 +1174,21 @@ to our mailing list shown in L<CONTACT>.
 
 =item [1]
 
+Michael Schilli, "Retire your debugger, log smartly with Log::Log4perl!",
+Tutorial on perl.com, 09/2002, 
+http://www.perl.com/pub/a/2002/09/11/log4perl.html
+
+=item [2]
+
 Ceki Gülcü, "Short introduction to log4j",
 http://jakarta.apache.org/log4j/docs/manual.html
 
-=item [2]
+=item [3]
 
 Vipan Singla, "Don't Use System.out.println! Use Log4j.",
 http://www.vipan.com/htdocs/log4jhelp.html
 
-=item [3]
+=item [4]
 
 The Log::Log4perl project home page: http://log4perl.sourceforge.net
 
