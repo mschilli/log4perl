@@ -176,9 +176,11 @@ sub _init {
         
         print "Filter $filter_name is of type $type\n" if DEBUG;
 
+        my $filter;
+
         if(ref($type) eq "CODE") {
                 # Subroutine - map into generic Log::Log4perl::Filter class
-            Log::Log4perl::Filter->new($filter_name, $type);
+            $filter = Log::Log4perl::Filter->new($filter_name, $type);
         } else {
                 # Filter class
                 eval "require $type";
@@ -189,11 +191,13 @@ sub _init {
                 # Invoke with all defined parameter
                 # key/values (except the key 'value' which is the entry 
                 # for the class)
-            $type->new(name => $filter_name,
+            $filter = $type->new(name => $filter_name,
                 map { $_ => $data->{filter}->{$filter_name}->{$_}->{value} } 
                 grep { $_ ne "value" } 
                 keys %{$data->{filter}->{$filter_name}});
         }
+            # Register filter with the global filter registry
+        Log::Log4perl::Filter::by_name($filter_name, $filter);
     }
 
         # Initialize bool filters (they need the other filters to be

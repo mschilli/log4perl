@@ -118,6 +118,20 @@ Log::Log4perl::Filter - Log4perl Custom Filter Base Class
       # Suppress this
   $logger->info("Here's the info, suppress this!");
 
+  #################################################################
+  # StringMatch Filter:
+  #################################################################
+  log4perl.filter.M1               = Log::Log4perl::Filter::StringMatch
+  log4perl.filter.M1.StringToMatch = let this through
+  log4perl.filter.M1.AcceptOnMatch = true
+
+  #################################################################
+  # LevelMatch Filter:
+  #################################################################
+  log4perl.filter.M1               = Log::Log4perl::Filter::LevelMatch
+  log4perl.filter.M1.LevelToMatch  = INFO
+  log4perl.filter.M1.AcceptOnMatch = true
+
 =head1 DESCRIPTION
 
 Log4perl allows the use of customized filters in its appenders
@@ -139,6 +153,7 @@ Perl's special C<$_> variable will be set to the message text (prerendered,
 i.e. concatenated but not layouted) to be logged. 
 The decider subroutine is expected to return a true value 
 if it wants the message to be logged or a false value if doesn't.
+
 Also, Log::Log4perl will pass a hash to the decider
 containing all key/value pairs that it would pass to the corresponding 
 appender, as the Log::Dispatch specification requires. Here's an
@@ -146,21 +161,50 @@ example of a filter checking the priority of the oncoming message:
 
   log4perl.filter.MyFilter        = sub {    \
        my %p = @_;                           \
-       ($p{log4p_level} eq "WARN") ? 1 : 0;  \
+       $p{log4p_level} eq "WARN" or          \
+       $p{log4p_level} eq "INFO"             \
                                           }
 
-If the message priority equals C<WARN>, it returns a true value, causing
-the message to be logged. For common tasks like this, there's already a 
-set of predefined filters available. To perform a level match, it's
+If the message priority equals C<WARN> or C<INFO>, 
+it returns a true value, causing
+the message to be logged.
+
+=head2 Predefined Filters
+
+For common tasks like verifying that the message priority matches
+a certain priority, there's already a 
+set of predefined filters available. To perform an exact level match, it's
 much cleaner to use Log4perl's C<LevelMatch> filter instead:
 
-    log4perl.filter.MyFilter = Log::Log4perl::Filter::LevelMatch
-    log4perl.filter.MyFilter.LevelToMatch = WARN
+  log4perl.filter.M1               = Log::Log4perl::Filter::LevelMatch
+  log4perl.filter.M1.LevelToMatch  = INFO
+  log4perl.filter.M1.AcceptOnMatch = true
 
-Once a filter has been defined by name and class (or, alternatively
-by just giving a decider function), its values can be
-assigned to its attributes, just as the C<WARN> value to the 
-C<LevelToMatch> attribute above.
+This will let the message through if its priority is INFO and suppress
+it otherwise. The statement can be negated by saying
+
+  log4perl.filter.M1.AcceptOnMatch = false
+
+instead. This way, the message will be logged if its priority is
+everything but INFO.
+
+On a similar note, Log4perl's C<StringMatch> filter will check the 
+oncoming message for strings or regular expressions:
+
+  log4perl.filter.M1               = Log::Log4perl::Filter::StringMatch
+  log4perl.filter.M1.StringToMatch = bl.. bl..
+  log4perl.filter.M1.AcceptOnMatch = true
+
+This will open the gate for messages like C<blah blah> because the 
+regular expression set in the C<StringToMatch> matches them. Again,
+the setting of C<AcceptOnMatch> determines if the filter is defined
+positive or negative.
+
+All class filters have to adhere to the following rule:
+Only after a filter has been defined by name and class,
+its values can be
+assigned to its attributes, just as the C<true> value to the 
+C<AcceptOnMatch> attribute above.
 
 =head2 Attaching a filter to an appender
 
@@ -177,7 +221,7 @@ planned or withdraw.
 =head2 Combining filters with Log::Log4perl::Filter::Bool
 
 Sometimes, it's useful to combine the output of various filters to
-arrive at a log/no log deciscion. While Log4j, Log4perl's mother ship,
+arrive at a log/no log decision. While Log4j, Log4perl's mother ship,
 chose to implement this feature as a filter chain, similar to Linux' IP chains,
 Log4perl tries a different approach. 
 
@@ -213,12 +257,21 @@ standard Perl. Here's a bunch of examples:
 =head2 Writing your own filter classes
 
 If none of Log::Log4perl's predefined filter classes fits your needs,
-you can easily roll your own: Just define a new class, derive it
-from the base class C<Log::Log4perl::Filter> and define its C<decide>
-method:
+you can easily roll your own: Just define a new class
+and define its C<new> and C<decide> methods like this:
 
     package Log::Log4perl::Filter::MyFilter;
-    use base Log::Log4perl::Filter;
+
+    sub new {
+        my ($class, %options) = @_;
+
+        my $self = { %options,
+                   };
+     
+        bless $self, $class;
+
+        return $self;
+    }
 
     sub decide {
          my ($self, %p) = @_;
@@ -229,7 +282,7 @@ method:
     1;
 
 Values you've defined for its attributes in Log4perl's configuration file,
-it will receive through its C<new> method:
+will be received through its C<new> method:
 
     log4perl.filter.MyFilter       = Log::Log4perl::Filter::MyFilter
     log4perl.filter.MyFilter.color = red
@@ -237,7 +290,8 @@ it will receive through its C<new> method:
 will cause C<Log::Log4perl::Filter::MyFilter>'s constructor to be called
 like this:
 
-    Log::Log4perl::Filter::MyFilter->new( color => "red" );
+    Log::Log4perl::Filter::MyFilter->new( name  => "MyFilter",
+                                          color => "red" );
 
 which in turn should be used by the custom filter class to set the
 object's attributes, which later on can be consulted inside the

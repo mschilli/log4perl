@@ -32,10 +32,6 @@ sub new {
 
      bless $self, $class;
 
-         # Register this bool filter 
-         # with the global filter registry
-     Log::Log4perl::Filter::by_name($options{name}, $self);
-
      return $self;
 }
 
