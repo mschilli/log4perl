@@ -57,7 +57,7 @@ sub file_open {
     umask($self->{umask}) if defined $self->{umask};
 
     open $fh, "$arrows$self->{filename}" or
-        die "Can't open $self->{filename} ($@)";
+        die "Can't open $self->{filename} ($!)";
 
     umask($old_umask) if defined $self->{umask};
 
