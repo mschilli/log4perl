@@ -1224,7 +1224,9 @@ a reference to it:
 
     Log::Log4perl->init( \%key_value_pairs );
 
-=head1 Using LWP to parse URLs
+Or also you can use a URL, see below:
+
+=head2 Using LWP to parse URLs
 
 (This section borrowed from XML::DOM::Parser by T.J. Mather).
 
