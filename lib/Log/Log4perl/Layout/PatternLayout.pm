@@ -490,9 +490,9 @@ If not, only full seconds are used.
 All placeholders can be extended with formatting instructions,
 just like in I<printf>:
 
-    %20c   Reserve 20 chars for the category, left-justify and fill
+    %20c   Reserve 20 chars for the category, right-justify and fill
            with blanks if it is shorter
-    %-20c  Same as %20c, but right-justify and fill the left side 
+    %-20c  Same as %20c, but left-justify and fill the right side 
            with blanks
     %09r   Zero-pad the number of milliseconds to 9 digits
     %.8c   Specify the maximum field with and have the formatter
