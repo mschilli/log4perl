@@ -8,11 +8,14 @@ use File::Spec;
 our $no_XMLDOM;
 
 BEGIN {
+    my $dvrq = $Log::Log4perl::DOM_VERSION_REQUIRED;
+
     eval {
         require XML::DOM;
+        XML::DOM->VERSION($dvrq);
     };
     if ($@) {
-        print STDERR "XML::DOM not installed, skipping tests\n";
+        print STDERR "XML::DOM not installed or version < $dvrq, skipping tests\n";
         $no_XMLDOM = 1;
         plan tests => 1;
     }else{

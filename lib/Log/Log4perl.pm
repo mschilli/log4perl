@@ -54,6 +54,11 @@ our $ALLOW_CODE_IN_CONFIG_FILE = 1;
     #see Log::Log4perl::Appender::DBI
 our $JOIN_MSG_ARRAY_CHAR = '';
 
+    #version required for XML::DOM, to enable XML Config parsing
+    #and XML Config unit tests
+our $DOM_VERSION_REQUIRED = '1.29'; 
+
+
 ##################################################
 sub import {
 ##################################################
