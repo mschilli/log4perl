@@ -29,6 +29,8 @@
     * (ms) Did away with $IS_LOADED internal variable.
     * (ms) Fixed bug with L4p::INITIALIZED vs. L4P::Logger::INITIALIZED,
            added t/020Easy2.t.
+    * (ms) Added adm/cvskwexp script to check if we're running into CVS
+           trouble because of <dollar>Log keyword expansion.
 
 0.47 (07/11/2004)
     * (ms) Added suggestion by Hutton Davidson <Davidson.Hutton@ftid.com>
