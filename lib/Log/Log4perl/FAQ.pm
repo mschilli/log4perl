@@ -1837,6 +1837,42 @@ If Log::Log4perl is available, its level constants are first imported
 (C<$DEBUG>, C<$INFO>, etc.) and then C<easy_init()> gets called to initialize
 the logging system.
 
+=head2 Can file appenders create files with different permissions?
+
+Typically, when C<Log::Log4perl::Appender::File> creates a new file,
+its permissions are set to C<rw-r--r-->. Why? Because your
+environment's I<umask> most likely defaults to
+C<0022>, that's the standard setting. 
+
+What's a I<umask>, you're asking? It's a template that's applied to
+the permissions of all newly created files. While calls like
+C<open(FILE, "E<gt>foo")> will always try to create files in C<rw-rw-rw-
+> mode, the system will apply the current I<umask> template to
+determine the final permission setting. I<umask> is a bit mask that's
+inverted and then applied to the requested permission setting, using a
+bitwise AND:
+
+    $request_permission &~ $umask
+
+So, a I<umask> setting of 0000 (the leading 0 simply indicates an
+octal value) will create files in C<rw-rw-rw-> mode, a setting of 0277
+will use C<r-------->, and the standard 0022 will use C<rw-r--r-->.
+
+As an example, if you want your log files to be created with
+C<rw-r--rw-> permissions, use a I<umask> of C<0020> before
+calling Log::Log4perl->init():
+
+    use Log::Log4perl;
+
+    umask 0020;
+        # Creates log.out in rw-r--rw mode
+    Log::Log4perl->init(\ q{
+        log4perl.logger = WARN, File
+        log4perl.appender.File = Log::Log4perl::Appender::File
+        log4perl.appender.File.filename = log.out
+        log4perl.appender.File.layout = SimpleLayout
+    });
+
 =cut
 
 =head1 SEE ALSO
