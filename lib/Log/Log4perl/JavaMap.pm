@@ -74,8 +74,8 @@ These should/will/might be implemented
     RollingFileAppender - 
     DailyRollingFileAppender - 
     SMTPAppender     - Log::Dispatch::Email::MailSender
-    
     SyslogAppender - Log::Dispatch::Syslog
+    SocketAppender - (pass a socket to Log::Dispatch)
     
 
 These might be implemented but they don't have corresponding classes
@@ -83,7 +83,6 @@ in Log::Dispatch (yet):
 
     NullAppender
     NTEventLogAppender
-    SocketAppender
     TelnetAppender
 
 These might be simulated
