@@ -1389,7 +1389,8 @@ if the application receives this signal, e.g. via the C<kill> command:
 
 where C<pid> is the process ID of the application. This will bring you back
 to about 85% of Log::Log4perl's normal execution speed for suppressed
-statements. For details, check out L<"Performance">.
+statements. For details, check out L<"Performance">. For more info
+on the signal handler, look for L<Log::Log4perl::Config::Watch/"SIGNAL MODE">.
 
 One thing to watch out for: If the configuration file contains a syntax
 or other fatal error, a running application will stop with C<die> if
