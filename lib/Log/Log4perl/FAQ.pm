@@ -857,17 +857,17 @@ configuration file C<test.conf> looks like this:
 
     log4perl.appender.ColorApp.layout = PatternLayout
     log4perl.appender.ColorApp.layout.ConversionPattern=%d %m %n
- 
+
 This will cause Log::Log4perl on C<init()> to look for a class
 ColorScreenAppender and call its constructor new(). Let's add
 new() to ColorScreenAppender.pm:
 
     sub new {
         my($class, %options) = @_;
-    
+
         my $self = { %options };
         bless $self, $class;
-    
+
         return $self;
     }
 
@@ -898,7 +898,7 @@ Term::ANSIColor module to colorize the output:
 
     sub log {
         my($self, %params) = @_;
-    
+
         print colored($params{message},
                       $self->{color});
     }
@@ -1019,16 +1019,16 @@ Let's define a new appender like
 
     sub new {
         my($class, %options) = @_;
-    
+
         my $self = { maxcount => 5,
                      %options
                    };
-    
+
         bless $self, $class;
-    
+
         $self->{last_message}        = "";
         $self->{last_message_count}  = 0;
-    
+
         return $self;
     }
 
@@ -1037,7 +1037,7 @@ C<last_message_count>, storing the content of the last message sent
 and a counter of how many times this has happened. Also, it features
 a configuration parameter C<maxcount> which defaults to 5 in the
 snippet above but can be set in the Log4perl configuration file like this:
- 
+
     log4perl.logger = INFO, A
     log4perl.appender.A=TallyAppender
     log4perl.appender.A.maxcount = 3
@@ -1267,18 +1267,18 @@ it should be written out or suppressed, based on the message content or other
 parameters:
 
     use Log::Log4perl qw(:easy);
-    
+
     Log::Log4perl::init( \ <<'EOT' );
         log4perl.logger             = INFO, A1
         log4perl.appender.A1        = Log::Log4perl::Appender::Screen
         log4perl.appender.A1.layout = \
             Log::Log4perl::Layout::PatternLayout
         log4perl.appender.A1.layout.ConversionPattern = %m%n
-    
+
         log4perl.filter.M1 = Log::Log4perl::Filter::StringMatch
         log4perl.filter.M1.StringToMatch = Begin
         log4perl.filter.M1.AcceptOnMatch = false
-    
+
         log4perl.appender.A1.Filter = M1
 EOT
 
@@ -1312,7 +1312,7 @@ mode, like in
     sub foo {
         DEBUG("In foo");
     }
-    
+
     1;
 
 and the calling program doesn't initialize Log::Log4perl at all (e.g. because
@@ -1384,7 +1384,7 @@ Here's a sample configuration to synchronize access to a file appender:
     log4perl.appender.Logfile.autoflush = 1
     log4perl.appender.Logfile.filename  = test.log
     log4perl.appender.Logfile.layout    = SimpleLayout
-    
+
     log4perl.appender.Syncer            = Log::Log4perl::Appender::Synchronized
     log4perl.appender.Syncer.appender   = Logfile
 
