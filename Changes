@@ -5,6 +5,18 @@
 0.46 (not yet released)
     * (ms) removed superfluous eval() in Log4perl.pm, reported anonymously
            on the CPAN bugtracker.
+    * (ms) Added a cleanup() function to Logger.pm which is used by an
+           END {} block in Logger.pm to tear down all Loggers/Appenders
+           before global destruction kicks in. There's still a problem with
+           a leftover reference to a L4p::Appender object, which you can
+           see if you set $Log::Log4perl::CHATTY_DESTROY_METHODS to 1. The
+           "meat" is cleaned up by the cleanup function, calling its DESTROY()
+           method, though. However, there's still another call to DESTROY() 
+           during the GDP.
+    * (ms) Kevin's idea is in now, on localizing $? in the L4p global END {} 
+           block. It prevents logdie() et. al from exiting with unwanted
+           exit codes when global cleanup / global destruction modifies $?,
+           as seen by Tim with the Email appender.
 
 0.45 (05/23/2004)
     * (ms) fix for t/045Composite.t on perl 5.6.1 by Jeff Macdonald 

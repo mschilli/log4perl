@@ -23,6 +23,44 @@ our $INITIALIZED;
 __PACKAGE__->reset();
 
 ##################################################
+sub cleanup {
+##################################################
+    # warn "Logger cleanup";
+
+    # Delete all loggers
+    foreach my $loggername (keys %$LOGGERS_BY_NAME){
+        # warn "Logger delete: $loggername";
+        $LOGGERS_BY_NAME->{$loggername}->DESTROY();
+        delete $LOGGERS_BY_NAME->{$loggername};
+    }
+
+    # Delete the root logger
+    undef $ROOT_LOGGER;
+
+    # Delete all appenders
+    foreach my $appendername (keys %APPENDER_BY_NAME){
+        if (exists $APPENDER_BY_NAME{$appendername} &&
+            exists $APPENDER_BY_NAME{$appendername}->{appender}) {
+                # Destroy L4p::Appender
+            $APPENDER_BY_NAME{$appendername}->DESTROY();
+            delete $APPENDER_BY_NAME{$appendername}->{appender};
+        }
+        delete $APPENDER_BY_NAME{$appendername};
+    }
+    %APPENDER_BY_NAME   = ();
+}
+
+##################################################
+sub DESTROY {
+##################################################
+    warn "Destroying logger $_[0]" if $Log::Log4perl::CHATTY_DESTROY_METHODS;
+
+    for(keys %{$_[0]}) {
+        delete $_[0]->{$_};
+    }
+}
+
+##################################################
 sub reset {
 ##################################################
     $ROOT_LOGGER        = __PACKAGE__->_new("", $DEBUG);

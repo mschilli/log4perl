@@ -2,6 +2,9 @@
 package Log::Log4perl;
 ##################################################
 
+    # Have this first to execute last
+END { local($?); Log::Log4perl::Logger::cleanup(); }
+
 use 5.006;
 use strict;
 use warnings;
@@ -56,6 +59,8 @@ our $JOIN_MSG_ARRAY_CHAR = '';
     #version required for XML::DOM, to enable XML Config parsing
     #and XML Config unit tests
 our $DOM_VERSION_REQUIRED = '1.29'; 
+
+our $CHATTY_DESTROY_METHODS = 0;
 
 ##################################################
 sub import {
