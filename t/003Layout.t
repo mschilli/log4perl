@@ -26,7 +26,7 @@ ok(1); # If we made it this far, we're ok.
 my $logger = Log::Log4perl->get_logger("abc.def.ghi");
 $logger->add_appender($app);
 my $layout = Log::Log4perl::Layout::PatternLayout->new(
-    "bugo %% %c{2} %-17F{ba} %L hugo");
+    "bugo %% %c{2} %-17F{2} %L hugo");
 $app->layout($layout);
 $logger->debug("That's the message");
 
