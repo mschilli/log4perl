@@ -1021,7 +1021,7 @@ format, check out the original C<log4j> website under
 
 =head2 Penalties
 
-Logging comes with a price tag. C<Log::Log4perl> is currently being optimized
+Logging comes with a price tag. C<Log::Log4perl> has been optimized
 to allow for maximum performance, both with logging enabled and disabled.
 
 But you need to be aware that there's a small hit every time your code
@@ -1400,6 +1400,37 @@ or other fatal error, a running application will stop with C<die> if
 this damaged configuration will be loaded during runtime, triggered
 either by a signal or if the delay period expired and the change is 
 detected. This behaviour might change in the future.
+
+=head2 Variable Substitution
+
+To avoid having to retype the same expressions over and over again,
+Log::Log4perl's configuration files support simple variable substitution.
+New variables are defined simply by adding
+
+    varname = value
+
+lines to the configuration file before using
+
+    ${varname}
+
+afterwards to recall the assigned values. Here's an example:
+
+    layout_class   = Log::Log4perl::Layout::PatternLayout
+    layout_pattern = %d %F{1} %L> %m %n
+    
+    log4perl.category.Bar.Twix = WARN, Logfile, Screen
+
+    log4perl.appender.Logfile  = Log::Log4perl::Appender::File
+    log4perl.appender.Logfile.filename = test.log
+    log4perl.appender.Logfile.layout = ${layout_class}
+    log4perl.appender.Logfile.layout.ConversionPattern = ${layout_pattern}
+
+    log4perl.appender.Screen  = Log::Log4perl::Appender::Screen
+    log4perl.appender.Screen.layout = ${layout_class}
+    log4perl.appender.Screen.layout.ConversionPattern = ${layout_pattern}
+
+This is a convenient way to define two appenders with the same layout 
+without having to retype the pattern definitions.
 
 =head2 Perl Hooks in the Configuration File
 
