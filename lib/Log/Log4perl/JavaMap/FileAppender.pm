@@ -86,6 +86,6 @@ http://jakarta.apache.org/log4j/docs/
 
 Log::Log4perl::Javamap
 
-Log::Dispatch::Screen
+Log::Dispatch::File
 
 =cut
