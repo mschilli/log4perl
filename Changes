@@ -17,6 +17,11 @@
            $parser->file($name) before calling L4p->init($parser).
            The Property, DOM and LDAP configurators have been
            adapted, check their implementation for details.
+    * (ms) Added integrity check for Log4perl configurations: Log4perl
+           now issues a warning if a configuration doesn't define any
+           appenders. Should anyone not like this, it can be turned
+           off by setting $L4p::Config::CONFIG_INTEGRITY_CHECK = 0
+           before calling init().
 
 0.47 (07/11/2004)
     * (ms) Added suggestion by Hutton Davidson <Davidson.Hutton@ftid.com>

@@ -7,15 +7,19 @@
 # change 'tests => 1' to 'tests => last_test_to_print';
 #########################
 use Test::More;
-BEGIN { plan tests => 12 };
+BEGIN { plan tests => 13 };
 
 use Log::Log4perl;
 use Log::Log4perl::Appender::TestBuffer;
+use File::Spec;
 
 my $EG_DIR = "eg";
 $EG_DIR = "../eg" unless -d $EG_DIR;
 
-ok(1); # If we made it this far, we are ok.
+my $TMP_FILE = File::Spec->catfile(qw(t tmp warnings));
+$TMP_FILE = "tmp/warnings" if ! -d "t";
+
+ok(1, "Startup"); # If we made it this far, we are ok.
 
 ######################################################################
 # Test the root logger on a configuration file defining a file appender
@@ -27,7 +31,7 @@ $logger->debug("Gurgel");
 
 
 like(Log::Log4perl::Appender::TestBuffer->by_name("A1")->buffer(), 
-   qr#^\d+\s+\[N/A\] DEBUG  N/A - Gurgel$#); 
+   qr#^\d+\s+\[N/A\] DEBUG  N/A - Gurgel$#, "Root logger"); 
 
 ######################################################################
 # Test the root logger via inheritance (discovered by Kevin Goess)
@@ -40,7 +44,7 @@ $logger = Log::Log4perl->get_logger("foo");
 $logger->debug("Gurgel");
 
 like(Log::Log4perl::Appender::TestBuffer->by_name("A1")->buffer(),
-    qr#^\d+\s+\[N/A\] DEBUG foo N/A - Gurgel$#); 
+    qr#^\d+\s+\[N/A\] DEBUG foo N/A - Gurgel$#, "Root logger inherited"); 
 
 ######################################################################
 # Test init with a string
@@ -58,7 +62,7 @@ $logger = Log::Log4perl->get_logger("foo");
 $logger->debug("Gurgel");
 
 like(Log::Log4perl::Appender::TestBuffer->by_name("A1")->buffer(),
-    qr#^\d+\s+\[N/A\] DEBUG foo - Gurgel$#); 
+    qr#^\d+\s+\[N/A\] DEBUG foo - Gurgel$#, "Init via string"); 
 
 ######################################################################
 # Test init with a hashref
@@ -79,7 +83,7 @@ $logger = Log::Log4perl->get_logger("foo");
 $logger->debug("Gurgel");
 
 like(Log::Log4perl::Appender::TestBuffer->by_name("A1")->buffer(),
-    qr#^\d+\s+\[N/A\] DEBUG foo - Gurgel$#); 
+    qr#^\d+\s+\[N/A\] DEBUG foo - Gurgel$#, "Init via hashref"); 
 
 
 ############################################################
@@ -137,10 +141,10 @@ EOT
 #  },
 
 
-is($stub_hook->{P}{login}{hostname}, 'a.jabber.server');
-is($stub_hook->{P}{login}{password}, 'bunny');
-is($stub_hook->{P}{to}[0], 'elmer@a.jabber.server');
-is($stub_hook->{P}{to}[1], 'sam@another.jabber.server');
+is($stub_hook->{P}{login}{hostname}, 'a.jabber.server', "Config and Jabber");
+is($stub_hook->{P}{login}{password}, 'bunny', "Config and Jabber");
+is($stub_hook->{P}{to}[0], 'elmer@a.jabber.server', "Config and Jabber");
+is($stub_hook->{P}{to}[1], 'sam@another.jabber.server', "Config and Jabber");
 
 ##########################################################################
 # Test what happens if we define a PatternLayout without ConversionPattern
@@ -160,7 +164,7 @@ eval { Log::Log4perl->init(\$conf); };
 #actually, it turns out that log4j handles this, if no ConversionPattern
 #specified is uses DEFAULT_LAYOUT_PATTERN, %m%n
 #ok($@, '/No ConversionPattern given for PatternLayout/'); 
-is($@, ''); 
+is($@, '', 'PatternLayout without ConversionPattern'); 
 
 ######################################################################
 # Test with $/ set to undef
@@ -172,7 +176,7 @@ $logger = Log::Log4perl->get_logger("");
 $logger->debug("Gurgel");
 
 like(Log::Log4perl::Appender::TestBuffer->by_name("A1")->buffer(), 
-     qr#^\d+\s+\[N/A\] DEBUG  N/A - Gurgel$#); 
+     qr#^\d+\s+\[N/A\] DEBUG  N/A - Gurgel$#, "Config in slurp mode"); 
 
 ######################################################################
 # Test init with a config parser object
@@ -194,5 +198,21 @@ $logger = Log::Log4perl->get_logger("foo");
 $logger->debug("Gurgel");
 
 is(Log::Log4perl::Appender::TestBuffer->by_name("A1")->buffer(), 
-   "objectGurgel\n"); 
+   "objectGurgel\n", "Init with parser object"); 
 
+######################################################################
+# Test integrity check
+######################################################################
+open STDERR, ">$TMP_FILE";
+open IN, "<$TMP_FILE" or die "Cannot open $TMP_FILE";
+sub readwarn { return scalar <IN>; }
+END { close IN }
+
+Log::Log4perl->init(\ <<EOT);
+    # Just an empty configuration
+EOT
+
+like(readwarn(), qr/looks suspicious: No appenders/, 
+     "Test integrity check on empty conf file");
+
+unlink $TMP_FILE;
