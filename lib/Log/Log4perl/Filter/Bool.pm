@@ -12,29 +12,25 @@ use Log::Log4perl::Config;
 
 use constant DEBUG => 0;
 
-use base "Log::Log4perl::Filter";
+use base qw(Log::Log4perl::Filter);
 
 ##################################################
 sub new {
 ##################################################
-     my ($class, %options) = @_;
+    my ($class, %options) = @_;
 
-     my $self = { params => {},
-                  %options,
-                };
+    my $self = { params => {},
+                 %options,
+               };
      
-     bless $self, $class;
+    bless $self, $class;
      
-     print "Compiling '$options{logic}'\n" if DEBUG;
+    print "Compiling '$options{logic}'\n" if DEBUG;
 
-         # Set up meta-decider for later
-     $self->compile_logic($options{logic});
+        # Set up meta-decider for later
+    $self->compile_logic($options{logic});
 
-         # Register this bool filter 
-         # with the global filter registry
-     Log::Log4perl::Filter::by_name($options{name}, $self);
-
-     return $self;
+    return $self;
 }
 
 ##################################################

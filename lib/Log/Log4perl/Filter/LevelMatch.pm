@@ -12,24 +12,24 @@ use Log::Log4perl::Config;
 
 use constant DEBUG => 0;
 
-use base "Log::Log4perl::Filter";
+use base qw(Log::Log4perl::Filter);
 
 ##################################################
 sub new {
 ##################################################
-     my ($class, %options) = @_;
+    my ($class, %options) = @_;
 
-     my $self = { LevelToMatch  => '',
-                  AcceptOnMatch => 1,
-                  %options,
-                };
+    my $self = { LevelToMatch  => '',
+                 AcceptOnMatch => 1,
+                 %options,
+               };
      
-     $self->{AcceptOnMatch} = Log::Log4perl::Config::boolean_to_perlish(
-                                                 $self->{AcceptOnMatch});
+    $self->{AcceptOnMatch} = Log::Log4perl::Config::boolean_to_perlish(
+                                                $self->{AcceptOnMatch});
 
-     bless $self, $class;
+    bless $self, $class;
 
-     return $self;
+    return $self;
 }
 
 ##################################################

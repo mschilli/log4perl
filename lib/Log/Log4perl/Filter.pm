@@ -27,13 +27,20 @@ sub new {
         # it's a code ref
         $self->{decider} = $action;
     } else {
-        # it's a class
-        die "Filter classes ($name/$action) not yet implemented";
+        # it's something else
+        die "Code for ($name/$action) not properly defined";
     }
 
-    $FILTERS_DEFINED{$name} = $self;
-
     return $self;
+}
+
+##################################################
+sub register {         # Register a filter by name
+                       # (Passed on to subclasses)
+##################################################
+    my($self) = @_;
+
+    by_name($self->{name}, $self);
 }
 
 ##################################################
@@ -259,10 +266,13 @@ Operator precedence follows standard Perl conventions. Here's a bunch of example
 =head2 Writing your own filter classes
 
 If none of Log::Log4perl's predefined filter classes fits your needs,
-you can easily roll your own: Just define a new class
+you can easily roll your own: Just define a new class,
+derive it from the baseclass C<Log::Log4perl::Filter>,
 and define its C<new> and C<decide> methods like this:
 
     package Log::Log4perl::Filter::MyFilter;
+
+    use base Log::Log4perl::Filter;
 
     sub new {
         my ($class, %options) = @_;

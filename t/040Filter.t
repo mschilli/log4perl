@@ -78,7 +78,10 @@ Log::Log4perl->init(\ <<'EOT');
 
     log4perl.filter.Match1       = sub { /let this through/ }
     log4perl.filter.Match2       = sub { /and that, too/ }
-    log4perl.filter.Match3       = sub { /suppress/ }
+    log4perl.filter.Match3       = Log::Log4perl::Filter::StringMatch
+    log4perl.filter.Match3.StringToMatch = suppress
+    log4perl.filter.Match3.AcceptOnMatch = true
+
     log4perl.filter.MyBool       = Log::Log4perl::Filter::Bool
     log4perl.filter.MyBool.logic = !Match3 && (Match1 || Match2)
 

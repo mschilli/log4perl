@@ -197,7 +197,7 @@ sub _init {
                 keys %{$data->{filter}->{$filter_name}});
         }
             # Register filter with the global filter registry
-        Log::Log4perl::Filter::by_name($filter_name, $filter);
+        $filter->register();
     }
 
         # Initialize bool filters (they need the other filters to be
@@ -205,7 +205,10 @@ sub _init {
     for my $name (keys %bool_filters) {
         my $logic = $data->{filter}->{$name}->{logic}->{value};
         die "No logic defined for bool filter $name" unless defined $logic;
-        Log::Log4perl::Filter::Bool->new(name => $name, logic => $logic);
+        my $filter = Log::Log4perl::Filter::Bool->new(
+                         name  => $name, 
+                         logic => $logic);
+        $filter->register();
     }
 
     for (@loggers) {
