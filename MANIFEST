@@ -1,7 +1,6 @@
 Changes
 MANIFEST
 MANIFEST.SKIP
-MANIFEST.bak
 README
 eg/log4j-file-append-java.conf
 eg/log4j-file-append-perl.conf
