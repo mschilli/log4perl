@@ -105,7 +105,7 @@ ok(Compare($xmldata, $propsdata)) ||
 # second, log4perl's boolean filters
 # *****************************************************
 
-my $xmlconfig = <<EOL;
+$xmlconfig = <<EOL;
 <?xml version="1.0" encoding="UTF-8"?> 
 <!DOCTYPE log4perl:configuration SYSTEM "log4perl.dtd">
 
@@ -144,9 +144,9 @@ EOL
 
 #Log::Log4perl::init(\$config);
 
-my $xmldata = Log::Log4perl::Config::config_read(\$xmlconfig);
+$xmldata = Log::Log4perl::Config::config_read(\$xmlconfig);
 
-my $propsconfig = <<EOL;
+$propsconfig = <<EOL;
 log4perl.category = INFO, A1
 
 log4perl.filter.Match1       = sub { /let this through/ }
@@ -190,7 +190,7 @@ ok(Compare($xmldata, $propsdata)) ||
 # *****************************************************
 
 
-my $xmlconfig = <<EOL;
+$xmlconfig = <<EOL;
 <?xml version="1.0" encoding="UTF-8"?> 
 <!DOCTYPE log4perl:configuration SYSTEM "log4perl.dtd">
 
@@ -217,9 +217,9 @@ EOL
 
 #Log::Log4perl::init(\$config);
 
-my $xmldata = Log::Log4perl::Config::config_read(\$xmlconfig);
+$xmldata = Log::Log4perl::Config::config_read(\$xmlconfig);
 
-my $propsconfig = <<EOL;
+$propsconfig = <<EOL;
 log4perl.category = DEBUG, A1
 log4perl.filter.Range1      = Log::Log4perl::Filter::LevelRange
 log4perl.filter.Range1.LevelMin = INFO
