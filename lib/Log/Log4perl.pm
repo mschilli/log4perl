@@ -193,12 +193,18 @@ Log::Log4perl - Log4j implementation for Perl
                             Log::Log4perl::Layout::SimpleLayout
     ###########################################
        
+=head1 ABSTRACT
+
+    Log::Log4perl provides a powerful logging API to your application,
+
 =head1 DESCRIPTION
 
-C<Log::Log4perl> implements the widely popular C<Log4j> logging
-package ([1]) in pure Perl.
+Log::Log4perl lets you remote-control and fine-tune the logging behaviour
+of your system from the outside. It implements the widely popular 
+(Java-based) Log4j logging package in pure Perl ([1]).
 
-A WORD OF CAUTION: THIS LIBRARY IS ALPHA SOFTWARE AND STILL UNDER CONSTRUCTION -- ON
+A WORD OF CAUTION: THIS LIBRARY IS ALPHA SOFTWARE AND STILL 
+UNDER CONSTRUCTION -- ON
 http://log4perl.sourceforge.net YOU'LL GET THE LATEST SCOOP.
 THE API HAS REACHED A MATURE STATE, WE WILL NOT CHANGE IT UNLESS FOR
 A GOOD REASON.
