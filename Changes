@@ -234,6 +234,17 @@ they're reused in the config file?
 
 Mike:
 ##################################################
+    * Kevin says:
+      >WARN in the config file
+      >   init_and_watch(...);
+      >   while (1){
+      >      ...blah...
+      >      $logger->level($INFO);
+      >      $logger->info(...);
+      >      sleep 5;
+      >   }
+      What's happening if the reload happens right after the level() call 
+      and the config file sets the level to WARN?
     * Documentation on Layout class changes
     * Document %d{} in layout
     * Documentation of Log::Log4perl::Logger and Log::Log4perl::Config
