@@ -835,6 +835,7 @@ replaced by the logging engine when it's time to log the message:
     %M Method or function where the logging request was issued
     %n Newline (OS-independent)
     %p Priority of the logging event
+    %P pid of the current process
     %r Number of milliseconds elapsed from program start to logging 
        event
     %% A literal percent (%) sign

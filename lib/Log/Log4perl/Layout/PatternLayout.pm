@@ -90,7 +90,7 @@ sub define {
 
     # Parse the format
     $format =~ s/%(-*\d*)
-                       ([cCdfFIlLmMnprtxX%])
+                       ([cCdfFIlLmMnpPrtxX%])
                        (?:{(.*?)})*/
                        rep($self, $1, $2, $3);
                       /gex;
@@ -171,6 +171,7 @@ sub render {
     $info{d} = 1; # Dummy value, corrected later
     $info{n} = "\n";
     $info{p} = $priority;
+    $info{P} = $$;
 
     if($self->{info_needed}->{r}) {
         if($TIME_HIRES_AVAILABLE) {
@@ -288,6 +289,7 @@ replaced by the logging engine when it's time to log the message:
     %M Method or function where the logging request was issued
     %n Newline (OS-independent)
     %p Priority of the logging event
+    %P pid of the current process
     %r Number of milliseconds elapsed from program start to logging 
        event
     %% A literal percent (%) sign

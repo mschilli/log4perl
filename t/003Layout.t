@@ -10,7 +10,7 @@ use strict;
 # change 'tests => 1' to 'tests => last_test_to_print';
 #########################
 use Test;
-BEGIN { plan tests => 11 };
+BEGIN { plan tests => 12 };
 
 use Log::Log4perl;
 use Log::Log4perl::Layout;
@@ -132,3 +132,13 @@ $app->layout($layout);
 $logger->debug("That's the message\n");
 
 ok($app->buffer(), "a\nb\nThat\'s the message\n");
+
+############################################################
+# Test if the process ID works
+############################################################
+$app->buffer("");
+$layout = Log::Log4perl::Layout::PatternLayout->new("%P:%m");
+$app->layout($layout);
+$logger->debug("That's the message\n");
+
+ok($app->buffer() =~ /^\d+:That's the message$/);
