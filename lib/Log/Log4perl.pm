@@ -12,7 +12,7 @@ use Log::Log4perl::Config;
 use Log::Dispatch::Screen;
 use Log::Log4perl::Appender;
 
-our $VERSION = '0.24';
+our $VERSION = '0.25alpha';
 
    # set this to '1' if you're using a wrapper
    # around Log::Log4perl
