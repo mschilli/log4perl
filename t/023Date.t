@@ -7,9 +7,11 @@ use strict;
 
 use Test;
 
-BEGIN { plan tests => 11 }
+BEGIN { plan tests => 12 }
 
+use Log::Log4perl qw(get_logger);
 use Log::Log4perl::DateFormat;
+use Log::Log4perl::TestBuffer;
 
 ###########################################
 # Year
@@ -76,3 +78,22 @@ ok($formatter->format(1030429942), "PM PM");
 ###########################################
 $formatter = Log::Log4perl::DateFormat->new("xx K");
 ok($formatter->format(1030429942), "xx -- 'K' not (yet) implemented --");
+
+###########################################
+# In conjunction with Log4perl
+###########################################
+my $conf = q(
+log4perl.category.Bar.Twix      = WARN, Buffer
+log4perl.appender.Buffer        = Log::Log4perl::TestBuffer
+log4perl.appender.Buffer.layout = \
+    Log::Log4perl::Layout::PatternLayout
+log4perl.appender.Buffer.layout.ConversionPattern = %d{HH:mm:ss} %p %m %n
+);
+
+Log::Log4perl::init(\$conf);
+
+my $logger = get_logger("Bar::Twix");
+$logger->error("Blah");
+
+ok($Log::Log4perl::TestBuffer::POPULATION[0]->buffer(), 
+     qr/\d\d:\d\d:\d\d ERROR Blah/);
