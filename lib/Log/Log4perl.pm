@@ -24,10 +24,9 @@ our $caller_depth = 0;
     #writing code within the config file, set this to 0
 our $ALLOW_CODE_IN_CONFIG_FILE = 1;
 
-    #unless an appender has dontCollapseArrayRefs, arrayrefs
-    #in a log message will be joined using this character,
+    #arrays in a log message will be joined using this character,
     #see Log::Log4perl::Appender::DBI
-our $JOIN_ARRAYREFS_CHAR = ' ';
+our $JOIN_MSG_ARRAY_CHAR = '';
 
 ##################################################
 sub import {
