@@ -2,6 +2,10 @@
 Revision history for Log::Log4perl
 ##################################################
 
+
+    * (kg) user-defined conversion specifiers
+    * (kg) implementing map to log4j.RollingFileAppender
+
 0.27 11/12/2002
     * (ms) Updated FAQ with "Recipes of the Week"
     * (ms) Added Log::Log4perl::NDC (Nested Diagnostic Contexts) and
@@ -283,11 +287,6 @@ TODO Kevin:
       DONE Create new module negotiating between Java-style config files
       and perl-style appenders
     * Module for reading XML-style config files
-    * revisit  CategoryFactory idea, give the user opportunity to override
-      log levels with their own?
-    * possible bug: was logging to a category, then took my appender off
-      that category, am still seeing stuff in my log, something didn't
-      take about the reload
 
 TODO Mike:
 ##################################################
