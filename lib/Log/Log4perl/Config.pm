@@ -795,6 +795,29 @@ sub allow_code {
     return $Log::Log4perl::ALLOW_CODE_IN_CONFIG_FILE;
 }
 
+################################################
+sub basic_subst {
+################################################
+    my($varname, $subst_hash) = @_;
+
+        # Throw out blanks
+    $varname =~ s/\s+//g;
+
+    if(exists $subst_hash->{$varname}) {
+        print "Replacing variable: '$varname' => '$subst_hash->{$varname}'\n" 
+            if _INTERNAL_DEBUG;
+        return $subst_hash->{$varname};
+
+    } elsif(exists $ENV{$varname}) {
+        print "Replacing ENV variable: '$varname' => '$ENV{$varname}'\n" 
+            if _INTERNAL_DEBUG;
+        return $ENV{$varname};
+
+    }
+
+    die "Undefined Variable '$varname'";
+}
+
 1;
 
 __END__
