@@ -19,11 +19,15 @@ sub get {
     #      File   => { value => "t/tmp/test1.log" },
     #      layout => {
     #                  ConversionPattern => 
-                                      { value => "%r [%t] %-5p %c %x - %m%n" },
+    #                                  { value => "%r [%t] %-5p %c %x - %m%n" },
     #                  value => "org.apache.log4j.PatternLayout",
     #                },
     #      value  => "org.apache.log4j.ConsoleAppender",
     #    },
+
+    $appender_data->{value} ||
+            die "ERROR: you didn't tell me how to implement your appender " .
+                "'$appender_name'";
 
     my $perl_class = $translate{$appender_data->{value}} || 
             die "ERROR:  I don't know how to make a '$appender_data->{value}' " .
