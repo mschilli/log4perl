@@ -3,6 +3,9 @@ Revision history for Log::Log4perl
 ##################################################
 
 0.28 (not yet released)
+    * (ms) Every value in the config file can now be a perl function,
+           dynamically replaced by its return value at configuration
+           parse time
     * (ms) NDC now prints entire stack, not just
            top element (as mandated by Log4j)
 
