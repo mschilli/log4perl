@@ -853,14 +853,23 @@ http://www.vipan.com/htdocs/log4jhelp.html
 =head1 CONTACT
 
 Please send bugs reports or requests for enhancements to the authors via 
-our 
+our log4perl development mailing list: 
 
-    Log4perl mailing list: log4perl-devel@lists.sourceforge.net
+log4perl-devel@lists.sourceforge.net
 
 =head1 AUTHORS
 
-    Mike Schilli, m@perlmeister.com
-    Kevin Goess, cpan@goess.org
+=over 4
+
+=item *
+
+Mike Schilli, m@perlmeister.com
+
+=item *
+
+Kevin Goess, cpan@goess.org
+
+=back
 
 =head1 COPYRIGHT AND LICENSE
 
