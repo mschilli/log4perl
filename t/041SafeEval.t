@@ -11,7 +11,7 @@ use Log::Log4perl;
 
 ok(1); # If we made it this far, we're ok.
 
-my $example_log = "example" . getpwuid($<) . ".log";
+my $example_log = "example" . (stat($0))[9] . ".log";
 unlink($example_log);
 
 # test that unrestricted code works properly
@@ -19,7 +19,7 @@ Log::Log4perl::Config::allow_code(1);
 my $config = <<'END';
     log4perl.logger = INFO, Main
     log4perl.appender.Main = Log::Dispatch::File
-    log4perl.appender.Main.filename = sub { "example" . getpwuid($<) . ".log" }
+    log4perl.appender.Main.filename = sub { "example" . (stat($0))[9] . ".log" }
     log4perl.appender.Main.layout = Log::Log4perl::Layout::SimpleLayout
 END
 eval { Log::Log4perl->init( \$config ) };
@@ -107,6 +107,7 @@ ok(keys %{ Log::Log4perl::Config->vars_shared_with_safe_compartment() }, $numkey
 # Add a new name/mask to the map
 $Foo::foo = 1;
 @Foo::bar = ( 1, 2, 3 );
+push @Foo::bar, $Foo::foo; # Some nonsense to avoid 'used only once' warning
 Log::Log4perl::Config->vars_shared_with_safe_compartment( Foo => [ '$foo', '@bar' ] );
 ok( keys %{ Log::Log4perl::Config->vars_shared_with_safe_compartment() },
     $numkeys + 1, 'can add a new name/mask to the map');
@@ -132,7 +133,7 @@ END
 Log::Log4perl::Config::allow_code('restrictive');
 undef @Log::Log4perl::ALLOWED_CODE_OPS_IN_CONFIG_FILE;
 eval { Log::Log4perl->init( \$config ) };
-my $failed = $@ ? 1 : 0;
+$failed = $@ ? 1 : 0;
 ok($failed, 1, 
    'global cspec with harmful code rejected on restrictive setting');
 
@@ -147,7 +148,7 @@ END
 Log::Log4perl::Config->allow_code('restrictive');
 undef @Log::Log4perl::ALLOWED_CODE_OPS_IN_CONFIG_FILE;
 eval { Log::Log4perl->init( \$config ) };
-my $failed = $@ ? 1 : 0;
+$failed = $@ ? 1 : 0;
 ok($failed, 0, 'global cspec with legal code allowed on restrictive setting');
 
 # Local cspec with illegal code
@@ -160,7 +161,7 @@ END
 Log::Log4perl::Config::allow_code('restrictive');
 undef @Log::Log4perl::ALLOWED_CODE_OPS_IN_CONFIG_FILE;
 eval { Log::Log4perl->init( \$config ) };
-my $failed = $@ ? 1 : 0;
+$failed = $@ ? 1 : 0;
 ok($failed, 1, 'local cspec with harmful code rejected on restrictive setting');
 
 # Global cspec with legal code
@@ -173,7 +174,7 @@ END
 Log::Log4perl::Config::allow_code('restrictive');
 undef @Log::Log4perl::ALLOWED_CODE_OPS_IN_CONFIG_FILE;
 eval { Log::Log4perl->init( \$config ) };
-my $failed = $@ ? 1 : 0;
+$failed = $@ ? 1 : 0;
 ok($failed, 0, 'local cspec with legal code allowed on restrictive setting');
 
 unlink($example_log);

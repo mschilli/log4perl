@@ -43,7 +43,7 @@ EOT
 
 $Log::Log4perl::JOIN_MSG_ARRAY_CHAR = "bang!";
 
-my $app = Log::Log4perl::Appender::TestBuffer->by_name("A1");
+$app = Log::Log4perl::Appender::TestBuffer->by_name("A1");
 $logger = Log::Log4perl->get_logger("");
 $logger->debug("Chunk1", "Chunk2", "Chunk3");
 
@@ -62,7 +62,7 @@ Log::Log4perl->init( \ <<EOT );
     log4perl.appender.A1.warp_message=0
 EOT
 
-my $app = Log::Log4perl::Appender::TestArrayBuffer->by_name("A1");
+$app = Log::Log4perl::Appender::TestArrayBuffer->by_name("A1");
 $logger = Log::Log4perl->get_logger("");
 $logger->debug("Chunk1", "Chunk2", "Chunk3");
 
@@ -80,7 +80,7 @@ Log::Log4perl->init( \ <<'EOT' );
                                            return @_; }
 EOT
 
-my $app = Log::Log4perl::Appender::TestArrayBuffer->by_name("A1");
+$app = Log::Log4perl::Appender::TestArrayBuffer->by_name("A1");
 $logger = Log::Log4perl->get_logger("");
 $logger->debug("Chunk1", "Chunk2", "Chunk3", "Chunk4");
 
@@ -105,7 +105,7 @@ Log::Log4perl->init( \ <<'EOT' );
     log4perl.appender.A1.warp_message = main::warp_my_message
 EOT
 
-my $app = Log::Log4perl::Appender::TestArrayBuffer->by_name("A1");
+$app = Log::Log4perl::Appender::TestArrayBuffer->by_name("A1");
 $logger = Log::Log4perl->get_logger("");
 $logger->debug("Chunk1", "Chunk2", "Chunk3");
 

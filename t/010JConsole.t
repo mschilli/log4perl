@@ -6,7 +6,7 @@ use Test;
 
 
 my $WORK_DIR = File::Spec->catfile(qw(t tmp));
-use vars qw(@outfiles, $test_logfile); 
+use vars qw(@outfiles $test_logfile); 
 $test_logfile = File::Spec->catfile($WORK_DIR,'test1.log');
 @outfiles = ($test_logfile,);
 unless (-e "$WORK_DIR"){

@@ -3,9 +3,9 @@ use Test;
 use File::Spec;
 
 my $WORK_DIR = File::Spec->catfile(qw(t tmp));
-use vars qw(@outfiles, $test_logfile); 
+use vars qw(@outfiles $test_logfile); 
 $test_logfile = File::Spec->catfile($WORK_DIR, 'test2.log');
-@outfiles = ($test_logfile,);
+@outfiles = ($test_logfile);
 unless (-e "$WORK_DIR"){
     mkdir("$WORK_DIR", 0755) || die "can't create $WORK_DIR $!";
 }
