@@ -10,7 +10,7 @@ package Log::Log4perl::Config::DOMConfigurator;
 # DONEsee Config, need to check version of XML::DOM
 # OK user defined levels? see parse_level
 # OK make sure 2nd test is using log4perl constructs, not log4j
-# handle new filter stuff
+# OK handle new filter stuff
 # make sure sample code actually works
 # try removing namespace prefixes in the xml
 
@@ -22,7 +22,10 @@ use constant _INTERNAL_DEBUG => 0;
 
 our $VERSION = 0.03;
 
-our $APPENDER_TAG = qr/((log4j|log4perl):)?appender/;
+our $APPENDER_TAG = qr/^((log4j|log4perl):)?appender$/;
+
+our $FILTER_TAG = qr/^(log4perl:)?filter$/;
+our $FILTER_REF_TAG = qr/^(log4perl:)?filter-ref$/;
 
 #can't use ValParser here because we're using namespaces? 
 #doesn't seem to work - kg 3/2003 
@@ -78,6 +81,10 @@ sub parse {
         }elsif ($tag_name eq 'root'){
             &parse_root($l4p_tree, $kid);
 
+        }elsif ($tag_name =~ $FILTER_TAG){
+            #parse log4perl's chainable boolean filters
+            &parse_l4p_filter($l4p_tree, $kid);
+
         }elsif ($tag_name eq 'renderer'){
             warn "Log4perl: ignoring renderer tag in config, unimplemented";
             #"log4j will render the content of the log message according to 
@@ -131,6 +138,50 @@ sub parse_root {
 
     $l4p_tree->{category}{value} = $l4p_branch->{value};
 
+}
+
+
+#this parses a custom log4perl-specific filter set up under
+#the root element, as opposed to children of the appenders
+sub parse_l4p_filter {
+    my ($l4p_tree, $node) = @_;
+
+    my $l4p_branch = {};
+
+    my $name = subst($node->getAttribute('name'));
+
+    my $class = subst($node->getAttribute('class'));
+    my $value = subst($node->getAttribute('value'));
+
+    if ($class && $value) {
+        die "Log4perl: only one of class or value allowed, not both, "
+            ."in XMLConfig filter '$name'";
+    }elsif ($class || $value){
+        $l4p_branch->{value} = ($value || $class);
+
+    }
+
+    for my $child ($node->getChildNodes) {
+
+        if ($child->getNodeType == ELEMENT_NODE){
+
+            my $tag_name = $child->getTagName();
+
+            if ($tag_name =~ /^(param|param-nested|param-text)$/) {
+                &parse_any_param($l4p_branch, $child);
+            }
+        }elsif ($child->getNodeType == TEXT_NODE){
+            my $text = $child->getData;
+            next unless $text =~ /\S/;
+            if ($class && $value) {
+                die "Log4perl: only one of class, value or PCDATA allowed, "
+                    ."in XMLConfig filter '$name'";
+            }
+            $l4p_branch->{value} .= subst($text); 
+        }
+    }
+
+    $l4p_tree->{filter}{$name} = $l4p_branch;
 }
 
    
@@ -193,7 +244,7 @@ sub parse_children_of_logger_element {
             $l4p_branch->{$name} = {value => $value};
         
         }elsif ($tag_name eq 'appender-ref'){
-            push @appenders, $child->getAttribute('ref');
+            push @appenders, subst($child->getAttribute('ref'));
             
         }elsif ($tag_name eq 'level' || $tag_name eq 'priority'){
             $priority = &parse_level($child);
@@ -238,7 +289,6 @@ sub parse_appender {
 
         my $name = unlog4j(subst($child->getAttribute('name')));
 
-
         if ($tag_name =~ /^(param|param-nested|param-text)$/) {
 
             &parse_any_param($l4p_branch, $child);
@@ -248,9 +298,11 @@ sub parse_appender {
         }elsif ($tag_name =~ /($LOG4PERL_PREFIX:)?layout/){
             $l4p_branch->{layout} = parse_layout($child);
 
-        }elsif ($tag_name eq 'filter'){
+        }elsif ($tag_name =~  $FILTER_TAG){
             $l4p_branch->{Filter} = parse_filter($child);
-            #die "filters not supported yet";
+
+        }elsif ($tag_name =~ $FILTER_REF_TAG){
+            $l4p_branch->{Filter} = parse_filter_ref($child);
 
         }elsif ($tag_name eq 'errorHandler'){
             die "errorHandlers not supported yet";
@@ -263,6 +315,8 @@ sub parse_appender {
             #I don't see the need to support this on the perl side any 
             #time soon.  --kg 3/2003
             die "Log4perl: in config file, <appender-ref> tag is unsupported in <appender>";
+        }else{
+            die "Log4perl: in config file, <$tag_name> is unsupported\n";
         }
     }
     $l4p_tree->{appender}{$name} = $l4p_branch;
@@ -352,6 +406,8 @@ sub parse_param_nested {
     return $l4p_branch;
 }
 
+#this handles filters that are children of appenders, as opposed
+#to the custom filters that go under the root element
 sub parse_filter {
     my $node = shift;
 
@@ -361,18 +417,32 @@ sub parse_filter {
 
     $filter_tree->{value} = $class_name;
 
-    print "\tparsing layout $class_name\n"  if _INTERNAL_DEBUG;  
+    print "\tparsing filter on class $class_name\n"  if _INTERNAL_DEBUG;  
 
     for my $child ($node->getChildNodes) {
         next unless $child->getNodeType == ELEMENT_NODE;
-        if ($child->getTagName() =~ 'param|param-nested|param-text') {
+
+        my $tag_name = $child->getTagName();
+
+        if ($tag_name =~ 'param|param-nested|param-text') {
             &parse_any_param($filter_tree, $child);
+        
         }else{
-            die "don't know what to do with a ".$child->getTagName()
+            die "Log4perl: don't know what to do with a ".$child->getTagName()
                 ."inside a filter element";
         }
     }
+    return $filter_tree;
+}
 
+sub parse_filter_ref {
+    my $node = shift;
+
+    my $filter_tree = {};
+
+    my $filter_id = subst($node->getAttribute('id'));
+
+    $filter_tree->{value} = $filter_id;
 
     return $filter_tree;
 }
@@ -643,7 +713,52 @@ The features added by the log4perl dtd are:
      log4j.appender.jabbender.login.port     = 5222
      log4j.appender.jabbender.login.username = bobjones
 
-=item 5 the new filter stuff!! (TBD)
+=item 5 the log4perl-specific filters, see L<Log::Log4perl::Filter>,
+lots of examples in t/044XML-Filter.t, here's a short one:
+
+
+  <?xml version="1.0" encoding="UTF-8"?> 
+  <!DOCTYPE log4perl:configuration SYSTEM "log4perl.dtd">
+
+  <log4perl:configuration xmlns:log4perl="http://log4perl.sourceforge.net/">
+   
+  <appender name="A1" class="Log::Log4perl::Appender::TestBuffer">
+        <layout class="Log::Log4perl::Layout::SimpleLayout"/>
+        <filter class="Log::Log4perl::Filter::Boolean">
+            <param name="logic" value="!Match3 &amp;&amp; (Match1 || Match2)"/> 
+        </filter>
+  </appender>   
+  
+  <appender name="A2" class="Log::Log4perl::Appender::TestBuffer">
+        <layout class="Log::Log4perl::Layout::SimpleLayout"/>
+        <filter-ref id="Match1"/>
+  </appender>   
+  
+  <log4perl:filter name="Match1" value="sub { /let this through/ }" />
+  
+  <log4perl:filter name="Match2">
+        sub { 
+            /and that, too/ 
+        }
+   </log4perl:filter>
+  
+  <log4perl:filter name="Match3" class="Log::Log4perl::Filter::StringMatch">
+    <param name="StringToMatch" value="suppress"/>
+    <param name="AcceptOnMatch" value="true"/>
+  </log4perl:filter>
+  
+  <log4perl:filter name="MyBoolean" class="Log::Log4perl::Filter::Boolean">
+    <param name="logic" value="!Match3 &amp;&amp; (Match1 || Match2)"/>
+  </log4perl:filter>
+  
+   
+   <root>
+           <priority value="info"/>
+           <appender-ref ref="A1"/>
+   </root>
+   
+   </log4perl:configuration>
+
 
 =back
 

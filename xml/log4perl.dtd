@@ -13,7 +13,7 @@
 <!-- overriding log4j:configuration with log4perl:configuration
      so that we can use a log4perl:appender -->
 <!ELEMENT log4perl:configuration (renderer*, log4perl:appender*, appender*,
-                                  (category|logger)*,root?, PatternLayout?)>
+                                  (log4perl:filter)*,(category|logger)*,root?, PatternLayout?)>
 
 <!ATTLIST log4perl:configuration
   xmlns:log4perl              CDATA #FIXED "http://log4perl.sourceforge.net/" 
@@ -26,7 +26,7 @@
 <!-- overriding log4j's appender with log4perl:appender so can include
      other kinds of param structures -->
 <!ELEMENT log4perl:appender     (errorHandler?, (param|param-nested|param-text)*, 
-                                 (layout|log4perl:layout)?, filter*, appender-ref*)>
+                                 (layout|log4perl:layout)?, filter*, filter-ref*, appender-ref*)>
 <!ATTLIST log4perl:appender
    xmlns:log4perl CDATA #FIXED "http://log4perl.sourceforge.net/"
   name 		ID 	#REQUIRED
@@ -62,4 +62,16 @@
   class		CDATA	#REQUIRED
 >
 
+<!-- This is the filter at the document root, as opposed to the appender
+       children filters.  This implement the log4perl-specific boolean appenders
+-->
+<!ELEMENT log4perl:filter (#PCDATA|param|param-nested|param-text)*>
+<!ATTLIST log4perl:filter 
+      class		CDATA	 #IMPLIED
+      name     CDATA    #IMPLIED
+      value     CDATA    #IMPLIED
+>
+
+<!ELEMENT filter-ref EMPTY>
+<!ATTLIST filter-ref id  NMTOKEN #REQUIRED>
 
