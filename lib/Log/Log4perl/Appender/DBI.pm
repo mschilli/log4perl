@@ -52,6 +52,25 @@ sub new {
     #'bind_value_layouts' now contains a PatternLayout
     #for each parameter heading for the Sql engine
 
+    $self->{SQL} = $p{sql}; #save for error msg later on
+
+    $self->{BUFFERSIZE} = $p{bufferSize} || 1; 
+
+    if ($p{usePreparedStmt}) {
+        $self->{sth} = $self->create_statement($p{sql});
+        $self->{usePreparedStmt} = 1;
+    }else{
+        $self->{layout} = Log::Log4perl::Layout::PatternLayout->new(
+                    {ConversionPattern => {value  => $p{sql}}});
+    }
+
+    if ($self->{usePreparedStmt} &&  $self->{BUFFERSIZE}){
+        warn "Log4perl: you've defined both usePreparedStmt and bufferSize \n".
+        "in your appender '$p{name}'--\n".
+        "I'm going to ignore bufferSize and just use a prepared stmt\n";
+    }
+
+
     return $self;
 }
 
@@ -67,25 +86,6 @@ sub _init {
             or croak "Log4perl: $DBI::errstr";
         $self->{_mine} = 1;
     }
-
-    $self->{SQL} = $params{sql}; #save for error msg later on
-
-    $self->{BUFFERSIZE} = $params{bufferSize} || 1; 
-
-    if ($params{usePreparedStmt}) {
-        $self->{sth} = $self->create_statement($params{sql});
-        $self->{usePreparedStmt} = 1;
-    }else{
-        $self->{layout} = Log::Log4perl::Layout::PatternLayout->new(
-                    {ConversionPattern => {value  => $params{sql}}});
-    }
-
-    if ($self->{usePreparedStmt} &&  $self->{BUFFERSIZE}){
-        warn "Log4perl: you've defined both usePreparedStmt and bufferSize \n".
-        "in your appender '$params{name}'--\n".
-        "I'm going to ignore bufferSize and just use a prepared stmt\n";
-    }
-    
 
 
 }
@@ -109,6 +109,9 @@ sub log_message {
     #%p is
     #    { name    => \$appender_name,
     #      level   => \$Log: DBI.pm,v $
+    #      level   => \Revision 1.2  2002/12/27 00:21:43  kgoess
+    #      level   => \tweaking docs
+    #      level   => \
     #      level   => \Revision 1.1  2002/12/27 00:03:28  kgoess
     #      level   => \initial version
     #      level   => \level},   
