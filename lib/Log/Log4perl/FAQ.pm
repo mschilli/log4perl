@@ -1351,7 +1351,7 @@ add the C<:nowarn> target to the module's C<use Log::Log4perl> call:
 
     use Log::Log4perl qw(get_logger :nowarn);
 
-will have Log::Log4perl silently ignore all logging statements if
+This will have Log::Log4perl silently ignore all logging statements if
 no initialization has taken place. 
 
 If the module wants to figure out if some other program part has 
