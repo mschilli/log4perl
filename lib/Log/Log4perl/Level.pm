@@ -15,7 +15,7 @@ our %PRIORITY = (
     "WARN"  => 4,
     "INFO"  => 6,
     "DEBUG" => 7,
-);
+) unless %PRIORITY;
 
     # Reverse mapping
 our %LEVELS = map { $PRIORITY{$_} => $_ } keys %PRIORITY;
@@ -109,6 +109,46 @@ sub to_LogDispatch_string {
 sub is_valid {
 ###################################################
     return $LEVELS{$_[0]};
+}
+
+sub get_higher_level {
+    my ($old_priority, $delta) = @_;
+
+    $delta ||= 1;
+
+    my $new_priority = 0;
+
+    foreach (1..$delta){
+        #so the list is DEBUG, INFO, WARN, ERROR, FATAL
+        foreach my $p (reverse sort keys %LEVELS){
+            if ($p < $old_priority) {
+                $new_priority = $p;
+                last;
+            }
+        }
+        $old_priority = $new_priority;
+    }
+    return $new_priority;
+}
+
+sub get_lower_level {
+    my ($old_priority, $delta) = @_;
+
+    $delta ||= 1;
+
+    my $new_priority = 0;
+
+    foreach (1..$delta){
+        #so the list is FATAL, ERROR, WARN, INFO, DEBUG
+        foreach my $p (sort keys %LEVELS){
+            if ($p > $old_priority) {
+                $new_priority = $p;
+                last;
+            }
+        }
+        $old_priority = $new_priority;
+    }
+    return $new_priority;
 }
 
 1;
