@@ -2,6 +2,10 @@
 Revision history for Log::Log4perl
 ##################################################
 
+0.18 07/11/2002
+    * Added Log::Dispatch::Buffer back in the distribution, otherwise
+      regression test suite would fail.
+
 0.17 07/11/2002
     * Updated documentation according to Dave Rolsky's suggestions
     * Lots of other documentation fixes
