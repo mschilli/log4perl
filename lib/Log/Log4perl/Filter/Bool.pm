@@ -3,18 +3,14 @@ package Log::Log4perl::Filter::Bool;
 ##################################################
 
 use 5.006;
+
 use strict;
 use warnings;
 
 use Log::Log4perl::Level;
 use Log::Log4perl::Config;
-use Parse::RecDescent;
 
 use constant DEBUG => 0;
-
-use constant CMD_AND => 0;
-use constant CMD_OR  => 1;
-use constant CMD_NOT => 2;
 
 use base "Log::Log4perl::Filter";
 
@@ -23,15 +19,19 @@ sub new {
 ##################################################
      my ($class, %options) = @_;
 
-     my $self = { %options };
+     my $self = { params => {},
+                  %options,
+                };
      
      bless $self, $class;
      
      print "Compiling '$options{logic}'\n" if DEBUG;
 
+         # Set up meta-decider for later
      $self->compile_logic($options{logic});
 
-         # Register with the global filter registry
+         # Register this bool filter 
+         # with the global filter registry
      Log::Log4perl::Filter::by_name($options{name}, $self);
 
      return $self;
@@ -46,74 +46,46 @@ sub decide {
 }
 
 ##################################################
-# Helper for compile_logic
-# (most of this and the following code has been
-# lifted from Damian Conway's Parse::RecDescent 
-# presentation)
-sub Parse::RecDescent::rpn {
-##################################################
-    for( my $i=1; $i<@_-1; $i+=2 ) {
-        @_[$i, $i+1] = @_[$i+1, $i];
-    }
-    return join " ", @_;
-}
-
-##################################################
 sub compile_logic {
 ##################################################
     my ($self, $logic) = @_;
 
-    my $grammar = q{
+       # Extract Filter placeholders in logic as defined
+       # in configuration file.
+    while($logic =~ /([\w_-]+)/g) {
+            # Get the corresponding filter object
+        my $filter = Log::Log4perl::Filter::by_name($1);
+        die "Filter $filter required by Bool filter, but not defined" 
+            unless $filter;
 
-      expr  :   <leftop: conj  /(\|\||\|)/ conj> 
-                { rpn(@{$item[1]}); }
-
-      conj  :   <leftop: term /(&&|&)/   term>
-                { rpn(@{$item[1]}); }
-
-      term  :   "!" unary  { rpn($item[2], $item[1]) }
-            | unary { $item[1] }
-
-      unary :   "(" expr ")"   { $item[2] }
-            |   value          { $item[1] }
-
-      value :   /(\w+)/        { $item[1] }
-    };
-
-    my $parse = Parse::RecDescent->new($grammar);
-
-    die "Internal error: Faulty grammar: $grammar" unless $parse;
-
-    my $upn = $parse->expr($logic);
-
-    unless($upn) {
-        warn "Parse error in " . __PACKAGE__ .
-             "'s logic: $logic";
-        return undef;
+        $self->{params}->{$1} = $filter;
     }
 
-    my @commands  = ();
+        # Fabricate a parameter list: A1/A2/A3 => $A1, $A2, $A3
+    my $plist = join ', ', map { '$' . $_ } keys %{$self->{params}};
 
-    while($upn =~ /(\S+)/g) {
-        $_ = $1;
-        if(/\|/) {
-            push @commands, CMD_OR;
-        }elsif(/&/) {
-            push @commands, CMD_AND;
-        }elsif(/!/) {
-            push @commands, CMD_NOT;
-        }else{
-            my $filter = Log::Log4perl::Filter::by_name($_);
- 
-            if(!$filter) {
-                die "No filter defined for $_";
-            }
+        # Replace all the (dollar-less) placeholders in the code 
+        # by scalars (basically just put dollars in front of them)
+    $logic =~ s/([\w_-]+)/\$$1/g;
 
-            push @commands, $filter;
+        # Set up the meta decider, which transforms the config file
+        # logic into compiled perl code
+    my $func = <<EOT;
+        sub { 
+            my($plist) = \@_;
+            $logic;
         }
+EOT
+
+    print "func=$func\n" if DEBUG;
+
+    my $eval_func = eval $func;
+
+    if(! $eval_func) {
+        die "Syntax error in Bool filter logic: $eval_func";
     }
 
-    $self->{commands} = \@commands;
+    $self->{eval_func} = $eval_func;
 }
 
 ##################################################
@@ -121,25 +93,22 @@ sub eval_logic {
 ##################################################
     my($self, $p) = @_;
 
-    my @stack = ();
+    my @plist = ();
 
-    for(@{$self->{commands}}) {
-        if($_ eq CMD_OR) {
-            my $a = pop @stack;
-            my $b = pop @stack;
-            push @stack, $a || $b;
-        }elsif($_ eq CMD_AND) {
-            my $a = pop @stack;
-            my $b = pop @stack;
-            push @stack, $a && $b;
-        }elsif($_ eq CMD_NOT) {
-            $stack[-1] = ! $stack[-1];
-        }elsif(ref($_) =~ /Log::Log4perl::Filter/) {
-            push @stack, $_->decide(%$p);
-        }
+        # Eval the results of all filters referenced
+        # in the code (although the order of keys is
+        # not predictable, it is consistent :)
+    for my $param (keys %{$self->{params}}) {
+            # Call the decider and map the result to 1 or 0
+        print "Calling filter $param\n" if DEBUG;
+        push @plist, ($self->{params}->{$param}->decide(%$p) ? 1 : 0);
     }
 
-    return $stack[0] || "0";
+        # Now pipe the parameters into the canned function,
+        # have it evaluate the logic and return the final
+        # decision
+    print "Passing in (", join(', ', @plist), ")\n" if DEBUG;
+    return $self->{eval_func}->(@plist);
 }
 
 1;
