@@ -17,7 +17,7 @@ our @ISA = qw(Log::Log4perl::Appender);
 use IPC::Shareable qw(:lock);
 use IPC::Semaphore;
 
-our $CVSVERSION   = '$Revision: 1.4 $';
+our $CVSVERSION   = '$Revision: 1.5 $';
 our ($VERSION)    = ($CVSVERSION =~ /(\d+\.\d+)/);
 
 ###########################################
@@ -253,7 +253,7 @@ passes them on to its attached sub-appender.
 For this reason, it doesn't need a layout (contrary to regular appenders).
 If it defines none, messages are passed on unaltered.
 
-Custom filters are also applied to the composite appender only
+Custom filters are also applied to the composite appender only.
 They are I<not> applied to the sub-appender. Same applies to appender
 thresholds. This behaviour might change in the future.
 
