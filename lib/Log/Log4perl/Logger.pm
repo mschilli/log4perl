@@ -480,44 +480,69 @@ sub log {
                     Log::Log4perl::Level::to_level($priority));
 }
 
+
+#now lets autogenerate the logger subs based on the defined priorities
+foreach my $level (keys %Log::Log4perl::Level::PRIORITY){
+
+    my $lclevel = lc $level;
+    my $code = <<EOL;
+
+    sub $lclevel {
+        print "$lclevel: (\$_[0]->{category}/\$_[0]->{level}) [\@_]\n" if DEBUG;
+        init_warn() unless \$INITIALIZED;
+        \$_[0]->{$level}(\@_, '$level');
+     }
+     
+     sub is_$lclevel { return \$_[0]->level() >= \$$level; }
+EOL
+
+    eval $code;
+
+    if ($@) {
+        die "Log4perl init failed, could not define a subroutine for $level:\n$code\n$@";
+    }
+
+
+}
+
 ##################################################
 #expected args are $logger, $msg, $levelname
 
-sub fatal {
-   print "fatal: ($_[0]->{category}/$_[0]->{level}) [@_]\n" if DEBUG;
-   init_warn() unless $INITIALIZED;
-   $_[0]->{FATAL}(@_, 'FATAL');
-}
+#sub fatal {
+#   print "fatal: ($_[0]->{category}/$_[0]->{level}) [@_]\n" if DEBUG;
+#   init_warn() unless $INITIALIZED;
+#   $_[0]->{FATAL}(@_, 'FATAL');
+#}
+#
+#sub error {
+#   print "error: ($_[0]->{category}/$_[0]->{level}) [@_]\n" if DEBUG;
+#   init_warn() unless $INITIALIZED;
+#   $_[0]->{ERROR}(@_, 'ERROR');
+#}
+#
+#sub warn {
+#   print "warn: ($_[0]->{category}/$_[0]->{level}) [@_]\n" if DEBUG;
+#   init_warn() unless $INITIALIZED;
+#   $_[0]->{WARN} (@_, 'WARN' );
+#}
+#
+#sub info {
+#   print "info: ($_[0]->{category}/$_[0]->{level}) [@_]\n" if DEBUG;
+#   init_warn() unless $INITIALIZED;
+#   $_[0]->{INFO} (@_, 'INFO' );
+#}
+#
+#sub debug {
+#   print "debug: ($_[0]->{category}/$_[0]->{level}) [@_]\n" if DEBUG;
+#   init_warn() unless $INITIALIZED;
+#   $_[0]->{DEBUG}(@_, 'DEBUG');
+#}
 
-sub error {
-   print "error: ($_[0]->{category}/$_[0]->{level}) [@_]\n" if DEBUG;
-   init_warn() unless $INITIALIZED;
-   $_[0]->{ERROR}(@_, 'ERROR');
-}
-
-sub warn {
-   print "warn: ($_[0]->{category}/$_[0]->{level}) [@_]\n" if DEBUG;
-   init_warn() unless $INITIALIZED;
-   $_[0]->{WARN} (@_, 'WARN' );
-}
-
-sub info {
-   print "info: ($_[0]->{category}/$_[0]->{level}) [@_]\n" if DEBUG;
-   init_warn() unless $INITIALIZED;
-   $_[0]->{INFO} (@_, 'INFO' );
-}
-
-sub debug {
-   print "debug: ($_[0]->{category}/$_[0]->{level}) [@_]\n" if DEBUG;
-   init_warn() unless $INITIALIZED;
-   $_[0]->{DEBUG}(@_, 'DEBUG');
-}
-
-sub is_debug { return $_[0]->level() >= $DEBUG; }
-sub is_info  { return $_[0]->level() >= $INFO; }
-sub is_warn  { return $_[0]->level() >= $WARN; }
-sub is_error { return $_[0]->level() >= $ERROR; }
-sub is_fatal { return $_[0]->level() >= $FATAL; }
+#sub is_debug { return $_[0]->level() >= $DEBUG; }
+#sub is_info  { return $_[0]->level() >= $INFO; }
+#sub is_warn  { return $_[0]->level() >= $WARN; }
+#sub is_error { return $_[0]->level() >= $ERROR; }
+#sub is_fatal { return $_[0]->level() >= $FATAL; }
 sub init_warn {
     CORE::warn "Log4perl: Seems like no initialization happened. Forgot to call init()?\n";
     # Only tell this once;
@@ -654,6 +679,27 @@ sub error_die {
     $self->error(@_);
     $self->and_die(@_);
   }
+}
+
+sub inc_level {
+    my ($self, $delta) = @_;
+
+    $delta ||= 1;
+
+    $self->level(Log::Log4perl::Level::get_higher_level($self->level(), $delta));
+
+    $self->set_output_methods;
+
+}
+
+sub dec_level {
+    my ($self, $delta) = @_;
+
+    $delta ||= 1;
+
+    $self->level(Log::Log4perl::Level::get_lower_level($self->level(), $delta));
+
+    $self->set_output_methods;
 }
 
 ##################################################
