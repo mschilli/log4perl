@@ -3,34 +3,7 @@ package Log::Log4perl::Appender::DBI;
 use Carp;
 
 use strict;
-use Log::Log4perl::Layout::PatternLayout;
-use Params::Validate qw(validate SCALAR ARRAYREF CODEREF);
 use DBI;
-
-
-use base qw(Log::Dispatch::Output);
-
-
-#overriding superclass so we can get arrayrefs through in 'message'
-sub log
-{
-    my $self = shift;
-
-    my %p = validate( @_, { level => { type => SCALAR },
-                            message => {  },
-                            log4p_level => { type => SCALAR },
-                            log4p_category  => { type => SCALAR },
-                            name  => { type => SCALAR },
-                          } );
-
-    return unless $self->_should_log($p{level});
-
-    $p{message} = $self->_apply_callbacks(%p)
-        if $self->{callbacks};
-
-    $self->log_message(%p);
-}
-
 
 sub new {
     my($proto, %p) = @_;
@@ -38,7 +11,6 @@ sub new {
 
     my $self = bless {}, $class;
 
-    $self->_basic_init(%p);
     $self->_init(%p);
 
     #e.g.
@@ -71,6 +43,7 @@ sub new {
         "in your appender '$p{name}'--\n".
         "I'm going to ignore bufferSize and just use a prepared stmt\n";
     }
+
     return $self;
 }
 
@@ -86,8 +59,6 @@ sub _init {
             or croak "Log4perl: $DBI::errstr";
         $self->{_mine} = 1;
     }
-
-
 }
 
 
@@ -101,7 +72,7 @@ sub create_statement {
 }
 
 
-sub log_message {
+sub log {
     my $self = shift;
     my %p = @_;
 
@@ -169,7 +140,7 @@ sub calculate_bind_values {
                         $p->{message},
                         $p->{log4p_category},
                         $p->{log4p_level},
-                        6 + $Log::Log4perl::caller_depth,  
+                        5 + $Log::Log4perl::caller_depth,  
                     );
 
                #we don't have a bind_value_layout, so get

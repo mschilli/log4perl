@@ -6,33 +6,33 @@ package Log::Log4perl::Appender::TestBuffer;
 # This is like having a Log::Log4perl::Appender::TestBuffer
 ##################################################
 
-use Log::Dispatch::Output;
-use base qw( Log::Dispatch::Output );
-use fields qw( stderr );
-
 our %POPULATION   = ();
 our $LOG_PRIORITY = 0;
 
 ##################################################
 sub new {
 ##################################################
-    my $proto = shift;
-    my $class = ref $proto || $proto;
+    my $proto  = shift;
+    my $class  = ref $proto || $proto;
     my %params = @_;
 
-    my $self = bless {}, $class;
+    my $self = {
+        name      => "unknown name",
+        %params,
+    };
 
-    $self->_basic_init(%params);
+    bless $self, $class;
+
     $self->{stderr} = exists $params{stderr} ? $params{stderr} : 1;
     $self->{buffer} = "";
 
-    $POPULATION{$self->name} = $self;
+    $POPULATION{$self->{name}} = $self;
 
     return $self;
 }
 
 ##################################################
-sub log_message {   
+sub log {   
 ##################################################
     my $self = shift;
     my %params = @_;
