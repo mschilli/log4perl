@@ -235,7 +235,8 @@ Log::Log4perl::Appender - Log appender class
 This class is a wrapper around the C<Log::Dispatch::*> collection of
 dispatchers, so they can be used by C<Log::Log4perl>. 
 The module hides the idiosyncrasies of C<Log::Dispatch>
-(e.g. every dispatcher gotta have a name, but there's no accessor to retrieve it)
+(e.g. every dispatcher gotta have a name, but there's no 
+accessor to retrieve it)
 from C<Log::Log4perl> and yet re-uses the extremely useful 
 variety of dispatchers already created and tested
 in C<Log::Dispatch>.
@@ -321,21 +322,81 @@ C<Log::Log4perl> to change this behaviour by slipping it the
 C<mode =E<gt> append> parameter behind the scenes. So, effectively
 with C<Log::Log4perl> 0.23, a configuration like
 
-    log4j.category = INFO, FileAppndr
-    log4j.appender.FileAppndr          = Log::Dispatch::File
-    log4j.appender.FileAppndr.filename = test.log
-    log4j.appender.FileAppndr.layout   = Log::Log4perl::Layout::SimpleLayout
+    log4perl.category = INFO, FileAppndr
+    log4perl.appender.FileAppndr          = Log::Dispatch::File
+    log4perl.appender.FileAppndr.filename = test.log
+    log4perl.appender.FileAppndr.layout   = Log::Log4perl::Layout::SimpleLayout
 
 will always I<append> to an existing logfile C<test.log> while if you 
 specifically request clobbering like in
 
-    log4j.category = INFO, FileAppndr
-    log4j.appender.FileAppndr          = Log::Dispatch::File
-    log4j.appender.FileAppndr.filename = test.log
-    log4j.appender.FileAppndr.mode     = write
-    log4j.appender.FileAppndr.layout   = Log::Log4perl::Layout::SimpleLayout
+    log4perl.category = INFO, FileAppndr
+    log4perl.appender.FileAppndr          = Log::Dispatch::File
+    log4perl.appender.FileAppndr.filename = test.log
+    log4perl.appender.FileAppndr.mode     = write
+    log4perl.appender.FileAppndr.layout   = Log::Log4perl::Layout::SimpleLayout
 
 it will overwrite an existing log file C<test.log> and start from scratch.
+
+=head1 Appenders Expecting Message Chunks
+
+Instead of simple strings, some appenders are expecting multiple fields
+as log messages. If a statement like 
+
+    $logger->debug("%d", $user, "signed in");
+
+causes an off-the-shelf C<Log::Log4perl::Screen> 
+appender to fire, the appender will 
+just concatenate the message chunks to form a single string,
+separating the chunks by a character defined in 
+C<$Log::Log4perl::JOIN_MSG_ARRAY_CHAR> (defaults to ""). 
+
+However, different appenders might choose to 
+interpret the message above differently: An
+appender of type C<Log::Log4perl::Appender::DBI> might take the
+three arguments passed to the logger and put them in three separate
+rows into the DB.
+
+The  C<filter_message> appender option is ued to specify the desired 
+behaviour.
+If no setting for the appender property
+
+    log4perl.appender.SomeApp.filter_message
+
+is defined in the Log4perl configuration file, the
+appender referenced by C<SomeApp> will fall back to the standard behaviour
+and join all message chunks together, separating them by
+C<$Log::Log4perl::JOIN_MSG_ARRAY_CHAR>.
+
+If, on the other hand, it is set to a false value, like in
+
+    log4perl.appender.SomeApp.filter_message = 0
+
+then the message chunks are passed unmodified to the appender as an
+array reference.
+
+If (and now we're getting fancy)
+an appender expects message chunks, but we would 
+like to pre-inspect and probably modify all of them before they're 
+actually passed to the appender's C<log>
+function, an inspection subroutine can be defined with the
+appender's C<filter_message> property:
+
+    log4perl.appender.SomeApp.filter_message = sub { \
+                    my @chunks = @$[0]; \
+                    unshift @chunks, "%d"; \
+                    return \@chunks;    \
+                }
+
+The subroutine above will add a time stamp as an additional first field to 
+every message passed to the C<SomeApp> appender -- but not to
+any other appender in the system.
+
+The inspection subroutine defined by the C<filter_message> 
+property will receive a reference to
+an array of message chunks and is expected to return a reference
+to an array of corrected message chunks. It is free to remove, add
+or modify any elements.
 
 =head1 SEE ALSO
 
