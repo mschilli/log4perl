@@ -2,66 +2,17 @@
 Revision history for Log::Log4perl
 ##################################################
 
-TODO:
-##################################################
-* I wonder if it might not be a mistake to have the base level be '0',
-  might be safer to make it '1', less chance of those
-  false-but-is-defined errors I think that's what log4j uses
-* Should we canonicalize on a level is a string and a priority is an
-  int? might make maintenance easier
-
-Kevin:
-##################################################
-* I think we should not install Log::Dispatch::Buffer, we only use it
-  for our test cases, we shouldn't infringe on the Log::Dispatch
-  namespace, should we?
-* test cases should use platform independend directory separator (Mac's
-  pre-OSX ':'?) DONE need level validation on Logger::level() DONE
-  Create new module negotiating between Java-style config files and
-  perl-style appenders
-* Module for reading XML-style config files
-* Please use 80 chars max line width
-DONE (is gone) redo level_str() hack
-DONE (Dispatch singleton) question - are appenders created just once if
-  they're reused in the config file?
-
-Mike:
-##################################################
-* Documentation on Layout class changes
-* %% bug in Layout.pm -- write test case
-* Documentation of Log::Log4perl::Logger and Log::Log4perl::Config
-* Tune performance of level() lookups (Mike, check out the log4j
-  statement: "As a side note, let me mention that in log4j child loggers
-  link only to their existing ancestors. In particular, the logger named
-  com.foo.Bar is linked directly to the root logger, thereby
-  circumventing the unused com or com.foo loggers. This significantly
-  increases performance and reduces log4j's memory footprint. "
-* Layout.pm: 'd' (partially implemented), 't', 'x', 'X'
-* Signal to re-read the conf file.
-* Additivity flag -- set/get as API and in cfg file
-* README tests (Pod::Tests or something)
-* Thread safety
-* Pass the config file in as a string or a file handle
-* Just had a wild idea: Could we possibly utilize the compiler
-  frontend to eliminate log statements that are not going to be
-  triggered? This would be a HUGE performance increase!
-DONE Log::Dispatch wrapper for perl modules just like JavaMap?
-DONE Warning in testcase 002
-DONE Added Log::Log4perl::Appender class to wrap Log::Dispatch::*
-DONE Log::Dispatch::Buffer: Delete from MANIFEST
-DONE Log::Log4perl->init()
-DONE Several appenders in one config line: log4j.rootLogger=debug, stdout, R
-DONE Define default if there's no layout:
-  http://jakarta.apache.org/log4j/docs/api/org/apache/log4j/SimpleLayout.html
-
-##################################################
+0.16 07/10/2002
+    * Updated documentation for CPAN release
+    * Applied Kevin's patch to limit it to one Log::Dispatcher
 
 0.15 07/10/2002
-    * There were name conflicts in Log::Dispatch, because we used *one* Log::Dispatch
-      object for the *all* loggers in the Log::Log4perl universe (it still worked
-      because we were using log_to() for Log::Dispatch to send messages to specific
-      appenders only). Now every logger has its own Log::Dispatch object. Logger.pm
-      doesn't call Kevin's anti-dupe logic anymore -- is this ok? Maybe there's 
+    * There were name conflicts in Log::Dispatch, because we used *one*
+      Log::Dispatch object for the *all* loggers in the Log::Log4perl
+      universe (it still worked because we were using log_to() for
+      Log::Dispatch to send messages to specific appenders only). Now
+      every logger has its own Log::Dispatch object. Logger.pm doesn't
+      call Kevin's anti-dupe logic anymore -- is this ok? Maybe there's
       some leftovers which need to be cleaned up.
     * Kevin fixed t/014ConfErrs.t after last night's Appender.pm change
 
@@ -113,7 +64,8 @@ DONE Define default if there's no layout:
 
 0.09 07/03/2002
     * %p should return level name, not number, adding level_str to Logger.pm (kg)
-    * Level.pm - discriminating: priorities are 1-4, levels are 'info','debug',etc (kg)
+    * Level.pm - discriminating: priorities are 1-4, levels are
+      'info','debug',etc (kg)
 
 0.08  07/03/2002
     * Non-root loggers are working now off the config file
@@ -152,3 +104,58 @@ DONE Define default if there's no layout:
 
 0.01  06/22/2002
     * Where it all began
+
+TODO:
+##################################################
+    * I wonder if it might not be a mistake to have the base level be
+      '0', might be safer to make it '1', less chance of those
+      false-but-is-defined errors I think that's what log4j uses
+    * Should we canonicalize on a level is a string and a priority is an
+      int? might make maintenance easier
+
+Kevin:
+##################################################
+    * I think we should not install Log::Dispatch::Buffer, we only use
+      it for our test cases, we shouldn't infringe on the Log::Dispatch
+      namespace, should we?
+    * test cases should use platform independend directory separator
+      (Mac's pre-OSX ':'?) DONE need level validation on Logger::level()
+      DONE Create new module negotiating between Java-style config files
+      and perl-style appenders
+    * Module for reading XML-style config files
+    * Please use 80 chars max line width
+DONE (is gone) redo level_str() hack
+DONE (Dispatch singleton) question - are appenders created just once if
+they're reused in the config file?
+
+Mike:
+##################################################
+    * Documentation on Layout class changes
+    * %% bug in Layout.pm -- write test case
+    * Documentation of Log::Log4perl::Logger and Log::Log4perl::Config
+    * Tune performance of level() lookups (Mike, check out the log4j
+      statement: "As a side note, let me mention that in log4j child
+      loggers link only to their existing ancestors. In particular, the
+      logger named com.foo.Bar is linked directly to the root logger,
+      thereby circumventing the unused com or com.foo loggers. This
+      significantly increases performance and reduces log4j's memory
+      footprint. "
+    * Layout.pm: 'd' (partially implemented), 't', 'x', 'X'
+    * Signal to re-read the conf file.
+    * Additivity flag -- set/get as API and in cfg file
+    * README tests (Pod::Tests or something)
+    * Thread safety
+    * Pass the config file in as a string or a file handle
+    * Just had a wild idea: Could we possibly utilize the compiler
+      frontend to eliminate log statements that are not going to be
+      triggered? This would be a HUGE performance increase!
+DONE Log::Dispatch wrapper for perl modules just like JavaMap?
+DONE Warning in testcase 002
+DONE Added Log::Log4perl::Appender class to wrap Log::Dispatch::*
+DONE Log::Dispatch::Buffer: Delete from MANIFEST
+DONE Log::Log4perl->init()
+DONE Several appenders in one config line: log4j.rootLogger=debug, stdout, R
+DONE Define default if there's no layout:
+  http://jakarta.apache.org/log4j/docs/api/org/apache/log4j/SimpleLayout.html
+
+##################################################

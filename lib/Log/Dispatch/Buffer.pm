@@ -79,3 +79,45 @@ sub DESTROY {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+Log::Dispatch::Buffer - Appender class for testing
+
+=head1 SYNOPSIS
+
+  use Log::Dispatch::Buffer;
+
+  my $appender = Log::Dispatch::Screen->new( 
+      name      => 'buffer',
+      min_level => 'debug',
+      );
+
+      # Append to the buffer
+  $appender->log_message( 
+      level =  > 'alert', 
+      message => "I'm searching the city for sci-fi wasabi\n" 
+      );
+
+      # Retrieve the result
+  my $result = $appender->buffer();
+
+      # Reset the buffer to the empty string
+  $appender->reset();
+
+=head1 DESCRIPTION
+
+This class is used for internal testing of C<Log::Log4perl>. It
+is a C<Log::Dispatch>-style appender, which writes to a buffer 
+in memory, from where actual results can be easily retrieved later
+to compare with expeced results.
+
+=head1 SEE ALSO
+
+=head1 AUTHOR
+
+Mike Schilli, E<lt>m@perlmeister.comE<gt>
+
+=cut

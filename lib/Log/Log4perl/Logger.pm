@@ -300,10 +300,54 @@ Log::Log4perl::Logger - Main Logger
 
   use Log::Log4perl::Logger;
 
-  my $log =  Log::Log4perl::Logger();
-  $log->debug("Debug Message");
+      # Init it only once
+  Log::Log4perl::Logger->init();
+
+      # Obtain an instance of a logger (many times)
+      # (_new() is not used externally because of singleton
+      #  behaviour)
+  my $logger = Log::Log4perl::Logger->get_logger($component);
+
+      # Add an appender to the logger
+  Log::Log4perl::Logger->add_appender($appender);
+
+      # re-init to delete all previously defined loggers
+  Log::Log4perl::Logger->reset();
+
+      # Log if logger's level is $level or higher
+  Log::Log4perl::Logger->log($level, $message);
+
+      # Log if logger's level is DEBUG or higher
+  Log::Log4perl::Logger->debug($message);
+      # Log if logger's level is DEBUG or higher
+  Log::Log4perl::Logger->info($message);
+      # Log if logger's level is DEBUG or higher
+  Log::Log4perl::Logger->warn($message);
+      # Log if logger's level is DEBUG or higher
+  Log::Log4perl::Logger->error($message);
+      # Log if logger's level is DEBUG or higher
+  Log::Log4perl::Logger->fatal($message);
+
+      # True if logger's level is DEBUG or higher
+  Log::Log4perl::Logger->is_debug();
+      # True if logger's level is INFO or higher
+  Log::Log4perl::Logger->is_info();
+      # True if logger's level is WARN or higher
+  Log::Log4perl::Logger->is_warn();
+      # True if logger's level is ERROR or higher
+  Log::Log4perl::Logger->is_error();
+      # True if logger's level is FATAL
+  Log::Log4perl::Logger->is_fatal();
 
 =head1 DESCRIPTION
+
+C<Log::Log4perl::Logger> is the main logger class. It provides the
+method C<get_logger($compontent)> which obtains a 
+logger. This is different from I<creating> a logger because
+loggers are only created once and then this single one instance is
+used all over the system. For this reason, there's no C<new()>
+method (there's an internal-only method called C<_new()> just in
+case you're curious).
 
 =head1 SEE ALSO
 
