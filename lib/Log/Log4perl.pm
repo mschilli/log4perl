@@ -1432,6 +1432,11 @@ afterwards to recall the assigned values. Here's an example:
 This is a convenient way to define two appenders with the same layout 
 without having to retype the pattern definitions.
 
+Variable substitution via C<${varname}> 
+will first try to find an explicitely defined 
+variable. If that fails, it will check your shell's environment
+for a variable of that name. If that also fails, the program will C<die()>.
+
 =head2 Perl Hooks in the Configuration File
 
 If some of the values used in the Log4perl configuration file 
