@@ -944,19 +944,27 @@ EXAMPLE
     A simple example to cut-and-paste and get started:
 
         use Log::Log4perl qw(get_logger);
-
+    
         my $conf = q(
-        log4perl.category.Bar.Twix      = WARN, Screen
-        log4perl.appender.Screen        = Log::Dispatch::Screen
-        log4perl.appender.Screen.layout = \
+        log4perl.category.Bar.Twix         = WARN, Logfile
+        log4perl.appender.Logfile          = Log::Dispatch::File
+        log4perl.appender.Logfile.filename = test.log
+        log4perl.appender.Logfile.layout = \
             Log::Log4perl::Layout::PatternLayout
-        log4perl.appender.Screen.layout.ConversionPattern = %d %m %n
+        log4perl.appender.Logfile.layout.ConversionPattern = %d %F{1} %L> %m %n
         );
     
         Log::Log4perl::init(\$conf);
     
         my $logger = get_logger("Bar::Twix");
         $logger->error("Blah");
+
+    This will log something like
+
+        2002/09/19 23:48:15 t1 25> Blah 
+
+    to the log file `test.log', which Log4perl will append to or create it
+    if it doesn't exist already.
 
 INSTALLATION
     `Log::Log4perl' needs `Log::Dispatch' (2.00 or better) from CPAN.
