@@ -385,16 +385,16 @@ Please note the class of the C<Log::Dispatch> object is passed as a
 I<string> to C<Log::Log4perl::Appender> in the I<first> argument. 
 Behind the scenes, C<Log::Log4perl::Appender> will create the necessary
 C<Log::Dispatch::*> object and pass along the name value pairs we provided
-to C<Log::Log4perl::Appender->new()> after the first argument.
+to C<Log::Log4perl::Appender-E<gt>new()> after the first argument.
 
 The C<name> value is optional and if you don't provide one,
-C<Log::Log4perl::Appender->new()> will create a unique one for you.
+C<Log::Log4perl::Appender-E<gt>new()> will create a unique one for you.
 The names and values of additional parameters are dependent on the requirements
 of the particular C<Log::Dispatch::*> class and can be looked up in their
 manual pages.
 
 On a side note:
-In case you're wondering if C<Log::Log4perl::Appender->new()> will also take care
+In case you're wondering if C<Log::Log4perl::Appender-E<gt>new()> will also take care
 of the C<min_level> argument to the C<Log::Dispatch::*> constructors called behind the 
 scenes -- yes, it does. This is because we want the
 C<Log::Dispatch> objects to blindly log everything we send them
