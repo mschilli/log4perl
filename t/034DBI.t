@@ -13,9 +13,11 @@ use strict;
 BEGIN {
     eval {
         require DBD::CSV;
+        require SQL::Statement;
+        die "" if $SQL::Statement::VERSION < 1.005;
     };
     if ($@) {
-        print STDERR "DBD::CSV not installed, skipping tests\n";
+        print STDERR "DBD::CSV or SQL::Statement 1.005 not installed, skipping tests\n";
         $no_DBD = 1;
         plan tests => 1;
     }else{
