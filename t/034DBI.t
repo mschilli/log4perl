@@ -7,6 +7,8 @@ use Test;
 
 use Log::Log4perl;
 our $no_DBD;
+use warnings;
+use strict;
 
 BEGIN {
     eval {
