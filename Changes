@@ -2,7 +2,7 @@
 Revision history for Log::Log4perl
 ##################################################
 
-0.20 7/21/2002
+0.20 7/23/2002
     * Strip trailing spaces in config file
     * Accept line continuations in properties file
     * Refactored Logger.pm for speed, defined the logging behavior when 
@@ -10,6 +10,7 @@ Revision history for Log::Log4perl
     * Fixing test suites so that SimpleFormat newline is accounted for
     * Fixed a bug with root inheritance where the category name wasn't coming 
       through
+    * added init_and_watch
 
 0.19 07/16/2002
     * Added Log::Log4perl::TestBuffer back in the distribution, otherwise
