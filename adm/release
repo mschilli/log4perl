@@ -6,6 +6,7 @@
 # RELEASE checklist:
 # * Update log4perl project download page
 # * Notify log4perl-devel
+# * Check 5.00503 compatibility
 ###########################################
 
 use warnings;
