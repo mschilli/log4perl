@@ -664,4 +664,12 @@ the log file if it exists.
 
 Mike Schilli, E<lt>log4perl@perlmeister.comE<gt>
 
+=head1 SEE ALSO
+
+Log::Log4perl::Config::PropertyConfigurator
+
+Log::Log4perl::Config::DOMConfigurator
+
+Log::Log4perl::Config::LDAPConfigurator (coming soon!)
+
 =cut
