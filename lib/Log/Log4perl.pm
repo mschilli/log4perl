@@ -147,6 +147,23 @@ sub import {
         delete $tags{':nowarn'};
     }
 
+    if(exists $tags{':unhide'}) {
+        my $FILTER_MODULE = "Filter::Util::Call";
+        if(! Log::Log4perl::Util::module_available($FILTER_MODULE)) {
+            die "$FILTER_MODULE required with :unhide" .
+                "(install from CPAN)";
+        }
+        eval "require $FILTER_MODULE" or die "Cannot pull in $FILTER_MODULE";
+        Filter::Util::Call::filter_add(
+            sub {
+                my($status);
+                s/^\s*#\(l4p\)// if
+                    ($status = Filter::Util::Call::filter_read()) > 0;
+                $status;
+                });
+        delete $tags{':unhide'};
+    }
+
     if(keys %tags) {
         # We received an Option we couldn't understand.
         die "Unknown Option(s): @{[keys %tags]}";
