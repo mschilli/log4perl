@@ -182,7 +182,7 @@ log4perl.appender.appndr.layout.ConversionPattern = sub{ "%m" . \
     chr(109) . " %n"; }
 EOL
 
-$Log::Log4perl::ALLOW_CODE_IN_CONFIG_FILE = 0;
+Log::Log4perl::Config::allow_code(0);
 
 eval {
     Log::Log4perl::init(\$config);
@@ -209,7 +209,7 @@ log4perl.appender.appndr.layout.ConversionPattern = %m %n
 log4perl.appender.appndr.layout.cspec.K = sub { $ENV{TEST_VALUE} }
 EOL
 
-$Log::Log4perl::ALLOW_CODE_IN_CONFIG_FILE = 0;
+Log::Log4perl::Config->allow_code(0);
 
 eval {
     Log::Log4perl::init(\$config);

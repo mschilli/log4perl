@@ -8,6 +8,12 @@ Revision history for Log::Log4perl
     * (ms) changed config_and_watch to ignore clock differences between
            system time and file system time (helpful with skewed NFS 
            systems). Added Log::Log4perl::Config::Watch.
+    * James FitzGibbon <james.fitzgibbon@target.com>: Added support for
+           optionally restricting eval'd code to Safe compartments. 
+    * (ms) allow/deny code in configuration files should now be controlled 
+           via the accessor Log::Log4perl::Config->allow_code(0/1).
+           $Log::Log4perl::ALLOW_CODE_IN_CONFIG_FILE is still supported
+           for backwards compatibility.
 
 0.30 03/14/2003
     * (ms) Added Log4perl custom filter logic and standard filter set

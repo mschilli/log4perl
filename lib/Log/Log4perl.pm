@@ -15,14 +15,39 @@ use Log::Log4perl::Appender;
 
 use constant DEBUG => 1;
 
-our $VERSION = '0.31';
+our $VERSION = '0.31dev';
 
    # set this to '1' if you're using a wrapper
    # around Log::Log4perl
 our $caller_depth = 0;
 
-    #for the security-conscious who don't want people
-    #writing code within the config file, set this to 0
+    #this is a mapping of convenience names to opcode masks used in
+    #$ALLOWED_CODE_OPS_IN_CONFIG_FILE below
+our %ALLOWED_CODE_OPS = (
+    'safe'        => [ ':browse' ],
+    'restrictive' => [ ':default' ],
+);
+
+    #set this to the opcodes which are allowed when
+    #$ALLOW_CODE_IN_CONFIG_FILE is set to a true value
+    #if undefined, there are no restrictions on code that can be
+    #excuted
+our @ALLOWED_CODE_OPS_IN_CONFIG_FILE;
+
+    #this hash lists things that should be exported into the Safe
+    #compartment.  The keys are the package the symbol should be
+    #exported from and the values are array references to the names
+    #of the symbols (including the leading type specifier)
+our %VARS_SHARED_WITH_SAFE_COMPARTMENT = (
+    main => [ '%ENV' ],
+);
+
+    #setting this to a true value will allow Perl code to be executed
+    #within the config file.  It works in conjunction with
+    #$ALLOWED_CODE_OPS_IN_CONFIG_FILE, which if defined restricts the
+    #opcodes which can be executed using the 'Safe' module.
+    #setting this to a false value disables code execution in the
+    #config file
 our $ALLOW_CODE_IN_CONFIG_FILE = 1;
 
     #arrays in a log message will be joined using this character,
@@ -899,6 +924,9 @@ the config file like this:
 
     log4perl.PatternLayout.cspec.U = sub { return "UID $<" }
 
+See L<Log::Log4perl::Layout::PatternLayout> for further details on
+customized specifiers.
+
 Please note that the subroutines you're defining in this way are going
 to be run in the C<main> namespace, so be sure to fully qualify functions
 and variables if they're located in different packages.
@@ -906,13 +934,13 @@ and variables if they're located in different packages.
 SECURITY NOTE: this feature means arbitrary perl code can be embedded in the 
 config file.  In the rare case where the people who have access to your config 
 file are different from the people who write your code and shouldn't have 
-execute rights, you might want to set
+execute rights, you might want to call
 
-    $Log::Log4perl::ALLOW_CODE_IN_CONFIG_FILE = 0;
+    Log::Log4perl::Config->allow_code(0);
 
-before you call init().
-
-See L<Log::Log4perl::Layout::PatternLayout> for details.
+before you call init(). Alternatively you can supply a restricted set of
+Perl opcodes that can be embedded in the config file as described in
+L<"Restricting what Opcodes can be in a Perl Hook">.
 
 =back
 
@@ -1295,9 +1323,137 @@ config file.  In the rare case where the people who have access to your config
 file are different from the people who write your code and shouldn't have 
 execute rights, you might want to set
 
-    $Log::Log4perl::ALLOW_CODE_IN_CONFIG_FILE = 0;
+    Log::Log4perl::Config->allow_code(0);
 
-before you call init().
+before you call init().  Alternatively you can supply a restricted set of
+Perl opcodes that can be embedded in the config file as described in
+L<"Restricting what Opcodes can be in a Perl Hook">.
+
+=head2 Restricting what Opcodes can be in a Perl Hook
+
+The value you pass to Log::Log4perl::Config->allow_code() determines whether
+the code that is embedded in the config file is eval'd unrestricted, or
+eval'd in a Safe compartment.  By default, a value of '1' is assumed,
+which does a normal 'eval' without any restrictions. A value of '0' 
+however prevents any embedded code from being evaluated.
+
+If you would like fine-grained control over what can and cannot be included
+in embedded code, then please utilize the following methods:
+
+ Log::Log4perl::Config->allow_code( $allow );
+ Log::Log4perl::Config->allowed_code_ops($op1, $op2, ... );
+ Log::Log4perl::Config->vars_shared_with_safe_compartment( [ \%vars | $package, \@vars ] );
+ Log::Log4perl::Config->allowed_code_ops_convenience_map( [ \%map | $name, \@mask ] );
+
+Log::Log4perl::Config-E<gt>allowed_code_ops() takes a list of opcode masks
+that are allowed to run in the compartment.  The opcode masks must be
+specified as described in L<Opcode>:
+
+ Log::Log4perl::Config->allowed_code_ops(':subprocess');
+ 
+This example would allow Perl operations like backticks, system, fork, and
+waitpid to be executed in the compartment.  Of course, you probably don't
+want to use this mask -- it would allow exactly what the Safe compartment is
+designed to prevent.
+
+Log::Log4perl::Config-E<gt>vars_shared_with_safe_compartment() 
+takes the symbols which
+should be exported into the Safe compartment before the code is evaluated. 
+The keys of this hash are the package names that the symbols are in, and the
+values are array references to the literal symbol names.  For convenience,
+the default settings export the '%ENV' hash from the 'main' package into the
+compartment:
+
+ Log::Log4perl::Config->vars_shared_with_safe_compartment(
+   main => [ '%ENV' ],
+ );
+
+Log::Log4perl::Config-E<gt>allowed_code_ops_convenience_map() is an accessor
+method to a map of convenience names to opcode masks. At present, the
+following convenience names are defined:
+
+ safe        = [ ':browse' ]
+ restrictive = [ ':default' ]
+ 
+For convenience, if Log::Log4perl::Config-E<gt>allow_code() is called with a
+value which is a key of the map previously defined with
+Log::Log4perl::Config-E<gt>allowed_code_ops_convenience_map(), then the
+allowed opcodes are set according to the value defined in the map. If this
+is confusing, consider the following:
+
+ use Log::Log4perl;
+ 
+ my $config = <<'END';
+  log4perl.logger = INFO, Main
+  log4perl.appender.Main = Log::Dispatch::File
+  log4perl.appender.Main.filename = \
+      sub { "example" . getpwuid($<) . ".log" }
+  log4perl.appender.Main.layout = Log::Log4perl::Layout::SimpleLayout
+ END
+ 
+ $Log::Log4perl::Config->allow_code('restrictive');
+ Log::Log4perl->init( \$config );       # will fail
+ $Log::Log4perl::Config->allow_code('safe');
+ Log::Log4perl->init( \$config );       # will succeed
+
+The reason that the first call to -E<gt>init() fails is because the
+'restrictive' name maps to an opcode mask of ':default'.  getpwuid() is not
+part of ':default', so -E<gt>init() fails.  The 'safe' name maps to an opcode
+mask of ':browse', which allows getpwuid() to run, so -E<gt>init() succeeds.
+
+allowed_code_ops_convenience_map() can be invoked in several ways:
+
+=over 4
+
+=item allowed_code_ops_convenience_map()
+
+Returns the entire convenience name map as a hash reference in scalar
+context or a hash in list context.
+
+=item allowed_code_ops_convenience_map( \%map )
+
+Replaces the entire conveniece name map with the supplied hash reference.
+
+=item allowed_code_ops_convenience_map( $name )
+
+Returns the opcode mask for the given convenience name, or undef if no such
+name is defined in the map.
+
+=item allowed_code_ops_convenience_map( $name, \@mask )
+
+Adds the given name/mask pair to the convenience name map.  If the name
+already exists in the map, it's value is replaced with the new mask.
+
+=back 
+
+as can vars_shared_with_safe_compartment():
+
+=over 4
+
+=item vars_shared_with_safe_compartment()
+
+Return the entire map of packages to variables as a hash reference in scalar
+context or a hash in list context.
+
+=item vars_shared_with_safe_compartment( \%packages )
+
+Replaces the entire map of packages to variables with the supplied hash
+reference.
+
+=item vars_shared_with_safe_compartment( $package )
+
+Returns the arrayref of variables to be shared for a specific package.
+
+=item vars_shared_with_safe_compartment( $package, \@vars )
+
+Adds the given package / varlist pair to the map.  If the package already
+exists in the map, it's value is replaced with the new arrayref of variable
+names.
+
+=back
+
+For more information on opcodes and Safe Compartments, see L<Opcode> and
+L<Safe>.
 
 =head2 Incrementing and Decrementing the Log Levels
 
@@ -1792,6 +1948,7 @@ our
 
     Contributors:
     Chris R. Donnelly <cdonnelly@digitalmotorworks.com>
+    James FitzGibbon <james.fitzgibbon@target.com>
     Paul Harrington <Paul-Harrington@deshaw.com>
     Erik Selberg <erik@selberg.com>
     Aaron Straup Cope <asc@vineyard.net>

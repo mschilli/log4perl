@@ -607,9 +607,9 @@ B<SECURITY NOTE>: this feature means arbitrary perl code
 can be embedded in the config file.  In the rare case
 where the people who have access to your config file
 are different from the people who write your code and
-shouldn't have execute rights, you might want to set
+shouldn't have execute rights, you might want to call
 
-    $Log::Log4perl::ALLOW_CODE_IN_CONFIG_FILE = 0;
+    $Log::Log4perl::Config->allow_code(0);
 
 before you call init(). This will prevent Log::Log4perl from
 executing I<any> Perl code in the config file (including

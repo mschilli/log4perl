@@ -336,13 +336,21 @@ sub add_global_cspec {
 
     }elsif (! ref $perlcode){
         
-        $GLOBAL_USER_DEFINED_CSPECS{$letter} = eval $perlcode;
+        $GLOBAL_USER_DEFINED_CSPECS{$letter} = 
+            Log::Log4perl::Config::compile_if_perl($perlcode);
+
         if ($@) {
             die qq{Compilation failed for your perl code for }.
                 qq{"log4j.PatternLayout.cspec.$letter":\n}.
                 qq{This is the error message: \t$@\n}.
                 qq{This is the code that failed: \n$perlcode\n};
         }
+
+        croak "eval'ing your perlcode for 'log4j.PatternLayout.cspec.$letter' ".
+              "doesn't return a coderef \n".
+              "Here is the perl code: \n\t$perlcode\n "
+            unless (ref $GLOBAL_USER_DEFINED_CSPECS{$letter} eq 'CODE');
+
     }else{
         croak "I don't know how to handle perlcode=$perlcode ".
               "for 'cspec.$letter' in call to add_global_cspec()";
@@ -379,7 +387,9 @@ sub add_layout_cspec {
 
     }elsif (! ref $perlcode){
         
-        $self->{USER_DEFINED_CSPECS}{$letter} = eval $perlcode;
+        $self->{USER_DEFINED_CSPECS}{$letter} =
+            Log::Log4perl::Config::compile_if_perl($perlcode);
+
         if ($@) {
             die qq{Compilation failed for your perl code for }.
                 qq{"cspec.$letter":\n}.
@@ -577,16 +587,18 @@ to be run in the C<main> namespace, so be sure to fully qualify functions
 and variables if they're located in different packages.
 
 B<SECURITY NOTE>
+  
+This feature means arbitrary perl code can be embedded in the config file. 
+In the rare case where the people who have access to your config file are
+different from the people who write your code and shouldn't have execute
+rights, you might want to set
 
-This feature means arbitrary perl code can be 
-embedded in the config file.  In the rare case where the people who have 
-access to your config file are different from the people who write your code 
-and shouldn't have execute rights, you might want to set
+    $Log::Log4perl::Config->allow_code(0);
 
-    $Log::Log4perl::ALLOW_CODE_IN_CONFIG_FILE = 0;
-
-before you call init().
-
+before you call init().  Alternatively you can supply a restricted set of
+Perl opcodes that can be embedded in the config file as described in
+L<Log::Log4perl/"Restricting what Opcodes can be in a Perl Hook">.
+  
 =head1 SEE ALSO
 
 =head1 AUTHOR
