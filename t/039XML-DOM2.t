@@ -58,9 +58,6 @@ my $xmlconfig = <<'EOL';
                 <param name="5" value="%c"/>
                 <param name="6" value="%C"/>
            </param-nested>
-           <param-nested name="cspec">
-                <param-text name="G">sub {'winstonchurchill'}</param-text>
-           </param-nested>
                 
            <layout class="Log::Log4perl::Layout::NoopLayout"/>
          
@@ -109,7 +106,6 @@ log4j.appender.DBAppndr2.params.1 = %p
 log4j.appender.DBAppndr2.params.3 = %5.5l
 log4j.appender.DBAppndr2.params.5 = %c
 log4j.appender.DBAppndr2.params.6 = %C
-log4j.appender.DBAppndr2.cspec.G = sub {'winstonchurchill'}
 
 log4j.appender.DBAppndr2.bufferSize=2
 log4j.appender.DBAppndr2.warp_message=0
