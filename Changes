@@ -2,7 +2,7 @@
  Revision history for Log::Log4perl
 ##################################################
 
-0.49 (10/15/2004)
+0.49 (11/07/2004)
     * (ms) init_and_watch() no longer die()s on reloading syntactically 
            wrong configuration files but issues a warning and then 
            reloads the last working config.
