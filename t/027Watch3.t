@@ -9,6 +9,7 @@ use Config;
 our $SIGNALS_AVAILABLE = 0;
 
 BEGIN {
+    no warnings;
     # Check if this platform supports signals
     if (length $Config{sig_name} and length $Config{sig_num}) {
         eval {
