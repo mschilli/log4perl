@@ -176,6 +176,8 @@ you'll have the following functions available in the current package:
 
 Just make sure that every package of your code where you're using them in
 pulls in C<use Log::Log4perl qw(:easy)> first, then you're set.
+Every stealth logger's category will be equivalent to the name of the
+package it's located in.
 
 These stealth loggers
 will be absolutely silent until you initialize Log::Log4perl in 
