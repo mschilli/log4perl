@@ -192,10 +192,22 @@ sub config_read {
 
     my $data = {};
 
-    for(@text) {
+    #for(@text) {
+    while (@text) {
+        $_ = shift @text;
         s/#.*//;
-        next if /^\s*$/;
+        next unless /\S/;
+    
+        while (/(.+?)\\$/) {
+            my $prev = $1;
+            my $next = shift(@text);
+            $next =~ s/^ +//g;  #leading spaces
+            $next =~ s/#.*//;
+            $_ = $prev. $next;
+            chomp;
+        }
         if(my($key, $val) = /(\S+?)\s*=\s*(.*)/) {
+            $val =~ s/\s+$//;
             $key = unlog4j($key);
             #$key =~ s#^org\.apache\.##;
             #$key =~ s#^log4j\.##;
