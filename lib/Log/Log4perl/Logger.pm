@@ -535,7 +535,7 @@ sub create_custom_level {
       create_custom_level("cust4", 4);
       create_custom_level("cust2", cust3);
       create_custom_level("cust1", cust2);
-   }) if ($Log::Log4perl::Level::LEVELS{$cust_prio});
+   }) if (${Log::Log4perl::Level::LEVELS{$cust_prio}});
 
   Log::Log4perl::Level::add_priority($level, $cust_prio, $syslog_equiv);
 
