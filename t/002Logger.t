@@ -7,7 +7,7 @@
 # change 'tests => 1' to 'tests => last_test_to_print';
 #########################
 use Test;
-BEGIN { plan tests => 29 };
+BEGIN { plan tests => 41 };
 
 use Log::Log4perl::Logger;
 use Log::Log4perl::Level;
@@ -157,3 +157,25 @@ $log1->debug("Debug Message");
 ok($disp->buffer(), "Debug Message");
 ok($disp2->buffer(), "Debug Message");
 ok($disp3->buffer(), "");
+
+    ##################################################
+    # Check is_*() functions
+    ##################################################
+$log1->level($DEBUG);
+$log2->level($ERROR);
+$log3->level($INFO);
+
+ok($log1->is_error(), 1);
+ok($log1->is_info(), 1);
+ok($log1->is_fatal(), 1);
+ok($log1->is_debug(), 1);
+
+ok($log2->is_error(), 1);
+ok($log2->is_info(), "");
+ok($log2->is_fatal(), 1);
+ok($log2->is_debug(), "");
+
+ok($log3->is_error(), 1);
+ok($log3->is_info(), 1);
+ok($log3->is_fatal(), 1);
+ok($log3->is_debug(), "");

@@ -1,14 +1,17 @@
 ##################################################
-Revision history for Log::Log4perl (test1)
+Revision history for Log::Log4perl
 ##################################################
+
+* 80 chars width
+* README tests
 
 TODO:
 
 * need level validation on Logger::level() 
-* test cases should use platform independend directory separator (Mac's pre-OSX ':'?)
+* test cases should use platform independend directory separator 
+  (Mac's pre-OSX ':'?)
 * can we parse multiple appenders for a category? e.g.
         log4j.category.a.b = WARN, console, logfile
-
 
 Kevin:
 * Create new module negotiating between Java-style config files
@@ -39,6 +42,12 @@ Mike:
   instead Log::Log4perl::Logger->blah() as suggested by Kevin
 
 ##################################################
+
+0.11 07/07/2002
+    * added documentation to Log/Log4perl.pm
+    * added is_debug/is_error/is_info etc. functions to Logger.pm,
+      test cases to t/002Logger.t
+
 0.10 07/05/2002
     * %p should return level name of the calling function, so 
       $logger->warn('bad thing!!') should print 'WARN - bad thing'

@@ -286,8 +286,13 @@ sub info  { &log($_[0], 'INFO',  $INFO,  @_[1,]); }
 sub warn  { &log($_[0], 'WARN',  $WARN,  @_[1,]); }
 sub error { &log($_[0], 'ERROR', $ERROR, @_[1,]); }
 sub fatal { &log($_[0], 'FATAL', $FATAL, @_[1,]); }
-##################################################
 
+sub is_debug { return $_[0]->level() >= $DEBUG; }
+sub is_info  { return $_[0]->level() >= $INFO; }
+sub is_warn  { return $_[0]->level() >= $WARN; }
+sub is_error { return $_[0]->level() >= $ERROR; }
+sub is_fatal { return $_[0]->level() >= $FATAL; }
+##################################################
 
 1;
 

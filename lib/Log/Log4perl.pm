@@ -6,7 +6,7 @@ use 5.006;
 use strict;
 use warnings;
 
-our $VERSION = '0.10';
+our $VERSION = '0.11';
 
 ##################################################
 sub new {
@@ -35,13 +35,11 @@ Log::Log4perl - Log4j implementation for Perl
 C<Log::Log4perl> implements the widely popular C<Log4j> logging
 package ([1]) in pure Perl.
 
-A WORD OF CAUTION: THIS LIBRARY IS UNDER HEAVY CONSTRUCTION AND CURRENTLY
-IN 'ALPHA' STATE. THE
-MODULE IS ALWAYS GUARANTEED TO PASS THE 
-CONTINUALLY GROWING REGRESSION TEST SUITE, BUT IF YOU'RE PLANNING
-TO USE IT
-ON A PRODUCTION SYSTEM, PLEASE WAIT UNTIL THE VERSION NUMBERS
-HAVE REACHED 1.0 OR BETTER.
+A WORD OF CAUTION: THIS LIBRARY IS UNDER HEAVY CONSTRUCTION AND
+CURRENTLY IN 'ALPHA' STATE. THE MODULE IS ALWAYS GUARANTEED TO PASS THE
+CONTINUALLY GROWING REGRESSION TEST SUITE, BUT IF YOU'RE PLANNING TO USE
+IT ON A PRODUCTION SYSTEM, PLEASE WAIT UNTIL THE VERSION NUMBERS HAVE
+REACHED 1.0 OR BETTER.
 
 Logging beats a debugger when you want to know what's going on 
 in your code during runtime. However, traditional logging packages
@@ -347,26 +345,28 @@ C<Log::Dispatch::File> and C<Log::Dispatch::Screen> modules:
   );
 
   $log->level($INFO);
-  $log->layout("[%r] %F %L %m%n");
-  $log->add_appender($stdout_appender);
-  $log->add_appender($file_appender);
+  $log->layout("screenlog", "[%r] %F %L %m%n");
+  $log->layout("filelog", "[%r] %F %L %m%n");
+  $log->add_appender("screenlog", $stdout_appender);
+  $log->add_appender("filelog", $file_appender);
 
 Please note that the constructor calls to the 
 C<Log::Dispatch> objects are all setting the mandatory 
 C<min_level> parameter to C<debug>. This is because we want the
 C<Log::Dispatch> objects to blindly log everything we send them
-(C<debug> is their lowest setting) because I<we> on C<Log::Log4perl>
-want to make the decision on when and what to log.
+(C<debug> is their lowest setting) because I<we> in C<Log::Log4perl>
+want to call the shots and decide on when and what to log.
 
 The call to the I<layout()> method specifies the format in which the
-message is logged in both appenders. The format shown above 
-logs not only the message but also the number of milliseconds since
+message is logged in the appender specified by name. The formats shown above 
+are logging not only the message but also the number of milliseconds since
 the program has started (%r), the name of the file the call to the logger
 has happened and the line number there (%F and %L), the message itself
 (%m) and a OS-specific newline character (%n).
 For more detailed info on layout formats, see L<Layouts>.
 If you don't specify a layout, the logger will just log the plain
 message.
+
 Once the initialisation shown above has happened once, typically in
 the startup code of your system, just use this logger anywhere in 
 your system (or better yet, only in C<My::Category>, since we
@@ -408,34 +408,112 @@ and levels.
 
 =head2 Turn off a component
  
+C<Log4perl> doesn't only allow you to selectively switch I<on> a category
+of log messages, you can also use the mechanism to selectively I<disable>
+logging in certain components whereas logging is kept turned on in higher-level
+categories. This mechanism comes in handy if you find that while bumping 
+up the logging level of a high-level (i. e. close to root) category, 
+that one component logs more than it should, 
+
+Here's how it works: 
+
+    ############################################################
+    # Turn off logging in a lower-level category while keeping
+    # it active in higher-level categories.
+    ############################################################
+    log4j.rootLogger=debug, LOGFILE
+    log4j.logger.deep.down.the.hierarchy = error, LOGFILE
+
+    # ... Define appenders ...
+
+This way, log messages issued from within 
+C<Deep::Down::The::Hierarchy> and below will be
+logged only if they're C<error> or worse, while in all other system components
+even C<debug> messages will be logged.
+
 =head2 Configuration files
+
+As shown above, you can define C<Log::Log4perl> loggers both from within
+your Perl code or from configuration files. The latter have the unbeatible
+advantage that you can modify your system's logging behaviour without 
+interfering with the code at all. So even if your code is being run by 
+somebody who's totally oblivious to Perl, they still can adapt the
+module's logging behaviour to their needs.
+
+C<Log::Log4perl> has been designed to understand C<Log4j> configuration
+files -- as used by the original Java implementation. Instead of 
+reiterating the format description in [1], let me just list three
+examples (also derived from [1]), which should also illustrate
+how it works:
+
+    log4j.rootLogger=DEBUG, A1
+    log4j.appender.A1=ConsoleAppender
+    log4j.appender.A1.layout=org.apache.log4j.PatternLayout
+    log4j.appender.A1.layout.ConversionPattern=%-4r [%t] %-5p %c %x - %m%n
+
+This enables messages of priority C<debug> or higher in the root
+hierarchy and has the system write them to the console. 
+C<ConsoleAppender> is a Java appender, but C<Log::Log4perl> jumps
+through a significant number of hoops internally to map these to their
+corresponding Perl classes, C<Log::Dispatch::Screen> in this case.
+
+Second example:
+
+    log4j.rootLogger=DEBUG, A1
+    log4j.appender.A1=Log::Dispatch::Screen
+    log4j.appender.A1.layout=org.apache.log4j.PatternLayout
+    log4j.appender.A1.layout.ConversionPattern=%d [%t] %-5p %c - %m%n
+    log4j.logger.com.foo=WARN
+
+This defines two loggers: The root logger and the C<com.foo> logger.
+The root logger is easily triggered by debug-messages, 
+but the C<com.foo> logger makes sure that messages issued within
+the C<Com::Foo> component and below are only forwarded to the appender
+if they're of priority I<warning> or higher. 
+
+Note that the C<com.foo> logger doesn't define an appender. Therefore,
+it will just propagate the message up the hierarchy until the root logger
+picks it up and forwards it to the one and only appender of the root
+category, using the format defined for it.
+
+Third example:
+
+    log4j.rootLogger=debug, stdout, R
+    log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+    log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+    log4j.appender.stdout.layout.ConversionPattern=%5p [%t] (%F:%L) - %m%n
+    log4j.appender.R=org.apache.log4j.FileAppender
+    log4j.appender.R.File=example.log
+    log4j.appender.R.layout=org.apache.log4j.PatternLayout
+    log4j.appender.R.layout.ConversionPattern=%p %t %c - %m%n
+
+The root logger defines two appenders here: C<stdout>, which uses 
+C<org.apache.log4j.ConsoleAppender> (ultimately mapped by C<Log::Log4perl>
+to C<Log::Dispatch::Screen>) to write to the screen. And
+C<R>, a C<org.apache.log4j.RollingFileAppender> 
+(ultimately mapped by C<Log::Log4perl> to 
+C<Log::Dispatch::File> with the C<File> attribute specifying the
+log file.
 
 =head2 Layout patterns
 
-=head2 How to log in an object
+Instead of copying the original documentation from which this format
+has been derived for C<Log::Log4perl>, please refer to it directly:
 
-    package MyPackage;
-
-    use Log::Log4perl;
-
-    our $Logger = Log::Log4perl->get_logger();
-
-    sub new { ... }
-
-    sub method {
-        ...
-        $Logger->info("Doing well ...");
-    }
-
-=head2 Reconfigure at runtime
-
-Signal?
+    http://jakarta.apache.org/log4j/docs/api/org/apache/log4j/PatternLayout.html
 
 =head2 Penalties
 
-Logging comes with a price tag.
+Logging comes with a price tag. C<Log::Log4perl> is currently being optimized
+to allow for maximum performance, both with logging enabled and disabled.
 
-    $Logger->info("...") if $Logger->is_info();
+But you need to be aware that there's a small hit every time your code
+encounters a log statement -- no matter if logging is enabled or not. 
+C<Log::Log4perl> has been designed to keep this so low that it will
+be unnoticable to most applications.
+
+Here's a couple of tricks which help C<Log::Log4perl> to avoid
+unnecessary delays:
 
 You can save serious time if you're logging something like
 
@@ -444,6 +522,10 @@ You can save serious time if you're logging something like
         $Logger->debug("Element: $_\n");
     }
 
+and C<@super_long_array> is fairly big, so looping through it is pretty
+expensive. Only you, the programmer, knows that going through that C<for>
+loop can be skipped entirely if the current logging level for the 
+actual component is higher than C<debug>.
 In this case, use this instead:
 
         # Cheap in non-debug mode!
@@ -452,10 +534,6 @@ In this case, use this instead:
             $Logger->debug("Element: $_\n");
         }
     }
-
-=head2 EXPORT
-
-=head1 SEE ALSO
 
 =head1 AUTHORS
 
