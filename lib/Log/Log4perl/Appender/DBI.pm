@@ -344,7 +344,7 @@ You'd better be darn sure there are not quotes in your log message, or your
 insert could have unforseen consequences!  This is a very insecure way to
 handle database inserts, using place holders and bind values is much better, 
 keep reading. (Note that the log4j docs warn "Be careful of quotes in your 
-messages!" *).
+messages!") B<*>.
 
 =item *
 
