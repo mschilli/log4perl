@@ -1501,6 +1501,48 @@ the Perl script shown above.
 Many thanks to Chainsaw's
 Scott Deboy <sdeboy@comotivsystems.com> for his support!
 
+=head2 How can I run Log::Log4perl under mod_perl?
+
+In persistent environments it's important to play by the rules outlined
+in section L<Log::Log4perl/"Initialize once and only once">. 
+If you haven't read this yet, please go ahead and read it right now. It's 
+very important.
+
+And no matter if you use a startup handler to init() Log::Log4perl or use the
+init_once() strategy (added in 0.42), either way you're very likely to have
+unsynchronized writes to logfiles.
+
+If Log::Log4perl is configured with a log file appender, and it is 
+initialized via
+the Apache startup handler, the file handle created initially will be
+shared among all Apache processes. Similarly, with the init_once()
+approach: although every process has a separate L4p configuration,
+processes are gonna share the appender file I<names> instead, effectively
+opening several different file handles on the same file.
+
+Now, having several appenders using the same file handle or having
+several appenders logging to the same file unsynchronized, this might
+result in overlapping messages. Sometimes, this is acceptable. If it's
+not, here's two strategies:
+
+=over 4
+
+=item *
+
+Use the L<Log::Log4perl::Appender::Synchronized> appender to connect to 
+your file appenders. Here's the writeup: 
+http://log4perl.sourceforge.net/releases/Log-Log4perl/docs/html/Log/Log4perl/FAQ.html#23804 
+
+=item *
+
+Use a different logfile for every process like in
+
+     #log4perl.conf
+     ...
+     log4perl.appender.A1.filename = sub { "mylog.$$.log" }
+
+=back
+
 =cut
 
 =head1 SEE ALSO
