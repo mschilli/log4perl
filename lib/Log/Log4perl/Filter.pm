@@ -305,9 +305,13 @@ like this:
     Log::Log4perl::Filter::MyFilter->new( name  => "MyFilter",
                                           color => "red" );
 
-which in turn should be used by the custom filter class to set the
-object's attributes, which later on can be retrieved inside the
-C<ok()> call to support decision making.
+The custom filter class should use this to set the object's attributes, 
+to have them available later to base log/nolog decisions on it.
+
+C<ok()> is the filter's method to tell if it agrees or disagrees with logging
+the message. It will be called by Log::Log4perl whenever it needs the
+filter to decide. A false value returned by C<ok()> will block messages,
+a true value will let them through.
 
 =head2 A Practical Example: Level Matching
 
