@@ -9,7 +9,7 @@ use warnings;
 use Log::Log4perl::Logger;
 use Log::Log4perl::Config;
 
-our $VERSION = '0.15';
+our $VERSION = '0.16';
 
 ##################################################
 sub new {
@@ -539,16 +539,85 @@ C<R>, a C<org.apache.log4j.RollingFileAppender>
 C<Log::Dispatch::File> with the C<File> attribute specifying the
 log file.
 
-=head2 Layout patterns
+=head2 Layouts
 
-Instead of copying the original documentation from which this format
-has been derived for C<Log::Log4perl>, please refer to it directly:
+If the logging engine passes a message to an appender, because it thinks
+it should be logged, the appender doesn't just
+write it out haphazardly. There's ways to tell the appender how to format
+the message and add all sorts of interesting data to it: The date and
+time when the event happened, the file, the line number, the
+debug level of the logger and others.
 
+There's currently two layouts defined in C<Log::Log4perl>: 
+C<Log::Log4perl::Layout::SimpleLayout> and
+C<Log::Log4perl::Layout::Patternlayout>:
+
+=over 4 
+
+=item C<Log::Log4perl::SimpleLayout> 
+
+formats a message in a simple
+way and just prepends it by the debug level and a hyphen:
+C<"$level - $message>, for example C<"FATAL - Can't open password file">.
+
+=item C<Log::Log4perl::PatternLayout> 
+
+on the other hand is very powerful and 
+allows for a very flexible format in C<printf>-style. The format
+string can contain a number of placeholders which will be
+replaced by the logging engine when it's time to log the message:
+
+    %c Category of the logging event.
+    %C Fully qualified package (or class) name of the caller
+    %d Current date in yyyy/mm/dd hh:mm:ss format
+    %F File where the logging event occurred
+    %l Fully qualified name of the calling method followed by the
+       callers source the file name and line number between parentheses.
+    %L Line number within the file where the log statement was issued
+    %m The message to be logged
+    %M Method or function where the logging request was issued
+    %n Newline (OS-independent)
+    %p Priority of the logging event
+    %r Number of milliseconds elapsed from program start to logging event
+    %% A literal percent (%) sign
+
+=back
+
+Layouts are objects, here's how you create them:
+
+        # Create a simple layout
+    my $simple = Log::Log4perl::SimpleLayout();
+
+        # create a flexible layout:
+        # ("yyyy/mm/dd hh:mm:ss (file:lineno)> message\n")
+    my $pattern = Log::Log4perl::PatternLayout("%d (%F:%L)> %m%n");
+
+Every appender has exactly one layout assigned to it. You assign
+the layout to the appender using the appender's C<layout()> object:
+
+    my $app =  Log::Log4perl::Appender->new(
+                  "Log::Dispatch::Screen",
+                  name      => "screenlog",
+                  stderr    => 0);
+
+        # Assign the previously defined flexible layout
+    $app->layout($pattern);
+
+        # Add the appender to a previously defined logger
+    $logger->add_appender($app);
+
+        # ... and you're good to go!
+    $logger->debug("Blah");
+        # => "2002/07/10 23:55:35 (test.pl:207)> Blah\n"
+
+If you don't specify a layout for an appender, the logger will fall back 
+to C<SimpleLayout>.
+
+For more details on logging and how to use the flexible and the simple
+format, check out the original C<log4j> website under
+
+    http://jakarta.apache.org/log4j/docs/api/org/apache/log4j/SimpleLayout.html
     http://jakarta.apache.org/log4j/docs/api/org/apache/log4j/PatternLayout.html
-
-Only exceptions so far are C<%t>, C<%x> and C<%X> which aren't implemented
-yet and C<%d> which stubburnly uses C<yyyy/mm/dd hh:mm:ss> as the time
-stamp format (no support yet for C<%d{yada}>.
 
 =head2 Penalties
 
