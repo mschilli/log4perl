@@ -147,6 +147,7 @@ TODO:
     * what happens when init() is called twice?
     * if $log->debug is called before init(), should it die saying "please initialize log engine"?
     * I really want a format specifier to print the pid, helps with web apps
+    * possible bug: was logging to a category, then took my appender off that category, am still seeing stuff in my log, something didn't take about the reload
 
 Kevin:
 ##################################################
