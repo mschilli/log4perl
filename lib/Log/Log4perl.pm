@@ -271,12 +271,12 @@ Log::Log4perl - Log4j implementation for Perl
     $logger->fatal('..');
     
     #####/etc/log4perl.conf###################
-    log4j.category.house              = WARN,  FileAppndr1
-    log4j.category.house.bedroom.desk = DEBUG,  FileAppndr1
+    log4perl.category.house              = WARN,  FileAppndr1
+    log4perl.category.house.bedroom.desk = DEBUG,  FileAppndr1
     
-    log4j.appender.FileAppndr1          = Log::Dispatch::File
-    log4j.appender.FileAppndr1.filename = desk.log 
-    log4j.appender.FileAppndr1.layout   = \
+    log4perl.appender.FileAppndr1          = Log::Dispatch::File
+    log4perl.appender.FileAppndr1.filename = desk.log 
+    log4perl.appender.FileAppndr1.layout   = \
                             Log::Log4perl::Layout::SimpleLayout
     ###########################################
        
@@ -298,7 +298,7 @@ MIGHT STILL BE BUGS. PLEASE CHECK http://log4perl.sourceforge.net REGULARILY
 FOR THE LATEST RELEASE. THE API HAS REACHED A MATURE STATE, WE WILL 
 NOT CHANGE IT UNLESS FOR A GOOD REASON. 
 
-Logging beats a debugger when you want to know what's going on 
+Logging beats a debugger if you want to know what's going on 
 in your code during runtime. However, traditional logging packages
 are too static and generate a flood of log messages in your log files
 that won't help you.
@@ -360,14 +360,14 @@ C<Log::Log4perl>. Use a configuration file like this:
     # in Perl.
     # Mike Schilli 2002 m@perlmeister.com
     ############################################################
-    log4j.rootLogger=error, LOGFILE
+    log4perl.rootLogger=ERROR, LOGFILE
     
-    log4j.appender.LOGFILE=Log::Dispatch::File
-    log4j.appender.LOGFILE.filename=/var/log/myerrs.log
-    log4j.appender.LOGFILE.mode=append
+    log4perl.appender.LOGFILE=Log::Dispatch::File
+    log4perl.appender.LOGFILE.filename=/var/log/myerrs.log
+    log4perl.appender.LOGFILE.mode=append
     
-    log4j.appender.LOGFILE.layout=org.apache.log4j.PatternLayout
-    log4j.appender.LOGFILE.layout.ConversionPattern=[%r] %F %L %c - %m%n
+    log4perl.appender.LOGFILE.layout=PatternLayout
+    log4perl.appender.LOGFILE.layout.ConversionPattern=[%r] %F %L %c - %m%n
 
 These lines define your standard logger that's appending severe
 errors to C</var/log/myerrs.log>, using the format
@@ -455,7 +455,7 @@ higher prioritized messages to the C</tmp/my.log> logfile:
 
   # Initialize the logger
 
-  use Log::Log4perl;
+  use Log::Log4perl qw(:levels);
   use Log::Dispatch::Screen;
   use Log::Log4perl::Appender;
 
@@ -465,6 +465,7 @@ higher prioritized messages to the C</tmp/my.log> logfile:
   $app->layout($layout);
 
   my $logger = Log::Log4perl->get_logger("My.Component");
+  $logger->level($INFO);
   $logger->add_appender($app);
 
 And after this, we can, again, start logging I<anywhere> in the system
@@ -475,9 +476,9 @@ we just get the logger via the singleton-mechanism):
 
   use Log::Log4perl;
   my $log = Log::Log4perl->get_logger("My::Component");
-  $log->debug("Debug Message");
-  $log->info("Info Message");
-  $log->error("Error Message");
+  $log->debug("Debug Message");  # Suppressed
+  $log->info("Info Message");    # Printed
+  $log->error("Error Message");  # Printed
 
 =head2 Log Levels
 
@@ -636,7 +637,7 @@ via the C<Log::Log4perl::Appender> wrapper:
   my $log = Log::Log4perl->get_logger("My::Category");
 
      # Define a layout
-  my $layout = Log::Log4perl->new("[%r] %F %L %m%n");
+  my $layout = Log::Log4perl::Layout::PatternLayout->new("[%r] %F %L %m%n");
 
      # Define a file appender
   my $file_appender = Log::Log4perl::Appender->new(
@@ -745,8 +746,8 @@ Here's how it works:
     # Turn off logging in a lower-level category while keeping
     # it active in higher-level categories.
     ############################################################
-    log4j.rootLogger=debug, LOGFILE
-    log4j.logger.deep.down.the.hierarchy = error, LOGFILE
+    log4perl.rootLogger=debug, LOGFILE
+    log4perl.logger.deep.down.the.hierarchy = error, LOGFILE
 
     # ... Define appenders ...
 
@@ -758,7 +759,7 @@ even C<debug> messages will be logged.
 =head2 Configuration files
 
 As shown above, you can define C<Log::Log4perl> loggers both from within
-your Perl code or from configuration files. The latter have the unbeatible
+your Perl code or from configuration files. The latter have the unbeatable
 advantage that you can modify your system's logging behaviour without 
 interfering with the code at all. So even if your code is being run by 
 somebody who's totally oblivious to Perl, they still can adapt the
@@ -771,7 +772,7 @@ examples (also derived from [2]), which should also illustrate
 how it works:
 
     log4j.rootLogger=DEBUG, A1
-    log4j.appender.A1=ConsoleAppender
+    log4j.appender.A1=org.apache.log4j.ConsoleAppender
     log4j.appender.A1.layout=org.apache.log4j.PatternLayout
     log4j.appender.A1.layout.ConversionPattern=%-4r [%t] %-5p %c %x - %m%n
 
@@ -783,11 +784,11 @@ corresponding Perl classes, C<Log::Dispatch::Screen> in this case.
 
 Second example:
 
-    log4j.rootLogger=DEBUG, A1
-    log4j.appender.A1=Log::Dispatch::Screen
-    log4j.appender.A1.layout=org.apache.log4j.PatternLayout
-    log4j.appender.A1.layout.ConversionPattern=%d [%t] %-5p %c - %m%n
-    log4j.logger.com.foo=WARN
+    log4perl.rootLogger=DEBUG, A1
+    log4perl.appender.A1=Log::Dispatch::Screen
+    log4perl.appender.A1.layout=PatternLayout
+    log4perl.appender.A1.layout.ConversionPattern=%d [%t] %-5p %c - %m%n
+    log4perl.logger.com.foo=WARN
 
 This defines two loggers: The root logger and the C<com.foo> logger.
 The root logger is easily triggered by debug-messages, 
@@ -889,7 +890,7 @@ becomes C<Bar::Baz> and saves space.
 If those placeholders aren't enough, then you can define your own right in
 the config file like this:
 
-    log4j.PatternLayout.cspec.U = sub { return "UID $<" }
+    log4perl.PatternLayout.cspec.U = sub { return "UID $<" }
     
 SECURITY NOTE: this feature means arbitrary perl code can be embedded in the 
 config file.  In the rare case where the people who have access to your config 
@@ -1187,8 +1188,8 @@ a hash, you can just as well initialized C<Log::Log4perl> with
 a reference to it:
 
     my %key_value_pairs = (
-        "log4j.rootLogger"       => "error, LOGFILE",
-        "log4j.appender.LOGFILE" => "Log::Dispatch::File",
+        "log4perl.rootLogger"       => "error, LOGFILE",
+        "log4perl.appender.LOGFILE" => "Log::Dispatch::File",
         ...
     );
 
