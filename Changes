@@ -2,6 +2,12 @@
 Revision history for Log::Log4perl
 ##################################################
 
+0.43 (not yet released)
+    * (ms) Applied patch by Markus Peter <warp@spin.de> for 'pipe'
+           mode in Log::Log4perl::Appender::File
+    * (ms) Added composite appender Log::Log4perl::Appender::Limit to
+           limit message delivery to adjustable time windows.
+
 0.42 (02/14/2004)
     * (kg) added filters to XML DOMConfig and DTD
     * (ms) Fixed caller level to cspecs by adding one
