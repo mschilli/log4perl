@@ -36,8 +36,7 @@ open (CONF, ">$testconf") || die "can't open $testconf $!";
 print CONF $conf1;
 close CONF;
 
-
-Log::Log4perl->init_and_watch($testconf, 2);
+Log::Log4perl->init_and_watch($testconf, 1);
 
 my $logger = Log::Log4perl::get_logger('animal.dog');
 
@@ -50,11 +49,25 @@ ok(  $logger->is_warn(),  "is_warn - true");
 ok(  $logger->is_error(), "is_error - true");
 ok(  $logger->is_fatal(), "is_fatal - true");
 
-# ***************************************************************
-# do it again
+# *********************************************************************
+# Check if we really dont re-read the conf file if nothing has changed
+# *********************************************************************
 
-print "sleeping for 3 secs\n";
-sleep 3;
+my $how_many_reads = $Log::Log4perl::Config::CONFIG_FILE_READS;
+print "sleeping for 2 secs\n";
+sleep 2;
+$logger->is_debug();
+is($how_many_reads, $Log::Log4perl::Config::CONFIG_FILE_READS,
+   "no re-read until config has changed");
+
+    # Need to sleep for at least a sec, otherwise the watcher
+    # wont check
+print "sleeping for 2 secs\n";
+sleep 2;
+
+# *********************************************************************
+# Now, lets check what happens if the config changes
+# *********************************************************************
 
 my $conf2 = <<EOL;
 log4j.category.animal.dog   = DEBUG, myAppender
@@ -74,9 +87,12 @@ close CONF;
 $logger = Log::Log4perl::get_logger('animal.dog');
 
 $logger->debug('2nd debug message');
+is($Log::Log4perl::Config::CONFIG_FILE_READS, $how_many_reads + 1,
+   "re-read if config has changed");
+
 $logger->info('2nd info message');
-print "sleeping for 3 secs\n";
-sleep 3;
+print "sleeping for 2 secs\n";
+sleep 2;
 $logger->info('2nd info message again');
 
 open (LOG, $testfile) or die "can't open $testfile $!";
@@ -94,8 +110,8 @@ ok(  $logger->is_fatal(), "is_fatal - true");
 # ***************************************************************
 # do it 3rd time
 
-print "sleeping for 3 secs\n";
-sleep 3;
+print "sleeping for 2 secs\n";
+sleep 2;
 
 $conf2 = <<EOL;
 log4j.category.animal.dog   = INFO, myAppender
@@ -127,7 +143,7 @@ $log = join('',@log);
 
 is($log, "INFO - info message\nDEBUG animal.dog - 2nd debug message\nINFO  animal.dog - 2nd info message\nINFO  animal.dog - 2nd info message again\nINFO - 3rd info message\n", "after reload");
 
-BEGIN {plan tests => 17};
+BEGIN {plan tests => 19};
 
 unlink $testfile if (-e $testfile);
 unlink $testconf if (-e $testconf);
