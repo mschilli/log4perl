@@ -572,6 +572,10 @@ will be called with these arguments:
 There are currently some issues around providing API access to an 
 appender-specific cspec, but let us know if this is something you want.
 
+Please note that the subroutines you're defining in this way are going
+to be run in the C<main> namespace, so be sure to fully qualify functions
+and variables if they're located in different packages.
+
 B<SECURITY NOTE>
 
 This feature means arbitrary perl code can be 
@@ -579,7 +583,7 @@ embedded in the config file.  In the rare case where the people who have
 access to your config file are different from the people who write your code 
 and shouldn't have execute rights, you might want to set
 
-    $Log::Log4perl::ALLOW_CODE_IN_CONFIG_FILE = 1;
+    $Log::Log4perl::ALLOW_CODE_IN_CONFIG_FILE = 0;
 
 before you call init().
 
