@@ -15,6 +15,7 @@ lib/Log/Log4perl.pm
 lib/Log/Log4perl/Appender.pm
 lib/Log/Log4perl/Config.pm
 lib/Log/Log4perl/DateFormat.pm
+lib/Log/Log4perl/FAQ.pm
 lib/Log/Log4perl/JavaMap.pm
 lib/Log/Log4perl/JavaMap/ConsoleAppender.pm
 lib/Log/Log4perl/JavaMap/FileAppender.pm
