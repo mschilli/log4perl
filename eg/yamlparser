@@ -84,6 +84,9 @@ my $p = MyYAMLParser->new(text => <<EOT);
             layout: Log::Log4perl::Layout::SimpleLayout
 EOT
 
+# use Data::Dump qw(dump);
+# print dump($p->parse());
+
 Log::Log4perl->init($p);
 
 my $log = Log::Log4perl->get_logger("Bar::Twix");
