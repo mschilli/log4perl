@@ -6,11 +6,12 @@ use 5.006;
 use strict;
 use warnings;
 
-use Data::Dumper;
+use Data::Dump qw(dump);
 use Log::Log4perl::Logger;
 use Log::Log4perl::Level;
-use Log::Dispatch::Screen;
+use Log::Dispatch;
 use Log::Dispatch::File;
+use Log::Log4perl::JavaMap;
 
 # How to map lib4j levels to Log::Dispatch levels
 my @LEVEL_MAP_A = qw(
@@ -27,7 +28,7 @@ my @LEVEL_MAP_A = qw(
 ##################################################
 sub init {
 ##################################################
-    my($class, $filename) = @_;
+    my($class, $config) = @_;
 
     # This logic is probably suited to win an obfuscated programming
     # contest. It desperately needs to be rewritten.
@@ -43,7 +44,7 @@ sub init {
     # Pretty scary. But it allows the lines of the config file to be
     # in *arbitrary* order.
 
-    my $data = config_read($filename);
+    my $data = config_read($config);
     
     my @loggers = ();
 
@@ -86,6 +87,12 @@ sub init {
                 my @params = grep { $_ ne "layout" and
                                     $_ ne "value" 
                                   } keys %{$data->{appender}->{$appname}};
+                eval {
+                    eval "require $appenderclass";  #see 'perldoc -f require' for why two evals
+                    die $@ if $@;
+                };
+                $@ and die "ERROR: trying to set appender for $appname to $appenderclass failed\n$@  ";
+
                 $appender = $appenderclass->new(
                    name      => $appname,
                    min_level => 'debug', # Set default, *we* are controlling
@@ -95,9 +102,10 @@ sub init {
                 );
             } else {
                 # It's Java. Try to map
-                #print Data::Dumper::Dumper($data->{appender}->{$appname});
-                $appender = $appenderclass->new($appname, 
+                $appender = Log::Log4perl::JavaMap::get($appname, 
                                                 $data->{appender}->{$appname});
+                #$appender = $appenderclass->new($appname, 
+                #                                $data->{appender}->{$appname});
             }
     
             $logger->add_appender($appender);
@@ -121,7 +129,8 @@ sub get_appender_by_name {
 
     my $appender = $data->{appender}->{$name}->{value};
 
-    return unlog4j($appender);
+    #return unlog4j($appender);
+    return $appender;
 }
 
 ###########################################
@@ -130,11 +139,17 @@ sub config_read {
 # Read the lib4j configuration and store the
 # values into a nested hash structure.
 ###########################################
-    my($file) = @_;
+    my($config) = @_;
 
-    open FILE, "<$file" or die "Cannot open $file";
-    my @text = <FILE>;
-    close FILE;
+    my @text;
+
+    if (ref $config) {
+        @text = split(/\n/,$$config);
+    }else{
+        open FILE, "<$config" or die "Cannot open $config";
+        @text = <FILE>;
+        close FILE;
+    }
 
     my $data = {};
 
