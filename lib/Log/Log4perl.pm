@@ -752,7 +752,7 @@ are equivalent and are handled the same way internally.
 However, categories are just there to make
 use of inheritance: if you invoke a logger in a sub-category, 
 it will bubble up the hierarchy and call the appropriate appenders.
-Internally, categories not related to the class hierarchy of the program
+Internally, categories are not related to the class hierarchy of the program
 at all -- they're purely virtual. You can use arbitrary categories --
 for example in the following program, which isn't oo-style, but
 procedural:
