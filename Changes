@@ -3,7 +3,6 @@
 ##################################################
 
 0.47 (not yet released)
-    TODO: 017Watch mysteriously core dumps with perl 5.00503.
     * (ms) Fixed bug with initialized() -- checking once caused
            subsequent calls to return true.
     * (ms) run t/045Composite.t only if Storable is installed -- earlier
@@ -11,6 +10,10 @@
     * (ms) fixed test case in t/020Easy.t for buggy perl 5.6.1
     * (ms) added Log::Log4perl::infiltrate_lwp() to make LWP::UserAgent 
            play in the L4p framework upon request.
+    * (ms) perl 5.00503 mysteriously core dumps in t/017Watch.t, seems like 
+           this was introduced in 0.46. Disabled these tests for now
+           if we're on 5.00503 to avoid installation hickups. Longer term,
+           need to investigate.
 
 0.46 (06/13/2004)
     * (ms) removed superfluous eval() in Log4perl.pm, reported anonymously

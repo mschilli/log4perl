@@ -1615,6 +1615,21 @@ Access to Internals
         to return a reference to a hash mapping appender names to their
         Log::Log4perl::Appender object references.
 
+Dirty Tricks
+    infiltrate_lwp()
+        The famous LWP::UserAgent module isn't Log::Log4perl-enabled. Often,
+        though, especially when tracing Web-related problems, it would be
+        helpful to get some insight on what's happening inside
+        LWP::UserAgent. Ideally, LWP::UserAgent would even play along in the
+        Log::Log4perl framework.
+
+        A call to "Log::Log4perl->infiltrate_lwp()" does exactly this. In a
+        very rude way, it pulls the rug from under LWP::UserAgent and
+        transforms its "debug/conn" messages into "debug()" calls of loggers
+        of the category "LWP::UserAgent". Similarily, "LWP::UserAgent"'s
+        "trace" messages are turned into "Log::Log4perl"'s "info()" method
+        calls.
+
 EXAMPLE
     A simple example to cut-and-paste and get started:
 

@@ -530,6 +530,10 @@ upon redefining C<LWP::Debug>'s C<trace()>, C<debug()> and C<conns()>
 functions. In case you use a perl prior to 5.6.x, you need
 to manipulate C<$^W> instead.
 
+To make things easy for you when dealing with LWP, Log::Log4perl 0.47 
+introduces C<Log::Log4perl-E<gt>infiltrate_lwp()> which does exactly the
+above.
+
 =head2 What if I need dynamic values in a static Log4perl configuration file?
 
 Say, your application uses Log::Log4perl for logging and 
