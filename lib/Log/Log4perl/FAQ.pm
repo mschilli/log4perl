@@ -1202,7 +1202,7 @@ If you're using Log4perl's feature to specify the configuration as a
 string in your program (as opposed to a separate configuration file),
 chances are that you've written it like this:
 
-    # *** WRONG! ***
+   # *** WRONG! ***
 
    Log::Log4perl->init( \ <<END_HERE);
         log4perl.logger = WARN, A1
@@ -1210,9 +1210,9 @@ chances are that you've written it like this:
         log4perl.appender.A1.layout = \
             Log::Log4perl::Layout::PatternLayout
         log4perl.appender.A1.layout.ConversionPattern = %m%n
-    END_HERE
+   END_HERE
 
-    # *** WRONG! ***
+   # *** WRONG! ***
 
 and you're getting the following error message:
 
