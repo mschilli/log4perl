@@ -1493,6 +1493,8 @@ without a preceding
 which Log::Log4perl::Layout::XMLLayout applies to the first event sent
 over the socket.
 
+=back
+
 See figure 1 for a screenshot of Chainsaw in action, receiving events from
 the Perl script shown above.
 
