@@ -343,7 +343,8 @@ But the downsides to that usage are:
 You'd better be darn sure there are not quotes in your log message, or your
 insert could have unforseen consequences!  This is a very insecure way to
 handle database inserts, using place holders and bind values is much better, 
-keep reading. (Note that the log4j docs warn "Be careful of quotes in your messages! ").
+keep reading. (Note that the log4j docs warn "Be careful of quotes in your 
+messages!" *).
 
 =item *
 
@@ -450,6 +451,10 @@ same statement handle for the inserts.
 If the program ends while the buffer is only partly full, the DESTROY
 block should flush the remaining statements, if the DESTROY block
 runs of course.
+
+* I<As I was writing this, Danko Mannhaupt was coming out with his
+improved log4j JDBCAppender (http://www.mannhaupt.com/danko/projects/)
+which overcomes many of the drawbacks of the original JDBCAppender.>
 
 =head1 DESCRIPTION 2
 
