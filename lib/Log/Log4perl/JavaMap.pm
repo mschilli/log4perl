@@ -4,13 +4,12 @@ use Carp;
 use strict;
 use Data::Dump qw(dump);
 
-
-
 our %translate = (
-    'org.apache.log4j.ConsoleAppender' => 'Log::Log4perl::JavaMap::ConsoleAppender',
-    'org.apache.log4j.FileAppender'    => 'Log::Log4perl::JavaMap::FileAppender',
+    'org.apache.log4j.ConsoleAppender' => 
+        'Log::Log4perl::JavaMap::ConsoleAppender',
+    'org.apache.log4j.FileAppender'    => 
+        'Log::Log4perl::JavaMap::FileAppender',
 );
-
 
 sub get {
     my ($appender_name, $appender_data) = @_;
@@ -19,25 +18,27 @@ sub get {
     #    {
     #      File   => { value => "t/tmp/test1.log" },
     #      layout => {
-    #                  ConversionPattern => { value => "%r [%t] %-5p %c %x - %m%n" },
+    #                  ConversionPattern => 
+                                      { value => "%r [%t] %-5p %c %x - %m%n" },
     #                  value => "org.apache.log4j.PatternLayout",
     #                },
     #      value  => "org.apache.log4j.ConsoleAppender",
     #    },
 
     my $perl_class = $translate{$appender_data->{value}} || 
-            die "ERROR:  I don't know how to make a '$appender_data->{value}' to implement your appender '$appender_name', that's not a supported class\n";
-
+            die "ERROR:  I don't know how to make a '$appender_data->{value}' " .
+                "to implement your appender '$appender_name', that's not a " .
+                "supported class\n";
     eval {
         eval "require $perl_class";  #see 'perldoc -f require' for why two evals
         die $@ if $@;
     };
-    $@ and die "ERROR: trying to set appender for $appender_name to $appender_data->{value} using $perl_class failed\n$@  \n";
+    $@ and die "ERROR: trying to set appender for $appender_name to " .
+               "$appender_data->{value} using $perl_class failed\n$@  \n";
 
-    return new $perl_class $appender_name, $appender_data;
-    
+    my $app = $perl_class->new($appender_name, $appender_data);
+    return $app;
 }
-
 
 1;
 

@@ -79,15 +79,15 @@ sub init {
             Log::Log4perl::Level::to_level($level));
 
         for my $appname (@appnames) {
-            add_layout_by_name($data, $logger, $appname);
 
             my $appenderclass = get_appender_by_name($data, $appname, 
                                                      \%appenders_created);
-
             my $appender;
+
             if (ref $appenderclass) {
 
                 $appender = $appenderclass;
+                add_layout_by_name($data, $appender, $appname);
 
             }else{
 
@@ -96,29 +96,23 @@ sub init {
                     my @params = grep { $_ ne "layout" and
                                         $_ ne "value" 
                                       } keys %{$data->{appender}->{$appname}};
-                    eval {
-                            # see 'perldoc -f require' for why two evals
-                        eval "require $appenderclass";  
-                        die $@ if $@;
-                    };
-                    $@ and die "ERROR: trying to set appender for $appname " .
-                               "to $appenderclass failed\n$@  ";
-    
-                    $appender = $appenderclass->new(
-                       name      => $appname,
-                       min_level => 'debug', # Set default, *we* are controlling
-                                             # this now
-                       map { $_ => $data->{appender}->{$appname}->{$_}->{value} 
-                           } @params
-                    );
+
+                    $appender = Log::Log4perl::Appender->new(
+                        $appenderclass, 
+                        name => $appname,
+                        map { $_ => $data->{appender}->{$appname}->{$_}->{value} 
+                            } @params,
+                    ); 
+                    add_layout_by_name($data, $appender, $appname);
                 } else {
                     # It's Java. Try to map
                     $appender = Log::Log4perl::JavaMap::get($appname, 
                                                 $data->{appender}->{$appname});
+                    add_layout_by_name($data, $appender, $appname);
                 }
             }
 
-            $logger->add_appender($appname, $appender, 
+            $logger->add_appender($appender, 
                                   $appenders_created{$appname});
             set_appender_by_name($appname, $appender, \%appenders_created);
         }
@@ -128,8 +122,7 @@ sub init {
 ###########################################
 sub add_layout_by_name {
 ###########################################
-    my($data, $logger, $appender_name) = @_;
-
+    my($data, $appender, $appender_name) = @_;
 
     my $layout_class = $data->{appender}->{$appender_name}->{layout}->{value};
 
@@ -141,19 +134,15 @@ sub add_layout_by_name {
         eval "require $layout_class";
         die $@ if $@;
     };
+
     if ($@) {
-        die "ERROR: trying to set layout for $appender_name to $layout_class failed\n$@";
+        die "ERROR: trying to set layout for $appender_name to " .
+            "$layout_class failed\n$@";
     }
 
-    $logger->layout(new 
-                   $layout_class
-                        (
-                        $appender_name,
-                        $data->{appender}->{$appender_name}->{layout}, #e.g. bugo %% %c{2} %-17F{ba} %L hugo
-
-                        )
-                    );
-
+    $appender->layout($layout_class->new(
+        $data->{appender}->{$appender_name}->{layout},
+        ));
 }
 
 ###########################################
@@ -161,14 +150,12 @@ sub get_appender_by_name {
 ###########################################
     my($data, $name, $appenders_created) = @_;
 
-
     if ($appenders_created->{$name}) {
         return $appenders_created->{$name};
     }else{
         return $data->{appender}->{$name}->{value};
     }
 }
-
 
 ###########################################
 sub set_appender_by_name {
@@ -179,7 +166,6 @@ sub set_appender_by_name {
 
     $appenders_created->{$appname} ||= $appender;
 }
-
 
 ###########################################
 sub config_read {

@@ -23,7 +23,7 @@ EOL
 eval{
     Log::Log4perl->init(\$conf);
 };
-ok($@,'/ERROR: trying to set appender for myAppender to Log::Log4perl::Appender::FileAppenderx failed/');
+ok($@, '/ERROR: appenderclass Log::Log4perl::Appender::FileAppenderx doesn\'t exist/');
 
 
 # *****************************************************
@@ -31,7 +31,7 @@ ok($@,'/ERROR: trying to set appender for myAppender to Log::Log4perl::Appender:
 $conf = <<EOL;
 log4j.category.simplelayout.test=INFO, myAppender
 
-log4j.appender.myAppender        = Log::Log4perl::Appender::FileAppender
+log4j.appender.myAppender        = Log::Dispatch::Appender::FileAppender
 log4j.appender.myAppender.layout = Log::Log4perl::Layout::SimpleLayoutx
 log4j.appender.myAppender.File   = $testfile
 EOL

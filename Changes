@@ -3,61 +3,91 @@ Revision history for Log::Log4perl
 ##################################################
 
 TODO:
-
-* I wonder if it might not be a mistake to have the base level be '0', 
-  might be safer to make it '1', less chance of those false-but-is-defined errors
-  I think that's what log4j uses
-* Should we canonicalize on a level is a string and a priority is an int?  
-  might make maintenance easier
-
+##################################################
+* I wonder if it might not be a mistake to have the base level be '0',
+  might be safer to make it '1', less chance of those
+  false-but-is-defined errors I think that's what log4j uses
+* Should we canonicalize on a level is a string and a priority is an
+  int? might make maintenance easier
 
 Kevin:
-* I think we should not install Log::Dispatch::Buffer, we only use it for our
-test cases, we shouldn't infringe on the Log::Dispatch namespace, should
-we?
-* test cases should use platform independend directory separator 
-  (Mac's pre-OSX ':'?)
-DONE need level validation on Logger::level() 
-DONE Create new module negotiating between Java-style config files
-  and perl-style appenders
+##################################################
+Notes to Kevin:
+* the 'new Class' syntax creates some syntactic ambiguities,
+  Class->new() is usually preferred (there's a funny paragraph
+  about it in Conway's oo-programming with perl).
+* Config.pm, bottom: "The following classes are for mapping log4j"
+  still needed?
+* Just had a wild idea: Could we possibly utilize the compiler
+  frontend to eliminate log statements that are not going to be
+  triggered? This would be a HUGE performance increase!
+##################################################
+* I think we should not install Log::Dispatch::Buffer, we only use it
+  for our test cases, we shouldn't infringe on the Log::Dispatch
+  namespace, should we?
+* test cases should use platform independend directory separator (Mac's
+  pre-OSX ':'?) DONE need level validation on Logger::level() DONE
+  Create new module negotiating between Java-style config files and
+  perl-style appenders
 * Module for reading XML-style config files
-DONE (is gone) redo level_str() hack
-DONE (Dispatch singleton) question - are appenders created just once if they're reused in the config file?
 * Please use 80 chars max line width
+DONE (is gone) redo level_str() hack
+DONE (Dispatch singleton) question - are appenders created just once if
+  they're reused in the config file?
 
 Mike:
+##################################################
+* Documentation on Layout class changes
+* %% bug in Layout.pm -- write test case
+* Documentation of Log::Log4perl::Logger and Log::Log4perl::Config
+* Tune performance of level() lookups (Mike, check out the log4j
+  statement: "As a side note, let me mention that in log4j child loggers
+  link only to their existing ancestors. In particular, the logger named
+  com.foo.Bar is linked directly to the root logger, thereby
+  circumventing the unused com or com.foo loggers. This significantly
+  increases performance and reduces log4j's memory footprint. "
+* Layout.pm: 'd' (partially implemented), 't', 'x', 'X'
+* Signal to re-read the conf file.
+* Additivity flag -- set/get as API and in cfg file
+* README tests (Pod::Tests or something)
+* Thread safety
+* Pass the config file in as a string or a file handle
+* Just had a wild idea: Could we possibly utilize the compiler
+  frontend to eliminate log statements that are not going to be
+  triggered? This would be a HUGE performance increase!
+DONE Log::Dispatch wrapper for perl modules just like JavaMap?
+DONE Warning in testcase 002
+DONE Added Log::Log4perl::Appender class to wrap Log::Dispatch::*
 DONE Log::Dispatch::Buffer: Delete from MANIFEST
 DONE Log::Log4perl->init()
 DONE Several appenders in one config line: log4j.rootLogger=debug, stdout, R
 DONE Define default if there's no layout:
   http://jakarta.apache.org/log4j/docs/api/org/apache/log4j/SimpleLayout.html
-* Log::Dispatch wrapper for perl modules just like JavaMap?
-* Tune performance of level() lookups
- (Mike, check out the log4j statement:
- "As a side note, let me mention that in log4j child loggers link only to their 
-  existing ancestors. In particular, the logger named com.foo.Bar is linked 
-  directly to the root logger, thereby circumventing the unused com or com.foo
-  loggers. This significantly increases performance and reduces log4j's memory 
-  footprint. "
-* %% bug in Layout.pm
-* Layout.pm: 'd' (partially implemented), 't', 'x', 'X'
-* Documentation of Log::Log4perl::Logger and Log::Log4perl::Config
-* Signal to re-read the conf file.
-* Additivity flag -- set/get as API and in cfg file
-* 80 chars width
-* README tests (Pod::Tests or something)
-* Thread safety
 
 ##################################################
 
+0.14 07/09/2002
+    * (!) Added new class Log::Log4perl::Appender as a wrapper around
+      Log::Dispatch::*. Layouts are no longer attached to the loggers,
+      but to the appenders instead. $app->layout($layout) sets the
+      layout. $logger->add_appender($app) is the new syntax to add
+      an appender to a logger. The $logger->layout method is gone
+      for that reason.
+    * Added documentation on categories
+    * Added documentation on Log::Log4perl::Appender,
+      Log::Log4perl::Layout::SimpleLayout,
+      Log::Log4perl::Layout::PatternLayout.
+
 0.13 07/09/2002
-* in the config files, 'debug' is not a level, 'DEBUG' is
-* expanded the layouts so that we can add subclassess, added SimpleLayout, 
-  note that api usage changes 
-  -$logger->layout('buf',"The message is here: %m");
-  +$logger->layout(new Log::Log4perl::Layout::PatternLayout('buf',"The message is here: %m"));
-* did benchmarks, see doc/benchmark*, t/013Bench.t
-* further tweaked errors for bad configuration, added a test for those
+    * in the config files, 'debug' is not a level, 'DEBUG' is
+    * expanded the layouts so that we can add subclassess, added
+      SimpleLayout, note that api usage changes
+      -$logger->layout('buf',"The message is here: %m");
+      +$logger->layout(new
+      Log::Log4perl::Layout::PatternLayout('buf',"The message is
+      here: %m"));
+    * did benchmarks, see doc/benchmark*, t/013Bench.t
+    * further tweaked errors for bad configuration, added a test for those
 
 0.12 07/08/2002
     * Log::Log4perl::Logger->get_logger now accessible via 

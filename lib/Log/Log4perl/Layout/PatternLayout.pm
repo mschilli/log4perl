@@ -2,7 +2,7 @@
 package Log::Log4perl::Layout::PatternLayout;
 ##################################################
 # TODO: 'd', 't', 'x', 'X'
-# as documented in
+# lib4j PatternLayout as documented in
 # http://jakarta.apache.org/log4j/docs/api/org/apache/log4j/PatternLayout.html
 ##################################################
 
@@ -26,14 +26,14 @@ sub new {
     my $class = shift;
     $class = ref ($class) || $class;
 
-    my ($appender_name, $data) = @_;
+    my ($data) = @_;
 
     my ($layout_string);
      
     #supporting both 
-    #    new Layout('myAppeder','%s %d %m %n');
+    #    new Layout('myAppender', '%s %d %m %n');
     #and 
-    #    new Layout ('myAppender',$data) a la config reader
+    #    new Layout('myAppender', $data) a la config reader
     if (ref $data){
          $layout_string = $data->{ConversionPattern}{value};
     }else{
@@ -44,7 +44,6 @@ sub new {
         format      => undef,
         info_needed => {},
         stack       => [],
-        appender_name => $appender_name,
     };
 
     bless $self, $class;
@@ -191,25 +190,30 @@ __END__
 
 =head1 NAME
 
-Log::Log4perl::Layout - Log layout
+Log::Log4perl::Layout::PatternLayout - Pattern Layout
 
 =head1 SYNOPSIS
 
-  use Log::Log4perl::Layout;
+  use Log::Log4perl::Layout::PatternLayout;
+
+  my $layout = Log::Log4perl::Layout::PatternLayout->("%d (%F:%L)> %m");
 
 =head1 DESCRIPTION
+
+Creates a pattern layout according to
+http://jakarta.apache.org/log4j/docs/api/org/apache/log4j/PatternLayout.html.
+Please check this page for documentation on the various C<%x> format
+tags.
+
+C<Log::Log4perl::Layout::PatternLayout> 
+is used in connection with the C<Log::Log4perl::Appender> object,
+which knows how to access its methods to render a message according
+to the given C<printf>-like format.
 
 =head1 SEE ALSO
 
 =head1 AUTHOR
 
 Mike Schilli, E<lt>m@perlmeister.comE<gt>
-
-=head1 COPYRIGHT AND LICENSE
-
-Copyright 2002 by Mike Schilli
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself. 
 
 =cut

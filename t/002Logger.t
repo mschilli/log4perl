@@ -3,6 +3,9 @@
 # Mike Schilli, 2002 (m@perlmeister.com)
 ###########################################
 
+use warnings;
+use strict;
+
 #########################
 # change 'tests => 1' to 'tests => last_test_to_print';
 #########################
@@ -11,8 +14,6 @@ BEGIN { plan tests => 41 };
 
 use Log::Log4perl;
 use Log::Log4perl::Level;
-use Log::Dispatch;
-use Log::Dispatch::Buffer;
 
 ok(1); # If we made it this far, we're ok.
 
@@ -44,63 +45,58 @@ ok($log5 != $log1);
 ok($log7 != $log8);
 ok($log8 != $log9);
 
-my $disp = Log::Dispatch::Buffer->new(
-    min_level => "debug",
-    name      => "buf",
-);
+my $app = Log::Log4perl::Appender->new(
+    "Log::Dispatch::Buffer");
 
 ##################################################
 # Suppress debug
 ##################################################
-$log1->add_appender('buf',$disp);
+$log1->add_appender($app);
 $log1->level($ERROR);
 $log1->error("Error Message");
 $log1->debug("Debug Message");
-ok($disp->buffer(), "ERROR - Error Message");
+ok($app->buffer(), "ERROR - Error Message");
 
 ##################################################
 # Allow debug
 ##################################################
 $log1->level($DEBUG);
-$disp->buffer("");
+$app->buffer("");
 $log1->error("Error Message");
 $log1->debug("Debug Message");
-ok($disp->buffer(), "ERROR - Error MessageDEBUG - Debug Message");
+ok($app->buffer(), "ERROR - Error MessageDEBUG - Debug Message");
 
 ##################################################
 # Multiple Appenders
 ##################################################
-my $disp2 = Log::Dispatch::Buffer->new(
-    min_level => "debug",
-    name      => "buf2",
-);
-my $disp3 = Log::Dispatch::Buffer->new(
-    min_level => "debug",
-    name      => "buf3",
-);
+my $app2 = Log::Log4perl::Appender->new(
+    "Log::Dispatch::Buffer");
+my $app3 = Log::Log4perl::Appender->new(
+    "Log::Dispatch::Buffer");
 
-$disp->buffer("");
-$disp2->buffer("");
+$app->buffer("");
+$app2->buffer("");
     # 2nd appender to $log1
-$log1->add_appender('buf2',$disp2);
+$log1->add_appender($app2);
 $log1->level($ERROR);
 $log1->error("Error Message");
-ok($disp->buffer(), "ERROR - Error Message");
-ok($disp2->buffer(), "ERROR - Error Message");
+#TODO
+ok($app->buffer(), "ERROR - Error Message");
+ok($app2->buffer(), "ERROR - Error Message");
 
 ##################################################
 # Multiple Appenders in different hierarchy levels
 ##################################################
-$disp->buffer("");
-$disp2->buffer("");
-$disp3->buffer("");
+$app->buffer("");
+$app2->buffer("");
+$app3->buffer("");
 
 $log1 = Log::Log4perl->get_logger("xxx.yyy.zzz");
 $log2 = Log::Log4perl->get_logger("xxx");
 $log3 = Log::Log4perl->get_logger("");
 
     # Root logger
-$log3->add_appender('buf3',$disp3);
+$log3->add_appender($app3);
 $log3->level($ERROR);
 
     ##################################################
@@ -108,45 +104,45 @@ $log3->level($ERROR);
     ##################################################
 $log1->error("Error Message");
     # Should be distributed to root
-ok($disp3->buffer(), "ERROR - Error Message");
+ok($app3->buffer(), "ERROR - Error Message");
 
     ##################################################
     # Log in lower levels and propagate to root
     ##################################################
-$disp->buffer("");
-$disp2->buffer("");
-$disp3->buffer("");
+$app->buffer("");
+$app2->buffer("");
+$app3->buffer("");
 
-$log1->add_appender('buf', $disp);
-$log2->add_appender('buf2',$disp2);
-# log3 already has disp3 attached
+$log1->add_appender($app);
+$log2->add_appender($app2);
+# log3 already has app3 attached
 $log1->error("Error Message");
-ok($disp->buffer(), "ERROR - Error Message");
-ok($disp2->buffer(), "ERROR - Error Message");
-ok($disp3->buffer(), "ERROR - Error Message");
+ok($app->buffer(), "ERROR - Error Message");
+ok($app2->buffer(), "ERROR - Error Message");
+ok($app3->buffer(), "ERROR - Error Message");
 
     ##################################################
     # Block appenders via priority 
     ##################################################
-$disp->buffer("");
-$disp2->buffer("");
-$disp3->buffer("");
+$app->buffer("");
+$app2->buffer("");
+$app3->buffer("");
 
 $log1->level($ERROR);
 $log2->level($DEBUG);
 $log3->level($DEBUG);
 
 $log1->debug("Debug Message");
-ok($disp->buffer(), "");
-ok($disp2->buffer(), "");
-ok($disp3->buffer(), "");
+ok($app->buffer(), "");
+ok($app2->buffer(), "");
+ok($app3->buffer(), "");
 
     ##################################################
     # Block via 'false' additivity
     ##################################################
-$disp->buffer("");
-$disp2->buffer("");
-$disp3->buffer("");
+$app->buffer("");
+$app2->buffer("");
+$app3->buffer("");
 
 $log1->level($DEBUG);
 $log2->additivity(0);
@@ -154,9 +150,9 @@ $log2->level($DEBUG);
 $log3->level($DEBUG);
 
 $log1->debug("Debug Message");
-ok($disp->buffer(), "DEBUG - Debug Message");
-ok($disp2->buffer(), "DEBUG - Debug Message");
-ok($disp3->buffer(), "");
+ok($app->buffer(), "DEBUG - Debug Message");
+ok($app2->buffer(), "DEBUG - Debug Message");
+ok($app3->buffer(), "");
 
     ##################################################
     # Check is_*() functions

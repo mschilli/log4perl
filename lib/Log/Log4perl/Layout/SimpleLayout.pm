@@ -1,24 +1,17 @@
 ##################################################
 package Log::Log4perl::Layout::SimpleLayout;
 ##################################################
-# TODO: 'd', 't', 'x', 'X'
 # as documented in
-# http://jakarta.apache.org/log4j/docs/api/org/apache/log4j/PatternLayout.html
+# http://jakarta.apache.org/log4j/docs/api/org/apache/log4j/SimpleLayout.html
 ##################################################
 
 use 5.006;
 use strict;
 use warnings;
-use Time::HiRes qw(gettimeofday tv_interval);
-use Data::Dump qw(dump);
 use Log::Log4perl::Level;
 
 no strict qw(refs);
-
-our $PROGRAM_START_TIME = [gettimeofday()];
-
 use base qw(Log::Log4perl::Layout);
-
 
 ##################################################
 sub new {
@@ -26,13 +19,10 @@ sub new {
     my $class = shift;
     $class = ref ($class) || $class;
 
-    my ($appender_name, $data) = @_;
-
     my $self = {
         format      => undef,
         info_needed => {},
         stack       => [],
-        appender_name => $appender_name,
     };
 
     bless $self, $class;
@@ -40,17 +30,12 @@ sub new {
     return $self;
 }
 
-
-
 ##################################################
 sub render {
 ##################################################
     my($self, $logger, $message, $category, $priority, $caller_level) = @_;
 
-    $caller_level = 0 unless defined  $caller_level;
-
     return "$priority - $message";
-
 }
 
 1;
@@ -59,25 +44,25 @@ __END__
 
 =head1 NAME
 
-Log::Log4perl::Layout - Log layout
+Log::Log4perl::Layout::SimpleLayout - Simple Layout
 
 =head1 SYNOPSIS
 
-  use Log::Log4perl::Layout;
+  use Log::Log4perl::Layout::SimpleLayout;
+  my $layout = Log::Log4perl::Layout::SimpleLayout->new();
 
 =head1 DESCRIPTION
+
+This class implements the C<log4j> simple layout format -- it basically 
+just prints the message priority and the message, that's all.
+Check 
+http://jakarta.apache.org/log4j/docs/api/org/apache/log4j/SimpleLayout.html
+for details.
 
 =head1 SEE ALSO
 
 =head1 AUTHOR
 
-Mike Schilli, E<lt>m@perlmeister.comE<gt>
-
-=head1 COPYRIGHT AND LICENSE
-
-Copyright 2002 by Mike Schilli
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself. 
+Kevin Goess, <cpan@goess.org>
 
 =cut

@@ -24,10 +24,9 @@ sub new {
         $stderr = 0;
     }
 
-    return Log::Dispatch::Screen->new( name => $appender_name,
-                                       min_level => 'debug',
-                                       stderr    => $stderr );
-    
+    return Log::Log4perl::Appender->new("Log::Dispatch::Screen",
+        name   => $appender_name,
+        stderr => $stderr );
 }
 
 
@@ -50,9 +49,6 @@ Possible config properties for log4j ConsoleAppender are
 Possible config properties for Log::Dispatch::Screen are
 
     stderr (0 or 1)
-
-    
-
 
 =head1 AUTHORS
 

@@ -30,8 +30,4 @@ sub render {
     die "subclass must implement render";
 }
 
-
-
-
-
 1;

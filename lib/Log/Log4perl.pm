@@ -9,7 +9,7 @@ use warnings;
 use Log::Log4perl::Logger;
 use Log::Log4perl::Config;
 
-our $VERSION = '0.13';
+our $VERSION = '0.14';
 
 ##################################################
 sub new {
@@ -565,10 +565,89 @@ In this case, use this instead:
         }
     }
 
-=head1 AUTHORS
+=head1 Categories
 
-    Mike Schilli, <m@perlmeister.com>
-    Kevin Goess, <cpan@goess.org>
+C<Log::Log4perl> uses I<categories> to determine if a log statement in
+a component should be executed or suppressed at the current logging level.
+Most of the time, these categories are just the classes the log statements
+are located in:
+
+    package Candy::Twix;
+
+    sub new { 
+        my $logger = Log::Log4perl->new("Candy::Twix");
+        $logger->debug("Creating a new Twix bar");
+        bless {}, shift;
+    }
+ 
+    # ...
+
+    package Candy::Snickers;
+
+    sub new { 
+        my $logger = Log::Log4perl->new("Candy.Snickers");
+        $logger->debug("Creating a new Snickers bar");
+        bless {}, shift;
+    }
+
+    # ...
+
+    package main;
+    Log::Log4perl->init("mylogdefs.conf") or 
+        die "Whoa, cannot read mylogdefs.conf!";
+
+        # => "LOG> Creating a new Snickers bar"
+    my $first = Candy::Snickers->new();
+        # => "LOG> Creating a new Twix bar"
+    my $second = Candy::Twix->new();
+
+Note that you can separate your category hierarchy levels
+using either dots like
+in Java (.) or double-colons (::) like in Perl. Both notations
+are equivalent and are handled the same way internally.
+
+However, categories are just there to make
+use of inheritance: if you invoke a logger in a sub-category, 
+it will bubble up the hierarchy and call the appropriate appenders.
+Internally, categories not related to the class hierarchy of the program
+at all -- they're purely virtual. You can use arbitrary categories --
+for example in the following program, which isn't oo-style, but
+procedural:
+
+    sub print_portfolio {
+
+        my $log = Log::Log4perl->new("user.portfolio");
+        $log->debug("Quotes requested: @_");
+
+        for(@_) {
+            print "$_: ", get_quote($_), "\n";
+        }
+    }
+
+    sub get_quote {
+
+        my $log = Log::Log4perl->new("internet.quotesystem");
+        $log->debug("Fetching quote: $_[0]");
+
+        return yahoo_quote($_[0]);
+    }
+
+The logger in first function, C<print_portfolio>, is assigned the
+(virtual) C<user.portfolio> category. Depending on the C<Log4perl>
+configuration, this will either call a C<user.portfolio> appender,
+a C<user> appender, or an appender assigned to root -- without
+C<user.portfolio> having any relevance to the class system used in 
+the program.
+The logger in the second function adheres to the 
+C<internet.quotesystem> category -- again, maybe because it's bundled 
+with other Internet functions, but not because there would be
+a class of this name somewhere.
+
+However, be careful, don't go overboard: if you're developing a system
+in object-oriented style, using the class hierarchy is usually your best
+choice. Think about the people taking over your code one day: The
+class hierarchy is probably what they know right up front, so it's easy
+for them to tune the logging to their needs.
 
 =head1 How about Log::Dispatch::Config?
 
@@ -576,7 +655,33 @@ Yeah, I've seen it. I like it, but I think it is too dependent
 on defining everything in a configuration file.
 I've designed C<Log::Log4perl> to be more flexible.
 
-=head1 References
+=head1 AUTHORS
+
+    Mike Schilli, <m@perlmeister.com>
+    Kevin Goess, <cpan@goess.org>
+
+=head1 INSTALLATION
+
+C<Log::Log4perl> needs C<Log::Dispatch> (2.00 or better) and
+C<Time::HiRes> (1.20 or better) from CPAN. They're automatically fetched
+if you're using the CPAN shell (CPAN.pm), because they're listed as 
+requirements in Makefile.PL.
+
+Manual installation works as usual with
+
+    perl Makefile.PL
+    make
+    make test
+    make install
+
+=head1 DEVELOPMENT
+
+C<Log::Log4perl> is under heavy development. The latest CVS tarball
+can be obtained from sourcforge, check C<http://log4perl.sorceforge.net>
+for details. Bug reports and feedback are always welcome, just email
+to the authors.
+
+=head1 REFERENCES
 
 =over 4
 

@@ -8,14 +8,16 @@ use warnings;
 
 use Log::Log4perl::Level;
 use Log::Log4perl::Layout;
+use Log::Log4perl::Appender;
 use Log::Dispatch;
 use Carp;
 use Data::Dump qw(dump);
 
     # Initialization
 our $ROOT_LOGGER;
-our $LOGGERS_BY_STRING;
+our $LOGGERS_BY_NAME;
 our %LAYOUT_BY_APPENDER;
+our %APPENDER_BY_NAME = ();
 
 our $DISPATCHER = Log::Dispatch->new();
 
@@ -32,10 +34,9 @@ sub init {
 ##################################################
 sub reset {
 ##################################################
-    our $ROOT_LOGGER          = __PACKAGE__->_new("", $DEBUG);
-    our $LOGGERS_BY_STRING    = {};
+    our $ROOT_LOGGER        = __PACKAGE__->_new("", $DEBUG);
+    our $LOGGERS_BY_NAME    = {};
     our $DISPATCHER = Log::Dispatch->new();
-    our $LAYOUT_BY_APPENDER = ();
 }
 
 ##################################################
@@ -43,14 +44,14 @@ sub _new {
 ##################################################
     my($class, $category, $level) = @_;
 
-    die "usage: __PACKAGE__->new(category)" unless
+    die "usage: __PACKAGE__->_new(category)" unless
         defined $category;
     
     $category  =~ s/::/./g;
 
        # Have we created it previously?
-    if(exists $LOGGERS_BY_STRING->{$category}) {
-        return $LOGGERS_BY_STRING->{$category};
+    if(exists $LOGGERS_BY_NAME->{$category}) {
+        return $LOGGERS_BY_NAME->{$category};
     }
 
     my $self  = {
@@ -63,26 +64,11 @@ sub _new {
                 };
 
         # Save it in global structure
-    $LOGGERS_BY_STRING->{$category} = $self;
+    $LOGGERS_BY_NAME->{$category} = $self;
 
     bless $self, $class;
 
     return $self;
-}
-
-
-##################################################
-sub layout {
-##################################################
-    my($self, $layout ) = @_;
-
-    my $appender_name = $layout->appender_name();
-
-    $LAYOUT_BY_APPENDER{$appender_name} = $layout;
-                            
-
-    #$LAYOUT_BY_APPENDER{$appender_name}->define($format_string);  
-
 }
 
 ##################################################
@@ -132,8 +118,8 @@ sub level {
             return $ROOT_LOGGER->{level};
         }
             
-        if(defined $LOGGERS_BY_STRING->{$logger->{logger_class}}->{level}) {
-            return $LOGGERS_BY_STRING->{$logger->{logger_class}}->{level};
+        if(defined $LOGGERS_BY_NAME->{$logger->{logger_class}}->{level}) {
+            return $LOGGERS_BY_NAME->{$logger->{logger_class}}->{level};
         }
     }
 
@@ -141,8 +127,6 @@ sub level {
     # have a level defined
     die "We should never get here.";
 }
-
-
 
 ##################################################
 sub parent_logger {
@@ -160,15 +144,15 @@ sub parent_logger {
     my $parent_class = parent_string($logger->{logger_class});
 
     while($parent_class ne "" and
-          ! exists $LOGGERS_BY_STRING->{$parent_class}) {
+          ! exists $LOGGERS_BY_NAME->{$parent_class}) {
         $parent_class = parent_string($parent_class);
-        $logger =  $LOGGERS_BY_STRING->{$parent_class};
+        $logger =  $LOGGERS_BY_NAME->{$parent_class};
     }
 
     if($parent_class eq "") {
         $logger = $ROOT_LOGGER;
     } else {
-        $logger = $LOGGERS_BY_STRING->{$parent_class};
+        $logger = $LOGGERS_BY_NAME->{$parent_class};
     }
 
     return $logger;
@@ -211,21 +195,24 @@ sub get_logger {
 ##################################################
 sub add_appender {
 ##################################################
-    my($self, $appender_name, $appender, $not_to_dispatcher) = @_;
+    my($self, $appender, $not_to_dispatcher) = @_;
+
+    my $appender_name = $appender->name();
 
     $self->{num_appenders}++;
 
     unless (grep{$_ eq $appender_name} @{$self->{appender_names}}){
-        $self->{appender_names} = [sort @{$self->{appender_names}}, $appender_name ];
+        $self->{appender_names} = [sort @{$self->{appender_names}}, 
+                                        $appender_name];
     }
 
-    $self->{dispatcher}->add($appender)
-        unless $not_to_dispatcher;    #ugly, but while we want to track the names of
-                                      #all the appenders in a category, we only
-                                      #want to add it to log_dispatch *once*
+    $APPENDER_BY_NAME{$appender_name} = $appender;
+
+    $self->{dispatcher}->add($appender) unless $not_to_dispatcher;    
+        # ugly, but while we want to track the names of
+        # all the appenders in a category, we only
+        # want to add it to log_dispatch *once*
 }
-
-
 
 ##################################################
 sub has_appenders {
@@ -258,21 +245,20 @@ sub log {
                     #only one message per appender, please
                 next if $seen{$appender_name} ++;
 
+                my $appender = $APPENDER_BY_NAME{$appender_name};
+
                 my $rendered_msg;
 
                 #is this proper behavior if no layout defined?  !!!
-                if ($LAYOUT_BY_APPENDER{$appender_name}) {
-                    $rendered_msg = 
-                        $LAYOUT_BY_APPENDER{$appender_name}->render($logger, 
-                                                                    $message,
-                                                                    $category,
-                                                                    $level,
-                                                                    2,
-                                                                    );
+                if ($appender->layout()) {
+                    $rendered_msg = $appender->layout()->render(
+                            $logger, $message, $category,
+                            $level, 2);
                 }else{
                     # Accoding to 
                     # http://jakarta.apache.org/log4j/docs/api/org/...
                     # apache/log4j/SimpleLayout.html this is the default layout
+                    # TODO: Replace with SimpleFormat
                     $rendered_msg = "$level - $message";
                 }
 
@@ -319,125 +305,10 @@ Log::Log4perl::Logger - Main Logger
 
 =head1 DESCRIPTION
 
-Why not use a debugger? Kernighan said it 
-
-I like the concepts behind C<log4perl>. I loathe the name, 
-though. It sounds to me like B2B and Ejb and all these other useless
-Sun products. But, hey, the name stands for the concept, so I kept it.
-
-=head2 Levels
-
-FATAL, ERROR, WARN, INFO and DEBUG
-
-=head2 Configuration files
-
-=head2 Appenders
-
-=head2 Layout patterns
-
-=head2 How to log
-
-    use Log::Log4perl;
-
-    our $Logger = Log::Log4perl->getInstance();
-
-Why not C<Log::Log4perl-E<gt>new()>? We don't want to create a new
-object every time. Usually in OO-Programming, you create an object
-once and use the reference to it to call its methods. However,
-this requires that you pass around the object to all functions
-and the last thing we want is pollute each and every function/method
-we're using with a handle to the Logger:
-
-    sub function {
-        my($logger, $some, $other, $parameters) = @_;
-    }
-
-Instead, if a function/method wants a reference to the logger, it
-just calls the Logger's static C<getInstance()> method to obtain
-a reference to the I<one and only> possible logger object.
-That's called a I<singleton> if you're a Gamma fan.
-
-=head2 How to log in an object
-
-    package MyPackage;
-
-    use Log::Log4perl;
-
-    our $Logger = Log::Log4perl->getInstance();
-
-    sub new { ... }
-
-    sub method {
-        ...
-        $Logger->info("Doing well ...");
-    }
-
-=head2 Reconfigure at runtime
-
-Signal?
-
-=head2 Penalties
-
-Logging comes with a price tag.
-
-    $Logger->info("...") if $Logger->is_info();
-
-Or, if you can save serious time because what you're logging is
-
-        # Expensive in non-debug mode!
-    for (@super_long_array) {
-        $Logger->debug("Element: $_\n");
-    }
-
-        # Cheap in non-debug mode!
-    if($Logger->is_debug()) {
-        for (@super_long_array) {
-            $Logger->debug("Element: $_\n");
-        }
-    }
-
-=head2 EXPORT
-
 =head1 SEE ALSO
 
 =head1 AUTHOR
 
 Mike Schilli, E<lt>m@perlmeister.comE<gt>
-
-=head1 INSTALL
-
-To install this module type the following:
-
-   perl Makefile.PL
-   make
-   make test
-   make install
-
-=head1 How about Log::Dispatch::Config?
-
-Yeah, I've seen it. I like it, but I think it is too dependent
-on defining everything in a configuration file.
-I've designed C<Log::Log4perl> to be more flexible.
-
-=head1 References
-
-=over 4
-
-=item [1]
-
-Vipan Singla, "Don't Use System.out.println! Use Log4j.",
-http://www.vipan.com/htdocs/log4jhelp.html
-
-=item [2]
-
-
-=back
-
-=head1 COPYRIGHT AND LICENSE
-
-Copyright 2002 by Mike Schilli
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself. 
 
 =cut

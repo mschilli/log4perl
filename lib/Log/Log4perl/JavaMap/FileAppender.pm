@@ -43,15 +43,14 @@ sub new {
     }
 
 
-    
-
-    return Log::Dispatch::File->new( name      => $appender_name,
-                                     min_level => 'debug',
-                                     filename  => $filename,
-                                     mode      => $mode,
-                                     autoflush => $autoflush,
-                                     );
+    return Log::Log4perl::Appender->new("Log::Dispatch::File",
+        name      => $appender_name,
+        filename  => $filename,
+        mode      => $mode,
+        autoflush => $autoflush,
+    );
 }
+
 1;
 
 =head1 NAME
