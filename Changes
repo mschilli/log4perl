@@ -4,6 +4,7 @@ Revision history for Log::Log4perl
 
 0.42 (not yet released)
     * (ms) Fixed caller level to cspecs by adding one
+    * (ms) Added init_once() and documentation
 
 0.41 (12/12/2003)
     * (ms) Applied documentation update for Synchronized appender, suggested
