@@ -960,7 +960,7 @@ You can save serious time if you're logging something like
 
         # Expensive in non-debug mode!
     for (@super_long_array) {
-        $Logger->debug("Element: $_\n");
+        $logger->debug("Element: $_\n");
     }
 
 and C<@super_long_array> is fairly big, so looping through it is pretty
@@ -970,9 +970,9 @@ actual component is higher than C<debug>.
 In this case, use this instead:
 
         # Cheap in non-debug mode!
-    if($Logger->is_debug()) {
+    if($logger->is_debug()) {
         for (@super_long_array) {
-            $Logger->debug("Element: $_\n");
+            $logger->debug("Element: $_\n");
         }
     }
 
@@ -981,10 +981,27 @@ of the logging function is fairly expensive, use closures:
 
         # Passed as subroutine ref
     use Data::Dumper;
-    $Logger->debug(sub { Dumper($data) } );
+    $logger->debug(sub { Dumper($data) } );
 
 This won't unravel C<$data> via Dumper() unless it's actually needed
-because it's logged.
+because it's logged. 
+
+Also, Log::Log4perl lets you specify arguments
+to logger functions in I<message output filter syntax>:
+
+    $logger->debug("Structure: ",
+                   { filter => \&Dumper,
+                     value  => $someref });
+
+In this way, shortly before Log::Log4perl sending the
+message out to any appenders, it will be searching all arguments for
+hash references and treat them in a special way:
+
+It will invoke the function given as a reference with the C<filter> key
+(C<Data::Dumper::Dumper()>) and pass it the value that came with
+the key named C<value> as an argument.
+The anonymous hash in the call above will be replaced by the return 
+value of the filter function.
 
 =head1 Categories
 
