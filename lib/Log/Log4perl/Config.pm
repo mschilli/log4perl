@@ -75,7 +75,8 @@ sub init {
         my ($level, @appnames) = split /\s*,\s*/, $value;
 
         $logger->level(
-            Log::Log4perl::Level::to_priority($level));
+            Log::Log4perl::Level::to_priority($level),
+            'dont_reset_all');
 
         for my $appname (@appnames) {
 
@@ -114,11 +115,13 @@ sub init {
                 }
             }
 
-            $logger->add_appender($appender, 
-                                  $appenders_created{$appname});
+            $logger->add_appender($appender, 'dont_reset_all');
             set_appender_by_name($appname, $appender, \%appenders_created);
         }
     }
+
+    #now we're done, set up all the output methods (e.g. ->debug('...'))
+    Log::Log4perl::Logger::reset_all_output_methods();
 }
 
 ###########################################
