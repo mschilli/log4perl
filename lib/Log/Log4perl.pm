@@ -957,6 +957,10 @@ http://jakarta.apache.org/log4j/docs/manual.html
 Vipan Singla, "Don't Use System.out.println! Use Log4j.",
 http://www.vipan.com/htdocs/log4jhelp.html
 
+=item [3]
+
+The Log::Log4perl project home page: http://log4perl.sorceforge.net
+
 =back
 
 =head1 CONTACT
