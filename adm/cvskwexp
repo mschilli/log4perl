@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 ###########################################
-# xx -- 
+# cvskwexp - check if we have $Log... instances 
 # Mike Schilli, 2004 (m@perlmeister.com)
 ###########################################
 use warnings;
@@ -9,6 +9,7 @@ use strict;
 use File::Find;
 
 find(sub {
+         return if /cvskwexp/;
          open FILE, "<$_" or die "Cannot open $_";
          while(<FILE>) {
              die $_ if /\$\s*Log.*\$/;
