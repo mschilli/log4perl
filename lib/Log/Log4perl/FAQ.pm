@@ -126,8 +126,8 @@ Log::Log4perl is fully supported on the Win32 platform. It has been tested
 with Activestate perl 5.6.1 under Windows 98 and rumor has it that it
 also runs smoothly on all other major flavors (Windows NT, 2000, XP, etc.).
 
-It also runs nicely with the buggy ActiveState 5.8.0 beta as of this
-writing, and, believe me, we had to jump through some major hoops for that.
+It also runs nicely with ActiveState 5.8.0, and, believe me, 
+we had to jump through some major hoops for that.
 
 Typically, Win32 systems don't have the C<make> utility installed,
 so the standard C<perl Makefile.PL; make install> on the downloadable
@@ -1126,8 +1126,8 @@ setting will just filter out messages with a I<lower> priority than
 C<WARN> -- C<ERROR> is higher and will be allowed to pass through.
 
 What we need for this is a Log4perl I<Custom Filter>, newly available with 
-Log::Log4perl 0.30, which, at the time of this writing, is available as 
-a development release.
+Log::Log4perl 0.30, which, at the time of this writing (Feb 2003), 
+is available as a development release from log4perl.sourceforge.net.
 
 Both appenders need to verify that
 the priority of the oncoming messages exactly I<matches> the priority 
