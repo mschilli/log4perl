@@ -215,6 +215,10 @@ How to use it
     that, one of the logger's parent's level setting) is $WARN, $ERROR or
     $FATAL.
 
+    Also available are a series of more Java-esque functions which return
+    the same values. These are of the format "is*Level*Enabled()", so
+    "$logger->isDebugEnabled()" is synonymous to "$logger->is_debug()".
+
     These level checking functions will come in handy later, when we want to
     block unnecessary expensive parameter construction in case the logging
     level is too low to log the statement anyway, like in:
@@ -1722,6 +1726,7 @@ AUTHORS
         Erik Selberg <erik@selberg.com>
         Aaron Straup Cope <asc@vineyard.net>
         Lars Thegler <lars@thegler.dk>
+        David Viner <dviner@yahoo-inc.com>
         Mac Yang <mac@proofpoint.com>
 
 COPYRIGHT AND LICENSE
