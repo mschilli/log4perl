@@ -132,7 +132,7 @@ Log::Log4perl::Filter::Bool - Special filter to combine the results of others
     log4perl.appender.Screen.Filter = MyBool
     log4perl.appender.Screen.layout = Log::Log4perl::Layout::SimpleLayout
 
-=DESCRIPTION
+=head1 DESCRIPTION
 
 Sometimes, it's useful to combine the output of various filters to
 arrive at a log/no log decision. While Log4j, Log4perl's mother ship,
