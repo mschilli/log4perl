@@ -10,6 +10,8 @@ our %translate = (
         'Log::Log4perl::JavaMap::ConsoleAppender',
     'org.apache.log4j.FileAppender'    => 
         'Log::Log4perl::JavaMap::FileAppender',
+    'org.apache.log4j.RollingFileAppender'    => 
+        'Log::Log4perl::JavaMap::RollingFileAppender',
     'org.apache.log4j.TestBuffer'    => 
         'Log::Log4perl::JavaMap::TestBuffer',
 );
