@@ -1279,7 +1279,7 @@ the file:
     Log::Log4perl->init( \$config_text );
 
 Also, if you've got the C<name=value> pairs of the configuration in
-a hash, you can just as well initialized C<Log::Log4perl> with
+a hash, you can just as well initialize C<Log::Log4perl> with
 a reference to it:
 
     my %key_value_pairs = (
