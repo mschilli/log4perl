@@ -53,9 +53,9 @@ sub new {
 
     my $size;
     if (defined $data->{MaxFileSize}{value}) {
-        $size = $data->{MaxFileSize}{value}
+        $size = $data->{MaxFileSize}{value} / 1024 / 1024;
     }elsif (defined $data->{size}{value}){
-        $size = $data->{size}{value};
+        $size = $data->{size}{value} / 1024 / 1024;
     }else{
         $size = 10;
     }
@@ -89,7 +89,7 @@ Possible config properties for log4j ConsoleAppender are
     File
     Append      "true|false|1|0" default=true
     BufferedIO  "true|false|1|0" default=false (i.e. autoflush is on)
-    MaxFileSize default=10 (in MB)
+    MaxFileSize default=10485760
     MaxBackupIndex default is 1
 
 Possible config properties for Log::Dispatch::FileRotate are
@@ -99,6 +99,11 @@ Possible config properties for Log::Dispatch::FileRotate are
     autoflush 0|1
     size
     max
+
+Please note that C<Log::Dispatch::FileRotate> expects C<MaxFileSize> in 
+megabytes while C<org.apache.log4j.RollingFileAppender> usually takes bytes.
+For this reason, we will convert the byte value given and convert
+it to megabytes -- but there may be rounding errors.
 
 =head1 AUTHORS
 
