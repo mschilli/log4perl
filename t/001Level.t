@@ -7,7 +7,9 @@
 # change 'tests => 1' to 'tests => last_test_to_print';
 #########################
 use Test;
-BEGIN { plan tests => 10 };
+use strict;
+
+BEGIN { plan tests => 28 };
 use Log::Log4perl::Level;
 BEGIN {
     Log::Log4perl::Level->import("Level");
@@ -16,16 +18,33 @@ BEGIN {
 ok(1); # If we made it this far, we're ok.
 
 # Import them into the 'main' namespace;
-ok($FATAL < $ERROR);
-ok($ERROR < $INFO);
-ok($INFO  < $DEBUG);
+foreach ($DEBUG, $INFO, $WARN, $ERROR, $FATAL) {
+  ok(Log::Log4perl::Level::to_level($_));
+}	
 
 # Import them into the 'Level' namespace;
-ok($Level::FATAL < $Level::ERROR);
-ok($Level::ERROR < $Level::INFO);
-ok($Level::INFO  < $Level::DEBUG);
+foreach ($Level::DEBUG, $Level::INFO, $Level::WARN, $Level::ERROR, $Level::FATAL) {
+  ok(Log::Log4perl::Level::to_level($_));
+}
 
 # Import them into the 'My::Level' namespace;
-ok($My::Level::FATAL < $My::Level::ERROR);
-ok($My::Level::ERROR < $My::Level::INFO);
-ok($My::Level::INFO  < $My::Level::DEBUG);
+foreach ($My::Level::DEBUG, $My::Level::INFO, $My::Level::WARN, $My::Level::ERROR, $My::Level::FATAL) {
+  ok(Log::Log4perl::Level::to_level($_));
+}
+
+# ok, now let's check to make sure the relative order is correct.
+
+ok(Log::Log4perl::Level::isGreaterOrEqual($DEBUG, $INFO));
+ok(Log::Log4perl::Level::isGreaterOrEqual($INFO, $WARN));
+ok(Log::Log4perl::Level::isGreaterOrEqual($WARN, $ERROR));
+ok(Log::Log4perl::Level::isGreaterOrEqual($ERROR, $FATAL));
+
+ok(Log::Log4perl::Level::isGreaterOrEqual($Level::DEBUG, $Level::INFO));
+ok(Log::Log4perl::Level::isGreaterOrEqual($Level::INFO, $Level::WARN));
+ok(Log::Log4perl::Level::isGreaterOrEqual($Level::WARN, $Level::ERROR));
+ok(Log::Log4perl::Level::isGreaterOrEqual($Level::ERROR, $Level::FATAL));
+
+ok(Log::Log4perl::Level::isGreaterOrEqual($My::Level::DEBUG, $My::Level::INFO));
+ok(Log::Log4perl::Level::isGreaterOrEqual($My::Level::INFO, $My::Level::WARN));
+ok(Log::Log4perl::Level::isGreaterOrEqual($My::Level::WARN, $My::Level::ERROR));
+ok(Log::Log4perl::Level::isGreaterOrEqual($My::Level::ERROR, $My::Level::FATAL));

@@ -9,10 +9,18 @@ use warnings;
 use strict;
 
 #########################
-# change 'tests => 1' to 'tests => last_test_to_print';
-#########################
-use Test;
+# used Test::Simple to help debug the test script
+use Test::Simple tests => 46;
 
+# to test, as ok() suppresses DEBUG output
+# my $i = 1;
+# sub ok {
+#     my ($r, $s) = @_;
+#     print "not " unless ($r);
+#     print "ok ", $i++;
+#     print " - $s" if (defined($s));
+#     print "\n";
+# }	
 
 use Log::Log4perl;
 use Log::Log4perl::Level;
@@ -30,22 +38,22 @@ my $log8 = Log::Log4perl->get_logger("abc.def");
 my $log9 = Log::Log4perl->get_logger("abc::def::ghi");
 
 # Loggers for the same namespace have to be identical
-ok($log1 == $log2);
-ok($log4 == $log5);
-ok($log6 == $log7);
-ok($log1 == $log8);
-ok($log3 == $log9);
+ok($log1 == $log2, "Log1 same as Log2");
+ok($log4 == $log5, "Log4 same as Log5");
+ok($log6 == $log7, "Log6 same as Log7");
+ok($log1 == $log8, "Log1 same as Log8");
+ok($log3 == $log9, "log3 same as Log9");
 
 # Loggers for different namespaces have to be different
-ok($log1 != $log3);
-ok($log3 != $log4);
-ok($log1 != $log6);
-ok($log3 != $log6);
-ok($log5 != $log6);
-ok($log5 != $log7);
-ok($log5 != $log1);
-ok($log7 != $log8);
-ok($log8 != $log9);
+ok($log1 != $log3, "Log1 not Log3");
+ok($log3 != $log4, "Log3 not Log4");
+ok($log1 != $log6, "Log1 not Log6");
+ok($log3 != $log6, "Log3 not Log6");
+ok($log5 != $log6, "Log5 not Log6");
+ok($log5 != $log7, "Log5 not Log7");
+ok($log5 != $log1, "Log5 not Log1");
+ok($log7 != $log8, "Log7 not Log8");
+ok($log8 != $log9, "Log8 not Log9");
 
 my $app = Log::Log4perl::Appender->new(
     "Log::Log4perl::TestBuffer");
@@ -55,10 +63,14 @@ my $app = Log::Log4perl::Appender->new(
 ##################################################
 $log1->add_appender($app);
 $log1->level($ERROR);
+
+# warn "level is: ", $log1->level(), "\n";
+
 $log1->error("Error Message");
 $log1->debug("Debug Message");
-ok($app->buffer(), "ERROR - Error Message\n");
+ok($app->buffer() eq "ERROR - Error Message\n", "log1 app buffer contains ERROR - Error Message");
 
+# warn "app buffer is: \"", $app->buffer(), "\"\n";
 
 ##################################################
 # Allow debug
@@ -67,7 +79,10 @@ $log1->level($DEBUG);
 $app->buffer("");
 $log1->error("Error Message");
 $log1->debug("Debug Message");
-ok($app->buffer(), "ERROR - Error Message\nDEBUG - Debug Message\n");
+ok($app->buffer() eq "ERROR - Error Message\nDEBUG - Debug Message\n",
+	"app buffer contains both ERROR and DEBUG message");
+
+# warn "app buffer is: \"", $app->buffer(), "\"\n";
 
 ##################################################
 # Multiple Appenders
@@ -84,8 +99,8 @@ $log1->add_appender($app2);
 $log1->level($ERROR);
 $log1->error("Error Message");
 #TODO
-ok($app->buffer(), "ERROR - Error Message\n");
-ok($app2->buffer(), "ERROR - Error Message\n");
+ok($app->buffer() eq "ERROR - Error Message\n", "app buffer contains ERROR only");
+ok($app2->buffer() eq "ERROR - Error Message\n", "app2 buffer contains ERROR only");
 
 ##################################################
 # Multiple Appenders in different hierarchy levels
@@ -109,7 +124,7 @@ $log3->level($ERROR);
 $log1->error("Error Message");
 
     # Should be distributed to root
-ok($app3->buffer(), "ERROR - Error Message\n");
+ok($app3->buffer() eq "ERROR - Error Message\n", "app3 buffer contains ERROR");
     ##################################################
     # Log in lower levels and propagate to root
     ##################################################
@@ -121,9 +136,9 @@ $log1->add_appender($app);
 $log2->add_appender($app2);
 # log3 already has app3 attached
 $log1->error("Error Message");
-ok($app->buffer(), "ERROR - Error Message\n");
-ok($app2->buffer(), "ERROR - Error Message\n");
-ok($app3->buffer(), "ERROR - Error Message\n");
+ok($app->buffer() eq "ERROR - Error Message\n", "app buffer contains ERROR");
+ok($app2->buffer() eq "ERROR - Error Message\n", "app2 buffer contains ERROR");
+ok($app3->buffer() eq "ERROR - Error Message\n", "app3 buffer contains ERROR");
 
     ##################################################
     # Block appenders via priority 
@@ -137,9 +152,9 @@ $log2->level($DEBUG);
 $log3->level($DEBUG);
 
 $log1->debug("Debug Message");
-ok($app->buffer(), "");
-ok($app2->buffer(), "");
-ok($app3->buffer(), "");
+ok($app->buffer() eq "", "app buffer is empty");
+ok($app2->buffer() eq "", "app2 buffer is empty");
+ok($app3->buffer() eq "", "app3 buffer is empty");
 
     ##################################################
     # Block via 'false' additivity
@@ -154,9 +169,9 @@ $log2->level($DEBUG);
 $log3->level($DEBUG);
 
 $log1->debug("Debug Message");
-ok($app->buffer(), "DEBUG - Debug Message\n");
-ok($app2->buffer(), "DEBUG - Debug Message\n");
-ok($app3->buffer(), "");
+ok($app->buffer() eq "DEBUG - Debug Message\n", "app buffer contains DEBUG");
+ok($app2->buffer() eq "DEBUG - Debug Message\n", "app2 buffer contains DEBUG");
+ok($app3->buffer() eq "", "app3 buffer is empty");
 
     ##################################################
     # Check is_*() functions
@@ -165,20 +180,20 @@ $log1->level($DEBUG);
 $log2->level($ERROR);
 $log3->level($INFO);
 
-ok($log1->is_error(), 1);
-ok($log1->is_info(), 1);
-ok($log1->is_fatal(), 1);
-ok($log1->is_debug(), 1);
+ok($log1->is_error(), "log1 is_error == 1");
+ok($log1->is_info(), "log1 is_info == 1");
+ok($log1->is_fatal(), "log1 is_fatal == 1");
+ok($log1->is_debug(), "log1 is_debug == 1");
 
-ok($log2->is_error(), 1);
-ok($log2->is_info(), "");
-ok($log2->is_fatal(), 1);
-ok($log2->is_debug(), "");
+ok($log2->is_error(), "log2 is_error == 1");
+ok(!$log2->is_info(), "log2 is_info == 0");
+ok($log2->is_fatal(), "log2 is_fatal == 1");
+ok(!$log2->is_debug(), "log2 is_debug == 0");
 
-ok($log3->is_error(), 1);
-ok($log3->is_info(), 1);
-ok($log3->is_fatal(), 1);
-ok($log3->is_debug(), "");
+ok($log3->is_error(), "log3 is_error == 1");
+ok($log3->is_info(), "log3 is_info == 1");
+ok($log3->is_fatal(), "log3 is_fatal == 1");
+ok(!$log3->is_debug(), "log3 is_debug == 0");
 
 
     ##################################################
@@ -201,9 +216,12 @@ $log2->log($INFO,  "info message ");
 $log3->log($DEBUG, "debug message");
 $log3->log($INFO,  "info message ");
 
-ok($app->buffer(), "DEBUG - debug message\nINFO - info message \n");
-ok($app2->buffer(),"DEBUG - debug message\nINFO - info message \n");
-ok($app3->buffer(),"INFO - info message \n");
+ok($app->buffer() eq "DEBUG - debug message\nINFO - info message \n",
+	"app  buffer contains DEBUG and INFO");
+ok($app2->buffer() eq "DEBUG - debug message\nINFO - info message \n",
+	"app2 buffer contains DEBUG");
+ok($app3->buffer() eq "INFO - info message \n",
+	"app3 buffer contains INFO");
 
     ##################################################
     # Check several messages concatenated
@@ -219,7 +237,7 @@ $log1->warn("7 ", "8 ");
 $log1->error("9 ", "10 ");
 $log1->fatal("11 ", "12 ", "13 ");
 
-ok($app->buffer(), <<EOT);
+ok($app->buffer() eq <<EOT, "app buffer six lines");
 DEBUG - 1 2 
 DEBUG - 3 4 
 INFO - 5 6 
@@ -238,9 +256,11 @@ $log1->level($DEBUG);
 $log1->log($DEBUG, sub { "1" . " " . "2" } );
 $log1->info(sub { "3 " . "4 " }, sub { "5 " . "6 " });
 
-ok($app->buffer(), <<EOT);
+ok($app->buffer() eq <<EOT, "app buffer contains 2 lines");
 DEBUG - 1 2
 INFO - 3 4 5 6 
 EOT
 
-BEGIN { plan tests => 46 };
+# warn("app buffer is: ", $app->buffer(), "\n");
+
+# BEGIN { plan tests => 46 };

@@ -986,6 +986,84 @@ a reference to it:
 
     Log::Log4perl->init( \%key_value_pairs );
 
+=head2 Incrementing and Decrementing the Log Levels
+
+Log4perl provides some internal functions for quickly adjusting the
+log level from within a running Perl program. 
+
+Now, some people might
+argue that you should adjust your levels from within an external 
+Log4perl configuration file, but Log4perl is everybody's darling.
+
+Typically run-time adjusting of levels is done
+at the beginning, or in response to some external input (like a
+"more logging" runtime command for diagnostics).
+
+To increase the level of logging currently being done, use:
+
+    $logger->more_logging($delta);
+
+and to decrease it, use:
+
+    $logger->less_logging($delta);
+
+$delta must be a positive integer (for now, we may fix this later ;).
+
+There are also two equivalent functions:
+
+    $logger->inc_level($delta);
+    $logger->dec_level($delta);
+
+They're included to allow you a choice in readability. Some folks
+will prefer more/less_logging, as they're fairly clear in what they
+do, and allow the programmer not to worry too much about what a Level
+is and whether a higher Level means more or less logging. However,
+other folks who do understand and have lots of code that deals with
+levels will probably prefer the inc_level() and dec_level() methods as
+they want to work with Levels and not worry about whether that means
+more or less logging. :)
+
+That diatribe aside, typically you'll use more_logging() or inc_level()
+as such:
+
+    my $v = 0; # default level of verbosity.
+    
+    GetOptions("v+" => \$v, ...);
+
+    $logger->more_logging($v);  # inc logging level once for each -v in ARGV
+
+=head2 Custom Log Levels
+
+First off, let me tell you that creating custom levels is heavily
+deprechiated by the log4j folks. Indeed, instead of creating additional
+levels on top of the predefined DEBUG, INFO, WARN, ERROR and FATAL, 
+you should use categories to control the amount of logging smartly,
+based on the location of the log-active code in the system.
+
+Nevertheless, 
+Log4perl provides a nice way to create custom levels via the 
+create_custom_level() routine function. However, this must be done
+before the first call to init() or get_logger(). Say you want to create
+a NOTIFY logging level that comes after WARN (and thus before INFO).
+You'd do such as follows:
+
+    use Log::Log4perl;
+    use Log::Log4perl::Level;
+
+    Log::Log4perl::Logger::create_custom_level("NOTIFY", "WARN");
+
+And that's it! create_custom_level() creates the following functions /
+variables for level FOO:
+
+    $FOO_INT		# integer to use in toLevel()
+    $logger->foo()	# log function to log if level = FOO
+    $logger->is_foo()	# true if current level is >= FOO
+
+These levels can also be used in your
+config file, but note that your config file probably won't be
+portable to another log4perl or log4j environment unless you've
+made the appropriate mods there too.
+
 =head1 How about Log::Dispatch::Config?
 
 Tatsuhiko Miyagawa's C<Log::Dispatch::Config> is a very clever 

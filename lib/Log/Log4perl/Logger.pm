@@ -147,8 +147,11 @@ sub set_output_methods {
 
     my %priority = %Log::Log4perl::Level::PRIORITY; #convenience and cvs
 
+   # changed to >= from <= as level ints were reversed
     foreach my $levelname (keys %priority){
-        if ($priority{$levelname} <= $level) {
+        if (Log::Log4perl::Level::isGreaterOrEqual($level,
+						   $priority{$levelname}
+						   )) {
             print "  ($priority{$levelname} <= $level)\n"
                   if DEBUG;
             $self->{$levelname} = $coderef;
@@ -475,6 +478,8 @@ sub log {
 ##################################################
     my ($self, $priority, @messages) = @_;
 
+    confess("log: No priority given!") unless defined($priority);
+
        # Just in case of 'init_and_watch' -- see Changes 0.21
     $_[0] = $LOGGERS_BY_NAME->{$_[0]->{category}} if defined $LAST_CHECKED_AT;
 
@@ -488,29 +493,109 @@ sub log {
                     Log::Log4perl::Level::to_level($priority));
 }
 
+######################################################################
+#
+# create_custom_level 
+# creates a custom level
+# in theory, could be used to create the default ones
+
+sub create_custom_level {
+  my $level = shift || die("create_custom_level: forgot to pass in a level string!");
+  my $after = shift || die("create_custom_level: forgot to pass in a level after which to place the new level!");
+  my $syslog_equiv = shift; # can be undef
+
+  ## only let users create custom levels before initialization
+
+  die("create_custom_level must be called before init or first get_logger() call") if ($INITIALIZED);
+
+  my %PRIORITY = %Log::Log4perl::Level::PRIORITY; #convenience
+
+  die("create_custom_level: no such level \"$after\"! Use one of: ", join(", ", sort keys %PRIORITY))
+    unless $PRIORITY{$after};
+
+  # figure out new int value by AFTER + (AFTER+ 1) / 2
+
+  my $next_prio = Log::Log4perl::Level::get_lower_level($PRIORITY{$after}, 1);
+  my $cust_prio = int(($PRIORITY{$after} + $next_prio) / 2);
+
+#   CORE::warn("Creating prio $cust_prio between $PRIORITY{$after} and $next_prio");
+
+  die(qq{create_custom_level: Calculated level of $cust_prio already exists!
+      This should only happen if you've made some insane number of custom
+      levels (like 15 one after another)
+      You can usually fix this by re-arranging your code from:
+      create_custom_level("cust1", X);
+      create_custom_level("cust2", X);
+      create_custom_level("cust3", X);
+      create_custom_level("cust4", X);
+      create_custom_level("cust5", X);
+      into:
+      create_custom_level("cust3", X);
+      create_custom_level("cust5", X);
+      create_custom_level("cust4", 4);
+      create_custom_level("cust2", cust3);
+      create_custom_level("cust1", cust2);
+   }) if ($Log::Log4perl::Level::LEVELS{$cust_prio});
+
+  Log::Log4perl::Level::add_priority($level, $cust_prio, $syslog_equiv);
+
+  print("Adding prio $level at $cust_prio\n") if DEBUG;
+
+  # get $LEVEL into namespace of Log::Log4perl::Logger to 
+  # create $logger->foo nd $logger->is_foo
+  my $name = "Log::Log4perl::Logger::";
+  my $key = $level;
+
+  no strict qw(refs);
+  # be sure to use ${Log...} as CVS adds log entries for Log
+  *{"$name$key"} = \${Log::Log4perl::Level::PRIORITY{$level}};
+
+  # now, stick it in the caller's namespace
+  $name = caller(0) . "::";
+  *{"$name$key"} = \${Log::Log4perl::Level::PRIORITY{$level}};
+  use strict qw(refs);
+
+  create_log_level_methods($level);
+
+  return 0;
+
+}
+
+########################################
+#
+# if we were hackin' lisp (or scheme), we'd be returning some lambda
+# expressions. But we aren't. :) So we'll just create some strings and
+# eval them.
+sub create_log_level_methods {
+  my $level = shift || die("create_log_level_methods: forgot to pass in a level string!");
+  my $lclevel = lc($level);
+  my $levelint = uc($level) . "_INT";
+
+  no strict qw(refs);
+
+  # This is a bit better way to create code on the fly than eval'ing strings.
+  # -erik
+
+  *{__PACKAGE__ . "::$lclevel"} = sub {
+        print "$lclevel: ($_[0]->{category}/$_[0]->{level}) [@_]\n" if DEBUG;
+        init_warn() unless $INITIALIZED;
+        $_[0]->{$level}(@_, $level);
+     };
+
+  *{__PACKAGE__ . "::is_$lclevel"} = sub { 
+    return Log::Log4perl::Level::isGreaterOrEqual($_[0]->level(),
+						  $$level); 
+  };
+  
+  use strict qw(refs);
+
+  return 0;
+
+}
 
 #now lets autogenerate the logger subs based on the defined priorities
 foreach my $level (keys %Log::Log4perl::Level::PRIORITY){
-
-    my $lclevel = lc $level;
-    my $code = <<EOL;
-
-    sub $lclevel {
-        print "$lclevel: (\$_[0]->{category}/\$_[0]->{level}) [\@_]\n" if DEBUG;
-        init_warn() unless \$INITIALIZED;
-        \$_[0]->{$level}(\@_, '$level');
-     }
-     
-     sub is_$lclevel { return \$_[0]->level() >= \$$level; }
-EOL
-
-    eval $code;
-
-    if ($@) {
-        die "Log4perl init failed, could not define a subroutine for $level:\n$code\n$@";
-    }
-
-
+  create_log_level_methods($level);
 }
 
 ##################################################
@@ -610,8 +695,9 @@ sub logdie {
   my $self = shift;
   if ($self->is_fatal()) {
     $self->fatal(@_);
-    $self->and_die(@_);
   }
+  # no matter what, we die... 'cuz logdie wants you to die.
+  $self->and_die(@_);
 }
 
 ##################################################
@@ -649,24 +735,26 @@ sub logcarp {
 # croaks and confess are FATAL level
 sub logcroak {
   my $self = shift;
+  my $message = Carp::shortmess(@_);
   if ($self->is_fatal()) {
-    my $message = Carp::shortmess(@_);
     foreach (split(/\n/, $message)) {
       $self->fatal("$_\n");
     }
-    die(noop($message));
   }
+  # again, we die no matter what
+  die(noop($message));
 }
 
 sub logconfess {
   my $self = shift;
+  my $message = Carp::longmess(@_);
   if ($self->is_fatal()) {
-    my $message = Carp::longmess(@_);
     foreach (split(/\n/, $message)) {
       $self->fatal("$_\n");
     }
-    die(noop($message));
   }
+  # again, we die no matter what
+  die(noop($message));
 }
 
 ##################################################
@@ -685,8 +773,12 @@ sub error_die {
   my $self = shift;
   if ($self->is_error()) {
     $self->error(@_);
-    $self->and_die(@_);
   }
+  $self->and_die(@_);
+}
+
+sub more_logging {
+  return inc_level(@_);
 }
 
 sub inc_level {
@@ -698,6 +790,10 @@ sub inc_level {
 
     $self->set_output_methods;
 
+}
+
+sub less_logging {
+  return dec_level(@_);
 }
 
 sub dec_level {

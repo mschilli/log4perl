@@ -18,10 +18,10 @@ use Log::Log4perl qw(get_logger :levels);
 
 ok(1);
 
-ok($DEBUG > $ERROR);
-ok($INFO > $WARN);
-ok($WARN > $ERROR);
-ok($ERROR > $FATAL);
+ok(Log::Log4perl::Level::isGreaterOrEqual($DEBUG, $ERROR));
+ok(Log::Log4perl::Level::isGreaterOrEqual($INFO, $WARN));
+ok(Log::Log4perl::Level::isGreaterOrEqual($WARN, $ERROR));
+ok(Log::Log4perl::Level::isGreaterOrEqual($ERROR, $FATAL));
 
 ##################################################
 # Init logger

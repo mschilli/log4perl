@@ -83,8 +83,9 @@ sub log { # Relay this call to Log::Dispatch::Whatever
 
     # Check if the appender has a last-minute veto in form
     # of an "appender threshold"
-    if($self->{level} < $
+    if($self->{level} > $
                         Log::Log4perl::Level::PRIORITY{$level}) {
+      print "$self->{level} > $level, aborting\n" if DEBUG;
         return;
     }
 

@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# $Id: $
+# $Id: 024WarnDieCarp.t,v 1.1 2002/08/29 05:33:28 mschilli Exp $
 
 # Check the various logFOO for FOO in {die, warn, Carp*}
 
@@ -45,6 +45,17 @@ sub warndietest_nooutput {
   ok($warnstr !~ /$out_str/, "$mname($in_str): STDERR does NOT contain \"$out_str\"");
   ok($app->buffer() !~ /$out_str/, "$mname($in_str): Buffer does NOT contain \"$out_str\"");
 }
+
+# same as above, just look for no output in buffer, but output in STDERR
+sub dietest_nooutput {
+  my ($method, $in_str, $out_str, $app, $mname) = @_;
+
+  eval { &$method($in_str) };
+  
+  ok($warnstr =~ /$out_str/, "$mname($in_str): STDERR contains \"$out_str\"");
+  ok($app->buffer() !~ /$out_str/, "$mname($in_str): Buffer does NOT contain \"$out_str\"");
+}
+
 
 ok(1, "Initialized OK"); 
 
@@ -94,13 +105,12 @@ foreach my $f ("logwarn", "logcarp", "logcluck",
 
 $log->level($OFF); # $OFF == $FATAL... although I suspect that's a bug in the log4j spec
 
-foreach my $f ("logwarn", "logcarp", "logcluck",
-    "error_warn", "error_die") {
+foreach my $f ("logwarn", "logcarp", "logcluck", "error_warn") {
   warndietest_nooutput(sub {$log->$f(@_)}, "Test $test: $f", "Test $test: $f", $app, "$f");
   $test++;
 }
 
-foreach my $f ("logdie", "logcroak", "logconfess") {
-  warndietest(sub {$log->$f(@_)}, "Test $test: $f", "Test $test: $f", $app, "$f");
+foreach my $f ("error_die", "logdie", "logcroak", "logconfess") {
+  dietest_nooutput(sub {$log->$f(@_)}, "Test $test: $f", "Test $test: $f", $app, "$f");
   $test++;
 }

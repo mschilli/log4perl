@@ -7,22 +7,44 @@ use strict;
 use warnings;
 use Carp;
 
+# log4j, for whatever reason, puts 0 as all and MAXINT as OFF.
+# this seems less optimal, as more logging would imply a higher
+# level. But oh well. Probably some brokenness that has persisted. :)
+use constant ALL_INT   => 0;
+use constant DEBUG_INT => 10000;
+use constant INFO_INT  => 20000;
+use constant WARN_INT  => 30000;
+use constant ERROR_INT => 40000;
+use constant FATAL_INT => 50000;
+use constant OFF_INT   => (2 ** 31) - 1;
+
 no strict qw(refs);
+use vars qw(%PRIORITY %LEVELS);
 
-our %PRIORITY = (
-    "FATAL" => 0,
-    "ERROR" => 3,
-    "WARN"  => 4,
-    "INFO"  => 6,
-    "DEBUG" => 7,
-) unless %PRIORITY;
+our %PRIORITY = (); # unless (%PRIORITY);
+our %LEVELS = () unless (%LEVELS);
+our %SYSLOG = () unless (%SYSLOG);
 
-    # Reverse mapping
-our %LEVELS = map { $PRIORITY{$_} => $_ } keys %PRIORITY;
+sub add_priority {
+  my ($prio, $intval, $syslog) = @_;
+  $prio = uc($prio); # just in case;
 
-    # Min and max
-$PRIORITY{'OFF'} = $PRIORITY{'FATAL'};
-$PRIORITY{'ALL'} = $PRIORITY{'DEBUG'};
+  $PRIORITY{$prio} = $intval;
+  $LEVELS{$intval} = $prio;
+  $SYSLOG{$prio} = $syslog if defined($syslog);
+}
+
+# create the basic priorities
+add_priority("OFF",   OFF_INT,   -1);
+add_priority("FATAL", FATAL_INT, 0);
+add_priority("ERROR", ERROR_INT, 3);
+add_priority("WARN",  WARN_INT,  4);
+add_priority("INFO",  INFO_INT,  6);
+add_priority("DEBUG", DEBUG_INT, 7);
+add_priority("ALL",   ALL_INT,   7);
+
+# we often sort numerically, so a helper func for readability
+sub numerically {$a <=> $b}
 
 ###########################################
 sub import {
@@ -43,6 +65,9 @@ sub import {
         my $name  = "$namespace$key";
         my $value = $PRIORITY{$key};
         *{"$name"} = \$value;
+	my $nameint = "$namespace${key}_INT";
+	my $func = uc($key) . "_INT";
+	*{"$nameint"} = \&$func;
     }
 }
 
@@ -75,8 +100,11 @@ sub to_level {
     if (exists $LEVELS{$priority}) {
         return $LEVELS{$priority}
     }else {
-        die "priority '$priority' is not a valid error level number (".join ('|', keys %LEVELS),')';
+      die("priority '$priority' is not a valid error level number (",
+	  join("|", sort numerically keys %LEVELS), "
+          )");
     }
+
 }
 
 ##################################################
@@ -120,8 +148,9 @@ sub get_higher_level {
 
     foreach (1..$delta){
         #so the list is DEBUG, INFO, WARN, ERROR, FATAL
-        foreach my $p (reverse sort keys %LEVELS){
-            if ($p < $old_priority) {
+      # but remember, the numbers go in reverse order!
+        foreach my $p (sort numerically keys %LEVELS){
+            if ($p > $old_priority) {
                 $new_priority = $p;
                 last;
             }
@@ -140,8 +169,9 @@ sub get_lower_level {
 
     foreach (1..$delta){
         #so the list is FATAL, ERROR, WARN, INFO, DEBUG
-        foreach my $p (sort keys %LEVELS){
-            if ($p > $old_priority) {
+      # but remember, the numbers go in reverse order!
+        foreach my $p (reverse sort numerically keys %LEVELS){
+            if ($p < $old_priority) {
                 $new_priority = $p;
                 last;
             }
@@ -150,6 +180,25 @@ sub get_lower_level {
     }
     return $new_priority;
 }
+
+sub isGreaterOrEqual {
+  my $lval = shift;
+  my $rval = shift;
+  
+  # in theory, we should check if the above really ARE valid levels.
+  # but we just use numeric comparison, since they aren't really classes.
+
+  # oh, yeah, and 'cuz level ints go from 0 .. N with 0 being highest,
+  # these are reversed.
+  return $lval <= $rval;
+}
+
+######################################################################
+# 
+# since the integer representation of levels is reversed from what
+# we normally want, we don't want to use < and >... instead, we
+# want to use this comparison function
+
 
 1;
 

@@ -1,6 +1,7 @@
 ###########################################
 # Test Suite for Log::Log4perl::Config
-# Mike Schilli, 2002 (m@perlmeister.com)
+# Erik Selberg, (c) 2002 erik@selberg.com
+# clone of 025CustLevels.t but uses nicer method (?) we hope
 ###########################################
 
 #########################
@@ -9,25 +10,60 @@
 use Test;
 
 #create a custom level "LITEWARN"
-BEGIN {
-package Log::Log4perl::Level;
-our %PRIORITY = (
-    "FATAL" => 0,
-    "ERROR" => 3,
-    "WARN"  => 4,
-    "LITEWARN"  => 5,
-    "INFO"  => 6,
-    "DEBUG" => 7,
-);
-}
-
-
 use Log::Log4perl;
 use Log::Log4perl::Level;
 use Log::Log4perl::TestBuffer;
+# use strict;
 
 
 ok(1); # If we made it this far, we're ok.
+
+Log::Log4perl::Logger::create_custom_level("LITEWARN", "WARN");
+
+# test insane creation of levels
+
+foreach (1 .. 14) {
+  ok(Log::Log4perl::Logger::create_custom_level("TEST$_", "INFO"), 0);
+}
+
+# 15th should fail.. this assumes that each level is 10000 apart from
+# the other.
+
+ok(eval { Log::Log4perl::Logger::create_custom_level("TEST15", "INFO") }, 
+   undef);
+
+# now, by re-arranging (as we whine about in create_custom_levels), we
+# should be able to get 15.
+
+my %btree = (
+             8 => "DEBUG",
+	     4 => 8,
+	     2 => 4,
+	     1 => 2,
+	     3 => 4,
+	     6 => 8,
+	     5 => 6,
+	     7 => 8,
+	     12 => "DEBUG",
+	     10 => 12,
+	     9 => 10,
+	     11 => 12,
+	     14 => "DEBUG",
+	     13 => 14,
+	     15 => "DEBUG",
+	     );
+
+foreach (8, 4, 2, 1, 3, 6, 5, 7, 12, 10, 9, 11, 14, 13, 15) {
+  my $level = $btree{$_} eq "DEBUG" ? "DEBUG" : "BTREE$btree{$_}";
+#  warn("Creating BTREE$_ after $level");
+  ok(Log::Log4perl::Logger::create_custom_level("BTREE$_", $level), 0);
+#  warn("BTREE$_ is ", ${Log::Log4perl::Level::PRIORITY{"BTREE$_"}});
+}
+
+# foreach (1 .. 15) {
+#    warn("BTREE$_ is: ", ${Log::Log4perl::Level::PRIORITY{"BTREE$_"}});
+# }
+
 
 my $LOGFILE = "example.log";
 unlink $LOGFILE;
@@ -40,8 +76,14 @@ log4j.appender.FileAppndr.layout   = Log::Log4perl::Layout::SimpleLayout
 EOT
 
 
-
 Log::Log4perl::init(\$config);
+
+
+# can't create a custom level after init... let's test that. Just look
+# for an undef (i.e. failure) from the eval
+
+ok(eval { Log::Log4perl::Logger::create_custom_level("NOTIFY", "WARN"); },
+   undef);
 
 
 # *********************
@@ -76,6 +118,7 @@ ok($data, "$result1$result2");
 
 $logger->log($WARN, "a warning message");
 $logger->log($LITEWARN, "a LITE warning message");
+die("lame hack to suppress warning") if ($LITEWARN != $LITEWARN);
 $logger->log($DEBUG, "an info message, should not log");
 
 open FILE, "<$LOGFILE" or die "Cannot open $LOGFILE";
@@ -92,9 +135,12 @@ ok($logger->is_litewarn);
 ok(! $logger->is_info);
 
 
+# warn("Testing inc_level()");
+
 #***************************
 #increase/decrease leves
-$logger->inc_level();  #bump up from litewarn to warn
+$logger->inc_level(1);  #bump up from litewarn to warn
+# warn("level is now: ", $logger->level());
 ok($logger->is_warn);
 ok(!$logger->is_litewarn);
 ok(!$logger->is_info);
@@ -107,14 +153,15 @@ close FILE;
 my $result4 = "WARN - after bumping, warning message\n";
 ok($data, "$result1$result2$result3$result4");
 
-
 $logger->dec_level(2); #bump down from warn to litewarn to info
+
 ok($logger->is_warn);
 ok($logger->is_litewarn);
 ok($logger->is_info);
+
 ok(! $logger->is_debug) ;
 
 
-BEGIN { plan tests => 15 };
+BEGIN { plan tests => 46 };
 
 unlink $LOGFILE;
