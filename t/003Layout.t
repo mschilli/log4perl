@@ -10,7 +10,7 @@ use strict;
 # change 'tests => 1' to 'tests => last_test_to_print';
 #########################
 use Test;
-BEGIN { plan tests => 10 };
+BEGIN { plan tests => 11 };
 
 use Log::Log4perl;
 use Log::Log4perl::Layout;
@@ -118,3 +118,13 @@ $app->layout($layout);
 $logger->debug("That's the message\n");
 
 ok($app->buffer(), "That\'s the message\n");
+
+############################################################
+# But don't suppress other %ns
+############################################################
+$app->buffer("");
+$layout = Log::Log4perl::Layout::PatternLayout->new("a%nb%n%m%n");
+$app->layout($layout);
+$logger->debug("That's the message\n");
+
+ok($app->buffer(), "a\nb\nThat\'s the message\n");
