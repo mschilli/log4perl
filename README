@@ -1643,6 +1643,18 @@ Advanced configuration within Perl
         $logger->debug("Blah");
             # => "2002/07/10 23:55:35 (test.pl:207)> Blah\n"
 
+    It's also possible to remove appenders from a logger:
+
+        $logger->remove_appender($appender_name);
+
+    will remove an appender, specified by name, from a given logger. Please
+    note that this does *not* remove an appender from the system.
+
+    To eradicate an appender from the system, you need to call
+    "Log::Log4perl->eradicate_appender($appender_name)" which will first
+    remove the appender from every logger in the system and then will delete
+    all references Log4perl holds to it.
+
 How about Log::Dispatch::Config?
     Tatsuhiko Miyagawa's "Log::Dispatch::Config" is a very clever simplified
     logger implementation, covering some of the *log4j* functionality. Among
