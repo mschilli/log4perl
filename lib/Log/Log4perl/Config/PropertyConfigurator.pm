@@ -61,3 +61,34 @@ sub parse {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+Log::Log4perl::Config::PropertyConfigurator - reads properties file
+
+=head1 SYNOPSIS
+
+This is an internal class.
+
+    Log::Log4perl::Config::PropertyConfigurator::parse($text);
+
+=head1 DESCRIPTION
+
+Initializes log4perl from a properties file, stuff like
+
+    log4j.category.a.b.c.d = WARN, A1
+    log4j.category.a.b = INFO, A1
+
+=head1 SEE ALSO
+
+Log::Log4perl::Config::DOMConfigurator
+
+Log::Log4perl::Config::LDAPConfigurator (tbd!)
+
+=head1 AUTHOR
+
+Kevin Goess, <cpan@goess.org> Jan-2003
+
+=cut
