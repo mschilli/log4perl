@@ -892,7 +892,7 @@ How about Log::Dispatch::Config?
     the things that "Log::Log4perl" can but "Log::Dispatch::Config" can't
     are:
 
-    *   You can't assing categories to loggers. For small systems that's
+    *   You can't assign categories to loggers. For small systems that's
         fine, but if you can't turn off and on detailed logging in only a
         tiny subsystem of your environment, you're missing out on a majorly
         useful log4j feature.

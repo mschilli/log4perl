@@ -1110,7 +1110,7 @@ C<Log::Log4perl> can but C<Log::Dispatch::Config> can't are:
 
 =item *
 
-You can't assing categories to loggers. For small systems that's fine,
+You can't assign categories to loggers. For small systems that's fine,
 but if you can't turn off and on detailed logging in only a tiny
 subsystem of your environment, you're missing out on a majorly
 useful log4j feature.
