@@ -2,9 +2,10 @@
 Revision history for Log::Log4perl
 ##################################################
 
-0.37
+0.37 (not yet released)
     * (kg) adjusting tests for XML::Parser 2.32 having broken
       XML::DOM 1.42 and lower
+    * (ms) Added signal handling to init_and_watch
 
 0.36 (07/22/2003)
     * (ms) Matthew Keene <mkeene@netspace.net.au> suggested to have
