@@ -6,6 +6,15 @@ Revision history for Log::Log4perl
     * (kg) added filters to XML DOMConfig and DTD
     * (ms) Fixed caller level to cspecs by adding one
     * (ms) Added init_once() and documentation
+    * (ms) Worked around the perl bug that triggers __DIE__ handlers
+           even if die() occurs within an eval(). So if you did
+             BEGIN { $SIG{__DIE__} = sub { print "ouch!"; die }; }
+             use Log::Log4perl;
+           and Time::HiRes wasn't available, the 
+             eval { require Time::HiRes }
+           in PatternLayout.pm triggered the __DIE__ handler. Now there's
+           a function module_available() in L4p::Util to check if a 
+           module is installed.
 
 0.41 (12/12/2003)
     * (ms) Applied documentation update for Synchronized appender, suggested
