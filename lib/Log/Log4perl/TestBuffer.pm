@@ -56,7 +56,7 @@ sub reset {
 ##################################################
     my($self) = @_;
 
-    %POPULATION_MAP = ();
+    %POPULATION = ();
     $self->{buffer} = "";
 }
 
