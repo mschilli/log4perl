@@ -136,19 +136,19 @@ sub parse_children_of_logger_element {
             }
             print "parse cole: got param $name = $value\n"  if DEBUG;
             $l4p_branch->{$name} = {value => $value};
-        }elsif ($tag_name eq 'param-nested'){ #log4perl only
-            parse param-nested
-               can be param, param-text, param-nested
-
-        }elsif ($tag_name eq 'param-text'){ #log4perl only
-            my $name = $child->getAttribute('name');
-            my $value = $child->getText;
-            if ($value =~ /(all|debug|info|warn|error|fatal|off|null)/) {
-                $value = uc $value;
-            }
-            print "parse cole: got param $name = $value\n"  if DEBUG;
-            $l4p_branch->{$name} = {value => $value};
-
+        #}elsif ($tag_name eq 'param-nested'){ #log4perl only
+        #    parse param-nested
+        #       can be param, param-text, param-nested
+        #
+        #}elsif ($tag_name eq 'param-text'){ #log4perl only
+        #    my $name = $child->getAttribute('name');
+        #    my $value = $child->getText;
+        #    if ($value =~ /(all|debug|info|warn|error|fatal|off|null)/) {
+        #        $value = uc $value;
+        #    }
+        #    print "parse cole: got param $name = $value\n"  if DEBUG;
+        #    $l4p_branch->{$name} = {value => $value};
+        #
         }elsif ($tag_name eq 'appender-ref'){
             push @appenders, $child->getAttribute('ref');
             #DEBUG!!!! q.v.
