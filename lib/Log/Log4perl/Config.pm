@@ -522,6 +522,11 @@ sub config_read {
     } elsif (ref $config eq 'SCALAR') {
         @text = split(/\n/,$$config);
 
+    } elsif (ref $config eq 'GLOB' or 
+             ref $config eq 'IO::File') {
+            # If we have a file handle, just call the reader
+        config_file_read($config, \@text);
+
     } elsif (ref $config) {
             # Caller provided a config parser object, which already
             # knows which file (or DB or whatever) to parse.
@@ -569,12 +574,7 @@ sub config_read {
             }
         }else{
             open FILE, "<$config" or die "Cannot open config file '$config'";
-            {
-                   # Dennis Gregorovic <dgregor@redhat.com> added this
-                   # to protect apps which are tinkering with $/ globally.
-               local $/ = "\n";
-               @text = <FILE>;
-            }
+            config_file_read(\*FILE, \@text);
             close FILE;
         }
     }
@@ -598,6 +598,19 @@ sub config_read {
     }
 
     return $data;
+}
+
+
+###########################################
+sub config_file_read {
+###########################################
+    my($handle, $linesref) = @_;
+
+        # Dennis Gregorovic <dgregor@redhat.com> added this
+        # to protect apps which are tinkering with $/ globally.
+    local $/ = "\n";
+
+    @$linesref = <$handle>;
 }
 
 ###########################################

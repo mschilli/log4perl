@@ -6,8 +6,8 @@
 #########################
 # change 'tests => 1' to 'tests => last_test_to_print';
 #########################
-use Test;
-BEGIN { plan tests => 2 };
+use Test::More;
+BEGIN { plan tests => 3 };
 
 
 use Log::Log4perl;
@@ -32,5 +32,24 @@ my $data = <FILE>;
 close FILE;
 
 unlink $LOGFILE;
-ok($data, File::Spec->catfile(qw(t 005Config-Perl.t)) . 
+is($data, File::Spec->catfile(qw(t 005Config-Perl.t)) . 
           " 28 DEBUG N/A  - Gurgel\n");
+
+###############################################
+# Check reading a config file via a file handle
+###############################################
+Log::Log4perl->reset();
+open FILE, File::Spec->catfile($EG_DIR, 'log4j-file-append-perl.conf') or
+    die "cannot open log4j-file-append-perl.conf";
+Log::Log4perl->init(\*FILE);
+
+$logger = Log::Log4perl->get_logger("");
+$logger->debug("Gurgel");
+
+open FILE, "<$LOGFILE" or die "Cannot open $LOGFILE";
+$data = <FILE>;
+close FILE;
+
+unlink $LOGFILE;
+is($data, File::Spec->catfile(qw(t 005Config-Perl.t)) . 
+          " 47 DEBUG N/A  - Gurgel\n");
