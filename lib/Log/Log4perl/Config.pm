@@ -318,3 +318,187 @@ sub leaf_paths {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+Log::Log4perl::Config - Log4perl configuration file syntax
+
+=head1 DESCRIPTION
+
+In C<Log::Log4perl>, configuration files are used to describe how the
+system's loggers ought to behave. 
+
+The format is the same as the one as used for C<log4j>, just with
+a few perl-specific extensions, like enabling the C<Bar::Twix>
+syntax instead of insisting on the Java-specific C<Bar.Twix>.
+
+Comment lines (starting with arbitrary whitespace and a #) and
+blank lines (all whitespace or empty) are ignored.
+
+Also, blanks between syntactical entities are ignored, it doesn't 
+matter if you write
+
+    log4perl.logger.Bar.Twix=WARN,Screen
+
+or 
+
+    log4perl.logger.Bar.Twix = WARN, Screen
+
+C<Log::Log4perl> will strip the blanks while parsing your input.
+
+Assignments need to be on a single line. However, you can break the
+line if you want to by using a continuation character at the end of the
+line. Instead of writing
+
+    log4perl.appender.A1.layout=Log::Log4perl::Layout::SimpleLayout
+
+you can break the line at any point by putting a backslash at the very (!)
+end of the line to be continued:
+
+    log4perl.appender.A1.layout=\
+        Log::Log4perl::Layout::SimpleLayout
+
+Watch out for trailing blanks after the backslash, which would prevent
+the line from being properly concatenated.
+
+=head2 Loggers
+
+Loggers are addressed by category:
+
+    log4perl.logger.Bar.Twix      = WARN, Screen
+
+This sets all loggers under the C<Bar::Twix> hierarchy on priority
+C<WARN> and attaches a later-to-be-defined C<Screen> appender to them.
+Settings for the root appender (which doesn't have a name) can be
+accomplished by simply omitting the name:
+
+    log4perl.logger = FATAL, Database, Mailer 
+
+This sets the root appender's level to C<FATAL> and also attaches the 
+later-to-be-defined appenders C<Database> and C<Mailer> to it.
+
+Loggers carrying a threshold, can be defined using the C<Threshold>
+keyword after the logger's name:
+
+    log4perl.logger.Bar.Twix.Threshold = ERROR
+
+The additivity flag of a logger is set or cleared via the 
+C<additivity> keyword:
+
+    log4perl.additivity.Bar.Twix = 0|1
+
+(Note the reversed order of keyword and logger name, resulting
+from the dilemma that a logger name could end in C<.additivity>
+according to the log4j documentation).
+
+=head2 Appenders and Layouts
+
+Appender names used in Log4perl configuration file
+lines need to be resolved later on, in order to
+define the appender's properties and its layout. To specify properties
+of an appender, just use the C<appender> keyword after the
+C<log4perl> intro and the appender's name:
+
+        # The Bar::Twix logger and its appender
+    log4perl.logger.Bar.Twix = DEBUG, A1
+    log4perl.appender.A1=Log::Dispatch::File
+    log4perl.appender.A1.filename=test.log
+    log4perl.appender.A1.mode=append
+    log4perl.appender.A1.layout=Log::Log4perl::Layout::SimpleLayout
+
+This sets a priority of C<DEBUG> for loggers in the C<Bar::Twix>
+hierarchy and assigns the C<A1> appender to it, which is later on
+resolved to be an appender of type C<Log::Dispatch::File>, simply
+appending to a log file. According to the C<Log::Dispatch::File>
+manpage, the C<filename> parameter specifies the name of the log file
+and the C<mode> parameter can be set to C<append> or C<write> (the
+former will append to the logfile if one with the specified name
+already exists while the latter would clobber and overwrite it).
+
+The order of the entries in the configuration file is not important,
+C<Log::Log4perl> will read in the entire file first and try to make
+sense of the lines after it knows the entire context.
+
+You can very well define all loggers first and then their appenders
+(you could even define your appenders first and then your loggers,
+but let's not go there):
+
+    log4perl.logger.Bar.Twix = DEBUG, A1
+    log4perl.logger.Bar.Snickers = FATAL, A2
+
+    log4perl.appender.A1=Log::Dispatch::File
+    log4perl.appender.A1.filename=test.log
+    log4perl.appender.A1.mode=append
+    log4perl.appender.A1.layout=Log::Log4perl::Layout::SimpleLayout
+
+    log4perl.appender.A2=Log::Dispatch::Screen
+    log4perl.appender.A2.stderr=0
+    log4perl.appender.A2.layout=Log::Log4perl::Layout::PatternLayout
+    log4perl.appender.A2.layout.ConversionPattern = %d %m %n
+
+Note that you have to specify the full path to the layout class
+and that C<ConversionPattern> is the keyword to specify the printf-style
+formatting instructions.
+
+=head1 Configuration File Cookbook
+
+Here's some examples of often-used Log4perl configuration files:
+
+=head2 Append to STDERR
+
+    log4perl.category.Bar.Twix      = WARN, Screen
+    log4perl.appender.Screen        = Log::Dispatch::Screen
+    log4perl.appender.Screen.layout = \
+        Log::Log4perl::Layout::PatternLayout
+    log4perl.appender.Screen.layout.ConversionPattern = %d %m %n
+
+=head2 Append to STDOUT
+
+    log4perl.category.Bar.Twix      = WARN, Screen
+    log4perl.appender.Screen        = Log::Dispatch::Screen
+    log4perl.appender.Screen.layout = \
+    log4perl.appender.Screen.stderr = 0
+        Log::Log4perl::Layout::PatternLayout
+    log4perl.appender.Screen.layout.ConversionPattern = %d %m %n
+
+=head2 Append to a log file
+
+    log4perl.logger.Bar.Twix = DEBUG, A1
+    log4perl.appender.A1=Log::Dispatch::File
+    log4perl.appender.A1.filename=test.log
+    log4perl.appender.A1.mode=append
+    log4perl.appender.A1.layout = \
+        Log::Log4perl::Layout::PatternLayout
+    log4perl.appender.A1.layout.ConversionPattern = %d %m %n
+
+Note that you could even leave out 
+
+    log4perl.appender.A1.mode=append
+
+and still have the logger append to the logfile by default, although
+the C<Log::Dispatch::File> module does exactly the opposite.
+This is due to some nasty trickery C<Log::Log4perl> performs behind 
+the scenes to make sure that beginner's CGI applications don't clobber 
+the log file every time they're called.
+
+=head2 Write a log file from scratch
+
+If you loathe the Log::Log4perl's append-by-default strategy, you can
+certainly override it:
+
+    log4perl.logger.Bar.Twix = DEBUG, A1
+    log4perl.appender.A1=Log::Dispatch::File
+    log4perl.appender.A1.filename=test.log
+    log4perl.appender.A1.mode=write
+    log4perl.appender.A1.layout=Log::Log4perl::Layout::SimpleLayout
+
+C<write> is the C<mode> that has C<Log::Dispatch::File> explicitely clobber
+the log file if it exists.
+
+=head1 AUTHOR
+
+Mike Schilli, E<lt>log4perl@perlmeister.comE<gt>
+
+=cut
