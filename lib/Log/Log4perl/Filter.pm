@@ -108,7 +108,7 @@ Log::Log4perl::Filter - Log4perl Custom Filter Base Class
 
   use Log::Log4perl;
 
-  Log::Log4perl->init(<<'EOT');
+  Log::Log4perl->init(\ <<'EOT');
     log4perl.logger = INFO, Screen
     log4perl.filter.MyFilter        = sub { /let this through/ }
     log4perl.appender.Screen        = Log::Log4perl::Appender::Screen
