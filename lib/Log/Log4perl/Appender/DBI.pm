@@ -54,6 +54,8 @@ sub new {
 
     $self->{SQL} = $p{sql}; #save for error msg later on
 
+    $self->{MAX_COL_SIZE} = $p{max_col_size};
+
     $self->{BUFFERSIZE} = $p{bufferSize} || 1; 
 
     if ($p{usePreparedStmt}) {
@@ -111,7 +113,6 @@ sub log_message {
     #      log4p_level  => $level,);
     #    },
 
-
         #getting log4j behavior with no specified ConversionPattern
     chomp $p{message} unless ref $p{message}; 
 
@@ -156,9 +157,11 @@ sub calculate_bind_values {
         #Walk through the integers for each possible bind value.
         #If it doesn't have a layout assigned from the config file
         #then shift it off the array from the $log call
+        #This needs to be reworked now that we always get an arrayref? --kg 1/2003
         foreach my $pnum (1..$max_pnum){
             my $msg;
     
+                #we've got a bind_value_layout to fill the spot
             if ($self->{bind_value_layouts}{$pnum}){
                $msg = $self->{bind_value_layouts}{$pnum}->render(
                         $p->{message},
@@ -166,19 +169,29 @@ sub calculate_bind_values {
                         $p->{log4p_level},
                         6 + $Log::Log4perl::caller_depth,  
                     );
+
+               #we don't have a bind_value_layout, so get
+               #a message bit
             }elsif (ref $p->{message} eq 'ARRAY' && @{$p->{message}}){
-                #$msg = $p->{message}->[$user_ph_idx++];
                 $msg = shift @{$p->{message}};
+
+               #here handle cases where we ran out of message bits
+               #before we ran out of bind_value_layouts, just keep going
+            }elsif (ref $p->{message} eq 'ARRAY'){
+                $msg = undef;
+                $p->{message} = undef;
 
                #here handle cases where we didn't get an arrayref
                #log the message in the first placeholder and nothing in the rest
             }elsif (! ref $p->{message} ){
                 $msg = $p->{message};
                 $p->{message} = undef;
-            }else{
-                croak "Log4perl: missing bind value for placeholder(?) number $pnum in ".
-                "sqlStatement, while trying to log \"$p->{message}\"\n".
-                "Did you set 'dontCollapseArrayRefs'?\n ";
+
+            }
+
+            if ($self->{MAX_COL_SIZE} &&
+                length($msg) > $self->{MAX_COL_SIZE}){
+                substr($msg, $self->{MAX_COL_SIZE}) = '';
             }
             push @qmarks, $msg;
         }
@@ -362,7 +375,7 @@ prepared statement handle at the beginning and just reuse it
     log4j.appender.DBAppndr.usePreparedStmt = 1
     
     
-    $logger->warn( 1234, 'warning message' ); #note the arrayref!
+    $logger->warn( 1234, 'warning message' ); 
 
 
 Now see how we're using the '?' placeholders in our statement?  This
@@ -413,7 +426,7 @@ then you just get undef in the fourth column.
 
 
 If the logger statement is also being handled by other non-DBI appenders,
-they will just join the arrayrefs into a string, joined with 
+they will just join the list into a string, joined with 
 C<$Log::Log4perl::JOIN_MSG_ARRAY_CHAR> (default is an empty string).
 
 And see the C<usePreparedStmt>?  That creates a statement handle when
@@ -439,7 +452,7 @@ Or another way to say the same thing:
 
 The idea is that if you're logging to a database table, you probably
 want specific parts of your log information in certain columns.  To this
-end, you pass an arrayref to the log statement, like 
+end, you pass an list to the log statement, like 
 
     $logger->warn('big problem!!',$userid,$subpoena_nr,$ip_addr);
 
@@ -452,6 +465,30 @@ file like
 in which case those numbered placeholders will be filled in with
 the specified values, and the rest of the placeholders will be
 filled in with the values from your log statement's array.
+
+=head1 MISC PARAMETERS
+
+
+=over 4
+
+=item usePreparedStmt
+
+See above.
+
+=item filter_message
+
+see Log::Log4perl::Appender
+
+=item max_col_size
+
+If you're used to just throwing debugging messages like huge stacktraces
+into your logger, some databases (Sybase's DBD!!) may suprise you 
+by choking on data size limitations.  Normally, the data would
+just be truncated to fit in the column, but Sybases's DBD it turns out
+maxes out at 255 characters.  Use this parameter in such a situation
+to truncate long messages before they get to the INSERT statement.
+
+=back
 
 =head1 CHANGING DBH CONNECTIONS (POOLING)
 
