@@ -1,5 +1,5 @@
 ######################################################################
-    Log::Log4perl 0.19
+    Log::Log4perl 0.20
 ######################################################################
 
 NAME
@@ -155,7 +155,8 @@ How to use it
       use Log::Log4perl::Appender;
 
       my $app = Log::Log4perl::Appender->new("Log::Dispatch::Screen");
-      my $layout = Log::Log4perl::Layout::PatternLayout->new("%d> %F %L %m %n");
+      my $layout = Log::Log4perl::Layout::PatternLayout
+                                            ->new("%d> %F %L %m %n");
       $app->layout($layout);
 
       my $logger = Log::Log4perl->get_logger("My.Component");
@@ -499,13 +500,15 @@ How to use it
             %d Current date in yyyy/mm/dd hh:mm:ss format
             %F File where the logging event occurred
             %l Fully qualified name of the calling method followed by the
-               callers source the file name and line number between parentheses.
+               callers source the file name and line number between 
+               parentheses.
             %L Line number within the file where the log statement was issued
             %m The message to be logged
             %M Method or function where the logging request was issued
             %n Newline (OS-independent)
             %p Priority of the logging event
-            %r Number of milliseconds elapsed from program start to logging event
+            %r Number of milliseconds elapsed from program start to logging 
+               event
             %% A literal percent (%) sign
 
     All placeholders are quantifiable, just like in *printf*. Following this
@@ -704,7 +707,7 @@ REFERENCES
         http://www.vipan.com/htdocs/log4jhelp.html
 
 CONTACT
-    Please send bugs reports or requests for enhancements to the authors via
+    Please send bug reports or requests for enhancements to the authors via
     our log4perl development mailing list:
 
     log4perl-devel@lists.sourceforge.net

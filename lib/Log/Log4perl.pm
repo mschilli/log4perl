@@ -11,7 +11,7 @@ use Log::Log4perl::Config;
 use Log::Dispatch::Screen;
 use Log::Log4perl::Appender;
 
-our $VERSION = '0.19';
+our $VERSION = '0.20';
 
 ##################################################
 sub import {
