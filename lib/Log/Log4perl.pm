@@ -869,7 +869,7 @@ http://www.vipan.com/htdocs/log4jhelp.html
 
 =head1 CONTACT
 
-Please send bugs reports or requests for enhancements to the authors via 
+Please send bug reports or requests for enhancements to the authors via 
 our log4perl development mailing list: 
 
 log4perl-devel@lists.sourceforge.net
