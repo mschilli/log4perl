@@ -1,5 +1,7 @@
 package Log::Log4perl::Util;
 
+use File::Spec;
+
 ##################################################
 sub module_available {  # Check if a module is available
 ##################################################
