@@ -19,7 +19,7 @@ our $PROGRAM_START_TIME;
 
 our %GLOBAL_USER_DEFINED_CSPECS = ();
 
-our $CSPECS = 'cCdFHIlLmMnpPrtxX%';
+our $CSPECS = 'cCdFHIlLmMnpPrtTxX%';
 
 
 BEGIN {
@@ -232,6 +232,15 @@ sub render {
         }
     }
 
+        # Stack trace wanted?
+    if($self->{info_needed}->{T}) {
+        my $mess = Carp::longmess(); 
+        chomp($mess);
+        $mess =~ s/(?:\A\s*at.*\n|^\s*Log::Log4perl.*\n|^\s*)//mg;
+        $mess =~ s/\n/, /g;
+        $info{T} = $mess;
+    }
+
         # As long as they're not implemented yet ..
     $info{t} = "N/A";
 
@@ -430,7 +439,8 @@ Log::Log4perl::Layout::PatternLayout - Pattern Layout
 =head1 DESCRIPTION
 
 Creates a pattern layout according to
-http://jakarta.apache.org/log4j/docs/api/org/apache/log4j/PatternLayout.html.
+http://jakarta.apache.org/log4j/docs/api/org/apache/log4j/PatternLayout.html
+and a couple of Log::Log4perl-specific extensions.
 
 The C<new()> method creates a new PatternLayout, specifying its log
 format. The format
@@ -453,6 +463,7 @@ replaced by the logging engine when it's time to log the message:
     %P pid of the current process
     %r Number of milliseconds elapsed from program start to logging 
        event
+    %T A stack trace of functions called
     %x The topmost NDC (see below)
     %X{key} The entry 'key' of the MDC (see below)
     %% A literal percent (%) sign
