@@ -12,6 +12,44 @@ use Log::Log4perl::Config;
 our $VERSION = '0.17';
 
 ##################################################
+sub import {
+##################################################
+    my($class) = shift;
+
+    no strict qw(refs);
+
+    my(%tags) = map { $_ => 1 } @_;
+
+    if(exists $tags{':shortcuts'}) {
+        # Export all symbols for lazy man's logger    
+
+        my $caller_pkg = caller();
+
+        *{"$caller_pkg\::debug"} = sub { get_logger($caller_pkg)->debug(@_) };
+        *{"$caller_pkg\::info"} = sub { get_logger($caller_pkg)->info(@_) };
+        *{"$caller_pkg\::warn"} = sub { get_logger($caller_pkg)->warn(@_) };
+        *{"$caller_pkg\::error"} = sub { get_logger($caller_pkg)->error(@_) };
+        *{"$caller_pkg\::fatal"} = sub { get_logger($caller_pkg)->fatal(@_) };
+
+        delete $tags{':shortcuts'};
+    }
+
+    if(exists $tags{get_logger}) {
+        # Export get_logger into the calling module's 
+        my $caller_pkg = caller();
+
+        *{"$caller_pkg\::get_logger"} = *get_logger;
+
+        delete $tags{get_logger};
+    }
+
+    if(keys %tags) {
+        # We received an Option we couldn't understand.
+        die "Unknown Option(s): @{[keys %tags]}";
+    }
+}
+
+##################################################
 sub new {
 ##################################################
     die "THIS CLASS ISN'T FOR DIRECT USE. " .
@@ -43,6 +81,19 @@ sub init { # Initialize the whole thing
 sub get_logger {  # Get an instance (shortcut)
 ##################################################
     my($class, @args) = @_;
+
+    if(!defined $class) {
+        # Called as ::get_logger()
+        unshift(@args, scalar caller());
+    } elsif($class eq __PACKAGE__ and !defined $args[0]) {
+        # Called as ->get_logger()
+        unshift(@args, scalar caller());
+    } elsif($class ne __PACKAGE__) {
+        # Called as ::get_logger($category)
+        unshift(@args, $class);
+    } else {
+        # Called as ->get_logger($category)
+    }
 
     # Delegate this to the logger module
     return Log::Log4perl::Logger->get_logger(@args);

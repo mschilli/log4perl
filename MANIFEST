@@ -3,11 +3,13 @@ LICENSE
 MANIFEST
 MANIFEST.SKIP
 README
+eg/TestModule.pm
 eg/log4j-file-append-java.conf
 eg/log4j-file-append-perl.conf
 eg/log4j-manual-1.conf
 eg/log4j-manual-2.conf
 eg/log4j-manual-3.conf
+eg/testmodule.pl
 lib/Log/Log4perl.pm
 lib/Log/Log4perl/Appender.pm
 lib/Log/Log4perl/Config.pm
@@ -33,6 +35,8 @@ t/011JFile.t
 t/012Deeper.t
 t/013Bench.t
 t/014ConfErrs.t
+t/015Shortcuts.t
+t/016Export.t
 t/deeper1.expected
 t/deeper6.expected
 t/deeper7.expected
