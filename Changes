@@ -220,11 +220,8 @@ Revision history for Log::Log4perl
 
 TODO (not assigned to anybody yet):
 ##################################################
-    * Make Log::Log4perl::Layout:: optional and accept just "PatternLayout"
     * BasicConfigurator() vs. :easy, PropertyConfigurator()
-    * Log/throw exception (either warn/die or real exceptions)
     * get_logger() thread safety (two try to create it at the same time)
-    * hierarchy-wide threshold (p.14), log4j.threshold = ERROR
     * Object rendering
     * NDC/MDC
     * Internal DEBUG for log4perl (log4perl.debug = 1)
@@ -276,7 +273,6 @@ TODO Mike:
       >   }
       What's happening if the reload happens right after the level() call 
       and the config file sets the level to WARN?
-    * Documentation of Log::Log4perl::Logger and Log::Log4perl::Config
     * Layout.pm: 't', 'x', 'X'
     * README tests (Pod::Tests or something)
     * Thread safety
