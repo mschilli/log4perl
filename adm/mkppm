@@ -125,39 +125,20 @@ sub ppm_make {
 
     chdir $topdir or LOGDIE("Cannot chdir to $topdir");
 
-    my $ppm = PPM::Make->new(os => "MSWin32", 
-                             arch => ["blah", "foo"],
+    patch_log_dispatch() if $topdir =~ /Log-Dispatch/;
+
+    my $ppm = PPM::Make->new(os   => "MSWin32", 
+                             arch => "",
                             );
     $ppm->make_ppm();
 
-        # For some reason, ActiveState 5.8.0 has problems with the tarfile,
-        # make our own.
-    system("rm -rf blib pm_to_blib; make; rm -rf blib/man3; $TAR czf $mod_dir.tar.gz blib") and 
-        LOGDIE("Can't tar $mod_dir.tar.gz ($!)");
-
     my $ppd_file = "$mod_dir.ppd";
 
-    open FILE, "<$ppd_file" or die "Cannot open $ppd_file";
-
-    my $data = join '', <FILE>;
-
-    $data =~ s#<ARCHITECTURE\s+NAME=".*?"\s*/>
-              ##x;
-    $data =~ s/^.*?Test-More.*?\n//mg;
-    $data =~ s/^.*?Test-Simple.*?\n//mg;
-        # Activestate has problems with compressed files
-    $data =~ s/\.tar\.gz/.tar/g;
-    close FILE;
-
-    open FILE, ">$ppd_file" or die "Cannot open $ppd_file";
-    print FILE $data;
-    close FILE;
+    fix_ppd($ppd_file);
 
     copy($ppd_file, "../$PPM_DIR") or die "Cannot copy $ppd_file";
-        # Activestate has problems with compressed files
-    system("$GZIP -d $mod_dir.tar.gz") and LOGDIE("decompression failed ($!)");
-    copy("$mod_dir.tar", "../$PPM_DIR") or 
-        die "Cannot copy $mod_dir.tar";
+    copy("$mod_dir.tar.gz", "../$PPM_DIR") or 
+        die "Cannot copy $mod_dir.tar.gz";
 
     chdir ".." or LOGDIE("Cannot chdir to ..");
 
@@ -165,4 +146,41 @@ sub ppm_make {
     #unlink $file;
 
     1;
+}
+
+###########################################
+sub fix_ppd {
+###########################################
+    my($ppd_file) = @_;
+
+    open FILE, "<$ppd_file" or die "Cannot open $ppd_file";
+    my $data = join '', <FILE>;
+    $data =~ s/^.*?Test-More.*?\n//mg;
+    $data =~ s/^.*?Test-Simple.*?\n//mg;
+    close FILE;
+
+    open FILE, ">$ppd_file" or die "Cannot open $ppd_file";
+    print FILE $data;
+    close FILE;
+}
+
+###########################################
+sub patch_log_dispatch {
+###########################################
+
+    # Get rid of Log::Dispatch's annoying user prompting
+
+    open FILE, "<Makefile.PL" or die "Cannot open Makefile.PL";
+    my $data = join '', <FILE>;
+    close FILE;
+
+    $data =~ s/use ExtUtils.*/
+               use ExtUtils::MakeMaker qw(WriteMakefile); 
+               sub prompt { return \$_[1] }
+              /;
+    $data =~ s/while\s*\(\s*1\s*\)/while(0)/;
+
+    open FILE, ">Makefile.PL" or die "Cannot open Makefile.PL (w)";
+    print FILE $data;
+    close FILE;
 }
