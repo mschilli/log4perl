@@ -266,6 +266,7 @@ up with, but that should hopefully follow shortly.
 You use it just like you would a properties config but if the data starts 
 with an xml declaration C<<\?xml...> then it gets parsed by this DOMConfigurator instead of the PropertiesConfigurator.
 
+Note that you need XML::DOM installed.
 
 It is brazenly modeled on log4j's DOMConfigurator class, (by 
 Christopher Taylor, Ceki Gulcu and Anders Kristensen) and any
