@@ -509,7 +509,6 @@ be too many.
 Even if you're not using that, the database handle may go stale.  If you're
 not using Apache::DBI this may cause you problems.
 
-
 =head1 AUTHOR
 
 Kevin Goess <cpan@goess.org> December, 2002
