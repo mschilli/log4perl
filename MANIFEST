@@ -5,6 +5,7 @@ MANIFEST.SKIP
 Makefile.PL
 README
 eg/5005it.pl
+eg/jabber.conf
 eg/log4j-file-append-java.conf
 eg/log4j-file-append-perl.conf
 eg/log4j-manual-1.conf
