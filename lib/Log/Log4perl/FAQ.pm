@@ -813,6 +813,110 @@ email address. Check the C<Log::Dispatch::Email::MailSend> documentation
 for details. And please make sure there's not a flood of email messages 
 sent out by your application, filling up the receipient's inbox.
 
+=head2 How can I write my own appender?
+
+First off, there's a lot of Log4perl-compatible appenders already
+available on CPAN: Just run a search for C<Log::Dispatch> on 
+http://search.cpan.org and chances are that what you're looking for 
+has already been developed, debugged and been used successfully 
+in production -- no need for you to reinvent the wheel.
+
+Also, Log::Log4perl ships with a nifty database appender named
+Log::Log4perl::Appender::DBI -- check it out if talking to databases is your
+desire.
+
+But if you're up for a truly exotic task, you might have to write
+an appender yourself. That's very easy -- it takes no longer
+than a couple of minutes for the basic framework.
+
+Say, we wanted to create an appender of the class
+C<Log::Dispatch::ColorScreen>, which logs messages
+to the screen in a configurable color. Just create a new class 
+in C<Log/Dispatch/ColorScreen.pm> and let it inherit from the base 
+class C<Log::Dispatch::Output>:
+
+    package Log::Dispatch::ColorScreen;
+
+    use Log::Dispatch::Output;
+    use base qw( Log::Dispatch::Output );
+
+Now let's assume that your Log::Log4perl
+configuration file C<test.conf> looks like this:
+
+    log4perl.logger = INFO, ColorApp
+
+    log4perl.appender.ColorApp=Log::Dispatch::ColorScreen
+    log4perl.appender.ColorApp.color=blue
+
+    log4perl.appender.ColorApp.layout = PatternLayout
+    log4perl.appender.ColorApp.layout.ConversionPattern=%d %m %n
+ 
+This will cause Log::Log4perl on C<init()> to look for a class
+Log::Dispatch::ColorScreen and call its constructor new(). Let's add
+new() to Log/Dispatch/ColorScreen.pm:
+
+    sub new {
+        my($class, %options) = @_;
+    
+        my $self = { %options };
+        bless $self, $class;
+    
+        $self->_basic_init( %options );
+    
+        return $self;
+    }
+
+To initialize this appender, Log::Log4perl will call 
+and pass all attributes of the appender as defined in the configuration
+file to the constructor as name/value pairs (in this case just one):
+
+    Log::Dispatch::ColorScreen->new(color => "blue");
+
+The new() method listed above stores the contents of the
+%options hash in the object's
+instance data hash (referred to by $self)
+and calls C<_basic_init> with all name/value
+pairs to initialize the appender in the Log::Dispatch world.
+That's all for initializing a new appender with Log::Log4perl.
+
+Second, Log::Dispatch::ColorScreen needs to expose a 
+C<log_message()> method, which will be called by Log::Log4perl 
+every time it thinks the appender should fire. Along with the
+object reference (as usual in Perl's object world), log_message()
+will receive a list of name/value pairs, of which only the one
+under the key C<message> shall be of interest for now since it is the
+message string to be logged. At this point, Log::Log4perl has already taken
+care of joining the message to be a single string.
+
+For our special appender Log::Dispatch::ColorScreen, 
+we're using the Term::ANSIColor module
+to colorize the output:
+
+    use Term::ANSIColor;
+
+    sub log_message {
+        my($self, %params) = @_;
+    
+        print colored($params{message},
+                      $self->{color});
+    }
+
+The color (as configured in the Log::Log4perl configuration file) 
+is available as $self-E<gt>{color} in the appender object. Don't
+forget to return
+
+    1;
+
+at the end of ColorScreen.pm and you're done. Install the new appender
+somewhere where perl can find it (like Log/Dispatch/ColorScreen.pm)
+and try it with a test script like 
+
+    use Log::Log4perl qw(:easy);
+    Log::Log4perl->init("test.conf");
+    ERROR("blah");
+
+to see the new colored output. Is this cool or what?
+
 =cut
 
 =head1 SEE ALSO
