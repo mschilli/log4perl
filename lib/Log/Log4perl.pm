@@ -739,6 +739,22 @@ replaced by the logging engine when it's time to log the message:
        event
     %% A literal percent (%) sign
 
+Also, C<%d> can be fine-tuned to display only certain characteristics
+of a date, according to the SimpleDateFormat in the Java World
+(http://java.sun.com/j2se/1.3/docs/api/java/text/SimpleDateFormat.html)
+
+In this way, C<%d{HH:mm}> displays only hours and minutes of the current date,
+while C<%d{yy, EEEE}> displays a two-digit year, followed by a spelled-out
+(like C<Wednesday>). 
+
+Similar options are available for shrinking the displayed category or
+limit file/path components, C<%f{1}> only displays the source file I<name>
+without any path components while C<%f> logs the full path. %c{2} only
+logs the last two components of the current category, C<Foo::Bar::Baz> 
+becomes C<Bar::Baz> and saves space.
+
+See L<Log::Log4perl::Layout::PatternLayout> for details.
+
 =back
 
 All placeholders are quantifiable, just like in I<printf>. Following this 
@@ -968,7 +984,7 @@ thresholds, there's no way to prevent cluttering STDERR with DEBUG messages.
 =item *
 
 PatternLayout specifications in accordance with the standard
-(e.g. "%d{HH:MM}").
+(e.g. "%d{HH:mm}").
 
 =back
 
@@ -1004,7 +1020,8 @@ A simple example to cut-and-paste and get started:
     log4perl.category.Bar.Twix      = WARN, Screen
     log4perl.appender.Screen        = Log::Dispatch::Screen
     log4perl.appender.Screen.layout = \
-        Log::Log4perl::Layout::SimpleLayout
+        Log::Log4perl::Layout::PatternLayout
+    log4perl.appender.Screen.layout.ConversionPattern = %d %m %n
     );
     
     Log::Log4perl::init(\$conf);
