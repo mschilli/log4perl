@@ -661,6 +661,34 @@ a maximum of 5 saved logfiles around:
 Please see the C<Log::Dispatch::FileRotate> documentation for details.
 C<Log::Dispatch::FileRotate> is available on CPAN.
 
+=head2 What's the easiest way to turn off all logging, even with a lengthy Log4perl configuration file?
+
+In addition to category-based levels and appender thresholds,
+Log::Log4perl supports system-wide logging thresholds. This is the 
+minimum level the system will require of any logging events in order for them 
+to make it through to any configured appenders.
+
+For example, putting the line
+
+    log4perl.threshold = ERROR
+
+anywhere in your configuration file will limit any output to any appender
+to events with priority of ERROR or higher (ERROR or FATAL that is). 
+
+However, in order to suppress all logging entirely, you need to use a
+priority that's higher than FATAL: It is simply called C<OFF>, and it is never
+used by any logger. By definition, it is higher than the highest 
+defined logger level.
+
+Therefore, if you keep the line
+
+    log4perl.threshold = OFF
+
+somewhere in your Log::Log4perl configuration, the system will be quiet
+as a graveyard. If you deactivate the line (e.g. by commenting it out), 
+the system will, upon config reload, snap back to normal operation, providing 
+logging messages according to the rest of the configuration file again.
+
 =cut
 
 =head1 SEE ALSO
