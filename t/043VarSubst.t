@@ -43,3 +43,30 @@ $logger->error("foobar");
 my $buffer = Log::Log4perl::Appender::TestBuffer->by_name("BufferApp");
 like($buffer->buffer, qr/foobar/);
 
+########################################################
+# Replacing appender class name
+########################################################
+$conf = q(
+    layout_class   = Log::Log4perl::Layout::PatternLayout
+    layout_pattern = %d %F{1} %L> %m %n
+    
+    log4perl.category.Bar.Twix = WARN, Logfile, Screen
+
+    log4perl.appender.Logfile  = Log::Log4perl::Appender::TestBuffer
+    log4perl.appender.Logfile.filename = test.log
+    log4perl.appender.Logfile.layout = ${layout_class}
+    log4perl.appender.Logfile.layout.ConversionPattern = ${layout_pattern}
+
+    log4perl.appender.Screen  = Log::Log4perl::Appender::TestBuffer
+    log4perl.appender.Screen.layout = ${layout_class}
+    log4perl.appender.Screen.layout.ConversionPattern = ${layout_pattern}
+);
+
+Log::Log4perl::init(\$conf);
+$logger = get_logger("Bar::Twix");
+$logger->error("foobar");
+
+$buffer = Log::Log4perl::Appender::TestBuffer->by_name("Logfile");
+like($buffer->buffer, qr/foobar/);
+$buffer = Log::Log4perl::Appender::TestBuffer->by_name("Screen");
+like($buffer->buffer, qr/foobar/);
