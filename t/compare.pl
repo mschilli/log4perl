@@ -3,7 +3,7 @@
 
 use Carp;
 
-sub Compare ($$) {
+sub Compare {
   croak "Usage: Data::Compare::Compare(x, y)\n" unless $#_ == 1;
   my $x = shift;
   my $y = shift;
