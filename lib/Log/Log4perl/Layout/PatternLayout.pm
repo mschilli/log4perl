@@ -19,7 +19,7 @@ our $PROGRAM_START_TIME;
 
 our %GLOBAL_USER_DEFINED_CSPECS = ();
 
-our $CSPECS = 'cCdfFIlLmMnpPrtxX%';
+our $CSPECS = 'cCdfFHIlLmMnpPrtxX%';
 
 
 BEGIN {
