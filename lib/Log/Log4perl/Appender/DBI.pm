@@ -220,6 +220,8 @@ sub check_buffer {
 
         my ($sth, $stmt, $prev_stmt);
 
+        $prev_stmt = ""; # Init to avoid warning (ms 5/10/03)
+
         while (@{$self->{BUFFER}}) {
             my ($stmt, $qmarks) = splice (@{$self->{BUFFER}},0,2);
 
