@@ -62,27 +62,25 @@ sub new {
     my $class = shift;
     $class = ref ($class) || $class;
 
-    my ($data) = @_;
-
-    my ($layout_string);
-
-    if (ref $data && !exists $data->{ConversionPattern}{value} or
-        !defined $data) {
-        #die "No ConversionPattern given for PatternLayout\n";
-        $layout_string = '%m%n';  #this is better per http://jakarta.apache.org/log4j/docs/api/org/apache/log4j/PatternLayout.html
-    } elsif (ref $data) {
-        $layout_string = $data->{ConversionPattern}{value};
-    } else {
-        $layout_string = $data;
+    my $options       = ref $_[0] eq "HASH" ? shift : {};
+    my $layout_string = @_ ? shift : '%m%n';
+    
+    if(exists $options->{ConversionPattern}->{value}) {
+        $layout_string = $options->{ConversionPattern}->{value};
     }
 
     my $self = {
-        format      => undef,
-        info_needed => {},
-        stack       => [],
-        CSPECS      => $CSPECS,
-        dontCollapseArrayRefs => $data->{dontCollapseArrayRefs}{value},
+        time_function         => \&current_time,
+        format                => undef,
+        info_needed           => {},
+        stack                 => [],
+        CSPECS                => $CSPECS,
+        dontCollapseArrayRefs => $options->{dontCollapseArrayRefs}{value},
     };
+
+    if(exists $options->{time_function}) {
+        $self->{time_function} = $options->{time_function};
+    }
 
     bless $self, $class;
 
@@ -95,8 +93,8 @@ sub new {
     }
 
     #add the user-defined cspecs local to this appender
-    foreach my $f (keys %{$data->{cspec}}){
-        $self->add_layout_cspec($f, $data->{cspec}{$f}{value});
+    foreach my $f (keys %{$options->{cspec}}){
+        $self->add_layout_cspec($f, $options->{cspec}{$f}{value});
     }
 
     $self->define($layout_string);
@@ -256,11 +254,11 @@ sub render {
         if(exists $info{$op}) {
             my $result = $info{$op};
             if($curlies) {
-                $result = curly_action($op, $curlies, $info{$op});
+                $result = $self->curly_action($op, $curlies, $info{$op});
             } else {
                 # just for %d
                 if($op eq 'd') {
-                    $result = $info{$op}->format(current_time());
+                    $result = $info{$op}->format($self->{time_function}->());
                 }
             }
             push @results, $result;
@@ -278,7 +276,7 @@ sub render {
 ##################################################
 sub curly_action {
 ##################################################
-    my($ops, $curlies, $data) = @_;
+    my($self, $ops, $curlies, $data) = @_;
 
     if($ops eq "c") {
         $data = shrink_category($data, $curlies);
@@ -287,7 +285,7 @@ sub curly_action {
     } elsif($ops eq "X") {
         $data = Log::Log4perl::MDC->get($curlies);
     } elsif($ops eq "d") {
-        $data = $curlies->format(current_time());
+        $data = $curlies->format($self->{time_function}->());
     } elsif($ops eq "F") {
         my @parts = File::Spec->splitdir($data);
             # Limit it to max curlies entries
@@ -451,7 +449,7 @@ replaced by the logging engine when it's time to log the message:
     %C Fully qualified package (or class) name of the caller
     %d Current date in yyyy/MM/dd hh:mm:ss format
     %F File where the logging event occurred
-    %H Hostname
+    %H Hostname (if Sys::Hostname is available)
     %l Fully qualified name of the calling method followed by the
        callers source the file name and line number between 
        parentheses.
@@ -470,6 +468,9 @@ replaced by the logging engine when it's time to log the message:
 
 NDC and MDC are explained in L<Log::Log4perl/"Nested Diagnostic Context (NDC)">
 and L<Log::Log4perl/"Mapped Diagnostic Context (MDC)">.
+
+The granularity of time values is milliseconds if Time::HiRes is available.
+If not, only full seconds are used.
 
 =head2 Quantify placeholders
 
@@ -610,6 +611,30 @@ before you call init().  Alternatively you can supply a restricted set of
 Perl opcodes that can be embedded in the config file as described in
 L<Log::Log4perl/"Restricting what Opcodes can be in a Perl Hook">.
   
+=head2 Advanced Options
+
+The constructor of the C<Log::Log4perl::Layout::PatternLayout> class
+takes an optional hash reference as a first argument to specify
+additional options in order to (ab)use it in creative ways:
+
+  my $layout = Log::Log4perl::Layout::PatternLayout->new(
+    { time_function       => \&my_time_func,
+    }, 
+    "%d (%F:%L)> %m");
+
+Here's a list of parameters:
+
+=over 4
+
+=item time_function
+
+Takes a reference to a function returning the time for the time/date
+fields, either in seconds
+since the epoch or as a reference to an array, carrying seconds and 
+microseconds, just like C<Time::HiRes::gettimeofday> does.
+
+=back
+
 =head1 SEE ALSO
 
 =head1 AUTHOR
