@@ -6,6 +6,7 @@ use 5.006;
 use strict;
 use warnings;
 
+use Log::Log4perl::Util;
 use Log::Log4perl::Logger;
 use Log::Log4perl::Level;
 use Log::Log4perl::Config;
@@ -55,7 +56,6 @@ our $JOIN_MSG_ARRAY_CHAR = '';
     #version required for XML::DOM, to enable XML Config parsing
     #and XML Config unit tests
 our $DOM_VERSION_REQUIRED = '1.29'; 
-
 
 ##################################################
 sub import {
