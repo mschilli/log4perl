@@ -4,10 +4,16 @@ Revision history for Log::Log4perl
 
 TODO:
 
+* question - are appenders created just once if they're reused in the config file?
+* need level validation on Logger::level() and level_str()
+* redo level_str() hack
+
 Kevin:
 * Create new module negotiating between Java-style config files
   and perl-style appenders
 * Module for reading XML-style config files
+* Level.pm - discriminating: priorities are 1-4, levels are 'info','debug',etc
+
 
 Mike:
 * Define default if there's no layout:
@@ -24,6 +30,9 @@ Mike:
   instead Log::Log4perl::Logger->blah() as suggested by Kevin
 
 ##################################################
+
+0.09 07/03/2002
+    * %p should return level name, not number, adding level_str to Logger.pm
 
 0.08  07/03/2002
     * Non-root loggers are working now off the config file
