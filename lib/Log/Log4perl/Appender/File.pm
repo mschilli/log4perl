@@ -141,7 +141,7 @@ Upon destruction of the object, the filehandle to access the
 file is flushed and closed.
 
 If you want to switch over to a different logfile, use the
-C<switch_file($newfile)> method which will first close the old
+C<file_switch($newfile)> method which will first close the old
 file handle and then open a one to the new file specified.
 
 =head2 OPTIONS
