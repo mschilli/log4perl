@@ -280,6 +280,12 @@ sub get_logger {  # Get an instance (shortcut)
     return Log::Log4perl::Logger->get_logger(@args);
 }
 
+##################################################
+sub appenders {  # Get all defined appenders hashref
+##################################################
+    return \%Log::Log4perl::Logger::APPENDER_BY_NAME;
+}
+
 1;
 
 __END__
@@ -1856,6 +1862,23 @@ But don't dispair, there's a solution: Just increase the value
 of C<$Log::Log4perl::caller_depth> (defaults to 0) by one for every
 wrapper that's in between your application and C<Log::Log4perl>,
 then C<Log::Log4perl> will compensate for the difference.
+
+=head1 Access to Internals
+
+The following methods are only of use if you want to peek/poke in
+the internals of Log::Log4perl. Be careful not to disrupt its
+inner workings.
+
+=over 4
+
+=item C<< Log::Log4perl->appenders() >>
+
+To find out which appenders are currently defined (not only
+for a particular logger, but overall), a C<appenders()>
+method is available to return a reference to a hash mapping appender
+names to their Log::Log4perl::Appender object references.
+
+=back
 
 =head1 EXAMPLE
 
