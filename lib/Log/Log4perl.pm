@@ -1272,7 +1272,10 @@ C<get_logger()> is equivalent to C<get_logger(__PACKAGE__)>.
 
 =head2 Alternative initialization
 
-Instead of having C<init()> read in a configuration file, you can 
+Instead of having C<init()> read in a configuration file by specifying
+a file name or passing it a reference to an open filehandle
+(C<Log::Log4perl-E<gt>init( \*FILE )>),
+you can 
 also pass in a reference to a string, containing the content of
 the file:
 
