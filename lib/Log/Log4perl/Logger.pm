@@ -294,7 +294,8 @@ sub generate_is_xxx_coderef {
 
         $watch_code = <<'EOL';
         my($logger, $subname) = @_;
-        if(time() > $Log::Log4perl::Config::Watch::NEXT_CHECK_TIME) {
+        if(time() > $Log::Log4perl::Config::Watch::NEXT_CHECK_TIME and
+           $Log::Log4perl::Config::WATCHER->change_detected()) {
             Log::Log4perl->init_and_watch();
             # Forward call to new configuration
             return $logger->$subname();
@@ -320,7 +321,8 @@ sub generate_watch_code {
         print "exe_watch_code:\n" if DEBUG;
                        
         # more closures here
-        if(time() > $Log::Log4perl::Config::Watch::NEXT_CHECK_TIME) {
+        if(time() > $Log::Log4perl::Config::Watch::NEXT_CHECK_TIME and
+           $Log::Log4perl::Config::WATCHER->change_detected()) {
             Log::Log4perl->init_and_watch();
                        
             my $methodname = lc($level);
