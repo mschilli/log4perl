@@ -145,7 +145,7 @@ sub ppm_make {
 
     patch_log_dispatch() if $topdir =~ /Log-Dispatch/;
 
-    my $ppm = PPM::Make->new(os   => "MSWin32", 
+    my $ppm = PPM::Make->new(os   => "", 
                              arch => "",
                             );
     $ppm->make_ppm();
@@ -153,7 +153,6 @@ sub ppm_make {
     my $ppd_file = "$mod_dir.ppd";
 
     fix_ppd($ppd_file);
-    repackage_tarball("$mod_dir.tar.gz");
 
     copy($ppd_file, "../$PPM_DIR") or die "Cannot copy $ppd_file";
     copy("$mod_dir.tar.gz", "../$PPM_DIR") or 
