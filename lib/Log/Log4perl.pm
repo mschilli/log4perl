@@ -604,7 +604,16 @@ C<Log::Log4perl> already comes with a standard set of appenders:
     Log::Log4perl::Appender::DBI
     Log::Log4perl::Appender::Synchronized
 
-to log to the screen, to files and to databases.
+to log to the screen, to files and to databases. 
+
+On CPAN, you can find additional appenders like
+
+    Log::Log4perl::Layout::XMLLayout
+
+by Guido Carls E<lt>gcarls@cpan.orgE<gt>.
+It allows for hooking up Log::Log4perl with the graphical Log Analyzer
+Chainsaw (see 
+L<Log::Log4perl::FAQ/"Can I use Log::Log4perl with log4j's Chainsaw?">).
 
 =head2 Additional Appenders via Log::Dispatch
 
@@ -1231,7 +1240,7 @@ Instead of just statically initializing Log::Log4perl via
 there's a way to have Log::Log4perl periodically check for changes
 in the configuration and reload it if necessary:
 
-    Log::Log4perl->init($conf_file, $delay);
+    Log::Log4perl->init_and_watch($conf_file, $delay);
 
 In this mode, Log::Log4perl will examine the configuration file 
 C<$conf_file> every C<$delay> seconds for changes via the file's
@@ -1253,7 +1262,7 @@ To alleviate this performance hit a bit, C<init_and_watch()>
 can be configured to listen for a Unix signal to reload the 
 configuration instead:
 
-    Log::Log4perl->init($conf_file, 'HUP');
+    Log::Log4perl->init_and_watch($conf_file, 'HUP');
 
 This will set up a signal handler for SIGHUP and reload the configuration
 if the application receives this signal, e.g. via the C<kill> command:
