@@ -15,7 +15,7 @@ Revision history for Log::Log4perl
       attention to on-the-fly config file changes via init_and_watch().
     * (ms) Fixed bug that reloaded the config under init_and_watch()
       every time the check period expired, regardless if the config
-      file itself had changed.
+      file itself had changed. Added test case.
 
 0.35 06/21/2003
     * (kg) got rid of warnings during make test in 014ConfErrs.t
