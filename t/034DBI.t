@@ -19,7 +19,7 @@ BEGIN {
         $no_DBD = 1;
         plan tests => 1;
     }else{
-        plan tests => 12;
+        plan tests => 15;
     }
 }
 
@@ -98,7 +98,43 @@ my $logger = Log::Log4perl->get_logger("groceries.beer");
 
 #$logger->fatal('fatal message',1234,'foo','bar');
 $logger->fatal('fatal message',1234,'foo',{aaa => 'aaa'});
+
+#since we ARE buffering, that message shouldn't be there yet
+{
+ local $/ = undef;
+ open (F, "t/tmp/log4perltest");
+ my $got = <F>;
+ close F;
+ my $expected = <<EOL;
+LOGLEVEL,MESSAGE,SHORTCALLER,THINGID,CATEGORY,PKG,RUNTIME1,RUNTIME2
+EOL
+  $got =~ s/[^\w ,"()]//g;  #silly DBD_CSV uses funny EOL chars
+  $expected =~ s/[^\w ,"()]//g;
+  ok($got, $expected);
+}
+
 $logger->warn('warning message',3456,'foo','bar');
+
+#with buffersize == 2, now they should write
+{
+ local $/ = undef;
+ open (F, "t/tmp/log4perltest");
+ my $got = <F>;
+ close F;
+ my $expected = <<EOL;
+LOGLEVEL,MESSAGE,SHORTCALLER,THINGID,CATEGORY,PKG,RUNTIME1,RUNTIME2
+FATAL,"fatal message",main:,1234,groceries.beer,main,foo,HASH(0x84cfd64)
+WARN,"warning message",main:,3456,groceries.beer,main,foo,bar
+EOL
+  $got =~ s/[^\w ,"()]//g;  #silly DBD_CSV uses funny EOL chars
+  $expected =~ s/[^\w ,"()]//g;
+  $got =~ s/HASH\(.+?\)//;
+  $expected =~ s/HASH\(.+?\)//;
+  ok($got, $expected);
+}
+
+
+
 $logger->debug('debug message',99,'foo','bar');
 
 my $sth = $dbh->prepare('select * from log4perltest'); 
@@ -121,4 +157,69 @@ ok($row->[4], 'groceries.beer');
 ok($row->[5], 'main');
 
 #$dbh->do('DROP TABLE log4perltest');
+
+$dbh->disconnect;
+
+# **************************************
+# checking usePreparedStmt, spurious warning bug reported by Brett Rann
+# might as well give it a thorough check
+Log::Log4perl->reset;
+
+$dbh = DBI->connect('DBI:CSV:f_dir=t/tmp','testuser','testpw',{ PrintError => 1 });
+
+$dbh->do('DROP TABLE log4perltest') if -e 't/tmp/log4perltest';
+
+$stmt = <<EOL;
+    CREATE TABLE log4perltest (
+      loglevel     char(9) ,   
+      message   char(128),     
+      
+  )
+EOL
+
+$dbh->do($stmt);
+
+
+$config = <<'EOT';
+#log4j.category = WARN, DBAppndr, console
+log4j.category = WARN, DBAppndr
+log4j.appender.DBAppndr             = Log::Log4perl::Appender::DBI
+log4j.appender.DBAppndr.datasource = DBI:CSV:f_dir=t/tmp
+log4j.appender.DBAppndr.sql = \
+   insert into log4perltest \
+   (loglevel, message) \
+   values (?,?)
+log4j.appender.DBAppndr.params.1 = %p    
+#---------------------------- #2 is message
+
+log4j.appender.DBAppndr.usePreparedStmt=2
+log4j.appender.DBAppndr.warp_message=0
+    
+#noop layout to pass it through
+log4j.appender.DBAppndr.layout    = Log::Log4perl::Layout::NoopLayout
+
+EOT
+
+Log::Log4perl::init(\$config);
+
+$logger = Log::Log4perl->get_logger("groceries.beer");
+
+$logger->fatal('warning message');
+
+#since we're not buffering, this message should show up immediately
+{
+ local $/ = undef;
+ open (F, "t/tmp/log4perltest");
+ my $got = <F>;
+ close F;
+ my $expected = <<EOL;
+LOGLEVEL,MESSAGE
+FATAL,"warning message"
+EOL
+  $got =~ s/[^\w ,"()]//g;  #silly DBD_CSV uses funny EOL chars
+  $expected =~ s/[^\w ,"()]//g;
+  ok($got, $expected);
+}
+
+$logger->fatal('warning message');
 
