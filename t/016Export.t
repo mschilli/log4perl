@@ -42,7 +42,7 @@ ok(2);
 my $log2 = get_logger("abc.def");
 $log2->debug("Is this it?");
 
-ok($app->buffer(), "DEBUG - Is this it?");
+ok($app->buffer(), "DEBUG - Is this it?\n");
 $app->buffer("");
 
 ##################################################
@@ -51,7 +51,7 @@ $app->buffer("");
 my $log3 = get_logger("main");
 $log3->debug("Is this it?");
 
-ok($app->buffer(), "DEBUG - Is this it?");
+ok($app->buffer(), "DEBUG - Is this it?\n");
 $app->buffer("");
 
 ##################################################
@@ -60,7 +60,7 @@ $app->buffer("");
 my $log4 = get_logger("main");
 $log4->debug("Is this it?");
 
-ok($app->buffer(), "DEBUG - Is this it?");
+ok($app->buffer(), "DEBUG - Is this it?\n");
 $app->buffer("");
 
 ##################################################
@@ -69,7 +69,7 @@ $app->buffer("");
 my $log5 = get_logger("main");
 $log5->debug("Is this it?");
 
-ok($app->buffer(), "DEBUG - Is this it?");
+ok($app->buffer(), "DEBUG - Is this it?\n");
 $app->buffer("");
 
 ##################################################
@@ -78,7 +78,7 @@ $app->buffer("");
 my $log6 = get_logger();
 $log6->debug("Is this it?");
 
-ok($app->buffer(), "DEBUG - Is this it?");
+ok($app->buffer(), "DEBUG - Is this it?\n");
 $app->buffer("");
 
 ##################################################
@@ -87,7 +87,7 @@ $app->buffer("");
 my $log7 = Log::Log4perl->get_logger();
 $log7->debug("Is this it?");
 
-ok($app->buffer(), "DEBUG - Is this it?");
+ok($app->buffer(), "DEBUG - Is this it?\n");
 $app->buffer("");
 
 ##################################################
@@ -96,5 +96,5 @@ $app->buffer("");
 my $log8 = Log::Log4perl::get_logger();
 $log8->debug("Is this it?");
 
-ok($app->buffer(), "DEBUG - Is this it?");
+ok($app->buffer(), "DEBUG - Is this it?\n");
 $app->buffer("");
