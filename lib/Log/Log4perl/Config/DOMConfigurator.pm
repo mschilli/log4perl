@@ -275,6 +275,8 @@ any problems.
 
 Log::Log4perl::Config::PropertyConfigurator
 
+t/038XML-DOM.t
+
 =head1 AUTHOR
 
 Kevin Goess, <cpan@goess.org> Jan-2003
