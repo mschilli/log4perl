@@ -104,7 +104,7 @@ sub _init {
         # Continue with lower level loggers. Both 'logger' and 'category'
         # are valid keywords. Also 'additivity' is one, having a logger
         # attached. We'll differenciate between the two further down.
-    for my $key (qw(logger category additivity)) {
+    for my $key (qw(logger category additivity PatternLayout)) {
 
         if(exists $data->{$key}) {
 
@@ -122,6 +122,11 @@ sub _init {
                     # This isn't a logger but an additivity setting.
                     # Save it in a hash under the logger's name for later.
                     $additivity{join('.', @$path)} = $value;
+
+                    #a global user-defined conversion specifier (cspec)
+                }elsif ($key eq "PatternLayout"){
+                    &add_global_cspec(@$path[-1], $value);
+
                 } else {
                     # This is a regular logger
                     push @loggers, [join('.', @$path), $value];
@@ -305,6 +310,20 @@ sub set_appender_by_name {
     my($appname, $appender, $appenders_created) = @_;
 
     $appenders_created->{$appname} ||= $appender;
+}
+
+##################################################
+sub add_global_cspec {
+##################################################
+# the config file said
+# log4j.PatternLayout.cspec.Z=sub {return $$*2}
+##################################################
+    my ($letter, $perlcode) = @_;
+
+    die "error: only single letters allowed in log4j.PatternLayout.cspec.$letter"
+        unless ($letter =~ /^[a-zA-Z]$/);
+
+    Log::Log4perl::Layout::PatternLayout::add_global_cspec($letter, $perlcode);
 }
 
 ###########################################
