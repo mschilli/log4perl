@@ -7,6 +7,7 @@ use 5.006;
 use strict;
 use warnings;
 use Time::HiRes qw(gettimeofday tv_interval);
+use Data::Dump qw(dump);
 
 no strict qw(refs);
 
@@ -93,7 +94,7 @@ sub render {
 
     $info{c} = $logger->{logger_class};
     $info{n} = "\n";
-    $info{p} = $logger->level();
+    $info{p} = $logger->level_str();
     $info{r} = int((tv_interval ( $PROGRAM_START_TIME ))*1000);
 
         # As long as they're not implemented yet ..
