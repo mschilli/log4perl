@@ -14,6 +14,10 @@ ok(1); # If we made it this far, we're ok.
 my $example_log = "example" . (stat($0))[9] . ".log";
 unlink($example_log);
 
+Log::Log4perl::Config->vars_shared_with_safe_compartment(
+  main => [ '$0' ],
+);
+
 # test that unrestricted code works properly
 Log::Log4perl::Config::allow_code(1);
 my $config = <<'END';
