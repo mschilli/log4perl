@@ -31,7 +31,7 @@ sub new {
     } elsif($format eq "DATE") {
         $format = "dd MMM yyyy HH:mm:ss,SSS";
     } elsif($format eq "ISO8601") {
-        $format = "yyyy-mm-dd HH:mm:ss,SSS";
+        $format = "yyyy-MM-dd HH:mm:ss,SSS";
     }
 
     if($format) { 
@@ -69,7 +69,7 @@ sub rep {
     # one by one when we get the components of the current time later on
     # via localtime.
     
-    # So, we're parsing the "yyyy/mm" format once, replace it by, say
+    # So, we're parsing the "yyyy/MM" format once, replace it by, say
     # "%04d:%02d" and store an array that says "for the first placeholder,
     # get the localtime-parameter on index #5 (which is years since the
     # epoch), add 1900 to it and pass it on to sprintf(). For the 2nd 
@@ -328,7 +328,7 @@ log4j spec:
     Format   Equivalent                 Example
     ABSOLUTE "HH:mm:ss,SSS"             "15:49:37,459"
     DATE     "dd MMM YYYY HH:mm:ss,SSS" "06 Nov 1994 15:49:37,459"
-    ISO8601  "YYYY-mm-dd HH:mm:ss,SSS"  "1999-11-27 15:49:37,459"
+    ISO8601  "YYYY-MM-dd HH:mm:ss,SSS"  "1999-11-27 15:49:37,459"
 
 So, instead of passing 
 

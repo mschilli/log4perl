@@ -410,7 +410,7 @@ replaced by the logging engine when it's time to log the message:
 
     %c Category of the logging event.
     %C Fully qualified package (or class) name of the caller
-    %d Current date in yyyy/mm/dd hh:mm:ss format
+    %d Current date in yyyy/MM/dd hh:mm:ss format
     %F File where the logging event occurred
     %H Hostname
     %l Fully qualified name of the calling method followed by the
@@ -516,7 +516,7 @@ There's also a bunch of pre-defined formats:
 
     %d{ABSOLUTE}   "HH:mm:ss,SSS"
     %d{DATE}       "dd MMM YYYY HH:mm:ss,SSS"
-    %d{ISO8601}    "YYYY-mm-dd HH:mm:ss,SSS"
+    %d{ISO8601}    "YYYY-MM-dd HH:mm:ss,SSS"
 
 =head2 Custom cspecs
 

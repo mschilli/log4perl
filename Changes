@@ -2,10 +2,6 @@
 Revision history for Log::Log4perl
 ##################################################
 
-
-    * (kg) user-defined conversion specifiers
-    * (kg) implementing map to log4j.RollingFileAppender
-
 0.27 11/12/2002
     * (ms) Updated FAQ with "Recipes of the Week"
     * (ms) Added Log::Log4perl::NDC (Nested Diagnostic Contexts) and
@@ -16,8 +12,12 @@ Revision history for Log::Log4perl
            was propagated to. If the message was suppressed due to level
            constraints, undef is returned. Updated manpage (new section
            "return values").
+    * (ms) Fixed bug reported by Francisco Olarte Sanz. 
+           <folarte@peoplecall.com>: ISO date format and documentation mixed 
+           up MM with mm in the simple date format
     * (kg) User-defined conversion specifiers for PatternLayout in
            configuration file and as C API
+    * (kg) implementing map to log4j.RollingFileAppender
 
 0.26 11/11/2002
     * (kg) enabled %l (was missing from PatternLayout::define)
@@ -201,7 +201,7 @@ Revision history for Log::Log4perl
     * Added test case t/009Deuce.t for two appenders in one category
       via the config file
     * Changed default layout in case there's none defined (SimpleLayout)
-    * Implemented dictatory date format for %d: yyyy/mm/dd hh:mm:ss
+    * Implemented dictatory date format for %d: yyyy/MM/dd hh:mm:ss
 
 0.11 07/07/2002
     * added documentation to Log/Log4perl.pm

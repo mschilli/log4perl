@@ -91,7 +91,7 @@ $formatter = Log::Log4perl::DateFormat->new("DATE");
 ok($formatter->format($GMTIME, 123456), "26 August 2002 23:32:22,123");
 
 $formatter = Log::Log4perl::DateFormat->new("ISO8601");
-ok($formatter->format($GMTIME, 123456), "2002-32-26 23:32:22,123");
+ok($formatter->format($GMTIME, 123456), "2002-08-26 23:32:22,123");
 
 $formatter = Log::Log4perl::DateFormat->new("ABSOLUTE");
 ok($formatter->format($GMTIME, 123456), "23:32:22,123");

@@ -846,7 +846,7 @@ replaced by the logging engine when it's time to log the message:
 
     %c Category of the logging event.
     %C Fully qualified package (or class) name of the caller
-    %d Current date in yyyy/mm/dd hh:mm:ss format
+    %d Current date in yyyy/MM/dd hh:mm:ss format
     %F File where the logging event occurred
     %H Hostname
     %l Fully qualified name of the calling method followed by the
@@ -909,7 +909,7 @@ Layouts are objects, here's how you create them:
     my $simple = Log::Log4perl::SimpleLayout();
 
         # create a flexible layout:
-        # ("yyyy/mm/dd hh:mm:ss (file:lineno)> message\n")
+        # ("yyyy/MM/dd hh:mm:ss (file:lineno)> message\n")
     my $pattern = Log::Log4perl::PatternLayout("%d (%F:%L)> %m%n");
 
 Every appender has exactly one layout assigned to it. You assign
