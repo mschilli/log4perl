@@ -4,6 +4,27 @@ use Log::Log4perl;
 use strict;
 use Data::Dumper;
 
+our $no_XMLDOM;
+
+BEGIN {
+    eval {
+        require XML::DOM;
+    };
+    if ($@) {
+        print STDERR "XML::DOM not installed, skipping tests\n";
+        $no_XMLDOM = 1;
+        plan tests => 1;
+    }else{
+        plan tests => 1;
+    }
+}
+
+if ($no_XMLDOM){
+    ok(1);
+    exit(0);
+}
+
+
 my $xmlconfig = <<EOL;
 <?xml version="1.0" encoding="UTF-8"?> 
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
@@ -115,4 +136,3 @@ my $propsdata = Log::Log4perl::Config::config_read(\$propsconfig);
 ok(Dumper($xmldata),Dumper($propsdata));
 
 
-BEGIN {plan tests => 1}
