@@ -7,7 +7,8 @@ Revision history for Log::Log4perl
           * rename decide()?
     DONE:
     * (ms) Added Log4perl custom filters
-    * (kg) added url support to init(), finally documenting it
+    * (kg) Added url support to init(), finally documenting it
+    * (kg) Finished implementation of DOMConfigurator allowing xml configs.
     * (ms) Corrected DateFormat inconsistencies as reported by
            Roger Perttu <roger.perttu@easit.se>
 
@@ -323,23 +324,13 @@ TODO Kevin:
     * use squirrel  http://www.perlmeister.com/scripts/squirrel?
     * document oneMessagePerAppender as a bona-fide feature
     * appender-by-name stuff?
-    * Module for reading XML-style config files
-    * DONE, CAN'T, SocketAppender actually ships a serialized LoggingEvent
-      object to the server side, we're not going to get into the business of
-      creating serialized Java objects! 
-       Dave Rolsky says: A couple other things: The JavaMap docs
-      mention that SocketAppender has no Log::Dispatch equivalent. You could
-      create an IO::Socket object and pass it to Log::Dispatch::Handle.
-    * DONE, added oneMessagePerAppender
-      Bug: If the *same* appender is being attached to several loggers,
-      appender inheritance doesn't work as expected: Even if the 
-      appender appears twice in the inheritance tree, it's only executed once.
-      But it actually needs to be run twice.
-    * DONE test cases should use platform independend directory separator
-      (Mac's pre-OSX ':'?) DONE need level validation on Logger::level()
-      DONE Create new module negotiating between Java-style config files
-      and perl-style appenders
-
+    * implement? #"log4j will render the content of the log message according to 
+            # user specified criteria. For example, if you frequently need 
+            # to log Oranges, an object type used in your current project, 
+            # then you can register an OrangeRenderer that will be invoked 
+            # whenever an orange needs to be logged. "
+         
+                
 TODO Mike:
 ##################################################
     * index.html on sourceforge should be part of CVS
