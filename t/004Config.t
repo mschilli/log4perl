@@ -45,5 +45,5 @@ $logger->debug("Gurgel");
 
    # POPULATION[1] because it created another buffer behind our back
 ok($Log::Dispatch::Buffer::POPULATION[1]->buffer(),
-    'm#^\d+\s+\[N/A\] DEBUG  N/A - Gurgel$#'); 
+    'm#^\d+\s+\[N/A\] DEBUG foo N/A - Gurgel$#'); 
 #print "BUFFER= '", $Log::Dispatch::Buffer::POPULATION[1]->buffer(), "'\n";

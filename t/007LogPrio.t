@@ -37,10 +37,10 @@ close FILE;
 
 my $exp = <<EOT;
 t/007LogPrio.t 28 DEBUG N/A  - Gurgel
-t/007LogPrio.t 29 DEBUG N/A  - Gurgel
-t/007LogPrio.t 30 DEBUG N/A  - Gurgel
-t/007LogPrio.t 31 DEBUG N/A  - Gurgel
-t/007LogPrio.t 32 DEBUG N/A  - Gurgel
+t/007LogPrio.t 29 INFO N/A  - Gurgel
+t/007LogPrio.t 30 WARN N/A  - Gurgel
+t/007LogPrio.t 31 ERROR N/A  - Gurgel
+t/007LogPrio.t 32 FATAL N/A  - Gurgel
 EOT
 
 unlink $LOGFILE;

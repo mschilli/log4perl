@@ -23,6 +23,10 @@ t/007LogPrio.t
 t/008ConfCat.t
 t/010JConsole.t
 t/011JFile.t
+t/012Deeper.t
+t/deeper1.expected
+t/deeper6.expected
+t/deeper7.expected
 eg/log4j-manual-3.conf
 eg/log4j-manual-1.conf
 eg/log4j-manual-2.conf

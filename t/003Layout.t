@@ -23,8 +23,8 @@ my $disp = Log::Dispatch::Buffer->new(
 ok(1); # If we made it this far, we're ok.
 
 my $logger = Log::Log4perl::Logger->get_logger("abc.def.ghi");
-$logger->add_appender($disp);
-$logger->layout("bugo %% %c{2} %-17F{ba} %L hugo");
+$logger->add_appender('buf',$disp);
+$logger->layout('buf',"bugo %% %c{2} %-17F{ba} %L hugo",);
 $logger->debug("That's the message");
 
 ok($disp->buffer(), "bugo  percent def.ghi t/003Layout.t     28 hugo"); 
@@ -33,7 +33,7 @@ ok($disp->buffer(), "bugo  percent def.ghi t/003Layout.t     28 hugo");
 # Log the message
 ############################################################
 $disp->buffer("");
-$logger->layout("The message is here: %m");
+$logger->layout('buf',"The message is here: %m");
 $logger->debug("That's the message");
 
 ok($disp->buffer(), "The message is here: That's the message"); 
@@ -42,7 +42,7 @@ ok($disp->buffer(), "The message is here: That's the message");
 # Log the time
 ############################################################
 $disp->buffer("");
-$logger->layout("[%r] %m");
+$logger->layout('buf',"[%r] %m");
 $logger->debug("That's the message");
 
 ok($disp->buffer() =~ /^\[\d+\] That's the message$/); 

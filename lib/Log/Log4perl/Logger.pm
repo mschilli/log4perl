@@ -9,10 +9,15 @@ use warnings;
 use Log::Log4perl::Level;
 use Log::Log4perl::Layout;
 use Log::Dispatch;
+use Data::Dump qw(dump);
 
     # Initialization
 our $ROOT_LOGGER;
 our $LOGGERS_BY_STRING;
+our %LAYOUT_BY_APPENDER;
+
+our $DISPATCHER = Log::Dispatch->new();
+
 __PACKAGE__->reset();
 
 ##################################################
@@ -28,6 +33,8 @@ sub reset {
 ##################################################
     our $ROOT_LOGGER          = __PACKAGE__->_new("", $DEBUG);
     our $LOGGERS_BY_STRING    = {};
+    our $DISPATCHER = Log::Dispatch->new();
+    our $LAYOUT_BY_APPENDER = ();
 }
 
 ##################################################
@@ -46,12 +53,12 @@ sub _new {
     }
 
     my $self  = {
-        logger_class => $logger_class,
-        appenders    => 0,
-        additivity   => 1,
-        level        => $level,
-        dispatcher   => Log::Dispatch->new(),
-        layout       => undef,
+        logger_class  => $logger_class,
+        num_appenders => 0,
+        additivity    => 1,
+        level         => $level,
+        dispatcher    => $DISPATCHER,
+        layout        => undef,
                 };
 
         # Save it in global structure
@@ -66,10 +73,13 @@ sub _new {
 ##################################################
 sub layout {
 ##################################################
-    my($self, $format_string) = @_;
+    my($self, $appender_name, $format_string ) = @_;
+    
+    $LAYOUT_BY_APPENDER{$appender_name} =
+    #don't need object attribute any more? !!!
+        $self->{layout} = Log::Log4perl::Layout->new();
+    $self->{layout}->define($format_string);  
 
-    $self->{layout} = Log::Log4perl::Layout->new();
-    $self->{layout}->define($format_string);
 }
 
 ##################################################
@@ -196,18 +206,28 @@ sub get_logger {
 ##################################################
 sub add_appender {
 ##################################################
-    my($self, $appender) = @_;
+    my($self, $appender_name, $appender, $not_to_dispatcher) = @_;
 
-    $self->{appenders}++;
-    $self->{dispatcher}->add($appender);
+    $self->{num_appenders}++;
+
+    unless (grep{$_ eq $appender_name} @{$self->{appender_names}}){
+        $self->{appender_names} = [sort @{$self->{appender_names}}, $appender_name ];
+    }
+
+    $self->{dispatcher}->add($appender)
+        unless $not_to_dispatcher;    #ugly, but while we want to track the names of
+                                      #all the appenders in a category, we only
+                                      #want to add it to log_dispatch *once*
 }
+
+
 
 ##################################################
 sub has_appenders {
 ##################################################
     my($self) = @_;
 
-    return $self->{appenders};
+    return $self->{num_appenders};
 }
 
 ##################################################
@@ -215,7 +235,11 @@ sub log {
 ##################################################
     my($self, $level, $priority, @message) = @_;
 
+    my %seen;
+
     my $message = join '', @message;
+
+    my $category = $self->{logger_class};
 
     if($priority <= $self->level()) {
         # Call the dispatchers up the hierarchy
@@ -224,14 +248,33 @@ sub log {
                # Only format the message if there's going to be an appender.
             next unless $logger->has_appenders();
 
-                # If we have a layout, use it.
-            if($logger->{layout}) {
-                $message = $logger->{layout}->render($logger, $message, $level, 2);
+            foreach my $appender_name (@{$logger->{appender_names}}){
+
+                    #only one message per appender, please
+                next if $seen{$appender_name} ++;
+
+                my $rendered_msg;
+
+                #is this proper behavior if no layout defined?
+                if ($LAYOUT_BY_APPENDER{$appender_name}) {
+                    $rendered_msg = 
+                        $LAYOUT_BY_APPENDER{$appender_name}->render($logger, 
+                                                                    $message,
+                                                                    $category,
+                                                                    $level,
+                                                                    2,
+                                                                    );
+                }else{
+                    $rendered_msg = $message;
+                }
+
+                    # Dispatch the (formatted) message
+                $logger->{dispatcher}->log_to(
+                    name    => $appender_name,
+                    level   => lc(Log::Log4perl::Level::to_string($priority)),
+                    message => $rendered_msg,
+                    );
             }
-                # Dispatch the (formatted) message
-            $logger->{dispatcher}->log(
-                level   => lc(Log::Log4perl::Level::to_string($priority)),
-                message => $message);
             last unless $logger->{additivity};
         }
     }

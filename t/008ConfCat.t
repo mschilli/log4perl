@@ -32,7 +32,7 @@ my $logger = Log::Log4perl::Logger->get_logger("foo.bar.baz");
 $logger->debug("Gurgel");
 
 ok($Log::Dispatch::Buffer::POPULATION[0]->buffer(),
-   "N/A [N/A] DEBUG  - Gurgel\n");
+   "N/A [N/A] DEBUG foo.bar.baz - Gurgel\n");
 #print "BUFFER= '", $Log::Dispatch::Buffer::POPULATION[0]->buffer(), "'\n";
 
 ######################################################################
@@ -47,5 +47,5 @@ $logger->debug("Gurgel");
 
    # POPULATION[1] because it created another buffer behind our back
 ok($Log::Dispatch::Buffer::POPULATION[1]->buffer(),
-   "N/A [N/A] DEBUG  - Gurgel\n");
+   "N/A [N/A] DEBUG foo - Gurgel\n");
 #print "BUFFER= '", $Log::Dispatch::Buffer::POPULATION[1]->buffer(), "'\n";

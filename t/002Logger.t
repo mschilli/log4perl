@@ -52,7 +52,7 @@ my $disp = Log::Dispatch::Buffer->new(
 ##################################################
 # Suppress debug
 ##################################################
-$log1->add_appender($disp);
+$log1->add_appender('buf',$disp);
 $log1->level($ERROR);
 $log1->error("Error Message");
 $log1->debug("Debug Message");
@@ -82,7 +82,7 @@ my $disp3 = Log::Dispatch::Buffer->new(
 $disp->buffer("");
 $disp2->buffer("");
     # 2nd appender to $log1
-$log1->add_appender($disp2);
+$log1->add_appender('buf2',$disp2);
 $log1->level($ERROR);
 $log1->error("Error Message");
 ok($disp->buffer(), "Error Message");
@@ -100,7 +100,7 @@ $log2 = Log::Log4perl::Logger->get_logger("xxx");
 $log3 = Log::Log4perl::Logger->get_logger("");
 
     # Root logger
-$log3->add_appender($disp3);
+$log3->add_appender('buf3',$disp3);
 $log3->level($ERROR);
 
     ##################################################
@@ -117,8 +117,8 @@ $disp->buffer("");
 $disp2->buffer("");
 $disp3->buffer("");
 
-$log1->add_appender($disp);
-$log2->add_appender($disp2);
+$log1->add_appender('buf', $disp);
+$log2->add_appender('buf2',$disp2);
 # log3 already has disp3 attached
 $log1->error("Error Message");
 ok($disp->buffer(), "Error Message");

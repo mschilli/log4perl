@@ -38,8 +38,8 @@ my ($result, $expected);
 
 $expected = <<EOL;
 INFO  cat1 - info message 1 
-INFO  cat1 - warning message 1 
-INFO  cat1 - fatal message 1 
+WARN  cat1 - warning message 1 
+FATAL cat1 - fatal message 1 
 EOL
 
 {local $/ = undef;
@@ -47,8 +47,6 @@ EOL
  $result = <F>;
  close F;
 }
-$result =~ s/ /./g;
-$expected =~ s/ /./g;
 ok ($result, $expected);
 
 

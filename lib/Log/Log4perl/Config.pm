@@ -25,10 +25,15 @@ my @LEVEL_MAP_A = qw(
  FATAL  emergency
 );
 
+
+
 ##################################################
 sub init {
 ##################################################
     my($class, $config) = @_;
+
+    #keep track so we don't create the same one twice
+    my %appenders_created = ();
 
     # This logic is probably suited to win an obfuscated programming
     # contest. It desperately needs to be rewritten.
@@ -78,37 +83,44 @@ sub init {
         if(defined $appname) {
             add_layout_by_name($data, $logger, $appname);
 
-            my $appenderclass = get_appender_by_name($data, $appname);
+            my $appenderclass = get_appender_by_name($data, $appname, \%appenders_created);
 
             my $appender;
+            if (ref $appenderclass) {
 
-            if($appenderclass =~ /::/) {
-                # It's Perl
-                my @params = grep { $_ ne "layout" and
-                                    $_ ne "value" 
-                                  } keys %{$data->{appender}->{$appname}};
-                eval {
-                    eval "require $appenderclass";  #see 'perldoc -f require' for why two evals
-                    die $@ if $@;
-                };
-                $@ and die "ERROR: trying to set appender for $appname to $appenderclass failed\n$@  ";
+                $appender = $appenderclass;
 
-                $appender = $appenderclass->new(
-                   name      => $appname,
-                   min_level => 'debug', # Set default, *we* are controlling
-                                         # this now
-                   map { $_ => $data->{appender}->{$appname}->{$_}->{value} } 
-                       @params
-                );
-            } else {
-                # It's Java. Try to map
-                $appender = Log::Log4perl::JavaMap::get($appname, 
-                                                $data->{appender}->{$appname});
-                #$appender = $appenderclass->new($appname, 
-                #                                $data->{appender}->{$appname});
-            }
+            }else{
+
+                if($appenderclass =~ /::/) {
+                    # It's Perl
+                    my @params = grep { $_ ne "layout" and
+                                        $_ ne "value" 
+                                      } keys %{$data->{appender}->{$appname}};
+                    eval {
+                        eval "require $appenderclass";  #see 'perldoc -f require' for why two evals
+                        die $@ if $@;
+                    };
+                    $@ and die "ERROR: trying to set appender for $appname to $appenderclass failed\n$@  ";
     
-            $logger->add_appender($appender);
+                    $appender = $appenderclass->new(
+                       name      => $appname,
+                       min_level => 'debug', # Set default, *we* are controlling
+                                             # this now
+                       map { $_ => $data->{appender}->{$appname}->{$_}->{value} } 
+                           @params
+                    );
+                } else {
+                    # It's Java. Try to map
+                    $appender = Log::Log4perl::JavaMap::get($appname, 
+                                                    $data->{appender}->{$appname});
+                    #$appender = $appenderclass->new($appname, 
+                    #                                $data->{appender}->{$appname});
+                }
+            }
+
+            $logger->add_appender($appname, $appender, $appenders_created{$appname});
+            set_appender_by_name($appname, $appender, \%appenders_created);
         }
     }
 }
@@ -116,22 +128,39 @@ sub init {
 ###########################################
 sub add_layout_by_name {
 ###########################################
-    my($data, $logger, $layout) = @_;
+    my($data, $logger, $appender_name) = @_;
 
-    $logger->layout($data->{appender}->{$layout}->
-                   {layout}->{ConversionPattern}->{value});
+    $logger->layout($appender_name,
+                   $data->{appender}->{$appender_name}->
+                   {layout}->{ConversionPattern}->{value},
+                   );
+
 }
 
 ###########################################
 sub get_appender_by_name {
 ###########################################
-    my($data, $name) = @_;
+    my($data, $name, $appenders_created) = @_;
 
-    my $appender = $data->{appender}->{$name}->{value};
 
-    #return unlog4j($appender);
-    return $appender;
+    if ($appenders_created->{$name}) {
+        return $appenders_created->{$name};
+    }else{
+        return $data->{appender}->{$name}->{value};
+    }
 }
+
+
+###########################################
+sub set_appender_by_name {
+###########################################
+# keep track of appenders we've already created
+###########################################
+    my($appname, $appender, $appenders_created) = @_;
+
+    $appenders_created->{$appname} ||= $appender;
+}
+
 
 ###########################################
 sub config_read {
@@ -218,6 +247,8 @@ sub leaf_paths {
     }
     return \@result;
 }
+
+1;
 
 ###############################################
 # The following classes are for mapping log4j #

@@ -65,7 +65,7 @@ sub rep {
 ##################################################
 sub render {
 ##################################################
-    my($self, $logger, $message, $priority, $caller_level) = @_;
+    my($self, $logger, $message, $category, $priority, $caller_level) = @_;
 
     $caller_level = 0 unless defined  $caller_level;
 
@@ -93,7 +93,7 @@ sub render {
         $info{l} = "$subroutine $filename ($line)";
     }
 
-    $info{c} = $logger->{logger_class};
+    $info{c} = $category;
     $info{n} = "\n";
     $info{p} = $priority;
     $info{r} = int((tv_interval ( $PROGRAM_START_TIME ))*1000);

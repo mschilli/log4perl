@@ -4,21 +4,30 @@ Revision history for Log::Log4perl
 
 TODO:
 
-* question - are appenders created just once if they're reused in the config file?
-* need level validation on Logger::level() and level_str()
-* redo level_str() hack
+* need level validation on Logger::level() 
+* test cases should use platform independend directory separator (Mac's pre-OSX ':'?)
+* can we parse multiple appenders for a category? e.g.
+        log4j.category.a.b = WARN, console, logfile
+
 
 Kevin:
 * Create new module negotiating between Java-style config files
   and perl-style appenders
 * Module for reading XML-style config files
-
+DONE (is gone) redo level_str() hack
+DONE (Dispatch singleton) question - are appenders created just once if they're reused in the config file?
 
 
 Mike:
 * Define default if there's no layout:
   http://jakarta.apache.org/log4j/docs/api/org/apache/log4j/SimpleLayout.html
 * Tune performance of level() lookups
+ (Mike, check out the log4j statement:
+ "As a side note, let me mention that in log4j child loggers link only to their 
+  existing ancestors. In particular, the logger named com.foo.Bar is linked 
+  directly to the root logger, thereby circumventing the unused com or com.foo
+  loggers. This significantly increases performance and reduces log4j's memory 
+  footprint. "
 * %% bug in Layout.pm
 * Layout.pm: 'd', 't', 'x', 'X'
 * Documentation
