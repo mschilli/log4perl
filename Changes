@@ -3,6 +3,8 @@ Revision history for Log::Log4perl
 ##################################################
 
 0.28 (not yet released)
+    * (kg) fixed docs, Pattern layout, %f not supported, s/b %F
+    * (kg) added Log::Log4perl::Appender::DBI to implement JDBCAppender
     * (ms) Every value in the config file can now be a perl function,
            dynamically replaced by its return value at configuration
            parse time
@@ -286,6 +288,7 @@ TODO (not assigned to anybody yet):
 
 TODO Kevin:
 ##################################################
+    * appender-by-name stuff?
     * Module for reading XML-style config files
     * Dave Rolsky says: A couple other things: The JavaMap docs mention
       that SocketAppender has no Log::Dispatch equivalent. You could
