@@ -189,6 +189,19 @@ sub render {
             $wantarray, $evaltext, $is_require, 
             $hints, $bitmask) = caller($caller_level);
 
+        # If caller() choked because of a whacko caller level,
+        # correct undefined values to '[undef]' in order to prevent 
+        # warning messages when interpolating later
+        unless(defined $bitmask) {
+            for($package, 
+                $filename, $line,
+                $subroutine, $hasargs,
+                $wantarray, $evaltext, $is_require,
+                $hints, $bitmask) {
+                $_ = '[undef]' unless defined $_;
+            }
+        }
+
         $info{L} = $line;
         $info{F} = $filename;
         $info{C} = $package;
