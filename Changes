@@ -16,6 +16,8 @@ Revision history for Log::Log4perl
     * Changed suppression of duplicate newline in log message algorithm
     * Custom levels and inc_level/dec_level/more_logging/less_logging
       added by Erik Selberg <erik@selberg.com>
+    * Append to logfile by default if Log::Dispatch::File is used
+      (previously clobbered by default)
 
 0.22 8/17/2002
     * Threshold settings of appenders: 
