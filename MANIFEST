@@ -11,6 +11,7 @@ eg/log4j-file-append-perl.conf
 eg/log4j-manual-1.conf
 eg/log4j-manual-2.conf
 eg/log4j-manual-3.conf
+eg/syslog.pl
 lib/Log/Log4perl.pm
 lib/Log/Log4perl/Appender.pm
 lib/Log/Log4perl/Config.pm
