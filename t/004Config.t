@@ -7,7 +7,7 @@
 # change 'tests => 1' to 'tests => last_test_to_print';
 #########################
 use Test;
-BEGIN { plan tests => 5 };
+BEGIN { plan tests => 9 };
 
 use Log::Log4perl;
 use Log::Log4perl::TestBuffer;
@@ -80,3 +80,67 @@ $logger->debug("Gurgel");
 
 ok(Log::Log4perl::TestBuffer->by_name("A1")->buffer(),
     'm#^\d+\s+\[N/A\] DEBUG foo N/A - Gurgel$#'); 
+
+
+############################################################
+# testing multiple parameters, nested hashes
+############################################################
+
+our $stub_hook;
+
+# -----------------------------------
+# here's a stub
+package Log::Log4perl::AppenderTester;
+use vars qw($IS_LOADED);
+$IS_LOADED = 1; 
+sub new {
+    my($class, %params) = @_;
+    my $self = {};
+    bless $self, $class;
+
+    $self->{P} = \%params;
+
+    $main::stub_hook = $self;
+    
+    return $self;
+}
+package main;
+# -----------------------------------
+
+Log::Log4perl->init(\ <<'EOT');
+#here's an example of using Log::Dispatch::Jabber
+
+log4j.category.animal.dog   = INFO, jabbender
+
+log4j.appender.jabbender          = Log::Log4perl::AppenderTester
+log4j.appender.jabbender.layout   = Log::Log4perl::Layout::SimpleLayout
+log4j.appender.jabbender.login.hostname = a.jabber.server
+log4j.appender.jabbender.login.port = 5222
+log4j.appender.jabbender.login.username =  bugs
+log4j.appender.jabbender.login.password = bunny
+log4j.appender.jabbender.login.resource = logger
+log4j.appender.jabbender.to = elmer@a.jabber.server
+log4j.appender.jabbender.to = sam@another.jabber.server
+
+EOT
+
+#should produce this:
+#{
+#    login => {
+#          hostname => "a.jabber.server",
+#          password => "bunny",
+#          port     => 5222,
+#          resource => "logger",
+#          username => "bugs",
+#        },
+#    to => ["elmer\@a.jabber.server", "sam\@another.jabber.server"],
+#  },
+
+
+ok($stub_hook->{P}{login}{hostname}, 'a.jabber.server');
+ok($stub_hook->{P}{login}{password}, 'bunny');
+ok($stub_hook->{P}{to}[0], 'elmer@a.jabber.server');
+ok($stub_hook->{P}{to}[1], 'sam@another.jabber.server');
+
+
+
