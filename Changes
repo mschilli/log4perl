@@ -3,6 +3,9 @@ Revision history for Log::Log4perl
 ##################################################
 
 0.26 10/07/2002
+    * (kg) enabled %l (was missing from PatternLayout::define)
+    * (kg) got rid of "Use of uninitialized value in join or string" message
+          when some of $logger->debug(@array) when some of @array are undef 
     * (ms) Stealth loggers and documentation
 
 0.25 10/06/2002
