@@ -11,10 +11,11 @@ package Log::Log4perl::Appender::Limit;
 
 use strict;
 use warnings;
+use Storable;
 
 our @ISA = qw(Log::Log4perl::Appender);
 
-our $CVSVERSION   = '$Revision: 1.1 $';
+our $CVSVERSION   = '$Revision: 1.2 $';
 our ($VERSION)    = ($CVSVERSION =~ /(\d+\.\d+)/);
 
 ###########################################
@@ -41,6 +42,12 @@ sub new {
     push @{$options{l4p_post_config_subs}}, sub { $self->post_init() };
 
     bless $self, $class;
+
+    if(defined $self->{persistent}) {
+        $self->restore();
+    }
+
+    return $self;
 }
 
 ###########################################
@@ -57,6 +64,8 @@ sub log {
 
             # Save message and other parameters
         push @{$self->{buffer}}, \%params if $self->{accumulate};
+
+        $self->save() if $self->{persistent};
 
         return;
     }
@@ -76,6 +85,10 @@ sub log {
                                  $_->{log4p_category},
                                  $_->{log4p_level});
     }
+
+        # Empty buffer
+    $self->{buffer} = [];
+
         # Log current message as well
     $self->{app}->SUPER::log(\%params,
                              $params{log4p_category},
@@ -84,6 +97,9 @@ sub log {
     $Log::Log4perl::caller_depth -= 2;
 
     $self->{sent_last} = time();
+
+        # We need to store the timestamp persistently, if requested
+    $self->save() if $self->{persistent};
 }
 
 ###########################################
@@ -107,11 +123,34 @@ sub post_init {
 }
 
 ###########################################
+sub save {
+###########################################
+    my($self) = @_;
+
+    my $pdata = [$self->{buffer}, $self->{sent_last}];
+
+        # Save the buffer if we're in persistent mode
+    store $pdata, $self->{persistent} or
+        die "Cannot save messages in $self->{persistent} ($!)";
+}
+
+###########################################
+sub restore {
+###########################################
+    my($self) = @_;
+
+    if(-f $self->{persistent}) {
+        my $pdata = retrieve $self->{persistent} or
+            die "Cannot retrieve messages from $self->{persistent} ($!)";
+        ($self->{buffer}, $self->{sent_last}) = @$pdata;
+    }
+}
+
+###########################################
 sub DESTROY {
 ###########################################
     my($self) = @_;
 
-    # Nothing to clean up (yet).
 }
 
 1;
