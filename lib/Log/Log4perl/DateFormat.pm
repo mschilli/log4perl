@@ -4,6 +4,8 @@ package Log::Log4perl::DateFormat;
 use warnings;
 use strict;
 
+our $GMTIME = 0;
+
 my @MONTH_NAMES = qw(
 January February March April May June July
 August September October November December);
@@ -211,7 +213,14 @@ sub format {
 
     $msecs = 0 unless defined $msecs;
 
-    my @time = localtime($secs);
+    my @time; 
+
+    if($GMTIME) {
+        @time = gmtime($secs);
+    } else {
+        @time = localtime($secs);
+    }
+
         # add milliseconds
     push @time, $msecs;
 
