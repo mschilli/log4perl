@@ -1393,6 +1393,112 @@ the C<IPC::Shareable> module and its semaphores, which will slow down writing
 the log messages, but ensures sequential access featuring atomic checks.
 Check L<Log::Log4perl::Appender::Synchronized> for details.
 
+=head2 Can I use Log::Log4perl with log4j's Chainsaw?
+
+Yes, Log::Log4perl can be configured to sent its events to log4j's 
+graphical log UI I<Chainsaw>.
+
+=for html
+<p>
+<TABLE><TR><TD>
+<A HREF=/images/chainsaw2.jpg"><IMG SRC="/images/chainsaw2s.jpg"></A>
+<TR><TD>
+<I>Figure 1: Chainsaw receives Log::Log4perl events</I>
+</TABLE>
+<p>
+
+=for text
+Figure1: Chainsaw receives Log::Log4perl events
+
+Here's how it works:
+
+=over 4
+
+=item *
+
+Get Guido Carls' E<lt>gcarls@cpan.orgE<gt> Log::Log4perl extension
+C<Log::Log4perl::Layout::XMLLayout> from CPAN and install it:
+
+    perl -MCPAN -eshell
+    cpan> install Log::Log4perl::Layout::XMLLayout
+
+=item *
+
+Install and start Chainsaw, which is part of the C<log4j> distribution now
+(see http://jakarta.apache.org/log4j). Create a configuration file like
+
+  <log4j:configuration debug="true">
+    <plugin name="XMLSocketReceiver" 
+            class="org.apache.log4j.net.XMLSocketReceiver">
+      <param name="decoder" value="org.apache.log4j.xml.XMLDecoder"/> 
+      <param name="Port" value="4445"/> 
+    </plugin>
+    <root> <level value="debug"/> </root> 
+  </log4j:configuration>
+
+and name it e.g. C<config.xml>. Then start Chainsaw like
+
+  java -Dlog4j.debug=true -Dlog4j.configuration=config.xml \
+    -classpath ".:log4j-1.3alpha.jar:log4j-chainsaw-1.3alpha.jar" \
+    org.apache.log4j.chainsaw.LogUI
+
+and watch the GUI coming up.
+
+=item *
+
+Configure Log::Log4perl to use a socket appender with an XMLLayout, pointing
+to the host/port where Chainsaw (as configured above) is waiting with its
+XMLSocketReceiver:
+
+  use Log::Log4perl qw(get_logger);
+  use Log::Log4perl::Layout::XMLLayout;
+
+  my $conf = q(
+    log4perl.category.Bar.Twix          = WARN, Appender
+    log4perl.appender.Appender          = Log::Log4perl::Appender::Socket
+    log4perl.appender.Appender.PeerAddr = localhost
+    log4perl.appender.Appender.PeerPort = 4445
+    log4perl.appender.Appender.layout   = Log::Log4perl::Layout::XMLLayout
+  );
+
+  Log::Log4perl::init(\$conf);
+
+    # Nasty hack to suppress encoding header
+  my $app = Log::Log4perl::appenders->{"Appender"};
+  $app->layout()->{enc_set} = 1;
+
+  my $logger = get_logger("Bar");
+  $logger->error("One");
+
+The nasty hack shown in the code snippet above is currently (October 2003) 
+necessary, because Chainsaw expects XML messages to arrive in a format like
+
+  <log4j:event logger="Bar.Twix"
+               timestamp="1066794904310"
+               level="ERROR"
+               thread="10567">
+    <log4j:message><![CDATA[Two]]></log4j:message>
+    <log4j:NDC><![CDATA[undef]]></log4j:NDC>
+    <log4j:locationInfo class="main"
+      method="main"
+      file="./t"
+      line="32">
+    </log4j:locationInfo>
+  </log4j:event>
+
+without a preceding 
+
+  <?xml version = "1.0" encoding = "iso8859-1"?>
+
+which Log::Log4perl::Layout::XMLLayout applies to the first event sent
+over the socket.
+
+See figure 1 for a screenshot of Chainsaw in action, receiving events from
+the Perl script shown above.
+
+Many thanks to Chainsaw's
+Scott Deboy <sdeboy@comotivsystems.com> for his support!
+
 =cut
 
 =head1 SEE ALSO
