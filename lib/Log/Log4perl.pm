@@ -909,6 +909,8 @@ for them to tune the logging to their needs.
 
 =head1 Cool Tricks
 
+=head2 Shortcuts
+
 When getting an instance of a logger, instead of saying
 
     use Log::Log4perl;
@@ -919,6 +921,26 @@ C<Log::Log4perl> into the current namespace:
 
     use Log::Log4perl qw(get_logger);
     my $logger = get_logger();
+
+=head2 Alternative initialization
+
+Instead of having C<init()> read in a configuration file, you can 
+also pass in a reference to a string, containing the content of
+the file:
+
+    Log::Log4perl->init( \$config_text );
+
+Also, if you've got the C<name=value> pairs of the configuration in
+a hash, you can just as well initialized C<Log::Log4perl> with
+a reference to it:
+
+    my %key_value_pairs = (
+        "log4j.rootLogger"       => "error, LOGFILE",
+        "log4j.appender.LOGFILE" => "Log::Dispatch::File",
+        ...
+    );
+
+    Log::Log4perl->init( \%key_value_pairs );
 
 =head1 How about Log::Dispatch::Config?
 

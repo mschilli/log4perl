@@ -701,6 +701,7 @@ Categories
     them to tune the logging to their needs.
 
 Cool Tricks
+  Shortcuts
     When getting an instance of a logger, instead of saying
 
         use Log::Log4perl;
@@ -711,6 +712,24 @@ Cool Tricks
 
         use Log::Log4perl qw(get_logger);
         my $logger = get_logger();
+
+  Alternative initialization
+    Instead of having "init()" read in a configuration file, you can also
+    pass in a reference to a string, containing the content of the file:
+
+        Log::Log4perl->init( \$config_text );
+
+    Also, if you've got the "name=value" pairs of the configuration in a
+    hash, you can just as well initialized "Log::Log4perl" with a reference
+    to it:
+
+        my %key_value_pairs = (
+            "log4j.rootLogger"       => "error, LOGFILE",
+            "log4j.appender.LOGFILE" => "Log::Dispatch::File",
+            ...
+        );
+
+        Log::Log4perl->init( \%key_value_pairs );
 
 How about Log::Dispatch::Config?
     Yeah, I've seen it. I like it, but I think it is too dependent on

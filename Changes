@@ -6,6 +6,13 @@ Revision history for Log::Log4perl
     * Threshold settings of appenders: 
         $appender->threshold($ERROR);
         log4j.appender.A.Threshold = ERROR
+    * Chris R. Donnelly <cdonnelly@digitalmotorworks.com>
+      submitted two patches: 
+      - extended init() to take obj references
+      - fixed %F and %L if Log4perl is used by a wrapper class (accepted,
+        but changed variable name to Log::Log4perl::caller_depth as
+        a tribute to Log::Dispatch::Config, added test case 022Wrap
+        and documentation
 
 0.21 8/08/2002
     * Synopsis shows code samples in Log4perl.pm/README

@@ -226,7 +226,10 @@ sub config_read {
 
     my @text;
 
-    if (ref $config) {
+    if (ref($config) eq 'HASH') {   # convert the hashref into a list 
+                                    # of name/value pairs
+        @text = map { $_ . '=' . $config->{$_} } keys %{$config};
+    } elsif (ref $config) {
         @text = split(/\n/,$$config);
     }else{
         Log::Log4perl::Logger::set_file_to_watch($config);
