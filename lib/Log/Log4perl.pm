@@ -12,6 +12,8 @@ use Log::Log4perl::Config;
 use Log::Dispatch::Screen;
 use Log::Log4perl::Appender;
 
+use constant DEBUG => 1;
+
 our $VERSION = '0.25alpha';
 
    # set this to '1' if you're using a wrapper
@@ -25,6 +27,8 @@ sub import {
 
     no strict qw(refs);
 
+    my $caller_pkg = caller();
+
     my(%tags) = map { $_ => 1 } @_;
 
         # Lazy man's logger
@@ -35,7 +39,6 @@ sub import {
 
     if(exists $tags{get_logger}) {
         # Export get_logger into the calling module's 
-        my $caller_pkg = caller();
 
         *{"$caller_pkg\::get_logger"} = *get_logger;
 
@@ -61,6 +64,22 @@ sub import {
         # Lazy man's logger
     if(exists $tags{':easy'}) {
         delete $tags{':easy'};
+
+            # Define default logger object in caller's package
+        my $logger = get_logger("$caller_pkg");
+        my $string = "\$${caller_pkg}::_default_logger = \$logger";
+        eval $string or die "$@";
+
+            # Define DEBUG, INFO, etc. routines in caller's package
+        for(qw(DEBUG INFO WARN ERROR FATAL)) {
+            my $level   = $_;
+            my $lclevel = lc($_);
+            *{"$caller_pkg\::$_"} = sub { 
+                Log::Log4perl::Logger::init_warn() unless 
+                               $Log::Log4perl::Logger::INITIALIZED;
+                $logger->{$level}->($logger, @_, $level);
+            };
+        }
     }
 
     if(keys %tags) {
