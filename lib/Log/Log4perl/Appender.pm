@@ -7,6 +7,7 @@ use strict;
 use warnings;
 
 use Log::Log4perl::Level;
+use constant DEBUG => 0;
 
 our $unique_counter = 0;
 
@@ -65,6 +66,8 @@ sub new {
 sub threshold { # Set/Get the appender threshold
 ##################################################
     my ($self, $level) = @_;
+
+    print "Setting threshold to $level\n" if DEBUG;
 
     if(defined $level) {
         $self->{level} = $level;
