@@ -14,7 +14,7 @@ use strict;
 use Test;
 BEGIN { plan tests => 9 };
 
-use Log::Log4perl qw(get_logger :shortcuts);
+use Log::Log4perl qw(get_logger);
 use Log::Log4perl::Level;
 
 ok(1);
