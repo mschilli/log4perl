@@ -1,5 +1,5 @@
 ######################################################################
-    Log::Log4perl 0.28dev
+    Log::Log4perl 0.28alpha1
 ######################################################################
 
 NAME
@@ -43,7 +43,7 @@ DESCRIPTION
     For a detailed tutorial on Log::Log4perl usage, please read [1].
 
     A WORD OF CAUTION: Log::Log4perl IS STILL UNDER DEVELOPMENT. WE WILL
-    ALWAYS MAKE SURE THE TEST SUITE (approx. 300 CASES) WILL PASS, BUT THERE
+    ALWAYS MAKE SURE THE TEST SUITE (approx. 350 CASES) WILL PASS, BUT THERE
     MIGHT STILL BE BUGS. PLEASE CHECK http://log4perl.sourceforge.net
     REGULARILY FOR THE LATEST RELEASE. THE API HAS REACHED A MATURE STATE,
     WE WILL NOT CHANGE IT UNLESS FOR A GOOD REASON.
@@ -594,8 +594,8 @@ How to use it
         by a spelled-out (like "Wednesday").
 
         Similar options are available for shrinking the displayed category
-        or limit file/path components, %f{1} only displays the source file
-        *name* without any path components while %f logs the full path.
+        or limit file/path components, %F{1} only displays the source file
+        *name* without any path components while %F logs the full path.
         %c{2} only logs the last two components of the current category,
         "Foo::Bar::Baz" becomes "Bar::Baz" and saves space.
 

@@ -3,6 +3,11 @@
 # release -- Release this module
 # Mike Schilli, 2002 (m@perlmeister.com)
 ###########################################
+# RELEASE checklist:
+# * Update log4perl project download page
+# * Notify log4perl-devel
+###########################################
+
 use warnings;
 use strict;
 

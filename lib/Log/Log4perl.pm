@@ -14,7 +14,7 @@ use Log::Log4perl::Appender;
 
 use constant DEBUG => 1;
 
-our $VERSION = '0.28dev';
+our $VERSION = '0.28alpha1';
 
    # set this to '1' if you're using a wrapper
    # around Log::Log4perl
@@ -293,7 +293,7 @@ of your system from the outside. It implements the widely popular
 B<For a detailed tutorial on Log::Log4perl usage, please read [1]>.
 
 A WORD OF CAUTION: Log::Log4perl IS STILL UNDER DEVELOPMENT. WE WILL
-ALWAYS MAKE SURE THE TEST SUITE (approx. 300 CASES) WILL PASS, BUT THERE 
+ALWAYS MAKE SURE THE TEST SUITE (approx. 350 CASES) WILL PASS, BUT THERE 
 MIGHT STILL BE BUGS. PLEASE CHECK http://log4perl.sourceforge.net REGULARILY
 FOR THE LATEST RELEASE. THE API HAS REACHED A MATURE STATE, WE WILL 
 NOT CHANGE IT UNLESS FOR A GOOD REASON. 

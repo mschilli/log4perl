@@ -2,7 +2,7 @@
 Revision history for Log::Log4perl
 ##################################################
 
-0.28 (not yet released)
+0.28 (not officially released yet)
     * (kg) t/024WarnDieCarp was assuming / as directory separator, failed
            on Win32
     * (kg) implemented JavaMaps for NTEventLogAppender, SyslogAppender
