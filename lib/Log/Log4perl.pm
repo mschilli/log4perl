@@ -1072,6 +1072,32 @@ config file, but note that your config file probably won't be
 portable to another log4perl or log4j environment unless you've
 made the appropriate mods there too.
 
+=head2 Easy Mode
+
+For teaching purposes (especially for [1]), I've put C<:easy> mode into 
+C<Log::Log4perl>, which just initializes a single root logger with a 
+defined priority and a screen appender including some nice standard layout:
+
+    ### Initialization Section
+    use Log::Log4perl qw(:easy);
+    Log::Log4perl->easy_init($ERROR);  # Set priority of root logger to ERROR
+
+    ### Application Section
+    my $logger = get_logger();
+    $logger->fatal("This will get logged.");
+    $logger->debug("This won't.");
+
+This will dump something like
+
+    2002/08/04 11:43:09 ERROR> script.pl:16 main::function - This will get logged.
+
+to the screen. While this has been proven to work well familiarizing people
+with C<Log::Logperl> slowly, effectively avoiding to clobber them over the head with a 
+plethora of different knobs to fiddle with (categories, appenders, levels, 
+layout), the overall mission of C<Log::Log4perl> is to let people use
+categories right from the start to get used to the concept. So, let's keep
+this one fairly hidden in the man page (congrats on reading this far :).
+
 =head1 How about Log::Dispatch::Config?
 
 Tatsuhiko Miyagawa's C<Log::Dispatch::Config> is a very clever 
