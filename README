@@ -1,5 +1,5 @@
 ######################################################################
-    Log::Log4perl 0.44
+    Log::Log4perl 0.45
 ######################################################################
 
 NAME
@@ -1712,6 +1712,7 @@ AUTHORS
         James FitzGibbon <james.fitzgibbon@target.com>
         Paul Harrington <Paul-Harrington@deshaw.com>
         David Hull <hull@paracel.com>
+        Jeff Macdonald <jeff.macdonald@e-dialog.com>
         Markus Peter <warp@spin.de>
         Brett Rann <brettrann@mail.com>
         Erik Selberg <erik@selberg.com>

@@ -6,7 +6,8 @@
 use warnings;
 use strict;
 
-use Test::More qw(no_plan);
+use Test::More;
+BEGIN { plan tests => 13 }
 
 use Log::Log4perl qw(get_logger);
 use Log::Log4perl::Level;

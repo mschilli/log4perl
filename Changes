@@ -2,6 +2,11 @@
  Revision history for Log::Log4perl
 ##################################################
 
+0.45 (not yet released)
+    * (ms) fix for t/045Composite.t on perl 5.6.1 by Jeff Macdonald 
+           <jeff.macdonald@e-dialog.com> (specify number of test cases,
+           getting rid of no_plan).
+
 0.44 (04/25/2004)
     * (ms) added filename() method to L4P::Appender::File as suggested 
            by Lee Carmichael <lecar_red@yahoo.com>
