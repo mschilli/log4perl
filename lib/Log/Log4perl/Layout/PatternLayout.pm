@@ -26,6 +26,17 @@ BEGIN {
     }
 }
 
+##################################################
+sub current_time {
+##################################################
+    # Return secs and optionally msecs if we have Time::HiRes
+    if($TIME_HIRES_AVAILABLE) {
+        return (Time::HiRes::gettimeofday());
+    } else {
+        return (time(), 0);
+    }
+}
+
 use base qw(Log::Log4perl::Layout);
 
 no strict qw(refs);
@@ -40,9 +51,9 @@ sub new {
 
     my ($layout_string);
      
-    if (ref $data){
+    if (ref $data) {
         $layout_string = $data->{ConversionPattern}{value};
-    }else{
+    } else {
         $layout_string = $data;
     }
 
@@ -58,8 +69,6 @@ sub new {
 
     return $self;
 }
-
-
 
 ##################################################
 sub define {
@@ -94,9 +103,14 @@ sub rep {
 
     # If it's a %d{...} construct, initialize a simple date
     # format formatter, so that we can quickly render later on.
+    # If it's just %d, assume %d{yyyy/MM/dd HH:mm::ss,SSS}
     my $sdf;
-    if($op eq "d" and defined $curlies) {
-        $sdf = Log::Log4perl::DateFormat->new($curlies);
+    if($op eq "d") {
+        if(defined $curlies) {
+            $sdf = Log::Log4perl::DateFormat->new($curlies);
+        } else {
+            $sdf = Log::Log4perl::DateFormat->new("yyyy/MM/dd HH:mm:ss,SSS");
+        }
     }
 
     push @{$self->{stack}}, [$op, $sdf || $curlies];
@@ -150,7 +164,7 @@ sub render {
     }
 
     $info{c} = $category;
-
+    $info{d} = 1; # Dummy value, corrected later
     $info{n} = "\n";
     $info{p} = $priority;
 
@@ -167,15 +181,6 @@ sub render {
         }
     }
 
-    if($self->{info_needed}->{d}) {
-        my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = 
-           localtime(time);
-
-        $info{d} = sprintf "%d/%02d/%02d %02d:%02d:%02d",
-                           $year + 1900, $mon+1, $mday, 
-                           $hour, $min, $sec;
-    }
-
         # As long as they're not implemented yet ..
     $info{t} = "N/A";
     $info{x} = "N/A";
@@ -186,7 +191,14 @@ sub render {
         my($op, $curlies) = @$e;
         if(exists $info{$op}) {
             my $result = $info{$op};
-            $result = curly_action($op, $curlies, $info{$op}) if $curlies;
+            if($curlies) {
+                $result = curly_action($op, $curlies, $info{$op});
+            } else {
+                # just for %d
+                if($op eq 'd') {
+                    $result = $info{$op}->format(current_time());
+                }
+            }
             push @results, $result;
         } else {
             warn "Format %'$op' not implemented (yet)";
@@ -207,7 +219,7 @@ sub curly_action {
     } elsif($ops eq "C") {
         $data = shrink_category($data, $curlies);
     } elsif($ops eq "d") {
-        $data = $curlies->format(time());
+        $data = $curlies->format(current_time());
     } elsif($ops eq "F") {
         my @parts = split m#/#, $data;
             # Limit it to max curlies entries
@@ -319,7 +331,6 @@ of a date, according to the SimpleDateFormat in the Java World
     %d{HH:mm}     "23:45" -- Just display hours and minutes
     %d{yy, EEEE}  "02, Monday" -- Just display two-digit year 
                                   and spelled-out weekday
-
 Here's the symbols and their meaning, according to the SimpleDateFormat
 specification:
 
@@ -346,6 +357,12 @@ specification:
               Year will be truncated to 2 digits. 
 
     (Text & Number): 3 or over, use text, otherwise use number. 
+
+There's also a bunch of pre-defined formats:
+
+    %d{ABSOLUTE}   "HH:mm:ss,SSS"
+    %d{DATE}       "dd MMM YYYY HH:mm:ss,SSS"
+    %d{ISO8601}    "YYYY-mm-dd HH:mm:ss,SSS"
 
 =head1 SEE ALSO
 
