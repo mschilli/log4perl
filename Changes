@@ -249,14 +249,13 @@ TODO (not assigned to anybody yet):
 ##################################################
     * BasicConfigurator() vs. :easy, PropertyConfigurator()
     * get_logger() thread safety (two try to create it at the same time)
+    * Thread safety with appenders, e.g. two threads calling the 
+      File::Dispatch appender's log method
+    * Thread safety with re-reading the conf file (watch)
     * Object rendering
-    * NDC/MDC
     * log4j.logger.blah = INHERITED, app
     * variable subst: a=b log4j.blah = ${a}
     * log4j.renderer.blah = blah
-    * I wonder if it might not be a mistake to have the base level be
-      '0', might be safer to make it '1', less chance of those
-      false-but-is-defined errors I think that's what log4j uses
     * permission problems, init() creates the files, maybe read later by
       different uid, no way to set umask?
     * Custom filters
@@ -288,9 +287,8 @@ TODO Mike:
     * Release script should maintain old CPAN message on index.html
     * Turning on DEBUG in Logger.pm results in broken test cases and
       warnings
-    * Layout.pm: 't', 'x', 'X'
+    * Layout.pm: '%t'
     * README tests (Pod::Tests or something)
-    * Thread safety
     * Just had a wild idea: Could we possibly utilize the compiler
       frontend to eliminate log statements that are not going to be
       triggered? This would be a HUGE performance increase!
