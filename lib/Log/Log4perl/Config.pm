@@ -404,7 +404,8 @@ sub config_read {
     print "Reading $config: [@text]\n" if DEBUG;
 
     if ($text[0] =~ /^<\?xml /) {
-        eval { require XML::DOM };
+        eval { require XML::DOM; require Log::Log4perl::Config::DOMConfigurator; };
+        #need to check version of XML::DOM! DEBUG!!!
         if ($@){die "Log4perl: missing XML::DOM needed to parse xml config files\n$@\n"}
         $data = Log::Log4perl::Config::DOMConfigurator::parse(\@text);
     }else{
