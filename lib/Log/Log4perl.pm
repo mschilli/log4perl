@@ -462,7 +462,7 @@ we're using with a handle to the C<Logger>:
     }
 
 Instead, if a function/method wants a reference to the logger, it
-just calls the Logger's static C<get_logger()> method to obtain
+just calls the Logger's static C<get_logger($category)> method to obtain
 a reference to the I<one and only> possible logger object of
 a certain category.
 That's called a I<singleton> if you're a Gamma fan.
@@ -1185,6 +1185,11 @@ C<Log::Log4perl> into the current namespace:
 
     use Log::Log4perl qw(get_logger);
     my $logger = get_logger();
+
+Please note this difference: To obtain the root logger, please use
+C<get_logger("")>, call it without parameters (C<get_logger()>), you'll
+get the logger of a category named after the current package. 
+C<get_logger()> is equivalent to C<get_logger(__PACKAGE__)>.
 
 =head2 Alternative initialization
 
