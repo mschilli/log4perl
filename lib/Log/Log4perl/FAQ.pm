@@ -558,19 +558,19 @@ Or, think about using the value of an environment variable:
 
     log4perl.appender.DBI.user = sub { $ENV{USERNAME} };
 
-When parsing the configuration file while running 
-C<Log::Log4perl->init()> and executing the assignment above, 
-Log::Log4perl will detect
-the C<sub {...}> pattern, evaluate the subroutine (which can contain
+When C<Log::Log4perl-E<gt>init()> parses the configuration
+file, it will notice the assignment above because of its
+C<sub {...}> pattern and treat it in a special way:
+It will evaluate the subroutine (which can contain
 arbitrary Perl code) and take its return value as the right side
 of the assignment.
 
-A typical applications would be called like this:
+A typical application would be called like this on the command line:
 
     app                # log file is "test.log"
     app -l mylog.txt   # log file is "mylog.txt"
 
-Here's some sample code implementing the above interface:
+Here's some sample code implementing the command line interface above:
 
     use Log::Log4perl qw(get_logger);
     use Getopt::Std;
@@ -603,7 +603,7 @@ Every Perl hook may contain arbitrary perl code,
 just make sure to fully qualify eventual variable names
 (e.g. C<%main::OPTS> instead of C<%OPTS>).
 
-SECURITY NOTE: this feature means arbitrary perl code
+B<SECURITY NOTE>: this feature means arbitrary perl code
 can be embedded in the config file.  In the rare case
 where the people who have access to your config file
 are different from the people who write your code and
@@ -611,7 +611,10 @@ shouldn't have execute rights, you might want to set
 
     $Log::Log4perl::ALLOW_CODE_IN_CONFIG_FILE = 0;
 
-before you call init().
+before you call init(). This will prevent Log::Log4perl from
+executing I<any> Perl code in the config file (including
+code for custom conversion specifiers 
+(see L<Log::Log4perl::Layout::PatternLayout/"Custom cspecs">).
 
 =cut
 
