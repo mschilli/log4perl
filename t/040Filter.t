@@ -71,7 +71,7 @@ Log::Log4perl->reset();
 $buffer->reset();
 
 #############################################
-# Filter combination with Filter::Bool
+# Filter combination with Filter::Boolean
 #############################################
 Log::Log4perl->init(\ <<'EOT');
     log4perl.logger = INFO, A1
@@ -82,11 +82,11 @@ Log::Log4perl->init(\ <<'EOT');
     log4perl.filter.Match3.StringToMatch = suppress
     log4perl.filter.Match3.AcceptOnMatch = true
 
-    log4perl.filter.MyBool       = Log::Log4perl::Filter::Bool
-    log4perl.filter.MyBool.logic = !Match3 && (Match1 || Match2)
+    log4perl.filter.MyBoolean       = Log::Log4perl::Filter::Boolean
+    log4perl.filter.MyBoolean.logic = !Match3 && (Match1 || Match2)
 
     log4perl.appender.A1        = Log::Log4perl::Appender::TestBuffer
-    log4perl.appender.A1.Filter = MyBool
+    log4perl.appender.A1.Filter = MyBoolean
     log4perl.appender.A1.layout = Log::Log4perl::Layout::SimpleLayout
 EOT
 
