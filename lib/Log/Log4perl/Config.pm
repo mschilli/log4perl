@@ -13,6 +13,7 @@ use Log::Dispatch;
 use Log::Dispatch::File;
 use Log::Log4perl::JavaMap;
 use Log::Log4perl::Filter;
+use Log::Log4perl::Filter::Bool;
 
 use constant DEBUG => 0;
 
@@ -114,6 +115,9 @@ sub _init {
                         $data->{oneMessagePerAppender}->{value};
     }
 
+        # Bool filters 
+    my %bool_filters = ();
+
         # Continue with lower level loggers. Both 'logger' and 'category'
         # are valid keywords. Also 'additivity' is one, having a logger
         # attached. We'll differenciate between the two further down.
@@ -143,6 +147,16 @@ sub _init {
                     &add_global_cspec(@$path[-1], $value);
 
                 }elsif ($key eq "filter"){
+                        # The bool filter needs all other filters already
+                        # initialized, defer its initialization
+                    print "Found entry @$path\n" if DEBUG;
+                    if($data->{$key}->{$path->[0]}->{value} eq
+                       "Log::Log4perl::Filter::Bool") {
+                        print "Bool filter ($path->[0])\n" if DEBUG;
+                        $bool_filters{$path->[0]}++;
+                        next;
+                    }
+
                     # That's either a filter sub or a filter class
                     print "filter value is @$path, $value\n" if DEBUG;
                     my $entry = compile_if_perl($value);
@@ -155,6 +169,14 @@ sub _init {
                 }
             }
         }
+    }
+
+        # Initialize bool filters (they need the other filters to be
+        # initialized to be able to compile their logic)
+    for my $name (keys %bool_filters) {
+        my $logic = $data->{filter}->{$name}->{logic}->{value};
+        die "No logic defined for bool filter $name" unless defined $logic;
+        Log::Log4perl::Filter::Bool->new(name => $name, logic => $logic);
     }
 
     for (@loggers) {

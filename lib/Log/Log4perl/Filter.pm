@@ -28,7 +28,7 @@ sub new {
         $self->{decider} = $action;
     } else {
         # it's a class
-        die "Class " . ref($action) . " ($action) not yet implemented";
+        die "Filter classes ($name/$action) not yet implemented";
     }
 
     $FILTERS_DEFINED{$name} = $self;
@@ -37,9 +37,13 @@ sub new {
 }
 
 ##################################################
-sub by_name {        # Get a filter object by name
+sub by_name {        # Get/Set a filter object by name
 ##################################################
-    my($name) = @_;
+    my($name, $value) = @_;
+
+    if(defined $value) {
+        $FILTERS_DEFINED{$name} = $value;
+    }
 
     if(exists $FILTERS_DEFINED{$name}) {
         return $FILTERS_DEFINED{$name};
@@ -59,6 +63,11 @@ sub decide {
 ##################################################
     my($self, %p) = @_;
 
+    print "Calling $self->{name}'s decider\n" if DEBUG;
+
+        # Force filter classes to define their own
+        # deciders. Exempt are only sub {..} deciders
+        # defined in the conf file.
     die "This is to be overridden by the filter" unless
          defined $self->{decider};
 
@@ -72,7 +81,12 @@ sub decide {
                      Log::Log4perl::JOIN_MSG_ARRAY_CHAR, @{$p{message}};
     print "\$_ is '$_'\n" if DEBUG;
 
-    return $self->{decider}->(%p);
+    my $decision = $self->{decider}->(%p);
+
+    print "$self->{name}'s decided: ", 
+          ($decision ? "yes" : "no"), "\n" if DEBUG;
+
+    return $decision;
 }
 
 1;

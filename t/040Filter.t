@@ -5,7 +5,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 4;
+use Test::More tests => 9;
 
 use Log::Log4perl;
 
@@ -66,6 +66,56 @@ $logger->warn("This passes the hurdle");
 
 like($buffer->buffer(), qr(passes the hurdle), "level-match let through");
 unlike($buffer->buffer(), qr(make it), "level-match block");
+
+Log::Log4perl->reset();
+$buffer->reset();
+
+#############################################
+# Filter combination with Filter::Bool
+#############################################
+Log::Log4perl->init(\ <<'EOT');
+    log4perl.logger = INFO, A1
+
+    log4perl.filter.Match1       = sub { /let this through/ }
+    log4perl.filter.Match2       = sub { /and that, too/ }
+    log4perl.filter.Match3       = sub { /suppress/ }
+    log4perl.filter.MyBool       = Log::Log4perl::Filter::Bool
+    log4perl.filter.MyBool.logic = !Match3 && (Match1 || Match2)
+
+    log4perl.appender.A1        = Log::Log4perl::Appender::TestBuffer
+    log4perl.appender.A1.Filter = MyBool
+    log4perl.appender.A1.layout = Log::Log4perl::Layout::SimpleLayout
+EOT
+
+$buffer = Log::Log4perl::Appender::TestBuffer->by_name("A1");
+
+    # Define a logger
+$logger = Log::Log4perl->get_logger("Some.Where");
+
+    # Let through
+$logger->info("let this through");
+like($buffer->buffer(), qr(let this through), "Boolean 1");
+$buffer->buffer("");
+
+    # Block
+$logger->info("suppress, let this through");
+is($buffer->buffer(), "", "Boolean 2");
+$buffer->buffer("");
+
+    # Let through
+$logger->info("and that, too");
+like($buffer->buffer(), qr(and that, too), "Boolean 3");
+$buffer->buffer("");
+
+    # Block
+$logger->info("and that, too suppress");
+is($buffer->buffer(), "", "Boolean 4");
+$buffer->buffer("");
+
+    # Block
+$logger->info("let this through - and that, too - suppress");
+is($buffer->buffer(), "", "Boolean 5");
+$buffer->buffer("");
 
 Log::Log4perl->reset();
 $buffer->reset();

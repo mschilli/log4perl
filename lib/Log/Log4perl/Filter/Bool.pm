@@ -23,11 +23,16 @@ sub new {
 ##################################################
      my ($class, %options) = @_;
 
-     my $self = {};
+     my $self = { %options };
      
      bless $self, $class;
      
+     print "Compiling '$options{logic}'\n" if DEBUG;
+
      $self->compile_logic($options{logic});
+
+         # Register with the global filter registry
+     Log::Log4perl::Filter::by_name($options{name}, $self);
 
      return $self;
 }
@@ -42,6 +47,9 @@ sub decide {
 
 ##################################################
 # Helper for compile_logic
+# (most of this and the following code has been
+# lifted from Damian Conway's Parse::RecDescent 
+# presentation)
 sub Parse::RecDescent::rpn {
 ##################################################
     for( my $i=1; $i<@_-1; $i+=2 ) {
@@ -74,7 +82,7 @@ sub compile_logic {
 
     my $parse = Parse::RecDescent->new($grammar);
 
-    die "Internal error: Faulty grammar" unless $parse;
+    die "Internal error: Faulty grammar: $grammar" unless $parse;
 
     my $upn = $parse->expr($logic);
 
@@ -95,19 +103,13 @@ sub compile_logic {
         }elsif(/!/) {
             push @commands, CMD_NOT;
         }else{
-            my $app = Log::Log4perl::Appender::ByName($_);
+            my $filter = Log::Log4perl::Filter::by_name($_);
  
-            if(!$app) {
-                warn "No appender defined for $_";
-                return undef;
+            if(!$filter) {
+                die "No filter defined for $_";
             }
 
-            if(! $app->can("filter")) {
-                warn "Appender $_ doesn't have a 'filter()'";
-                return undef;
-            }
-
-            push @commands, $app;
+            push @commands, $filter;
         }
     }
 
