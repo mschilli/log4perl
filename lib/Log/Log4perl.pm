@@ -300,7 +300,13 @@ Log::Log4perl - Log4j implementation for Perl
     
     --or--
     
+        # Check config every 10 secs
     Log::Log4perl::init_and_watch('/etc/log4perl.conf',10);
+
+    --or--
+
+        # Reload config on 'SIGHUP'
+    Log::Log4perl::init_and_watch('/etc/log4perl.conf', 'HUP');
     
     --then--
     
@@ -1255,6 +1261,29 @@ decision based upon these circumstantial facts.
 Check out L<Log::Log4perl::Filter> for detailed instructions 
 on how to use them.
 
+=head2 Performance
+
+Performance of Log::Log4perl calls obviously depend on a lot of things,
+but to give you a general idea, here's some rough numbers:
+
+On a Pentium 4 Linux box at 1.6 GHz, you'll get through
+
+=over 4
+
+=item *
+
+7,000 logged messages per second
+
+=item *
+
+100,000 suppressed log statements per second
+
+=back
+
+Numbers depend on the complexity of the Log::Log4perl configuration.
+For a more detailed benchmark test, check the C<docs/benchmark.results.txt> 
+document in the Log::Log4perl distribution.
+
 =head1 Cool Tricks
 
 =head2 Shortcuts
@@ -1315,6 +1344,51 @@ the following URL schemes: http, https, ftp, wais, gopher, or file (followed by 
 
 Don't use this feature with init_and_watch().
 
+=head2 Automatic reloading of changed configuration files
+
+Instead of just statically initializing Log::Log4perl via
+
+    Log::Log4perl->init($conf_file);
+
+there's a way to have Log::Log4perl periodically check for changes
+in the configuration and reload it if necessary:
+
+    Log::Log4perl->init($conf_file, $delay);
+
+In this mode, Log::Log4perl will examine the configuration file 
+C<$conf_file> every C<$delay> seconds for changes via the file's
+last modification timestamp. If the file has been updated, it will
+be reloaded and replace the current Log::Log4perl configuration.
+
+The way this works is that with every logger function called 
+(debug(), is_debug(), etc.), Log::Log4perl will check if the delay 
+interval has expired. If so, it will run a -M file check on the 
+configuration file. If its timestamp has been modified, the current
+configuration will be dumped and new content of the file will be
+loaded.
+
+This convenience comes at a price, though: Calling time() with every
+logging function (even the ones that are "suppressed" (!)), will slow
+down all Log4perl calls by about 50%.
+
+To alleviate this performance a bit, init_and_watch() can be configured to
+listen for a Unix signal to reload the configuration instead:
+
+    Log::Log4perl->init($conf_file, 'HUP');
+
+This will set up a signal handler for SIGHUP and reload the configuration
+if the application receives this signal, e.g. via the C<kill> command:
+
+    kill -HUP pid
+
+where C<pid> is the process ID of the application. Expect no miracles, though:
+This will get you only about 60% of the normal Log4perl speed.
+
+One thing to watch out for: If the configuration file contains a syntax
+or other fatal error, a running application will stop with C<die> if
+this damaged configuration will be loaded during runtime, triggered
+either by a signal or if the delay period expired and the change is 
+detected. This behaviour might change in the future.
 
 =head2 Perl Hooks in the Configuration File
 
