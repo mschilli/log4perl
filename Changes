@@ -12,6 +12,8 @@ Revision history for Log::Log4perl
            was propagated to. If the message was suppressed due to level
            constraints, undef is returned. Updated manpage (new section
            "return values").
+    * (kg) User-defined conversion specifiers for PatternLayout in
+           configuration file and as C API
 
 0.26 11/11/2002
     * (kg) enabled %l (was missing from PatternLayout::define)
