@@ -2,9 +2,12 @@
 Revision history for Log::Log4perl
 ##################################################
 
-0.25 09/29/2002
+0.25 10/01/2002
     * (ms) backwards-compatibility with perl 5.00503
     * (ms) added system-wide threshold, fixed java-app thresholds
+    * (kg) Nested configuration structures for appenders like L::D::Jabber
+    * (ms) ::Log4perl::Appender::threshold() accepts strings or integer
+           levels (as submitted by Aaron Straup Cope <asc@vineyard.net>)
 
 0.24 09/26/2002
     * (kg) Fix for init_and_watch and test cases

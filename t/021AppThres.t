@@ -29,8 +29,8 @@ my $app0 = Log::Log4perl::Appender->new(
 my $app1 = Log::Log4perl::Appender->new(
     "Log::Log4perl::TestBuffer");
 
-$app0->threshold($ERROR);
-$app1->threshold($WARN);
+$app0->threshold($ERROR);  # As integer value
+$app1->threshold("WARN");  # As string
 
 $log0->add_appender($app0);
 $log1->add_appender($app1);

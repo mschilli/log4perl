@@ -83,7 +83,10 @@ sub threshold { # Set/Get the appender threshold
     print "Setting threshold to $level\n" if DEBUG;
 
     if(defined $level) {
-        $self->{level} = $level;
+        # Checking for \d makes for a faster regex(p)
+        $self->{level} = ($level =~ /^(\d+)$/) ? $level :
+            # Take advantage of &to_priority's error reporting
+            Log::Log4perl::Level::to_priority($level);
     }
 
     return $self->{level};
