@@ -493,6 +493,9 @@ Here's the list of appender modules currently available via C<Log::Dispatch>:
        Log::Dispatch::Syslog
        Log::Dispatch::Tk (by Dominique Dumont)
 
+For additional information on appenders, please check the
+L<Log::Log4perl::Appender> manual page.
+
 Now let's assume that we want to go overboard and log C<info()> or
 higher prioritized messages in the C<My::Category> class
 to both STDOUT and to a log file, say C</tmp/my.log>.
