@@ -294,6 +294,11 @@ Log::Log4perl::Appender::DBI - implements appending to a DB
     $logger->warn( $custid, 'big problem!!', $ip_addr );
 
 
+=head1 CAVEAT
+
+This is a very young module and there are a lot of variations
+in setups with different databases and connection methods,
+so make sure you test thoroughly!  Any feedback is welcome!
 
 =head1 DESCRIPTION
 
