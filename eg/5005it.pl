@@ -36,7 +36,7 @@ sub process_file {
     }
 
         # Replace 'our' variables
-    $data =~ s/^our\s+[\$%@][\w_]+/rep_our($&)/meg;
+    $data =~ s/^our\s+[\$%@][\w_]+.*/rep_our($&)/meg;
 
         # Replace 'use 5.006' lines
     $data =~ s/^use\s+5\.006/use 5.00503/mg;
@@ -61,7 +61,14 @@ sub rep_our {
         $USEVARS_DONE = 1;
     }
 
-    $line =~ s/^our\s+//;
+    if($line =~ /=/) {
+            # There's an assignment, just skip the 'our'
+        $line =~ s/^our\s+//;
+    } else {
+            # There's nothing, just get rid of the entire line
+        $line = "\n";
+    }
+
     $out .= $line;
     return $out;
 }
