@@ -3,6 +3,8 @@ Revision history for Log::Log4perl
 ##################################################
 
 0.28 (not officially released yet)
+    * (ms) Added message output filters:
+           log({filter => \&filter, value => $value})
     * (kg) t/024WarnDieCarp was assuming / as directory separator, failed
            on Win32
     * (kg) implemented JavaMaps for NTEventLogAppender, SyslogAppender
