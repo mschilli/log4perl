@@ -2,7 +2,7 @@
  Revision history for Log::Log4perl
 ##################################################
 
-0.43 (not yet released)
+0.43 (03/22/2004)
     * (ms) Applied patch by Markus Peter <warp@spin.de> for 'pipe'
            mode in Log::Log4perl::Appender::File
     * (ms) Added composite appender Log::Log4perl::Appender::Limit to
