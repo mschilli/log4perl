@@ -236,7 +236,7 @@ sub check_buffer {
 
         my $dbh = $self->{dbh};
 
-        if (! $dbh->{AutoCommit}) {
+        if ($dbh && ! $dbh->{AutoCommit}) {
             $dbh->commit;
         }
     }
@@ -494,7 +494,20 @@ to truncate long messages before they get to the INSERT statement.
 
 If you want to get your dbh from some place in particular, like
 maybe a pool, subclass and override _init() and/or create_statement(), 
-q.v.
+for instance 
+
+    sub _init {
+        ; #no-op
+    }
+    sub create_statement {
+        my ($self, $stmt) = @_;
+    
+        $stmt || croak "Log4perl: sql not set in ".__PACKAGE__;
+    
+        return My::Connections->getConnection->prepare($stmt) 
+            || croak "Log4perl: DBI->prepare failed $DBI::errstr\n$stmt";
+    }
+
 
 =head1 LIFE OF CONNECTIONS
 
@@ -507,7 +520,8 @@ It also holds one connection open for every appender, which might
 be too many.
 
 Even if you're not using that, the database handle may go stale.  If you're
-not using Apache::DBI this may cause you problems.
+not using Apache::DBI this may cause you problems.  See CHANGING
+DB CONNECTIONS above.
 
 =head1 AUTHOR
 
