@@ -11,6 +11,8 @@ Revision history for Log::Log4perl
     * (ms) Added performance improvements suggested by
       Kyle R. Burton <mortis@voicenet.com>. is_debug/is_info/etc.
       are now precompiled, similar to the debug/info/etc. methods.
+    * (ms) Added a fix to have is_debug()/is_info()/etc. pay
+      attention to on-the-fly config file changes via init_and_watch().
 
 0.35 06/21/2003
     * (kg) got rid of warnings during make test in 014ConfErrs.t
