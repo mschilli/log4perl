@@ -952,6 +952,98 @@ Cool Tricks
     get used to the concept. So, let's keep this one fairly hidden in the
     man page (congrats on reading this far :).
 
+  Stealth loggers
+    Sometimes, people are lazy. If you're whipping up a 50-line script and
+    want the comfort of Log::Log4perl without having the burden of carrying
+    a separate log4perl.conf file or a 5-liner defining that you want to
+    append your log statements to a file, you can use the following
+    features:
+
+        use Log::Log4perl qw(:easy);
+
+        Log::Log4perl->easy_init( { level   => $DEBUG,
+                                    file    => ">>test.log" } );
+
+            # Logs to test.log via stealth logger
+        DEBUG("Debug this!");
+        INFO("Info this!");
+        WARN("Warn this!");
+        ERROR("Error this!");
+
+        some_function();
+
+        sub some_function {
+                # Same here
+            FATAL("Fatal this!");
+        }
+
+    In ":easy" mode, "Log::Log4perl" will instantiate a *stealth logger*
+    named $_default_logger and import it into the current package. Also, it
+    will introduce the convenience functions "DEBUG()", "INFO()", "WARN()",
+    "ERROR()" and "FATAL()" into the package namespace, which take arguments
+    and forward them to "_default_logger->debug()",
+    "_default_logger->info()" and so on.
+
+    The "easy_init" method can be called with a single level value to create
+    a STDERR appender and a root logger as in
+
+        Log::Log4perl->easy_init($DEBUG);
+
+    or, as shown below (and in the example above) with a reference to a
+    hash, specifying values for "level" (the logger's priority), "file" (the
+    appender's data sink), "category" (the logger's category> and "layout"
+    for the appender's pattern layout specification. All key-value pairs are
+    optional, they default to $DEBUG for "level", "STDERR" for "file", ""
+    (root category) for "category" and "%d %m%n" for "layout":
+
+        Log::Log4perl->easy_init( { level    => $DEBUG,
+                                    file     => ">test.log",
+                                    category => "Bar::Twix",
+                                    layout   => '%F{1}-%L-%M: %m%n' } );
+
+    The "file" parameter takes file names preceded by ">" (overwrite) and
+    ">>" (append) as arguments. This will cause "Log::Dispatch::File"
+    appenders to be created behind the scenes. Also the keywords "STDOUT"
+    and "STDERR" (no ">" or ">>") are recognized, which will utilize and
+    configure "Log::Dispatch::Screen" appropriately.
+
+    The stealth loggers can be used in different packages, you just need to
+    make sure you're calling the "use" function in every package you're
+    using "Log::Log4perl"'s easy services:
+
+        package Bar::Twix;
+        use Log::Log4perl qw(:easy);
+        sub eat { DEBUG("Twix mjam"); }
+
+        package Bar::Mars;
+        use Log::Log4perl qw(:easy);
+        sub eat { INFO("Mars mjam"); }
+
+        package main;
+
+        use Log::Log4perl qw(:easy);
+
+        Log::Log4perl->easy_init( { level    => $DEBUG,
+                                    file     => ">>test.log",
+                                    category => "Bar::Twix",
+                                    layout   => '%F{1}-%L-%M: %m%n' },
+                                  { level    => $DEBUG,
+                                    file     => "STDOUT",
+                                    category => "Bar::Mars",
+                                    layout   => '%m%n' },
+                                );
+        Bar::Twix::eat();
+        Bar::Mars::eat();
+
+    As shown above, "easy_init()" will take any number of different logger
+    definitions as hash references.
+
+    When using Log::Log4perl in easy mode, please make sure you understand
+    the implications of "Pitfalls with Categories". By the way, these
+    convenience functions perform exactly as fast as the standard
+    Log::Log4perl logger methods, there's *no* performance penalty
+    whatsoever.
+
 How about Log::Dispatch::Config?
     Tatsuhiko Miyagawa's "Log::Dispatch::Config" is a very clever simplified
     logger implementation, covering some of the *log4j* functionality. Among
@@ -1072,15 +1164,16 @@ SEE ALSO
 
 AUTHORS
     Please send bug reports or requests for enhancements to the authors via
-    our log4perl development mailing list:
+    our
 
+        MAILING LIST (questions, bug reports, suggestions/patches): 
         log4perl-devel@lists.sourceforge.net
 
-        Log::Log4perl Authors: 
+        Authors (please contact them via the list above, not directly)
         Mike Schilli <m@perlmeister.com>
         Kevin Goess <cpan@goess.org>
 
-        Log::Log4perl Contributors:
+        Contributors:
         Chris R. Donnelly <cdonnelly@digitalmotorworks.com>
         Erik Selberg <erik@selberg.com>
         Aaron Straup Cope <asc@vineyard.net>

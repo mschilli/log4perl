@@ -3,6 +3,7 @@ Revision history for Log::Log4perl
 ##################################################
 
 0.26 10/07/2002
+    * (ms) Stealth loggers and documentation
 
 0.25 10/06/2002
     * (ms) backwards-compatibility with perl 5.00503

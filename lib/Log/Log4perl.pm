@@ -140,23 +140,60 @@ sub init_and_watch {
 ##################################################
 sub easy_init { # Initialize the root logger with a screen appender
 ##################################################
-    my($class, $level) = @_;
+    my($class, @args) = @_;
 
     # Did somebody call us with Log::Log4perl::easy_init()?
-    if(!defined $level and $class =~ /^\d+$/) {
-        $level = $class;
+    if(ref($class) or $class =~ /^\d+$/) {
+        unshift @args, $class;
     }
 
-    $level = $DEBUG unless defined $level;
+    my @loggers = ();
 
-    my $app = Log::Log4perl::Appender->new("Log::Dispatch::Screen");
-    my $layout = Log::Log4perl::Layout::PatternLayout->new(
-                     "%d %p> %F{1}:%L %M - %m%n");
-    $app->layout($layout);
+    my %default = ( level    => $DEBUG,
+                    file     => "STDERR",
+                    category => "",
+                    layout   => "%d %m%n",
+                  );
 
-    my $logger = Log::Log4perl->get_logger("");
-    $logger->level($level);
-    $logger->add_appender($app);
+    if(!@args) {
+        push @loggers, \%default;
+    } else {
+        for my $arg (@args) {
+            if($arg =~ /^\d+$/) {
+                my %logger = (%default, level => $arg);
+                push @loggers, \%logger;
+            } elsif(ref($arg) eq "HASH") {
+                my %logger = (%default, %$arg);
+                push @loggers, \%logger;
+            }
+        }
+    }
+
+    for my $logger (@loggers) {
+
+        my $app;
+
+        if($logger->{file} =~ /^stderr$/i) {
+            $app = Log::Log4perl::Appender->new("Log::Dispatch::Screen");
+        } elsif($logger->{file} =~ /^stdout$/i) {
+            $app = Log::Log4perl::Appender->new("Log::Dispatch::Screen",
+                                                stderr => 0);
+        } elsif($logger->{file} =~ /^(>)?(>)?/) {
+            my $mode = ($2 ? "append" : "write");
+            $logger->{file} =~ s/>+//g;
+            $app = Log::Log4perl::Appender->new("Log::Dispatch::File",
+                filename => $logger->{file},
+                mode     => $mode);
+        }
+
+        my $layout = Log::Log4perl::Layout::PatternLayout->new(
+                                                        $logger->{layout});
+        $app->layout($layout);
+
+        my $log = Log::Log4perl->get_logger($logger->{category});
+        $log->level($logger->{level});
+        $log->add_appender($app);
+    }
 }
 
 ##################################################
@@ -1187,11 +1224,110 @@ This will dump something like
     2002/08/04 11:43:09 ERROR> script.pl:16 main::function - This will get logged.
 
 to the screen. While this has been proven to work well familiarizing people
-with C<Log::Logperl> slowly, effectively avoiding to clobber them over the head with a 
+with C<Log::Logperl> slowly, effectively avoiding to clobber them over the 
+head with a 
 plethora of different knobs to fiddle with (categories, appenders, levels, 
 layout), the overall mission of C<Log::Log4perl> is to let people use
 categories right from the start to get used to the concept. So, let's keep
 this one fairly hidden in the man page (congrats on reading this far :).
+
+=head2 Stealth loggers
+
+Sometimes, people are lazy. If you're whipping up a 50-line script and want 
+the comfort of Log::Log4perl without having the burden of carrying a
+separate log4perl.conf file or a 5-liner defining that you want to append
+your log statements to a file, you can use the following features:
+
+    use Log::Log4perl qw(:easy);
+
+    Log::Log4perl->easy_init( { level   => $DEBUG,
+                                file    => ">>test.log" } );
+
+        # Logs to test.log via stealth logger
+    DEBUG("Debug this!");
+    INFO("Info this!");
+    WARN("Warn this!");
+    ERROR("Error this!");
+
+    some_function();
+
+    sub some_function {
+            # Same here
+        FATAL("Fatal this!");
+    }
+
+In C<:easy> mode, C<Log::Log4perl> will instantiate a I<stealth logger>
+named C<$_default_logger> and import it into the current package. Also,
+it will introduce the
+convenience functions C<DEBUG()>, C<INFO()>, C<WARN()>, 
+C<ERROR()> and C<FATAL()> into the package namespace,
+which take arguments and forward them to C<_default_logger-E<gt>debug()>,
+C<_default_logger-E<gt>info()> and so on.
+
+The C<easy_init> method can be called with a single level value to
+create a STDERR appender and a root logger as in
+
+    Log::Log4perl->easy_init($DEBUG);
+
+or, as shown below (and in the example above) 
+with a reference to a hash, specifying values
+for C<level> (the logger's priority), C<file> (the appender's data sink),
+C<category> (the logger's category> and C<layout> for the appender's 
+pattern layout specification.
+All key-value pairs are optional, they 
+default to C<$DEBUG> for C<level>, C<STDERR> for C<file>,
+C<""> (root category) for C<category> and 
+C<%d %m%n> for C<layout>:
+
+    Log::Log4perl->easy_init( { level    => $DEBUG,
+                                file     => ">test.log",
+                                category => "Bar::Twix",
+                                layout   => '%F{1}-%L-%M: %m%n' } );
+
+The C<file> parameter takes file names preceded by C<"E<gt>">
+(overwrite) and C<"E<gt>E<gt>"> (append) as arguments. This will
+cause C<Log::Dispatch::File> appenders to be created behind the scenes.
+Also the keywords C<STDOUT> and C<STDERR> (no C<E<gt>> or C<E<gt>E<gt>>)
+are recognized, which will utilize and configure
+C<Log::Dispatch::Screen> appropriately.
+
+The stealth loggers can be used in different packages, you just need to make
+sure you're calling the "use" function in every package you're using
+C<Log::Log4perl>'s easy services:
+
+    package Bar::Twix;
+    use Log::Log4perl qw(:easy);
+    sub eat { DEBUG("Twix mjam"); }
+
+    package Bar::Mars;
+    use Log::Log4perl qw(:easy);
+    sub eat { INFO("Mars mjam"); }
+
+    package main;
+
+    use Log::Log4perl qw(:easy);
+
+    Log::Log4perl->easy_init( { level    => $DEBUG,
+                                file     => ">>test.log",
+                                category => "Bar::Twix",
+                                layout   => '%F{1}-%L-%M: %m%n' },
+                              { level    => $DEBUG,
+                                file     => "STDOUT",
+                                category => "Bar::Mars",
+                                layout   => '%m%n' },
+                            );
+    Bar::Twix::eat();
+    Bar::Mars::eat();
+
+As shown above, C<easy_init()> will take any number of different logger 
+definitions as hash references.
+
+When using Log::Log4perl in easy mode, 
+please make sure you understand the implications of 
+L</"Pitfalls with Categories">.
+By the way, these convenience functions perform exactly as fast as the 
+standard Log::Log4perl logger methods, there's I<no> performance penalty
+whatsoever.
 
 =head1 How about Log::Dispatch::Config?
 
@@ -1347,15 +1483,16 @@ L<Log::Log4perl::JavaMap|Log::Log4perl::JavaMap>
 =head1 AUTHORS
 
 Please send bug reports or requests for enhancements to the authors via 
-our log4perl development mailing list: 
+our
 
+    MAILING LIST (questions, bug reports, suggestions/patches): 
     log4perl-devel@lists.sourceforge.net
 
-    Log::Log4perl Authors: 
+    Authors (please contact them via the list above, not directly)
     Mike Schilli <m@perlmeister.com>
     Kevin Goess <cpan@goess.org>
 
-    Log::Log4perl Contributors:
+    Contributors:
     Chris R. Donnelly <cdonnelly@digitalmotorworks.com>
     Erik Selberg <erik@selberg.com>
     Aaron Straup Cope <asc@vineyard.net>

@@ -9,7 +9,8 @@ use Log::Log4perl qw(:easy);
 my $TMP_FILE = "t/tmp/easy";
 $TMP_FILE = "tmp/easy" if ! -d "t";
 
-BEGIN { plan tests => 4 }
+BEGIN { plan tests => 5 }
+
 END   { unlink $TMP_FILE;
         close IN;
       }
@@ -37,3 +38,45 @@ my $stderr = readstderr();
 ok($stderr !~ /don't/);
 ok($stderr, 'm#this we want#');
 ok($stderr, 'm#this also#');
+
+############################################################
+# Advanced easy setup
+############################################################
+Log::Log4perl->reset();
+close IN;
+    # Reopen stderr
+open STDERR, ">&1";
+unlink $TMP_FILE;
+
+package Bar::Twix;
+use Log::Log4perl qw(:easy);
+sub crunch { DEBUG("Twix Not shown"); 
+             ERROR("Twix mjam"); }
+
+package Bar::Mars;
+use Log::Log4perl qw(:easy);
+sub crunch { ERROR("Mars mjam"); 
+             INFO("Mars not shown"); }
+package main;
+
+Log::Log4perl->easy_init(
+         { level    => $INFO,
+           category => "Bar::Twix",
+           file     => ">>$TMP_FILE",
+           layout   => '%m%n',
+         },
+         { level    => $WARN,
+           category => "Bar::Mars",
+           file     => ">>$TMP_FILE",
+           layout   => '%F{1}-%L-%M: %m%n',
+         },
+);
+
+Bar::Mars::crunch();
+Bar::Twix::crunch();
+
+open FILE, "<$TMP_FILE" or die "Cannot open $TMP_FILE";
+my $data = join '', <FILE>;
+close FILE;
+
+ok($data, "020Easy.t-58-Bar::Mars::crunch: Mars mjam\nTwix mjam\n");
