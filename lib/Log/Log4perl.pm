@@ -1892,7 +1892,7 @@ which itself depends on C<Attribute-Handlers> and
 C<Params-Validate>. And a lot of other modules, that's the reason
 why we're now shipping Log::Log4perl with its own standard appenders
 and only if you wish to use additional ones, you'll have to go through
-the grueling C<Log::Dispatch> installation process.
+the C<Log::Dispatch> installation process.
 
 Log::Log4perl needs C<Test::Simple>, C<Test::Harness> and C<File::Spec>, 
 but they already come with fairly recent versions of perl.
