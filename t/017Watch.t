@@ -125,7 +125,7 @@ open (LOG, $testfile) or die "can't open $testfile $!";
 close LOG;
 $log = join('',@log);
 
-is($log, "INFO - info message\nDEBUG animal.dog - 2nd debug message\nINFO  animal.dog - 2nd info message\nINFO  animal.dog - 2nd info message again\nINFO - 3rd info message\n");
+is($log, "INFO - info message\nDEBUG animal.dog - 2nd debug message\nINFO  animal.dog - 2nd info message\nINFO  animal.dog - 2nd info message again\nINFO - 3rd info message\n", "after reload");
 
 BEGIN {plan tests => 17};
 
