@@ -42,7 +42,7 @@ Log::Log4perl->init("$EG_DIR/log4j-manual-3.conf");
 $logger = Log::Log4perl->get_logger("foo");
 $logger->debug("Gurgel");
 
+ok(Log::Log4perl::Appender::TestBuffer->by_name("stdout")->buffer(), 
+   'm#^\S+\s+\[N/A\] \(\S+?:\d+\) - Gurgel$#'); 
 ok(Log::Log4perl::Appender::TestBuffer->by_name("R")->buffer(), 
-    'm#^\S+\s+N/A \'foo\' - Gurgel\n#'); 
-ok(Log::Log4perl::Appender::TestBuffer->by_name("R")->buffer(), 
-    'm#^\S+\s+N/A \'foo\' - Gurgel\n$#'); 
+    'm#^\S+\s+N/A \'foo\' - Gurgel$#'); 
