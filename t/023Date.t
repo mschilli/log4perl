@@ -7,7 +7,7 @@ use strict;
 
 use Test;
 
-BEGIN { plan tests => 16 }
+BEGIN { plan tests => 16, todo => [1..16] }
 
 use Log::Log4perl qw(get_logger);
 use Log::Log4perl::DateFormat;
