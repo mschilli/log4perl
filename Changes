@@ -2,7 +2,7 @@
 Revision history for Log::Log4perl
 ##################################################
 
-0.22 8/08/2002
+0.22 8/17/2002
     * Threshold settings of appenders: 
         $appender->threshold($ERROR);
         log4j.appender.A.Threshold = ERROR
