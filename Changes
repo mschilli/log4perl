@@ -2,6 +2,10 @@
 Revision history for Log::Log4perl
 ##################################################
 
+0.41 (not yet released)
+    * (ms) Applied documentation update for Synchronized appender, suggested
+      by David Viner E<lt>dviner@yahoo-inc.comE<gt>
+
 0.40 (11/11/2003)
     * (ms) perl 5.005_03 fix for l4p::Appender::Synchronized
     * (ms) Fixed a bug in 0.39 (thanks to James King for finding) which
