@@ -117,6 +117,12 @@ will return a reference to an array of configuration text lines.
 This will typically be used by the C<parse()> method to process the 
 input.
 
+=item C<< parse >>
+
+Virtual method, needs to be defined by the derived class.
+
+=back
+
 =head2 Parser requirements
 
 =over 4
