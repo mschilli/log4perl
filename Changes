@@ -12,6 +12,8 @@ Revision history for Log::Log4perl
     * (ms) Added basic substitution to PropertyConfigurator. Now you can
       define variables (like in "name=value") and subsequent patterns
       of "${name}" will be replaced by "value" in the configuration file.
+    * (kg) Followed Mike's lead and added variable substitution to the 
+      DOMConfigurator.
     * (ms) Added Log::Log4perl::Appender::Socket as a simple Socket
       appender featuring connection recovery.
 
