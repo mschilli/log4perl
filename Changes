@@ -6,6 +6,11 @@
     * (ms) added filename() method to L4P::Appender::File as suggested 
            by Lee Carmichael <lecar_red@yahoo.com>
     * (ms) added RRDs appender Log::Log4perl::Appender::RRDs and testcases
+    * (ms) fixed Log::Log4perl::Appender to check if a an appender package
+           has already been loaded and skip 'require' in this case. 
+           Packages injected via Class::Prototyped caused an error with this.
+    * (ms) Extended the FAQ's "How can I writing my own appender?" on
+           how to dynamically create new appenders via Class::Prototyped.
 
 0.43 (03/22/2004)
     * (ms) Applied patch by Markus Peter <warp@spin.de> for 'pipe'
