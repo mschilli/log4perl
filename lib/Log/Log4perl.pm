@@ -835,6 +835,13 @@ http://www.vipan.com/htdocs/log4jhelp.html
 
 =back
 
+=head1 CONTACT
+
+Please send bugs reports or requests for enhancements to the authors via 
+our 
+
+    Mailing list <log4perl-devel@lists.sourceforge.net>
+
 =head1 AUTHORS
 
     Mike Schilli, <m@perlmeister.com>
