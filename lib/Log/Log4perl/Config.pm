@@ -16,7 +16,9 @@ use Log::Log4perl::Config::Watch;
 
 use constant _INTERNAL_DEBUG => 0;
 
-our $CONFIG_FILE_READS = 0;
+our $CONFIG_FILE_READS       = 0;
+our $CONFIG_INTEGRITY_CHECK  = 1;
+our $CONFIG_INTEGRITY_ERROR  = undef;
 
 # How to map lib4j levels to Log::Dispatch levels
 my @LEVEL_MAP_A = qw(
@@ -269,6 +271,24 @@ sub _init {
 
     #now we're done, set up all the output methods (e.g. ->debug('...'))
     Log::Log4perl::Logger::reset_all_output_methods();
+
+    #Run a sanity test on the config not disabled
+    if($Log::Log4perl::Config::CONFIG_INTEGRITY_CHECK and
+       !config_is_sane()) {
+        warn "Log::Log4perl configuration looks suspicious: ",
+             "$CONFIG_INTEGRITY_ERROR";
+    }
+}
+
+##################################################
+sub config_is_sane {
+##################################################
+    if(scalar keys %Log::Log4perl::Logger::APPENDER_BY_NAME == 0) {
+        $CONFIG_INTEGRITY_ERROR = "No appenders defined";
+        return 0;
+    }
+
+    return 1;
 }
 
 ##################################################
