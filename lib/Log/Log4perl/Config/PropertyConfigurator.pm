@@ -28,7 +28,8 @@ sub parse {
         }
         if(my($key, $val) = /(\S+?)\s*=\s*(.*)/) {
             $val =~ s/\s+$//;
-            $val = eval_if_perl($val) if $key !~ /\.(cspec\.)|warp_message/;
+            $val = eval_if_perl($val) if 
+                $key !~ /\.(cspec\.)|warp_message|filter/;
             $key = unlog4j($key);
             my $how_deep = 0;
             my $ptr = $data;
