@@ -42,8 +42,8 @@ sub process_file {
     $data =~ s/^use\s+5\.006/use 5.00503/mg;
 
         # Delete 'no/use warnings;'
-    $data =~ s/^\s*use warnings;//mg;
-    $data =~ s/^\s*no warnings;//mg;
+    $data =~ s/^\s*use warnings;/ \n/mg;
+    $data =~ s/^\s*no warnings;/ \n/mg;
 
         # 5.00503 can't handle constants that start with a _
     $data =~ s/_INTERNAL_DEBUG/INTERNAL_DEBUG/g;
