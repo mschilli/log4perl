@@ -13,7 +13,7 @@ use Log::Log4perl::Appender;
 
 use constant DEBUG => 1;
 
-our $VERSION = '0.36';
+our $VERSION = '0.37';
 
    # set this to '1' if you're using a wrapper
    # around Log::Log4perl
@@ -1263,20 +1263,25 @@ on how to use them.
 
 =head2 Performance
 
-Performance of Log::Log4perl calls obviously depend on a lot of things,
+The performance of Log::Log4perl calls obviously depends on a lot of things.
 but to give you a general idea, here's some rough numbers:
 
-On a Pentium 4 Linux box at 1.6 GHz, you'll get through
+On a Pentium 4 Linux box at 2.4 GHz, you'll get through
 
 =over 4
 
 =item *
 
-7,000 logged messages per second
+500,000 suppressed log statements per second
 
 =item *
 
-100,000 suppressed log statements per second
+30,000 logged messages per second (using an in-memory appender)
+
+=item *
+
+init_and_watch delay mode: 300,000 suppressed, 30,000 logged.
+init_and_watch signal mode: 450,000 suppressed, 30,000 logged.
 
 =back
 
@@ -1368,11 +1373,12 @@ configuration will be dumped and new content of the file will be
 loaded.
 
 This convenience comes at a price, though: Calling time() with every
-logging function (even the ones that are "suppressed" (!)), will slow
-down all Log4perl calls by about 50%.
+logging function call, especially the ones that are "suppressed" (!), 
+will slow down these Log4perl calls by about 40%.
 
-To alleviate this performance a bit, init_and_watch() can be configured to
-listen for a Unix signal to reload the configuration instead:
+To alleviate this performance hit a bit, C<init_and_watch()> 
+can be configured to listen for a Unix signal to reload the 
+configuration instead:
 
     Log::Log4perl->init($conf_file, 'HUP');
 
@@ -1381,8 +1387,9 @@ if the application receives this signal, e.g. via the C<kill> command:
 
     kill -HUP pid
 
-where C<pid> is the process ID of the application. Expect no miracles, though:
-This will get you only about 60% of the normal Log4perl speed.
+where C<pid> is the process ID of the application. This will bring you back
+to about 85% of Log::Log4perl's normal execution speed for suppressed
+statements. For details, check out L<"Performance">.
 
 One thing to watch out for: If the configuration file contains a syntax
 or other fatal error, a running application will stop with C<die> if
