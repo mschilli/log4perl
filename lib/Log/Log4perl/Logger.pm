@@ -561,6 +561,25 @@ sub add_appender {
 }
 
 ##################################################
+sub remove_appender {
+##################################################
+    my($self, $appender_name, $dont_reset_all) = @_;
+
+    my %appender_names = map { $_ => 1 } @{$self->{appender_names}};
+    
+    if(!exists $appender_names{$appender_name}) {
+        die "No such appender: $appender_name";
+    }
+
+    delete $appender_names{$appender_name};
+    $self->{num_appenders}--;
+    $self->{appender_names} = [sort keys %appender_names];
+
+    &reset_all_output_methods
+                unless $dont_reset_all; 
+}
+
+##################################################
 sub has_appenders {
 ##################################################
     my($self) = @_;
