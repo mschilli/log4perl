@@ -51,7 +51,7 @@ $log0->level($DEBUG);
 my $app0 = Log::Log4perl::Appender->new(
     "Log::Log4perl::TestBuffer");
 my $layout = Log::Log4perl::Layout::PatternLayout->new(
-    "File: %F Line number: %L package: %C");
+    "File: %F{1} Line number: %L package: %C");
 $app0->layout($layout);
 $log0->add_appender($app0);
 
