@@ -385,14 +385,11 @@ are used, their attempt to C<render()> your layout will result in something
 like "ARRAY(0x841d8dc)" in your logs.  More information on C<filter_message>
 is in Log::Log4perl::Appender.)
 
-
-In your insert SQL you can mix up
-'?' placeholders with conversion specifiers (%c, %p, etc) as you see 
-fit--the logger 
-will match the question marks to params you've defined in the config 
-file and populate the rest with values from your arrayref.  If there
-are more '?' placeholders than there are values in your message, it will
-use undef for the rest.  For instance, 
+In your insert SQL you can mix up '?' placeholders with conversion specifiers 
+(%c, %p, etc) as you see fit--the logger will match the question marks to 
+params you've defined in the config file and populate the rest with values 
+from your list.  If there are more '?' placeholders than there are values in 
+your message, it will use undef for the rest.  For instance, 
 
 	log4j.appender.DBAppndr.sql =                 \
 	   insert into log4perltest                   \
