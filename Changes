@@ -4,14 +4,18 @@ Revision history for Log::Log4perl
 
 TODO:
 
-* need level validation on Logger::level() 
+* I wonder if it might not be a mistake to have the base level be '0', 
+  might be safer to make it '1', less chance of those false-but-is-defined errors
+  I think that's what log4j uses
+* Should we canonicalize on a level is a string and a priority is an int?  
+  might make maintenance easier
+
 * test cases should use platform independend directory separator 
   (Mac's pre-OSX ':'?)
-* can we parse multiple appenders for a category? e.g.
-        log4j.category.a.b = WARN, console, logfile
 
 Kevin:
-* Create new module negotiating between Java-style config files
+DONE need level validation on Logger::level() 
+DONE Create new module negotiating between Java-style config files
   and perl-style appenders
 * Module for reading XML-style config files
 DONE (is gone) redo level_str() hack
@@ -42,6 +46,15 @@ DONE Define default if there's no layout:
 * Thread safety
 
 ##################################################
+
+0.13 07/09/2002
+* in the config files, 'debug' is not a level, 'DEBUG' is
+* expanded the layouts so that we can add subclassess, added SimpleLayout, 
+  note that api usage changes 
+  -$logger->layout('buf',"The message is here: %m");
+  +$logger->layout(new Log::Log4perl::Layout::PatternLayout('buf',"The message is here: %m"));
+* did benchmarks, see doc/benchmark*, t/013Bench.t
+* further tweaked errors for bad configuration, added a test for those
 
 0.12 07/08/2002
     * Log::Log4perl::Logger->get_logger now accessible via 

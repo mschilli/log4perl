@@ -9,7 +9,7 @@ use warnings;
 use Log::Log4perl::Logger;
 use Log::Log4perl::Config;
 
-our $VERSION = '0.12';
+our $VERSION = '0.13';
 
 ##################################################
 sub new {
