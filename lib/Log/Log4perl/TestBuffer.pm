@@ -69,7 +69,11 @@ sub DESTROY {
 
     return unless defined $self;
 
-    delete $POPULATION{$self->name};
+    #this delete() along with &reset() above was causing
+    #Attempt to free unreferenced scalar at 
+    #blib/lib/Log/Log4perl/TestBuffer.pm line 69.
+
+    #delete $POPULATION{$self->name};
 }
 
 ##################################################
