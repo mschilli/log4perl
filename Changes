@@ -2,6 +2,10 @@
 Revision history for Log::Log4perl
 ##################################################
 
+0.32 (not yet released)
+    * (ms) 0.31 had a Win32 test suite glitch, replaced getpwuid() 
+           (not implemented) by stat() for Safe test.
+
 0.31 05/08/2003
     * (kg) fixed bug Appender::DBI where it was consuming the message
            array before other appenders could get to it
