@@ -48,6 +48,7 @@ t/024WarnDieCarp.t
 t/025CustLevels.t
 t/026FileApp.t
 t/027Watch2.t
+t/028Additivity.t
 t/deeper1.expected
 t/deeper6.expected
 t/deeper7.expected
