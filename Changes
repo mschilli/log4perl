@@ -12,6 +12,7 @@ Revision history for Log::Log4perl
     * Added new logdie/logwarn/error_warn/error_die/logcarp/
       logcluck/logcroak/logconfess functions written by 
       Erik Selberg <erik@selberg.com>
+    * Added PatternLayout documentation
 
 0.22 8/17/2002
     * Threshold settings of appenders: 
