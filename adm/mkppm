@@ -147,16 +147,18 @@ sub ppm_make {
 
     my $ppm = PPM::Make->new(os   => "", 
                              arch => "",
+                             vs   => 1,
                             );
     $ppm->make_ppm();
 
-    my $ppd_file = "$mod_dir.ppd";
+    my $ppd_file = glob "$mod_dir-*.ppd";
+    my $tar_file = glob "$mod_dir-*.tar.gz";
 
     fix_ppd($ppd_file);
 
-    copy($ppd_file, "../$PPM_DIR") or die "Cannot copy $ppd_file";
-    copy("$mod_dir.tar.gz", "../$PPM_DIR") or 
-        die "Cannot copy $mod_dir.tar.gz";
+    copy($ppd_file, "../$PPM_DIR/$mod_dir.ppd") or die "Cannot copy $ppd_file";
+    copy("$tar_file", "../$PPM_DIR/$mod_dir.tar.gz") or 
+        die "Cannot copy $tar_file";
 
     chdir ".." or LOGDIE("Cannot chdir to ..");
 
@@ -173,8 +175,7 @@ sub fix_ppd {
 
     open FILE, "<$ppd_file" or die "Cannot open $ppd_file";
     my $data = join '', <FILE>;
-    $data =~ s/^.*?Test-More.*?\n//mg;
-    $data =~ s/^.*?Test-Simple.*?\n//mg;
+    $data =~ s/-\d+\.\d+//g;
     close FILE;
 
     open FILE, ">$ppd_file" or die "Cannot open $ppd_file";
