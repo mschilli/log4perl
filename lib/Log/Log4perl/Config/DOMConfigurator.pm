@@ -11,10 +11,6 @@ package Log::Log4perl::Config::DOMConfigurator;
 # user defined levels? see below
 # OK make sure 2nd test is using log4perl constructs, not log4j
 # handle new filter stuff
-#note <?xml version="1.0"?> <!DOCTYPE memories SYSTEM "memory.dtd">
-#<memories>
-#   <memory tapeid="23412">
-#      <subdat
 
 use XML::DOM;
 use Log::Log4perl::Level;
@@ -26,6 +22,14 @@ our $VERSION = 0.03;
 
 our $APPENDER_TAG = qr/((log4j|log4perl):)?appender/;
 
+#can't use ValParser here because we're using namespaces? 
+#doesn't seem to work - kg 3/2003 
+our $PARSER_CLASS = 'XML::DOM::Parser';
+
+our $LOG4J_PREFIX = 'log4j';
+our $LOG4PERL_PREFIX = 'log4perl';
+    
+
 #poor man's export
 *eval_if_perl = \&Log::Log4perl::Config::eval_if_perl;
 *unlog4j      = \&Log::Log4perl::Config::unlog4j;
@@ -35,14 +39,14 @@ our $APPENDER_TAG = qr/((log4j|log4perl):)?appender/;
 sub parse {
     my ($text) = @_;
 
-    my $parser = new XML::DOM::Parser;
+    my $parser = $PARSER_CLASS->new;
     my $doc = $parser->parse (join('',@$text));
 
 
     my $l4p_tree = {};
     
-    my $config = $doc->getElementsByTagName('log4j:configuration')->item(0)||
-                 $doc->getElementsByTagName('log4perl:configuration')->item(0);
+    my $config = $doc->getElementsByTagName("$LOG4J_PREFIX:configuration")->item(0)||
+                 $doc->getElementsByTagName("$LOG4PERL_PREFIX:configuration")->item(0);
 
     my $threshold = uc($config->getAttribute('threshold'));
     if ($threshold) {
@@ -240,7 +244,7 @@ sub parse_appender {
 
             my $value;
 
-        }elsif ($tag_name =~ /(log4perl:)?layout/){
+        }elsif ($tag_name =~ /($LOG4PERL_PREFIX:)?layout/){
             $l4p_branch->{layout} = parse_layout($child);
 
         }elsif ($tag_name eq 'filter'){
@@ -397,9 +401,13 @@ __END__
 
 =head1 NAME
 
-Log::Log4perl::Config::DOMConfigurator - reads xml
+Log::Log4perl::Config::DOMConfigurator - reads xml config files
 
 =head1 SYNOPSIS
+
+    --------------------------
+    --using the log4j DTD--
+    --------------------------
 
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
@@ -426,42 +434,260 @@ Log::Log4perl::Config::DOMConfigurator - reads xml
    </root>
 
    </log4j:configuration>
+   
+   
+   
+   --------------------------
+   --using the log4perl DTD--
+   --------------------------
+   
+   <?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE log4perl:configuration SYSTEM "log4perl.dtd">
+
+    <log4perl:configuration xmlns:log4perl="http://log4perl.sourceforge.net/"
+        threshold="debug" oneMessagePerAppender="true">
+
+    <log4perl:appender name="jabbender" class="Log::Dispatch::Jabber">
+
+            <param-nested name="login">
+                   <param name="hostname" value="a.jabber.server"/>
+                   <param name="password" value="12345"/>
+                   <param name="port"     value="5222"/>
+                   <param name="resource" value="logger"/>
+                   <param name="username" value="bobjones"/>
+            </param-nested>
+
+            <param name="to" value="bob@a.jabber.server"/>
+
+            <param-text name="to">
+                  mary@another.jabber.server
+            </param-text>
+
+            <log4perl:layout class="org.apache.log4j.PatternLayout">
+                <param name="ConversionPattern" value = "%K xx %G %U"/>
+                <cspec name="K">
+                    sub { return sprintf "%1x", $$}
+                </cspec>
+                <cspec name="G">
+                    sub {return 'thisistheGcspec'}
+                </cspec>
+            </log4perl:layout>
+    </log4perl:appender>
+
+    <log4perl:appender name="DBAppndr2" class="Log::Log4perl::Appender::DBI">
+              <param name="warp_message" value="0"/>
+              <param name="datasource" value="DBI:CSV:f_dir=t/tmp"/>
+              <param name="bufferSize" value="2"/>
+              <param name="password" value="sub { $ENV{PWD} }"/>
+              <param name="username" value="bobjones"/>
+
+              <param-text name="sql">
+                  INSERT INTO log4perltest
+                            (loglevel, message, shortcaller, thingid,
+                            category, pkg, runtime1, runtime2)
+                  VALUES
+                             (?,?,?,?,?,?,?,?)
+              </param-text>
+
+               <param-nested name="params">
+                    <param name="1" value="%p"/>
+                    <param name="3" value="%5.5l"/>
+                    <param name="5" value="%c"/>
+                    <param name="6" value="%C"/>
+               </param-nested>
+
+               <layout class="Log::Log4perl::Layout::NoopLayout"/>
+    </log4perl:appender>
+
+    <category name="animal.dog">
+               <priority value="info"/>
+               <appender-ref ref="jabbender"/>
+               <appender-ref ref="DBAppndr2"/>
+    </category>
+
+    <category name="plant">
+            <priority value="debug"/>
+            <appender-ref ref="DBAppndr2"/>
+    </category>
+
+    <PatternLayout>
+        <cspec name="U"><![CDATA[
+            sub {
+                return "UID $< GID $(";
+            }
+        ]]></cspec>
+    </PatternLayout>
+
+    </log4perl:configuration>
+    
 
 
 
 =head1 DESCRIPTION
 
-This parses an XML file that conforms to the log4j.dtd, q.v.  It currently
-does B<not> handle any of the log4perl extensions we've been coming 
-up with, but that should hopefully follow shortly.
+This module implements an XML config, complementing the properties-style
+config described elsewhere.
 
-You can handle an xml config just like you would a properties config but 
-if the data starts with an xml declaration C<<\?xml ...> then it gets 
-parsed by this DOMConfigurator instead of the PropertiesConfigurator.
+=head1 WHY
 
-Note that you need XML::DOM installed.
+"Why would I want my config in XML?" you ask.  Well, there are a couple
+reasons you might want to.  Maybe you have a personal preference
+for XML.  Maybe you manage your config with other tools that have an
+affinity for XML, like XML-aware editors or automated config
+generators.  Or maybe (and this is the big one) you don't like
+having to run your application just to check the syntax of your
+config file.
 
-The code is brazenly modeled on log4j's DOMConfigurator class, (by 
-Christopher Taylor, Ceki Gülcü and Anders Kristensen) and any
-perceived similarity is not coincidental.
+By using an XML config and referencing a DTD, you can use a namespace-aware
+validating parser to see if your XML config at least follows the rules set 
+in the DTD. 
+
+=head1 HOW
+
+To reference a DTD, drop this in after the <?xml...> declaration
+in your config file:
+
+    <!DOCTYPE log4perl:configuration SYSTEM "log4perl.dtd">
+
+That tells the parser to validate your config against the DTD in
+"log4perl.dtd", which is available in the xml/ directory of
+the log4perl distribution.  Note that you'll also need to grab
+the log4j-1.2.dtd from there as well, since the it's included
+by log4perl.dtd.
+
+Namespace-aware validating parsers are not the norm in Perl.  
+But the Xerces project 
+(http://xml.apache.org/xerces-c/index.html --lots of binaries available, 
+even rpm's)  does provide just such a parser
+that you can use like this:
+
+    StdInParse -ns -v < my-log4perl-config.xml
+
+This module itself does not use a validating parser, the obvious
+one XML::DOM::ValParser doesn't seem to handle namespaces.
+
+=head1 WHY TWO DTDs
+
+The log4j DTD is from the log4j project, they designed it to 
+handle their needs.  log4perl has added some extensions to the 
+original log4j functionality which needed some extensions to the
+log4j DTD.  If you aren't using these features then you can validate
+your config against the log4j dtd and know that you're using
+unadulterated log4j config tags.   
+
+The features added by the log4perl dtd are:
+
+=over 4
+
+=item 1 oneMessagePerAppender global setting
+
+    log4perl.oneMessagePerAppender=1
+
+=item 2 globally defined user conversion specifiers
+
+    log4perl.PatternLayout.cspec.G=sub { return "UID $< GID $("; }
+
+=item 3 appender-local custom conversion specifiers
+
+     log4j.appender.appndr1.layout.cspec.K = sub {return sprintf "%1x", $$ }
+
+=item 4 nested options
+
+     log4j.appender.jabbender          = Log::Dispatch::Jabber
+     #(note how these are nested under 'login')
+     log4j.appender.jabbender.login.hostname = a.jabber.server
+     log4j.appender.jabbender.login.port     = 5222
+     log4j.appender.jabbender.login.username = bobjones
+
+=item 5 the new filter stuff!! (TBD)
+
+=back
+
+
+So we needed to extend the log4j dtd to cover these additions.
+Now I could have just taken a 'steal this code' approach and mixed
+parts of the log4j dtd into a log4perl dtd, but that would be
+cut-n-paste programming.  So I've used namespaces and
+
+=over 4
+
+=item * 
+
+replaced three elements:
+
+=over 4
+
+=item <log4perl:configuration>
+
+handles #1) and accepts <PatternLayout>
+
+=item  <log4perl:appender> 
+
+accepts <param-nested> and <param-text>
+
+=item <log4perl:layout> 
+
+accepts custom cspecs for #3)
+
+=back
+
+=item * 
+
+added a <param-nested> element (complementing the <param> element)
+    to handle #4)
+
+=item * 
+
+added a root <PatternLayout> element to handle #2)
+
+=item * 
+
+added <param-text> which lets you put things like perl code
+    into escaped CDATA between the tags, so you don't have to worry
+    about escaping characters and quotes
+
+=item * 
+
+added <cspec>
+
+=back
+
+See the examples up in the L<"SYNOPSIS"> for how all that gets used.
+
+=head1 WHY NAMESPACES
+
+I liked the idea of using the log4j DTD I<in situ>, so I used namespaces
+to extend it.  If you really don't like having to type <log4perl:appender>
+instead of just <appender>, you can make your own DTD combining
+the two DTDs and getting rid of the namespace prefixes.  Then you can
+validate against that, and log4perl should accept it just fine.
+
+=head1 REQUIRES
+
+To use this module you need XML::DOM installed.  
+
+To use the log4perl.dtd, you'll have to reference it in your XML config,
+and you'll also need to note that log4perl.dtd references the 
+log4j dtd as "log4j-1.2.dtd", so your validator needs to be able
+to find that file as well.  If you don't like having to schlep two
+files around, feel free
+to dump the contents of "log4j-1.2.dtd" into your "log4perl.dtd" file.
 
 =head1 CAVEATS
 
-It is still (version 0.02 Jan-2002) very fresh, alpha software, please 
-check it out thoroughly before use and let me know if you find
-any problems.
-
 You can't mix a multiple param-nesteds with the same name, I'm going to
-leave that for now, there's no need for a list of data structures
+leave that for now, there's presently no need for a list of structs
 in the config.
 
-=head2 CHANGES
+=head1 CHANGES
 
 0.03 2/26/2003 Added support for log4perl extensions to the log4j dtd
 
 =head1 SEE ALSO
 
-t/038XML-DOM1.t for examples
+t/038XML-DOM1.t, t/039XML-DOM2.t for examples
+
+xml/log4perl.dtd, xml/log4j-1.2.dtd
 
 Log::Log4perl::Config
 
@@ -472,5 +698,10 @@ Log::Log4perl::Config::LDAPConfigurator (coming soon!)
 =head1 AUTHOR
 
 Kevin Goess, <cpan@goess.org> Jan-2003
+
+The code is brazenly modeled on log4j's DOMConfigurator class, (by 
+Christopher Taylor, Ceki Gülcü and Anders Kristensen) and any
+perceived similarity is not coincidental.
+
 
 =cut
