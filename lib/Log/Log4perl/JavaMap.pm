@@ -52,6 +52,15 @@ Log::Log4perl::JavaMap - maps java log4j appenders to Log::Dispatch classes
 
 =head1 SYNOPSIS
 
+     ###############################
+     log4j.appender.FileAppndr1        = org.apache.log4j.FileAppender
+     log4j.appender.FileAppndr1.File   = /var/log/onetime.log
+     log4j.appender.FileAppndr1.Append = false
+
+     log4j.appender.FileAppndr1.layout = org.apache.log4j.PatternLayout
+     log4j.appender.FileAppndr1.layout.ConversionPattern=%d %4r [%t] %-5p %c %x - %m%n
+     ###############################
+
 
 =head1 DESCRIPTION
 
