@@ -210,19 +210,21 @@ Log::Log4perl::Level - Predefined log levels
 
 =head1 SYNOPSIS
 
-  use Log::Log4perl::Level;
+  use Log::Log4perl;
 
   print $ERROR, "\n";
 
 =head1 DESCRIPTION
 
-This package simply exports a predefined set of I<Log4perl> log
+The C<Log::Log4perl::Level> package is included if you say
+
+    use Log::Log4perl;
+
+so there's usually no need to call it explicitely.
+It simply exports a predefined set of I<Log4perl> log
 levels into the caller's name space. It is used internally by 
-C<Log::Log4perl>. After
-
-    use Log::Log4perl::Level;
-
-the following scalars are defined in the caller's namespace:
+C<Log::Log4perl>. The following scalars are defined in the 
+caller's namespace:
 
     $OFF
     $FATAL
