@@ -18,6 +18,14 @@ BEGIN {
     }
 };
 
+my $WORK_DIR = "tmp";
+if(-d "t") {
+    $WORK_DIR = File::Spec->catfile(qw(t tmp));
+}
+unless (-e "$WORK_DIR"){
+    mkdir("$WORK_DIR", 0755) || die "can't create $WORK_DIR ($!)";
+}
+
 my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
 my $today = sprintf("%4.4d%2.2d%2.2d",$year+1900, $mon+1, $mday);
 use vars qw($logfile1 $logfile6 $logfile7);

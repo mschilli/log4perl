@@ -17,6 +17,14 @@ BEGIN {
     }
 };
 
+my $WORK_DIR = "tmp";
+if(-d "t") {
+    $WORK_DIR = File::Spec->catfile(qw(t tmp));
+}
+unless (-e "$WORK_DIR"){
+    mkdir("$WORK_DIR", 0755) || die "can't create $WORK_DIR ($!)";
+}
+
 my $testfile = File::Spec->catfile(qw(t tmp test26.log));
 
 BEGIN {plan tests => 5}

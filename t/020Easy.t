@@ -1,11 +1,19 @@
-# Tests for the lazy man's logger with easy_init()
+# Tests for the lazy man:s logger with easy_init()
 
 use warnings;
 use strict;
 
-use Test;
+use Test::More;
 use Log::Log4perl qw(:easy);
 use File::Spec;
+
+my $WORK_DIR = "tmp";
+if(-d "t") {
+    $WORK_DIR = File::Spec->catfile(qw(t tmp));
+}
+unless (-e "$WORK_DIR"){
+    mkdir("$WORK_DIR", 0755) || die "can't create $WORK_DIR ($!)";
+}
 
 my $TMP_FILE = File::Spec->catfile(qw(t tmp easy));
 $TMP_FILE = "tmp/easy" if ! -d "t";
@@ -36,9 +44,9 @@ $log->error("And this also");
 my $stderr = readstderr();
 #print "STDERR='$stderr'\n";
 
-ok($stderr !~ /don't/);
-ok($stderr =~ /this we want/);
-ok($stderr =~ /this also/);
+unlike($stderr, qr/don't/);
+like($stderr, qr/this we want/);
+like($stderr, qr/this also/);
 
 ############################################################
 # Advanced easy setup
@@ -80,7 +88,7 @@ open FILE, "<$TMP_FILE" or die "Cannot open $TMP_FILE";
 my $data = join '', <FILE>;
 close FILE;
 
-ok($data ,"020Easy.t-59-Bar::Mars::crunch: Mars mjam\nTwix mjam\n");
+is($data, "020Easy.t-67-Bar::Mars::crunch: Mars mjam\nTwix mjam\n");
 
 ############################################################
 # LOGDIE and LOGWARN
@@ -94,10 +102,10 @@ Log::Log4perl->easy_init($INFO);
 $log = get_logger();
 eval { LOGDIE("logdie"); };
 
-ok($@ ,'/logdie at .*?020Easy.t line 95/');
-ok(readstderr() =~ /^[\d:\/ ]+logdie$/);
+like($@, qr/logdie at .*?020Easy.t line 103/);
+like(readstderr(), qr/^[\d:\/ ]+logdie$/);
 
 LOGWARN("logwarn");
-ok(readstderr() =~ /logwarn/);
+like(readstderr(), qr/logwarn/);
 
 close IN;

@@ -7,6 +7,14 @@ use Test;
 use Log::Log4perl;
 use File::Spec;
 
+my $WORK_DIR = "tmp";
+if(-d "t") {
+    $WORK_DIR = File::Spec->catfile(qw(t tmp));
+}
+unless (-e "$WORK_DIR"){
+    mkdir("$WORK_DIR", 0755) || die "can't create $WORK_DIR ($!)";
+}
+
 my $TMP_FILE = File::Spec->catfile(qw(t tmp warnings));
 $TMP_FILE = "tmp/warnings" if ! -d "t";
 
