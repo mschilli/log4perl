@@ -77,6 +77,11 @@ is supposed to pass or block the message on a match (C<true> or C<false>).
 
 =head1 SEE ALSO
 
+L<Log::Log4perl::Filter>,
+L<Log::Log4perl::Filter::LevelMatch>,
+L<Log::Log4perl::Filter::LevelRange>,
+L<Log::Log4perl::Filter::Bool>
+
 =head1 AUTHOR
 
 Mike Schilli, E<lt>log4perl@perlmeister.comE<gt>, 2003

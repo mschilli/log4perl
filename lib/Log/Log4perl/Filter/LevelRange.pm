@@ -73,8 +73,10 @@ is supposed to pass or block the message (C<true> or C<false>).
 
 =head1 SEE ALSO
 
-Log::Log4perl::Filter, Log::Log4perl::Filter::LevelMatch,
-Log::Log4perl::Filter::StringMatch
+L<Log::Log4perl::Filter>,
+L<Log::Log4perl::Filter::LevelMatch>,
+L<Log::Log4perl::Filter::StringRange>,
+L<Log::Log4perl::Filter::Bool>
 
 =head1 AUTHOR
 

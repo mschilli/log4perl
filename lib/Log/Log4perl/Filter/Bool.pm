@@ -132,7 +132,48 @@ Log::Log4perl::Filter::Bool - Special filter to combine the results of others
     log4perl.appender.Screen.Filter = MyBool
     log4perl.appender.Screen.layout = Log::Log4perl::Layout::SimpleLayout
 
+=DESCRIPTION
+
+Sometimes, it's useful to combine the output of various filters to
+arrive at a log/no log decision. While Log4j, Log4perl's mother ship,
+chose to implement this feature as a filter chain, similar to Linux' IP chains,
+Log4perl tries a different approach. 
+
+Typically, filter results will not need to be passed along in chains but 
+combined in a programmatic manner using boolean logic. "Log if
+this filter says 'yes' and that filter says 'no'" 
+is a fairly common requirement but hard to implement as a chain.
+
+C<Log::Log4perl::Filter::Bool> is a special predefined custom filter
+for Log4perl which combines the results of other custom filters 
+in arbitrary ways, using boolean expressions:
+
+    log4perl.logger = WARN, AppWarn, AppError
+
+    log4perl.filter.Match1       = sub { /let this through/ }
+    log4perl.filter.Match2       = sub { /and that, too/ }
+    log4perl.filter.MyBool       = Log::Log4perl::Filter::Bool
+    log4perl.filter.MyBool.logic = Match1 || Match2
+
+    log4perl.appender.Screen        = Log::Dispatch::Screen
+    log4perl.appender.Screen.Filter = MyBool
+    log4perl.appender.Screen.layout = Log::Log4perl::Layout::SimpleLayout
+
+C<Log::Log4perl::Filter::Bool>'s boolean expressions allow for combining
+different appenders by name using AND (&& or &), OR (|| or |) and NOT (!) as
+logical expressions. Parentheses are used for grouping. Precedence follows
+standard Perl. Here's a bunch of examples:
+
+    Match1 && !Match2            # Match1 and not Match2
+    !(Match1 || Match2)          # Neither Match1 nor Match2
+    (Match1 && Match2) || Match3 # Both Match1 and Match2 or Match3
+
 =head1 SEE ALSO
+
+L<Log::Log4perl::Filter>,
+L<Log::Log4perl::Filter::LevelMatch>,
+L<Log::Log4perl::Filter::LevelRange>,
+L<Log::Log4perl::Filter::StringRange>
 
 =head1 AUTHOR
 

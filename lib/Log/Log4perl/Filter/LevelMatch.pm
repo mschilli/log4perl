@@ -70,8 +70,10 @@ on a match.
 
 =head1 SEE ALSO
 
-Log::Log4perl::Filter, Log::Log4perl::Filter::LevelRange,
-Log::Log4perl::Filter::StringMatch
+L<Log::Log4perl::Filter>,
+L<Log::Log4perl::Filter::LevelRange>,
+L<Log::Log4perl::Filter::StringRange>,
+L<Log::Log4perl::Filter::Bool>
 
 =head1 AUTHOR
 
