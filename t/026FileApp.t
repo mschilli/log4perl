@@ -168,3 +168,30 @@ for(qw(1 2)) {
 
     ok($content, "INFO - Shu-wa-chi!\n");
 }
+
+#########################################################
+# Check if switching over to a new file will work
+#########################################################
+$data = <<EOT;
+log4perl.category = INFO, FileAppndr1
+log4perl.appender.FileAppndr1          = Log::Log4perl::Appender::File
+log4perl.appender.FileAppndr1.filename = ${testfile}_1
+log4perl.appender.FileAppndr1.mode     = write
+log4perl.appender.FileAppndr1.layout   = Log::Log4perl::Layout::SimpleLayout
+EOT
+
+Log::Log4perl::init(\$data);
+$log = Log::Log4perl::get_logger("");
+$log->info("File1");
+
+my $app = Log::Log4perl->appenders()->{FileAppndr1};
+$app->file_switch("${testfile}_2");
+$log->info("File2");
+
+for(qw(1 2)) {
+    open FILE, "<${testfile}_$_" or die "Cannot open ${testfile}_$_";
+    $content = join '', <FILE>;
+    close FILE;
+
+    ok($content, "INFO - File$_\n");
+}

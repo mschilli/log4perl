@@ -9,6 +9,8 @@ Revision history for Log::Log4perl
       SimpleLayout. With the fix, composite appenders are now relaying
       messages unmodified to their delegates, which can then apply 
       any layout they desire.
+    * (ms) Added file_open(), file_close() and file_switch() to 
+      l4p::Appender::File
 
 0.39 (10/23/2003)
     * (kg) fixed bug in interaction between Logger::Level and Level::is_valid

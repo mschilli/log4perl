@@ -20,6 +20,19 @@ sub new {
     die "Mandatory parameter 'filename' missing" unless
         exists $self->{filename};
 
+    bless $self, $class;
+
+        # This will die() if it fails
+    $self->file_open();
+
+    return $self;
+}
+
+##################################################
+sub file_open {
+##################################################
+    my($self) = @_;
+
     my $arrows = ">";
 
     if($self->{mode} eq "append") {
@@ -32,10 +45,26 @@ sub new {
         die "Can't open $self->{filename} ($@)";
 
     $self->{fh} = $fh;
-
-    bless $self, $class;
 }
-    
+
+##################################################
+sub file_close {
+##################################################
+    my($self) = @_;
+
+    undef $self->{fh};
+}
+
+##################################################
+sub file_switch {
+##################################################
+    my($self, $new_filename) = @_;
+
+    $self->file_close();
+    $self->{filename} = $new_filename;
+    $self->file_open($new_filename);
+}
+
 ##################################################
 sub log {
 ##################################################
@@ -100,6 +129,10 @@ should terminate the message, it has to be added explicitely.
 
 Upon destruction of the object, the filehandle to access the
 file is flushed and closed.
+
+If you want to switch over to a different logfile, use the
+C<switch_file($newfile)> method which will first close the old
+file handle and then open a one to the new file specified.
 
 Design and implementation of this module has been greatly inspired by
 Dave Rolsky's C<Log::Dispatch> appender framework.
