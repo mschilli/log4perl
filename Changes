@@ -2,11 +2,12 @@
 Revision history for Log::Log4perl
 ##################################################
 
-0.26 10/07/2002
+0.26 10/28/2002
     * (kg) enabled %l (was missing from PatternLayout::define)
     * (kg) got rid of "Use of uninitialized value in join or string" message
           when some of $logger->debug(@array) when some of @array are undef 
     * (ms) Stealth loggers and documentation
+    * (kg) Better error message for case reported by Hai Wu
 
 0.25 10/06/2002
     * (ms) backwards-compatibility with perl 5.00503
@@ -269,6 +270,10 @@ TODO Kevin:
 
 TODO Mike:
 ##################################################
+    * Perl-way (-file => blah) creates conf-style or xml-style conf files 
+      (for transition).
+    * index.html on sourceforge should be part of CVS
+    * Release script should maintain old CPAN message on index.html
     * Turning on DEBUG in Logger.pm results in broken test cases and
       warnings
     * %20.30d
