@@ -377,6 +377,14 @@ sub appender_by_name {  # Get an appender by name
 }
 
 ##################################################
+sub eradicate_appender {  # Remove an appender from the system
+##################################################
+        # If someone calls L4p->... and not L4p::...
+    shift if $_[0] eq __PACKAGE__;
+    Log::Log4perl::Logger->eradicate_appender(@_);
+}
+
+##################################################
 sub infiltrate_lwp {  # 
 ##################################################
     no warnings qw(redefine);
@@ -2156,10 +2164,11 @@ It's also possible to remove appenders from a logger:
 will remove an appender, specified by name, from a given logger. 
 Please note that this does
 I<not> remove an appender from the system.
+
 To eradicate an appender from the system, 
-you need to call C<$logger-E<gt>remove_appender($appender_name)> on every 
-logger in the system using the appender (as defined in the configuration)
-and then stomp out the appender by calling its DESTROY method.
+you need to call C<Log::Log4perl-E<gt>eradicate_appender($appender_name)>
+which will first remove the appender from every logger in the system
+and then will delete all references Log4perl holds to it.
 
 =head1 How about Log::Dispatch::Config?
 

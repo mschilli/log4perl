@@ -563,12 +563,13 @@ sub add_appender {
 ##################################################
 sub remove_appender {
 ##################################################
-    my($self, $appender_name, $dont_reset_all) = @_;
+    my($self, $appender_name, $dont_reset_all, $sloppy) = @_;
 
     my %appender_names = map { $_ => 1 } @{$self->{appender_names}};
     
     if(!exists $appender_names{$appender_name}) {
-        die "No such appender: $appender_name";
+        die "No such appender: $appender_name" unless $sloppy;
+        return undef;
     }
 
     delete $appender_names{$appender_name};
@@ -577,6 +578,34 @@ sub remove_appender {
 
     &reset_all_output_methods
                 unless $dont_reset_all; 
+}
+
+##################################################
+sub eradicate_appender {
+##################################################
+        # If someone calls Logger->... and not Logger::...
+    shift if $_[0] eq __PACKAGE__;
+
+    my($appender_name, $dont_reset_all) = @_;
+
+    return 0 unless exists 
+        $APPENDER_BY_NAME{$appender_name};
+
+        # Remove the given appender from all loggers
+        # and delete all references to it, causing
+        # its DESTROY method to be called.
+    foreach my $logger (values %$LOGGERS_BY_NAME){
+        $logger->remove_appender($appender_name, 0, 1);
+    }
+        # Also remove it from the root logger
+    $ROOT_LOGGER->remove_appender($appender_name, 0, 1);
+    
+    delete $APPENDER_BY_NAME{$appender_name};
+
+    &reset_all_output_methods
+                unless $dont_reset_all; 
+
+    return 1;
 }
 
 ##################################################

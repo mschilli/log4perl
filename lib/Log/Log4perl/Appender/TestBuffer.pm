@@ -6,8 +6,9 @@ package Log::Log4perl::Appender::TestBuffer;
 # This is like having a Log::Log4perl::Appender::TestBuffer
 ##################################################
 
-our %POPULATION   = ();
-our $LOG_PRIORITY = 0;
+our %POPULATION       = ();
+our $LOG_PRIORITY     = 0;
+our $DESTROY_MESSAGES = "";
 
 ##################################################
 sub new {
@@ -67,12 +68,11 @@ sub DESTROY {
 ##################################################
     my($self) = @_;
 
-    return unless defined $self;
+    $DESTROY_MESSAGES .= __PACKAGE__ . " destroyed";
 
     #this delete() along with &reset() above was causing
     #Attempt to free unreferenced scalar at 
     #blib/lib/Log/Log4perl/TestBuffer.pm line 69.
-
     #delete $POPULATION{$self->name};
 }
 

@@ -7,8 +7,9 @@
            if the pm file is available in %INC, indicating that it has
            already been loaded. This fixes a problem when running L4p
            in a PAR binary.
-    * (ms) added remove_appender() method to Logger.pm, a test case and
-           documentation.
+    * (ms) added remove_appender() and eradicate_appender() method to 
+           Logger.pm, test cases and documentation on the main Log4perl 
+           page.
 
 0.50 (12/08/2004)
     * (ms) Added ':resurrect' source filter, which uncomments all lines
