@@ -16,8 +16,7 @@ use File::Spec;
 my $EG_DIR = "eg";
 $EG_DIR = "../eg" unless -d $EG_DIR;
 
-my $TMP_FILE = File::Spec->catfile(qw(t tmp warnings));
-$TMP_FILE = "tmp/warnings" if ! -d "t";
+my $TMP_FILE = File::Spec->catfile($EG_DIR, "warnings");
 
 ok(1, "Startup"); # If we made it this far, we are ok.
 
