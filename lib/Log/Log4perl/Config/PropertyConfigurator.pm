@@ -50,7 +50,6 @@ sub parse {
                     $ptr->{value} = [];
                     push (@{$ptr->{value}}, $temp);
                 }
-                print ref $ptr->{value},"\n";
                 push (@{$ptr->{value}}, $val);
             }else{
                 $ptr->{value} = $val;
