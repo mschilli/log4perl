@@ -688,9 +688,9 @@ INSTALLATION
 
 DEVELOPMENT
     `Log::Log4perl' is under heavy development. The latest CVS tarball can
-    be obtained from sourcforge, check `http://log4perl.sorceforge.net' for
-    details. Bug reports and feedback are always welcome, just email to the
-    authors.
+    be obtained from SourceForge, check `http://log4perl.sorceforge.net' for
+    details. Bug reports and feedback are always welcome, just email to our
+    mailing list shown in the CONTACT manpage.
 
 REFERENCES
     [1] Ceki Gülcü, "Short introduction to log4j",
@@ -701,13 +701,14 @@ REFERENCES
 
 CONTACT
     Please send bugs reports or requests for enhancements to the authors via
-    our
+    our log4perl development mailing list:
 
-        Mailing list <log4perl-devel@lists.sourceforge.net>
+    log4perl-devel@lists.sourceforge.net
 
 AUTHORS
-        Mike Schilli, <m@perlmeister.com>
-        Kevin Goess, <cpan@goess.org>
+    *   Mike Schilli, m@perlmeister.com
+
+    *   Kevin Goess, cpan@goess.org
 
 COPYRIGHT AND LICENSE
     Copyright 2002 by Mike Schilli <m@perlmeister.com> and Kevin Goess
