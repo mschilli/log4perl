@@ -1,0 +1,149 @@
+#!/usr/bin/perl
+###########################################
+# Build ppm balls for Log4perl and all of 
+# its dependencies
+# Mike Schilli, 2002 (m@perlmeister.com)
+###########################################
+use warnings;
+use strict;
+
+use LWP::Simple;
+use File::Basename;
+use File::Path;
+use File::Copy;
+use Archive::Tar;
+use Log::Log4perl qw(:easy);
+use PPM::Make;
+
+Log::Log4perl->easy_init($DEBUG);
+
+my $PPM_DIR  = "ppm";
+my $CPAN_DIR = "http://www.cpan.org/authors/id";
+my $TAR      = "/bin/tar";
+
+if(-d $PPM_DIR) {
+    rmtree $PPM_DIR or LOGDIE("Cannot delete $PPM_DIR");
+}
+
+mkdir $PPM_DIR, 0755 or LOGDIE("Cannot mkdir $PPM_DIR");
+
+doall("Log::Dispatch", "DROLSKY");
+doall("Params::Validate", "DROLSKY");
+ppm_make("Log::Log4perl", <../Log-Log4perl-*.tar.gz>);
+
+###########################################
+sub doall {
+###########################################
+    my($module, $id) = @_;
+
+    my $tarball = fetch_tarball($module, $id);
+    ppm_make($module, $tarball);
+}
+
+###########################################
+sub fetch_tarball {
+###########################################
+    my($module, $id) = @_;
+
+    LOGDIE("invalid id: $id") unless $id =~ /(.)(.)(.*)/;
+
+    DEBUG("Making $module ($id)");
+
+    my $author_dir = "$CPAN_DIR/$1/$1$2/$1$2$3";
+
+    DEBUG("Searching in $author_dir");
+
+    (my $mod_dir = $module) =~ s/::/-/g;
+
+    my $data = get $author_dir or LOGDIE("Cannot get $author_dir");
+    my $tarball  = undef;
+    my $max  = 0;
+
+    while($data =~ /($mod_dir-([\d.]+)\..*?)"/g) {
+        DEBUG("Found $1 on CPAN");
+        if($2 > $max) {
+            $tarball = $1;
+        }
+    }
+
+    LOGDIE("Cannot find latest version") unless defined $tarball;
+
+    my $file = basename($tarball);
+
+    INFO("Fetching $author_dir/$tarball");
+
+    my $rc = getstore("$author_dir/$tarball", $file) or 
+    LOGDIE("Cannot getstore $tarball");
+
+    LOGDIE("HTTP GET failed ($rc)") if $rc != 200;
+
+    DEBUG("$file stored ($rc)");
+
+    return $file;
+}
+
+###########################################
+sub ppm_make {
+###########################################
+    my($module, $file) = @_;
+
+    (my $mod_dir = $module) =~ s/::/-/g;
+
+    my @files = ();
+
+    open PIPE, "$TAR ztf $file |" or LOGDIE("Can't open $TAR");
+    while(<PIPE>) {
+        chomp;
+        push @files, $_;
+    }
+    close PIPE or LOGDIE("Can't untar $file");
+
+    DEBUG("Archive contains ", scalar @files, " files");
+
+    (my $topdir = $files[0]) =~ s#/.*##;
+
+    if(-d $topdir) {
+        rmtree $topdir or LOGDIE("Cannot delete $topdir");
+    }
+
+    DEBUG("Unpacking $file");
+
+    system("$TAR zxf $file") and LOGDIE("Cannot untar $file");
+
+    DEBUG("$topdir ready");
+
+    chdir $topdir or LOGDIE("Cannot chdir to $topdir");
+
+    my $ppm = PPM::Make->new(os => "MSWin32", 
+                             arch => ["blah", "foo"],
+                            );
+    $ppm->make_ppm();
+
+    my $ppd_file = "$mod_dir.ppd";
+
+    open FILE, "<$ppd_file" or die "Cannot open $ppd_file";
+
+    my $data = join '', <FILE>;
+
+    $data =~ s#<ARCHITECTURE\s+NAME=".*?"\s*/>
+              #<ARCHITECTURE NAME="MSWin32-x86-multi-thread-5.8" />
+              #x;
+    $data =~ s/^.*?Test-More.*?\n//mg;
+    $data =~ s/^.*?Test-Simple.*?\n//mg;
+    close FILE;
+
+    open FILE, ">$ppd_file" or die "Cannot open $ppd_file";
+    print FILE $data;
+    close FILE;
+
+    copy($ppd_file, "../$PPM_DIR") or die "Cannot copy $ppd_file";
+    copy("$mod_dir.tar.gz", "../$PPM_DIR") or 
+        die "Cannot copy $mod_dir.tar.gz";
+
+    chdir ".." or LOGDIE("Cannot chdir to ..");
+
+    rmtree $topdir or die "Can't delete $topdir";
+    unlink $file;
+
+    1;
+}
