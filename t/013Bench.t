@@ -65,6 +65,15 @@ $secondlevelcategory = Log::Log4perl->get_logger('patternlayout.foo.bar');
 print "Iterations: $count\n\n";
 
 
+print "Just is_debug/info/warn/error/fatal() methods: \n";
+$t = timeit $count, sub{my $v = $basecategory->is_debug();
+                        $v = $basecategory->is_info();
+                        $v = $basecategory->is_warn();
+                        $v = $basecategory->is_error();
+                        $v = $basecategory->is_fatal();
+                       };
+print timestr($t),"\n\n";
+
 print "no logging: \n";
 $t = timeit $count, sub{$basecategory->debug('debug message')};
 print timestr($t),"\n\n";
