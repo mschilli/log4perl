@@ -126,8 +126,9 @@ sub set_output_methods {
 
         foreach my $appender_name (@{$logger->{appender_names}}){
 
-                #only one message per appender, please
-            next if $seen{$appender_name} ++;
+                #only one message per appender, (configurable)
+            next if $seen{$appender_name} ++ && 
+                    $Log::Log4perl::one_message_per_appender;
 
             push (@appenders,     
                    [$appender_name,
