@@ -29,7 +29,8 @@ my $logger = Log::Log4perl->get_logger('cat1');
 #hmm, I wonder how portable this is, maybe check $^O first?
 use vars qw($OLDOUT); #for -w
 open(OLDOUT, ">&STDOUT");
-`touch $WORK_DIR/test1.log`;
+open (TOUCH, ">>$WORK_DIR/test1.log");# `touch $WORK_DIR/test1.log`;
+close TOUCH;
 open(STDOUT, ">$WORK_DIR/test1.log") || die "Can't redirect stdout $WORK_DIR/test1.log $!";
 select(STDOUT); $| = 1;     # make unbuffered
 

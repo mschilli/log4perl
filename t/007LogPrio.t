@@ -35,12 +35,12 @@ my $data = join '', <FILE>;
 close FILE;
 
 my $exp = <<EOT;
-t/007LogPrio.t 27 DEBUG N/A  - Gurgel
-t/007LogPrio.t 28 INFO N/A  - Gurgel
-t/007LogPrio.t 29 WARN N/A  - Gurgel
-t/007LogPrio.t 30 ERROR N/A  - Gurgel
-t/007LogPrio.t 31 FATAL N/A  - Gurgel
+t.007LogPrio.t 27 DEBUG N/A  - Gurgel
+t.007LogPrio.t 28 INFO N/A  - Gurgel
+t.007LogPrio.t 29 WARN N/A  - Gurgel
+t.007LogPrio.t 30 ERROR N/A  - Gurgel
+t.007LogPrio.t 31 FATAL N/A  - Gurgel
 EOT
 
 unlink $LOGFILE;
-ok($data, $exp);
+ok($data, "/$exp/");
