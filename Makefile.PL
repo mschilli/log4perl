@@ -40,7 +40,7 @@ WriteMakefile(
                            }, # e.g., Module::Name => 1.1
     ($] >= 5.005 ?    ## Add these new keywords supported since 5.005
       (ABSTRACT_FROM => 'lib/Log/Log4perl.pm', # retrieve abstract from module
-       AUTHOR     => 'Mike <m@perlmeister.com>') : ()),
+       AUTHOR     => 'Mike Schilli <m@perlmeister.com>') : ()),
     'LIBS'		=> [''], # e.g., '-lm'
     'DEFINE'		=> '', # e.g., '-DHAVE_SOMETHING'
 	# Insert -I. if you add *.h files later:
