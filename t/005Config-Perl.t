@@ -32,4 +32,4 @@ my $data = <FILE>;
 close FILE;
 
 unlink $LOGFILE;
-ok($data, "t/005Config-Perl.t 28 7 N/A  - Gurgel\n");
+ok($data, "t/005Config-Perl.t 28 DEBUG N/A  - Gurgel\n");

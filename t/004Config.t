@@ -28,8 +28,9 @@ Log::Log4perl::Config->init("$EG_DIR/log4j-manual-1.conf");
 my $logger = Log::Log4perl::Logger->get_logger("");
 $logger->debug("Gurgel");
 
-ok($Log::Dispatch::Buffer::POPULATION[0]->buffer() 
-   =~ m#^\d+\s+\[N/A\] 7      N/A - Gurgel$#); 
+
+ok($Log::Dispatch::Buffer::POPULATION[0]->buffer(), 
+   'm#^\d+\s+\[N/A\] DEBUG  N/A - Gurgel$#'); 
 #print "BUFFER= '", $Log::Dispatch::Buffer::POPULATION[0]->buffer(), "'\n";
 
 ######################################################################
@@ -43,6 +44,6 @@ $logger = Log::Log4perl::Logger->get_logger("foo");
 $logger->debug("Gurgel");
 
    # POPULATION[1] because it created another buffer behind our back
-ok($Log::Dispatch::Buffer::POPULATION[1]->buffer()
-    =~ m#^\d+\s+\[N/A\] 7      N/A - Gurgel$#); 
+ok($Log::Dispatch::Buffer::POPULATION[1]->buffer(),
+    'm#^\d+\s+\[N/A\] DEBUG  N/A - Gurgel$#'); 
 #print "BUFFER= '", $Log::Dispatch::Buffer::POPULATION[1]->buffer(), "'\n";
