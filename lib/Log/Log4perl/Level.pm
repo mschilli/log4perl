@@ -230,21 +230,19 @@ Log::Log4perl::Level - Predefined log levels
 
 =head1 SYNOPSIS
 
-  use Log::Log4perl;
+  use Log::Log4perl::Level;
+  print $ERROR, "\n";
 
+  # -- or --
+
+  use Log::Log4perl qw(:levels);
   print $ERROR, "\n";
 
 =head1 DESCRIPTION
 
-The C<Log::Log4perl::Level> package is included if you say
-
-    use Log::Log4perl;
-
-so there's usually no need to call it explicitely.
-It simply exports a predefined set of I<Log4perl> log
+C<Log::Log4perl::Level> simply exports a predefined set of I<Log4perl> log
 levels into the caller's name space. It is used internally by 
-C<Log::Log4perl>. The following scalars are defined in the 
-caller's namespace:
+C<Log::Log4perl>. The following scalars are defined:
 
     $OFF
     $FATAL
@@ -254,6 +252,14 @@ caller's namespace:
     $DEBUG
     $ALL
 
+C<Log::Log4perl> also exports these constants into the caller's namespace
+if you pull it in providing the C<:levels> tag:
+
+    use Log::Log4perl qw(:levels);
+
+This is the preferred way, there's usually no need to call 
+C<Log::Log4perl::Level> explicitely.
+
 The numerical values assigned to these constants are purely virtual,
 only used by Log::Log4perl internally and can change at any time,
 so please don't make any assumptions.
@@ -261,10 +267,10 @@ so please don't make any assumptions.
 If the caller wants to import these constants into a different namespace,
 it can be provided with the C<use> command:
 
-    use Log::Log4perl::Level qw(Level);
+    use Log::Log4perl::Level qw(MyNameSpace);
 
-After this C<$Level::ERROR>, C<$Level::INFO> etc. will be defined
-accordingly.
+After this C<$MyNameSpace::ERROR>, C<$MyNameSpace::INFO> etc. 
+will be defined accordingly.
 
 =head1 SEE ALSO
 
