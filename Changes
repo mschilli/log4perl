@@ -2,11 +2,8 @@
 Revision history for Log::Log4perl
 ##################################################
 
-0.30 (not officially released yet)
-    TODO: * objects passed via the config hash are stringified by Config.pm
-          * rename decide()?
-    DONE:
-    * (ms) Added Log4perl custom filters
+0.30 03/14/2003
+    * (ms) Added Log4perl custom filter logic and standard filter set
     * (kg) Added url support to init(), finally documenting it
     * (kg) Finished implementation of DOMConfigurator allowing xml configs.
     * (ms) Corrected DateFormat inconsistencies as reported by
@@ -306,6 +303,9 @@ Revision history for Log::Log4perl
 
 TODO (not assigned to anybody yet):
 ##################################################
+    * objects passed via the config hash are stringified by Config.pm
+      (requires a significant change on how to init via a hash ref,
+       something like a HashConfigurator class)
     * BasicConfigurator() vs. :easy, PropertyConfigurator()
     * get_logger() thread safety (two try to create it at the same time)
     * Thread safety with appenders, e.g. two threads calling the 
