@@ -213,24 +213,28 @@ Log::Log4perl::Level - Predefined log levels
   use Log::Log4perl::Level;
 
   print $ERROR, "\n";
-      # => "3"
 
 =head1 DESCRIPTION
 
 This package simply exports a predefined set of I<Log4perl> log
-levels to the caller's name space. After
+levels into the caller's name space. It is used internally by 
+C<Log::Log4perl. After
 
     use Log::Log4perl::Level;
 
-the following scalar are defined:
+the following scalars are defined in the caller's namespace:
 
-    $OFF    => 0
-    $FATAL  => 0
-    $ERROR  => 3
-    $WARN   => 4
-    $INFO   => 6
-    $DEBUG  => 7
-    $ALL    => 7
+    $OFF
+    $FATAL
+    $ERROR
+    $WARN
+    $INFO
+    $DEBUG
+    $ALL
+
+The numerical values assigned to these constants are purely virtual,
+only used by Log::Log4perl internally and can change at any time,
+so please don't make any assumptions.
 
 If the caller wants to import these constants into a different namespace,
 it can be provided with the C<use> command:
