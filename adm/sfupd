@@ -48,6 +48,7 @@ INFO "Logging in";
 
 my $sn = readin("sn", "mschilli", 0);
 my $pw = readin("pw", "", 1);
+print "\n";
 $agent->get($LOGIN_URL);
 $agent->form_number(4);
 $agent->field(form_loginname => $sn);
