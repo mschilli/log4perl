@@ -145,8 +145,9 @@ sub _init {
                     my $threshold = 
                        $data->{appender}->{$appname}->{Threshold}->{value};
                     if(defined $threshold) {
-                        $appender->threshold(
-                            $Log::Log4perl::Level::PRIORITY{$threshold});
+                            # Need to split into two lines because of CVS
+                        $appender->threshold($
+                            Log::Log4perl::Level::PRIORITY{$threshold});
                     }
                     add_layout_by_name($data, $appender, $appname);
                 } else {
