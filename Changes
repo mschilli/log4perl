@@ -3,6 +3,7 @@
 ##################################################
 
 0.51 (not yet released)
+    * (ms) Added umask option to file appender
     * (ms) Fix to L4p::Util::module::available() for Win32
            compliance by Roger Yager <roger.yager@eyestreet.com>
     * (ms) Added check to L4p::Util::module_available() returning true
