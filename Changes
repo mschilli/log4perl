@@ -2,6 +2,10 @@
  Revision history for Log::Log4perl
 ##################################################
 
+0.47 (06/20/2004)
+    * (ms) Fixed bug with initialized() -- checking once caused
+           subsequent calls to return true.
+
 0.46 (06/13/2004)
     * (ms) removed superfluous eval() in Log4perl.pm, reported anonymously
            on the CPAN bugtracker.
