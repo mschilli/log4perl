@@ -276,6 +276,7 @@ if not noted otherwise, written by Dave Rolsky:
        Log::Dispatch::Email::MailSendmail,
        Log::Dispatch::Email::MIMELite
        Log::Dispatch::File
+       Log::Dispatch::FileRotate (by Mark Pfeiffer)
        Log::Dispatch::Handle
        Log::Dispatch::Screen
        Log::Dispatch::Syslog

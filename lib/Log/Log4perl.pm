@@ -599,6 +599,7 @@ Here's the list of appender modules currently available via C<Log::Dispatch>:
        Log::Dispatch::Email::MailSendmail,
        Log::Dispatch::Email::MIMELite
        Log::Dispatch::File
+       Log::Dispatch::RollingFile (by Mark Pfeiffer)
        Log::Dispatch::Handle
        Log::Dispatch::Screen
        Log::Dispatch::Syslog
@@ -796,7 +797,7 @@ Third example:
     log4j.appender.stdout=org.apache.log4j.ConsoleAppender
     log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
     log4j.appender.stdout.layout.ConversionPattern=%5p [%t] (%F:%L) - %m%n
-    log4j.appender.R=org.apache.log4j.FileAppender
+    log4j.appender.R=org.apache.log4j.RollingFileAppender
     log4j.appender.R.File=example.log
     log4j.appender.R.layout=org.apache.log4j.PatternLayout
     log4j.appender.R.layout.ConversionPattern=%p %t %c - %m%n
@@ -805,8 +806,8 @@ The root logger defines two appenders here: C<stdout>, which uses
 C<org.apache.log4j.ConsoleAppender> (ultimately mapped by C<Log::Log4perl>
 to C<Log::Dispatch::Screen>) to write to the screen. And
 C<R>, a C<org.apache.log4j.RollingFileAppender> 
-(ultimately mapped by C<Log::Log4perl> to 
-C<Log::Dispatch::File> with the C<File> attribute specifying the
+(mapped by C<Log::Log4perl> to 
+C<Log::Dispatch::FileRotate> with the C<File> attribute specifying the
 log file.
 
 See L<Log::Log4perl::Config> for more examples and syntax explanations.
