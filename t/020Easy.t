@@ -18,7 +18,7 @@ unless (-e "$WORK_DIR"){
 my $TMP_FILE = File::Spec->catfile(qw(t tmp easy));
 $TMP_FILE = "tmp/easy" if ! -d "t";
 
-BEGIN { plan tests => 8 }
+BEGIN { plan tests => 9 }
 
 END   { unlink $TMP_FILE;
         close IN;
@@ -108,4 +108,24 @@ like(readstderr(), qr/^[\d:\/ ]+logdie$/);
 LOGWARN("logwarn");
 like(readstderr(), qr/logwarn/);
 
+############################################################
+# Test %T stack traces
+############################################################
+Log::Log4perl->easy_init({ level => $INFO, layout => "%T: %m%n"});
+
+sub foo {
+   bar();
+}
+
+sub bar {
+    my $log = get_logger();
+    $log->info("info!");
+}
+
+foo();
+like(readstderr(), qr(main::bar.*?main::foo));
+
+############################################################
+# Finally close
+############################################################
 close IN;
