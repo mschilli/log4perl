@@ -6,6 +6,7 @@ Revision history for Log::Log4perl
     * (ms) Updated FAQ with "Recipes of the Week"
     * (ms) Added Log::Log4perl::NDC (Nested Diagnostic Contexts) and
            Log::Log4perl::MDC (Mapped Diagnostic Contexts)
+    * (ms) LOGDIE and LOGWARN added to stealth loggers
 
 0.26 11/11/2002
     * (kg) enabled %l (was missing from PatternLayout::define)

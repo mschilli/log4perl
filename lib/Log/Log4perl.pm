@@ -81,6 +81,22 @@ sub import {
                 $logger->{$level}->($logger, @_, $level);
             };
         }
+
+            # Define LOGDIE, LOGWARN
+
+        *{"$caller_pkg\::LOGDIE"} = sub {
+            Log::Log4perl::Logger::init_warn() unless 
+                           $Log::Log4perl::Logger::INITIALIZED;
+            $logger->{FATAL}->($logger, @_, "FATAL");
+            CORE::die(Log::Log4perl::Logger::callerline(join '', @_));
+        };
+
+        *{"$caller_pkg\::LOGWARN"} = sub { 
+            Log::Log4perl::Logger::init_warn() unless 
+                           $Log::Log4perl::Logger::INITIALIZED;
+            $logger->{WARN}->($logger, @_, "WARN");
+            CORE::warn(Log::Log4perl::Logger::callerline(join '', @_));
+        };
     }
 
     if(exists $tags{':nowarn'}) {
@@ -1329,9 +1345,24 @@ C<Log::Log4perl>'s easy services:
 As shown above, C<easy_init()> will take any number of different logger 
 definitions as hash references.
 
-When using Log::Log4perl in easy mode, 
+Also, stealth loggers feature the functions C<LOGWARN()> and C<LOGDIE()>,
+combining a logging request with a subsequent Perl warn() or die()
+statement. So, for example
+
+    if($all_is_lost) {
+        LOGDIE("Terrible Problem");
+    }
+
+will log the message if the package's logger is at least C<FATAL> but
+C<die()> (including the traditional output to STDERR) in any case afterwards.
+
+See L<"Log and die or warn"> for the similar C<logdie()> and C<logwarn()>
+functions of regular (i.e non-stealth) loggers.
+
+B<When using Log::Log4perl in easy mode, 
 please make sure you understand the implications of 
-L</"Pitfalls with Categories">.
+L</"Pitfalls with Categories">>.
+
 By the way, these convenience functions perform exactly as fast as the 
 standard Log::Log4perl logger methods, there's I<no> performance penalty
 whatsoever.

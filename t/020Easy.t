@@ -9,7 +9,7 @@ use Log::Log4perl qw(:easy);
 my $TMP_FILE = "t/tmp/easy";
 $TMP_FILE = "tmp/easy" if ! -d "t";
 
-BEGIN { plan tests => 5 }
+BEGIN { plan tests => 8 }
 
 END   { unlink $TMP_FILE;
         close IN;
@@ -36,8 +36,8 @@ my $stderr = readstderr();
 #print "STDERR='$stderr'\n";
 
 ok($stderr !~ /don't/);
-ok($stderr, 'm#this we want#');
-ok($stderr, 'm#this also#');
+ok($stderr =~ /this we want/);
+ok($stderr =~ /this also/);
 
 ############################################################
 # Advanced easy setup
@@ -79,4 +79,24 @@ open FILE, "<$TMP_FILE" or die "Cannot open $TMP_FILE";
 my $data = join '', <FILE>;
 close FILE;
 
-ok($data, "020Easy.t-58-Bar::Mars::crunch: Mars mjam\nTwix mjam\n");
+ok($data eq "020Easy.t-58-Bar::Mars::crunch: Mars mjam\nTwix mjam\n");
+
+############################################################
+# LOGDIE and LOGWARN
+############################################################
+# redir STDERR again
+open STDERR, ">$TMP_FILE";
+select STDERR; $| = 1; #needed on win32
+open IN, "<$TMP_FILE" or die "Cannot open $TMP_FILE";
+
+Log::Log4perl->easy_init($INFO);
+$log = get_logger();
+eval { LOGDIE("logdie"); };
+
+ok($@ =~ /logdie at .*?020Easy.t line 94/);
+ok(readstderr() =~ /^[\d:\/ ]+logdie$/);
+
+LOGWARN("logwarn");
+ok(readstderr() =~ /logwarn/);
+
+close IN;
