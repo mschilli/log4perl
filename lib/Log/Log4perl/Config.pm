@@ -361,7 +361,7 @@ sub config_read {
         s/#.*//;
         next unless /\S/;
     
-        while (/(.+?)\\$/) {
+        while (/(.+?)\\\s*$/) {
             my $prev = $1;
             my $next = shift(@text);
             $next =~ s/^ +//g;  #leading spaces

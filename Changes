@@ -8,6 +8,8 @@ Revision history for Log::Log4perl
            parse time
     * (ms) NDC now prints entire stack, not just
            top element (as mandated by Log4j)
+    * (ms) Allow trailing spaces after a line-breaking '\' in the 
+           config file to be fault-tolerant on cut-and-pasted code
 
 0.27 12/06/2002
     * (ms) Updated FAQ with "Recipes of the Week"
