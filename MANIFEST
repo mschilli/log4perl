@@ -4,6 +4,7 @@ MANIFEST
 MANIFEST.SKIP
 Makefile.PL
 README
+eg/5005it.pl
 eg/log4j-file-append-java.conf
 eg/log4j-file-append-perl.conf
 eg/log4j-manual-1.conf
@@ -16,6 +17,7 @@ lib/Log/Log4perl/DateFormat.pm
 lib/Log/Log4perl/JavaMap.pm
 lib/Log/Log4perl/JavaMap/ConsoleAppender.pm
 lib/Log/Log4perl/JavaMap/FileAppender.pm
+lib/Log/Log4perl/JavaMap/TestBuffer.pm
 lib/Log/Log4perl/Layout.pm
 lib/Log/Log4perl/Layout/PatternLayout.pm
 lib/Log/Log4perl/Layout/SimpleLayout.pm
@@ -49,6 +51,7 @@ t/025CustLevels.t
 t/026FileApp.t
 t/027Watch2.t
 t/028Additivity.t
+t/029SysWide.t
 t/deeper1.expected
 t/deeper6.expected
 t/deeper7.expected
