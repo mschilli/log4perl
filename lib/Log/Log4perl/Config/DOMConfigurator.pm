@@ -278,6 +278,8 @@ any problems.
 
 =head1 SEE ALSO
 
+t/038XML-DOM1.t for examples
+
 Log::Log4perl::Config
 
 Log::Log4perl::Config::PropertyConfigurator
