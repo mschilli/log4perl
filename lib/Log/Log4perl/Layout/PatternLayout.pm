@@ -245,7 +245,7 @@ sub render {
     foreach my $cspec (keys %{$self->{USER_DEFINED_CSPECS}}){
         next unless $self->{info_needed}->{$cspec};
         $info{$cspec} = $self->{USER_DEFINED_CSPECS}->{$cspec}->($self, 
-                                $message, $category, $priority, $caller_level);
+                              $message, $category, $priority, $caller_level+1);
     }
 
         # Iterate over all info fields on the stack
