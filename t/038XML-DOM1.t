@@ -13,6 +13,14 @@ BEGIN {
     eval {
         require XML::DOM;
         XML::DOM->VERSION($dvrq);
+        my $dver = XML::DOM->VERSION($dvrq);
+        require XML::Parser;
+        my $pver = XML::Parser->VERSION;
+        if ($pver >= 2.32 && $dver <= 1.42){
+            print STDERR "Your version of XML::DOM ($dver) is incompatible with your version of XML::Parser ($pver).  You should upgrade your XML::DOM to 1.43 or greater.\n";
+            die 'skip tests';
+        }
+
     };
     if ($@) {
         plan skip_all => "only with XML::DOM > $dvrq";
