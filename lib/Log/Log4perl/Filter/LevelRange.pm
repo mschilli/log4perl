@@ -78,7 +78,7 @@ is supposed to pass or block the message (C<true> or C<false>).
 L<Log::Log4perl::Filter>,
 L<Log::Log4perl::Filter::LevelMatch>,
 L<Log::Log4perl::Filter::StringRange>,
-L<Log::Log4perl::Filter::Bool>
+L<Log::Log4perl::Filter::Boolean>
 
 =head1 AUTHOR
 

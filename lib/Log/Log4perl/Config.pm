@@ -118,7 +118,7 @@ sub _init {
     }
 
         # Boolean filters 
-    my %bool_filters = ();
+    my %boolean_filters = ();
 
         # Continue with lower level loggers. Both 'logger' and 'category'
         # are valid keywords. Also 'additivity' is one, having a logger
@@ -160,12 +160,12 @@ sub _init {
 
         print "Checking filter $filter_name\n" if DEBUG;
 
-            # The bool filter needs all other filters already
+            # The boolean filter needs all other filters already
             # initialized, defer its initialization
         if($data->{filter}->{$filter_name}->{value} eq
            "Log::Log4perl::Filter::Boolean") {
             print "Boolean filter ($filter_name)\n" if DEBUG;
-            $bool_filters{$filter_name}++;
+            $boolean_filters{$filter_name}++;
             next;
         }
 
@@ -200,11 +200,11 @@ sub _init {
         $filter->register();
     }
 
-        # Initialize bool filters (they need the other filters to be
+        # Initialize boolean filters (they need the other filters to be
         # initialized to be able to compile their logic)
-    for my $name (keys %bool_filters) {
+    for my $name (keys %boolean_filters) {
         my $logic = $data->{filter}->{$name}->{logic}->{value};
-        die "No logic defined for bool filter $name" unless defined $logic;
+        die "No logic defined for boolean filter $name" unless defined $logic;
         my $filter = Log::Log4perl::Filter::Boolean->new(
                          name  => $name, 
                          logic => $logic);

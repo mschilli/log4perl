@@ -73,7 +73,7 @@ on a match.
 L<Log::Log4perl::Filter>,
 L<Log::Log4perl::Filter::LevelRange>,
 L<Log::Log4perl::Filter::StringRange>,
-L<Log::Log4perl::Filter::Bool>
+L<Log::Log4perl::Filter::Boolean>
 
 =head1 AUTHOR
 

@@ -122,7 +122,7 @@ sub log { # Relay this call to Log::Dispatch::Whatever
     }
 
     # Run against the (yes only one) customized filter (which in turn
-    # might call other filters via the Bool filter) and check if it 
+    # might call other filters via the Boolean filter) and check if it 
     # decides if it lets our message pass or blocks.
     if($self->{filter}) {
         if($self->{filter}->decide(%$p,

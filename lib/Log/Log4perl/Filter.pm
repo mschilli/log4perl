@@ -227,7 +227,7 @@ every time a message is supposed to be passed to the appender. Depending
 on the filter's return value, C<Log::Log4perl> will either continue as
 planned or withdraw immediately.
 
-=head2 Combining filters with Log::Log4perl::Filter::Bool
+=head2 Combining filters with Log::Log4perl::Filter::Boolean
 
 Sometimes, it's useful to combine the output of various filters to
 arrive at a log/no log decision. While Log4j, Log4perl's mother ship,
@@ -239,7 +239,7 @@ combined in a programmatic manner using boolean logic. "Log if
 this filter says 'yes' and that filter says 'no'" 
 is a fairly common requirement, but hard to implement as a chain.
 
-C<Log::Log4perl::Filter::Bool> is a specially predefined custom filter
+C<Log::Log4perl::Filter::Boolean> is a specially predefined custom filter
 for Log4perl. It combines the results of other custom filters 
 in arbitrary ways, using boolean expressions:
 
@@ -247,14 +247,14 @@ in arbitrary ways, using boolean expressions:
 
     log4perl.filter.Match1       = sub { /let this through/ }
     log4perl.filter.Match2       = sub { /and that, too/ }
-    log4perl.filter.MyBool       = Log::Log4perl::Filter::Bool
-    log4perl.filter.MyBool.logic = Match1 || Match2
+    log4perl.filter.MyBoolean       = Log::Log4perl::Filter::Boolean
+    log4perl.filter.MyBoolean.logic = Match1 || Match2
 
     log4perl.appender.Screen        = Log::Dispatch::Screen
-    log4perl.appender.Screen.Filter = MyBool
+    log4perl.appender.Screen.Filter = MyBoolean
     log4perl.appender.Screen.layout = Log::Log4perl::Layout::SimpleLayout
 
-C<Log::Log4perl::Filter::Bool>'s boolean expressions allow for combining
+C<Log::Log4perl::Filter::Boolean>'s boolean expressions allow for combining
 different appenders by name using AND (&& or &), OR (|| or |) and NOT (!) as
 logical expressions. Also, parentheses can be used for defining precedences. 
 Operator precedence follows standard Perl conventions. Here's a bunch of examples:
@@ -318,7 +318,7 @@ See L<Log::Log4perl::FAQ> for this.
 L<Log::Log4perl::Filter::LevelMatch>,
 L<Log::Log4perl::Filter::LevelRange>,
 L<Log::Log4perl::Filter::StringRange>,
-L<Log::Log4perl::Filter::Bool>
+L<Log::Log4perl::Filter::Boolean>
 
 =head1 AUTHOR
 

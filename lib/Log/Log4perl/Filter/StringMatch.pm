@@ -80,7 +80,7 @@ is supposed to pass or block the message on a match (C<true> or C<false>).
 L<Log::Log4perl::Filter>,
 L<Log::Log4perl::Filter::LevelMatch>,
 L<Log::Log4perl::Filter::LevelRange>,
-L<Log::Log4perl::Filter::Bool>
+L<Log::Log4perl::Filter::Boolean>
 
 =head1 AUTHOR
 

@@ -23,7 +23,7 @@ lib/Log/Log4perl/Config/PropertyConfigurator.pm
 lib/Log/Log4perl/DateFormat.pm
 lib/Log/Log4perl/FAQ.pm
 lib/Log/Log4perl/Filter.pm
-lib/Log/Log4perl/Filter/Bool.pm
+lib/Log/Log4perl/Filter/Boolean.pm
 lib/Log/Log4perl/Filter/LevelMatch.pm
 lib/Log/Log4perl/Filter/LevelRange.pm
 lib/Log/Log4perl/Filter/StringMatch.pm
