@@ -100,6 +100,10 @@ sub _init {
             # yes, we do.
         $system_wide_threshold = $data->{threshold}->{value};
     }
+    if (exists $data->{oneMessagePerAppender}){
+                    $Log::Log4perl::one_message_per_appender = 
+                        $data->{oneMessagePerAppender}->{value};
+    }
 
         # Continue with lower level loggers. Both 'logger' and 'category'
         # are valid keywords. Also 'additivity' is one, having a logger
