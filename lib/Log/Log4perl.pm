@@ -14,7 +14,7 @@ use Log::Log4perl::Appender;
 
 use constant DEBUG => 1;
 
-our $VERSION = '0.29dev';
+our $VERSION = '0.30';
 
    # set this to '1' if you're using a wrapper
    # around Log::Log4perl
@@ -601,6 +601,7 @@ all of them at once if you desire to do so.
 
 Here's the list of appender modules currently available via C<Log::Dispatch>:
 
+       Log::Log4perl::Appender::DBI (by Kevin Goess)
        Log::Dispatch::ApacheLog
        Log::Dispatch::DBI (by Tatsuhiko Miyagawa)
        Log::Dispatch::Email,
@@ -608,7 +609,7 @@ Here's the list of appender modules currently available via C<Log::Dispatch>:
        Log::Dispatch::Email::MailSendmail,
        Log::Dispatch::Email::MIMELite
        Log::Dispatch::File
-       Log::Dispatch::RollingFile (by Mark Pfeiffer)
+       Log::Dispatch::FileRotate (by Mark Pfeiffer)
        Log::Dispatch::Handle
        Log::Dispatch::Screen
        Log::Dispatch::Syslog
