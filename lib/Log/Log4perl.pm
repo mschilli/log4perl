@@ -66,6 +66,21 @@ sub init { # Read the config file
 }
 
 ##################################################
+sub init_and_watch { 
+##################################################
+    my($class, @args) = @_;
+
+    #woops, they called ::init instead of ->init, let's be forgiving
+    if ($class ne __PACKAGE__) {
+        unshift(@args, $class);
+    }
+
+    # Delegate this to the config module
+    return Log::Log4perl::Config->init_and_watch(@args);
+}
+
+
+##################################################
 sub default_init { # Initialize the root logger with a screen appender
 ##################################################
     my($class, @args) = @_;
