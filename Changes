@@ -289,10 +289,10 @@ TODO (not assigned to anybody yet):
     * permission problems, init() creates the files, maybe read later by
       different uid, no way to set umask?
     * Custom filters
-    * XML config files
 
 TODO Kevin:
 ##################################################
+    * document oneMessagePerAppender as a bona-fide feature
     * appender-by-name stuff?
     * Module for reading XML-style config files
     * DONE, CAN'T, SocketAppender actually ships a serialized LoggingEvent
