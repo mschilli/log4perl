@@ -1,9 +1,5 @@
 use Log::Log4perl;
-use Log::Log4perl::Config;
-use Log::Log4perl::Logger;
 use Test;
-use Data::Dump qw(dump);
-
 
 my $WORK_DIR = 't/tmp';
 our @outfiles = ("$WORK_DIR/test2.log",);
@@ -24,9 +20,9 @@ log4j.appender.myAppender.layout=org.apache.log4j.PatternLayout
 log4j.appender.myAppender.layout.ConversionPattern=%-5p %c - %m%n
 CONF
 
-Log::Log4perl::Config->init(\$conf);
+Log::Log4perl->init(\$conf);
 
-my $logger = Log::Log4perl::Logger->get_logger('cat1');
+my $logger = Log::Log4perl->get_logger('cat1');
 
 $logger->debug("debugging message 1 ");
 $logger->info("info message 1 ");      

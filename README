@@ -1,5 +1,5 @@
 ######################################################################
-    Log::Log4perl 0.11 (test checkin)
+    Log::Log4perl 0.12
 ######################################################################
 
 NAME
@@ -84,8 +84,8 @@ How to use it
     Assuming that this file is saved as `log.conf', you need to read it in
     in the startup section of your code, using the following commands:
 
-      use Log::Log4perl::Config;
-      Log::Log4perl::Config->init("log.conf");
+      use Log::Log4perl;
+      Log::Log4perl->init("log.conf");
 
     After that's done *somewhere* in the code, you can retrieve logger
     objects *anywhere* in the code. Note that there's no need to carry any
@@ -97,8 +97,8 @@ How to use it
         sub some_method {
             my($param) = @_;
 
-            use  Log::Log4perl::Logger;
-            my $log = Log::Log4perl::Logger->get_logger("My::MegaPackage");
+            use  Log::Log4perl;
+            my $log = Log::Log4perl->get_logger("My::MegaPackage");
 
             $log->debug("Debug message");
             $log->info("Info message");
@@ -152,7 +152,7 @@ How to use it
 
       # Initialize the logger
 
-      use Log::Log4perl::Logger;
+      use Log::Log4perl;
       use Log::Dispatch::File;
       use Log::Log4perl::Layout;
 
@@ -162,7 +162,7 @@ How to use it
                        min_level => "debug",
                    );
 
-      my $log = Log::Log4perl::Logger->get_logger(""); # root logger
+      my $log = Log::Log4perl->get_logger(""); # root logger
       $log->layout("[%r] %F %L %m%n");
       $log->add_appender($disp);
 
@@ -172,8 +172,8 @@ How to use it
 
       # Use the logger
 
-      use Log::Log4perl::Logger;
-      my $log = Log::Log4perl::Logger->get_logger("My::Component");
+      use Log::Log4perl;
+      my $log = Log::Log4perl->get_logger("My::Component");
       $log->debug("Debug Message");
       $log->info("Info Message");
       $log->error("Error Message");
@@ -277,12 +277,12 @@ How to use it
       ########################
       # Initialisation section
       ########################
-      use Log::Log4perl::Logger;
+      use Log::Log4perl;
       use Log::Dispatch::File;
       use Log::Log4perl::Layout;
       use Log::Log4perl::Level;
 
-      my $log = Log::Log4perl::Logger->get_logger("My::Category");
+      my $log = Log::Log4perl->get_logger("My::Category");
 
       my $file_appender = Log::Dispatch::File->new(
           name      => "filelog",
@@ -326,7 +326,7 @@ How to use it
       ##########################
       # ... in some function ...
       ##########################
-      my $log = Log::Log4perl::Logger->get_logger("My::Category");
+      my $log = Log::Log4perl->get_logger("My::Category");
       $log->info("This is an informational message");
 
     Above, we chose to define a *category* logger (`My::Category') in a
@@ -340,7 +340,7 @@ How to use it
       ##########################
       # ... in some function ...
       ##########################
-      my $log = Log::Log4perl::Logger->get_logger("My::Category");
+      my $log = Log::Log4perl->get_logger("My::Category");
       $log->info("This is an informational message");
 
     will trigger a logger with no layout or appenders or even a level
@@ -449,6 +449,10 @@ How to use it
     been derived for `Log::Log4perl', please refer to it directly:
 
         http://jakarta.apache.org/log4j/docs/api/org/apache/log4j/PatternLayout.html
+
+    Only exceptions so far are `%t', `%x' and `%X' which aren't implemented
+    yet and `%d' which stubburnly uses `yyyy/mm/dd hh:mm:ss' as the time
+    stamp format (no support yet for `%d{yada}'.
 
   Penalties
 

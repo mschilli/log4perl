@@ -9,22 +9,22 @@
 use Test;
 BEGIN { plan tests => 41 };
 
-use Log::Log4perl::Logger;
+use Log::Log4perl;
 use Log::Log4perl::Level;
 use Log::Dispatch;
 use Log::Dispatch::Buffer;
 
 ok(1); # If we made it this far, we're ok.
 
-my $log1 = Log::Log4perl::Logger->get_logger("abc.def");
-my $log2 = Log::Log4perl::Logger->get_logger("abc.def");
-my $log3 = Log::Log4perl::Logger->get_logger("abc.def.ghi");
-my $log4 = Log::Log4perl::Logger->get_logger("def.abc.def");
-my $log5 = Log::Log4perl::Logger->get_logger("def.abc.def");
-my $log6 = Log::Log4perl::Logger->get_logger("");
-my $log7 = Log::Log4perl::Logger->get_logger("");
-my $log8 = Log::Log4perl::Logger->get_logger("abc.def");
-my $log9 = Log::Log4perl::Logger->get_logger("abc::def::ghi");
+my $log1 = Log::Log4perl->get_logger("abc.def");
+my $log2 = Log::Log4perl->get_logger("abc.def");
+my $log3 = Log::Log4perl->get_logger("abc.def.ghi");
+my $log4 = Log::Log4perl->get_logger("def.abc.def");
+my $log5 = Log::Log4perl->get_logger("def.abc.def");
+my $log6 = Log::Log4perl->get_logger("");
+my $log7 = Log::Log4perl->get_logger("");
+my $log8 = Log::Log4perl->get_logger("abc.def");
+my $log9 = Log::Log4perl->get_logger("abc::def::ghi");
 
 # Loggers for the same namespace have to be identical
 ok($log1 == $log2);
@@ -56,7 +56,7 @@ $log1->add_appender('buf',$disp);
 $log1->level($ERROR);
 $log1->error("Error Message");
 $log1->debug("Debug Message");
-ok($disp->buffer(), "Error Message");
+ok($disp->buffer(), "ERROR - Error Message");
 
 ##################################################
 # Allow debug
@@ -65,7 +65,7 @@ $log1->level($DEBUG);
 $disp->buffer("");
 $log1->error("Error Message");
 $log1->debug("Debug Message");
-ok($disp->buffer(), "Error MessageDebug Message");
+ok($disp->buffer(), "ERROR - Error MessageDEBUG - Debug Message");
 
 ##################################################
 # Multiple Appenders
@@ -85,8 +85,8 @@ $disp2->buffer("");
 $log1->add_appender('buf2',$disp2);
 $log1->level($ERROR);
 $log1->error("Error Message");
-ok($disp->buffer(), "Error Message");
-ok($disp2->buffer(), "Error Message");
+ok($disp->buffer(), "ERROR - Error Message");
+ok($disp2->buffer(), "ERROR - Error Message");
 
 ##################################################
 # Multiple Appenders in different hierarchy levels
@@ -95,9 +95,9 @@ $disp->buffer("");
 $disp2->buffer("");
 $disp3->buffer("");
 
-$log1 = Log::Log4perl::Logger->get_logger("xxx.yyy.zzz");
-$log2 = Log::Log4perl::Logger->get_logger("xxx");
-$log3 = Log::Log4perl::Logger->get_logger("");
+$log1 = Log::Log4perl->get_logger("xxx.yyy.zzz");
+$log2 = Log::Log4perl->get_logger("xxx");
+$log3 = Log::Log4perl->get_logger("");
 
     # Root logger
 $log3->add_appender('buf3',$disp3);
@@ -108,7 +108,7 @@ $log3->level($ERROR);
     ##################################################
 $log1->error("Error Message");
     # Should be distributed to root
-ok($disp3->buffer(), "Error Message");
+ok($disp3->buffer(), "ERROR - Error Message");
 
     ##################################################
     # Log in lower levels and propagate to root
@@ -121,9 +121,9 @@ $log1->add_appender('buf', $disp);
 $log2->add_appender('buf2',$disp2);
 # log3 already has disp3 attached
 $log1->error("Error Message");
-ok($disp->buffer(), "Error Message");
-ok($disp2->buffer(), "Error Message");
-ok($disp3->buffer(), "Error Message");
+ok($disp->buffer(), "ERROR - Error Message");
+ok($disp2->buffer(), "ERROR - Error Message");
+ok($disp3->buffer(), "ERROR - Error Message");
 
     ##################################################
     # Block appenders via priority 
@@ -154,8 +154,8 @@ $log2->level($DEBUG);
 $log3->level($DEBUG);
 
 $log1->debug("Debug Message");
-ok($disp->buffer(), "Debug Message");
-ok($disp2->buffer(), "Debug Message");
+ok($disp->buffer(), "DEBUG - Debug Message");
+ok($disp2->buffer(), "DEBUG - Debug Message");
 ok($disp3->buffer(), "");
 
     ##################################################

@@ -25,8 +25,6 @@ my @LEVEL_MAP_A = qw(
  FATAL  emergency
 );
 
-
-
 ##################################################
 sub init {
 ##################################################
@@ -75,15 +73,16 @@ sub init {
         my($name, $value) = @$_;
 
         my $logger = Log::Log4perl::Logger->get_logger($name);
-        my ($level, $appname) = split /\s*,\s*/, $value;
+        my ($level, @appnames) = split /\s*,\s*/, $value;
 
         $logger->level(
             Log::Log4perl::Level::to_level($level));
 
-        if(defined $appname) {
+        for my $appname (@appnames) {
             add_layout_by_name($data, $logger, $appname);
 
-            my $appenderclass = get_appender_by_name($data, $appname, \%appenders_created);
+            my $appenderclass = get_appender_by_name($data, $appname, 
+                                                     \%appenders_created);
 
             my $appender;
             if (ref $appenderclass) {
@@ -98,28 +97,29 @@ sub init {
                                         $_ ne "value" 
                                       } keys %{$data->{appender}->{$appname}};
                     eval {
-                        eval "require $appenderclass";  #see 'perldoc -f require' for why two evals
+                            # see 'perldoc -f require' for why two evals
+                        eval "require $appenderclass";  
                         die $@ if $@;
                     };
-                    $@ and die "ERROR: trying to set appender for $appname to $appenderclass failed\n$@  ";
+                    $@ and die "ERROR: trying to set appender for $appname " .
+                               "to $appenderclass failed\n$@  ";
     
                     $appender = $appenderclass->new(
                        name      => $appname,
                        min_level => 'debug', # Set default, *we* are controlling
                                              # this now
-                       map { $_ => $data->{appender}->{$appname}->{$_}->{value} } 
-                           @params
+                       map { $_ => $data->{appender}->{$appname}->{$_}->{value} 
+                           } @params
                     );
                 } else {
                     # It's Java. Try to map
                     $appender = Log::Log4perl::JavaMap::get($appname, 
-                                                    $data->{appender}->{$appname});
-                    #$appender = $appenderclass->new($appname, 
-                    #                                $data->{appender}->{$appname});
+                                                $data->{appender}->{$appname});
                 }
             }
 
-            $logger->add_appender($appname, $appender, $appenders_created{$appname});
+            $logger->add_appender($appname, $appender, 
+                                  $appenders_created{$appname});
             set_appender_by_name($appname, $appender, \%appenders_created);
         }
     }

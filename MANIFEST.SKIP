@@ -5,3 +5,4 @@ Makefile
 CVS
 ^t/bak
 .cvsignore
+lib/Log/Dispatch/Buffer.pm

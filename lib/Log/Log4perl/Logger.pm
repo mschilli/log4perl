@@ -265,7 +265,10 @@ sub log {
                                                                     2,
                                                                     );
                 }else{
-                    $rendered_msg = $message;
+                    # Accoding to 
+                    # http://jakarta.apache.org/log4j/docs/api/org/...
+                    # apache/log4j/SimpleLayout.html this is the default layout
+                    $rendered_msg = "$level - $message";
                 }
 
                     # Dispatch the (formatted) message

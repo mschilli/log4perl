@@ -1,5 +1,5 @@
 ###########################################
-# Test Suite for Log::Log4perl::Config
+# Test Suite for Log::Log4perl
 # Mike Schilli, 2002 (m@perlmeister.com)
 ###########################################
 
@@ -10,8 +10,6 @@ use Test;
 BEGIN { plan tests => 3 };
 
 use Log::Log4perl;
-use Log::Log4perl::Config;
-use Log::Log4perl::Logger;
 use Data::Dumper;
 use Log::Dispatch::Buffer;
 
@@ -23,9 +21,9 @@ ok(1); # If we made it this far, we're ok.
 ######################################################################
 # Test the root logger on a configuration file defining a file appender
 ######################################################################
-Log::Log4perl::Config->init("$EG_DIR/log4j-manual-1.conf");
+Log::Log4perl->init("$EG_DIR/log4j-manual-1.conf");
 
-my $logger = Log::Log4perl::Logger->get_logger("");
+my $logger = Log::Log4perl->get_logger("");
 $logger->debug("Gurgel");
 
 
@@ -38,9 +36,9 @@ ok($Log::Dispatch::Buffer::POPULATION[0]->buffer(),
 ######################################################################
 Log::Log4perl->reset();
 
-Log::Log4perl::Config->init("$EG_DIR/log4j-manual-1.conf");
+Log::Log4perl->init("$EG_DIR/log4j-manual-1.conf");
 
-$logger = Log::Log4perl::Logger->get_logger("foo");
+$logger = Log::Log4perl->get_logger("foo");
 $logger->debug("Gurgel");
 
    # POPULATION[1] because it created another buffer behind our back

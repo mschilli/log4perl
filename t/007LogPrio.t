@@ -1,5 +1,5 @@
 ###########################################
-# Test Suite for Log::Log4perl::Config
+# Test Suite for Log::Log4perl
 # Mike Schilli, 2002 (m@perlmeister.com)
 ###########################################
 
@@ -9,8 +9,8 @@
 use Test;
 BEGIN { plan tests => 2 };
 
-use Log::Log4perl::Config;
-use Log::Log4perl::Logger;
+
+use Log::Log4perl;
 use Data::Dumper;
 use Log::Dispatch::Buffer;
 
@@ -22,9 +22,9 @@ ok(1); # If we made it this far, we're ok.
 my $LOGFILE = "example.log";
 unlink $LOGFILE;
 
-Log::Log4perl::Config->init("$EG_DIR/log4j-file-append-perl.conf");
+Log::Log4perl->init("$EG_DIR/log4j-file-append-perl.conf");
 
-my $logger = Log::Log4perl::Logger->get_logger("");
+my $logger = Log::Log4perl->get_logger("");
 $logger->debug("Gurgel");
 $logger->info("Gurgel");
 $logger->warn("Gurgel");

@@ -1,11 +1,7 @@
 use Log::Log4perl;
-use Log::Log4perl::Config;
-use Log::Log4perl::Logger;
 use Log::Dispatch::Buffer;
 use Log::Dispatch::File;
 use Test;
-use Data::Dump qw(dump);
-
 
 my $WORK_DIR = 't/tmp';
 our @outfiles = ("$WORK_DIR/test1.log",);
@@ -26,9 +22,9 @@ log4j.appender.myAppender.layout=org.apache.log4j.PatternLayout
 log4j.appender.myAppender.layout.ConversionPattern=%-5p %c - %m%n
 CONF
 
-Log::Log4perl::Config->init(\$conf);
+Log::Log4perl->init(\$conf);
 
-my $logger = Log::Log4perl::Logger->get_logger('cat1');
+my $logger = Log::Log4perl->get_logger('cat1');
 
 #hmm, I wonder how portable this is, maybe check $^O first?
 use vars qw($OLDOUT); #for -w

@@ -2,9 +2,6 @@
 Revision history for Log::Log4perl
 ##################################################
 
-* 80 chars width
-* README tests
-
 TODO:
 
 * need level validation on Logger::level() 
@@ -19,18 +16,15 @@ Kevin:
 * Module for reading XML-style config files
 DONE (is gone) redo level_str() hack
 DONE (Dispatch singleton) question - are appenders created just once if they're reused in the config file?
-
+* Please use 80 chars max line width
 
 Mike:
-* Log::Dispatch wrapper for perl modules just like JavaMap?
-* Throw Data::Dump out
-* Log::Dispatch::Buffer: Delete from MANIFEST
-* Log::Log4perl->init()
-* Thread safety
-* Multiple appenders
-
-* Define default if there's no layout:
+DONE Log::Dispatch::Buffer: Delete from MANIFEST
+DONE Log::Log4perl->init()
+DONE Several appenders in one config line: log4j.rootLogger=debug, stdout, R
+DONE Define default if there's no layout:
   http://jakarta.apache.org/log4j/docs/api/org/apache/log4j/SimpleLayout.html
+* Log::Dispatch wrapper for perl modules just like JavaMap?
 * Tune performance of level() lookups
  (Mike, check out the log4j statement:
  "As a side note, let me mention that in log4j child loggers link only to their 
@@ -39,16 +33,27 @@ Mike:
   loggers. This significantly increases performance and reduces log4j's memory 
   footprint. "
 * %% bug in Layout.pm
-* Layout.pm: 'd', 't', 'x', 'X'
-* Documentation
+* Layout.pm: 'd' (partially implemented), 't', 'x', 'X'
+* Documentation of Log::Log4perl::Logger and Log::Log4perl::Config
 * Signal to re-read the conf file.
-* Several appenders in one config line:
-    log4j.rootLogger=debug, stdout, R
 * Additivity flag -- set/get as API and in cfg file
-* Simplify interface to go through Log::Log4perl->blah()
-  instead Log::Log4perl::Logger->blah() as suggested by Kevin
+* 80 chars width
+* README tests (Pod::Tests or something)
+* Thread safety
 
 ##################################################
+
+0.12 07/08/2002
+    * Log::Log4perl::Logger->get_logger now accessible via 
+      Log::Log4perl->get_logger()
+    * Log::Log4perl::Config->init now accessible via 
+      Log::Log4perl->init()
+    * Adapted test cases to new shortcuts
+    * Constrained some files to 80 chars width
+    * Added test case t/009Deuce.t for two appenders in one category
+      via the config file
+    * Changed default layout in case there's none defined (SimpleLayout)
+    * Implemented dictatory date format for %d: yyyy/mm/dd hh:mm:ss
 
 0.11 07/07/2002
     * added documentation to Log/Log4perl.pm

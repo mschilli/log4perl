@@ -6,7 +6,10 @@ use 5.006;
 use strict;
 use warnings;
 
-our $VERSION = '0.11';
+use Log::Log4perl::Logger;
+use Log::Log4perl::Config;
+
+our $VERSION = '0.12';
 
 ##################################################
 sub new {
@@ -19,7 +22,25 @@ sub new {
 sub reset {
 ##################################################
     # Delegate this to the logger ...
-    Log::Log4perl::Logger->reset();
+    return Log::Log4perl::Logger->reset();
+}
+
+##################################################
+sub init {
+##################################################
+    my($class, @args) = @_;
+
+    # Delegate this to the config module
+    return Log::Log4perl::Config->init(@args);
+}
+
+##################################################
+sub get_logger {
+##################################################
+    my($class, @args) = @_;
+
+    # Delegate this to the logger module
+    return Log::Log4perl::Logger->get_logger(@args);
 }
 
 1;
@@ -124,8 +145,8 @@ Assuming that this file is saved as C<log.conf>, you need to
 read it in in the startup section of your code, using the following
 commands:
 
-  use Log::Log4perl::Config;
-  Log::Log4perl::Config->init("log.conf");
+  use Log::Log4perl;
+  Log::Log4perl->init("log.conf");
 
 After that's done I<somewhere> in the code, you can retrieve
 logger objects I<anywhere> in the code. Note that
@@ -138,8 +159,8 @@ mechanism:
     sub some_method {
         my($param) = @_;
 
-        use  Log::Log4perl::Logger;
-        my $log = Log::Log4perl::Logger->get_logger("My::MegaPackage");
+        use  Log::Log4perl;
+        my $log = Log::Log4perl->get_logger("My::MegaPackage");
 
         $log->debug("Debug message");
         $log->info("Info message");
@@ -198,7 +219,7 @@ higher prioritized messages to the C</tmp/my.log> logfile:
 
   # Initialize the logger
 
-  use Log::Log4perl::Logger;
+  use Log::Log4perl;
   use Log::Dispatch::File;
   use Log::Log4perl::Layout;
 
@@ -208,7 +229,7 @@ higher prioritized messages to the C</tmp/my.log> logfile:
                    min_level => "debug",
                );
 
-  my $log = Log::Log4perl::Logger->get_logger(""); # root logger
+  my $log = Log::Log4perl->get_logger(""); # root logger
   $log->layout("[%r] %F %L %m%n");
   $log->add_appender($disp);
 
@@ -218,8 +239,8 @@ we just get the logger via the singleton-mechanism):
 
   # Use the logger
 
-  use Log::Log4perl::Logger;
-  my $log = Log::Log4perl::Logger->get_logger("My::Component");
+  use Log::Log4perl;
+  my $log = Log::Log4perl->get_logger("My::Component");
   $log->debug("Debug Message");
   $log->info("Info Message");
   $log->error("Error Message");
@@ -325,12 +346,12 @@ C<Log::Dispatch::File> and C<Log::Dispatch::Screen> modules:
   ########################
   # Initialisation section
   ########################
-  use Log::Log4perl::Logger;
+  use Log::Log4perl;
   use Log::Dispatch::File;
   use Log::Log4perl::Layout;
   use Log::Log4perl::Level;
 
-  my $log = Log::Log4perl::Logger->get_logger("My::Category");
+  my $log = Log::Log4perl->get_logger("My::Category");
 
   my $file_appender = Log::Dispatch::File->new(
       name      => "filelog",
@@ -375,7 +396,7 @@ defined it this way) as often as you like:
   ##########################
   # ... in some function ...
   ##########################
-  my $log = Log::Log4perl::Logger->get_logger("My::Category");
+  my $log = Log::Log4perl->get_logger("My::Category");
   $log->info("This is an informational message");
 
 Above, we chose to define a I<category> logger (C<My::Category>)
@@ -390,7 +411,7 @@ shown above. Now
   ##########################
   # ... in some function ...
   ##########################
-  my $log = Log::Log4perl::Logger->get_logger("My::Category");
+  my $log = Log::Log4perl->get_logger("My::Category");
   $log->info("This is an informational message");
 
 will trigger a logger with no layout or appenders or even a level defined.
@@ -501,6 +522,10 @@ Instead of copying the original documentation from which this format
 has been derived for C<Log::Log4perl>, please refer to it directly:
 
     http://jakarta.apache.org/log4j/docs/api/org/apache/log4j/PatternLayout.html
+
+Only exceptions so far are C<%t>, C<%x> and C<%X> which aren't implemented
+yet and C<%d> which stubburnly uses C<yyyy/mm/dd hh:mm:ss> as the time
+stamp format (no support yet for C<%d{yada}>.
 
 =head2 Penalties
 

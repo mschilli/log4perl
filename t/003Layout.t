@@ -1,5 +1,5 @@
 ###########################################
-# Test Suite for Log::Log4perl::Logger
+# Test Suite for Log::Log4perl
 # Mike Schilli, 2002 (m@perlmeister.com)
 ###########################################
 
@@ -7,10 +7,10 @@
 # change 'tests => 1' to 'tests => last_test_to_print';
 #########################
 use Test;
-BEGIN { plan tests => 4 };
+BEGIN { plan tests => 5 };
 
+use Log::Log4perl;
 use Log::Log4perl::Layout;
-use Log::Log4perl::Logger;
 use Log::Log4perl::Level;
 use Log::Dispatch;
 use Log::Dispatch::Buffer;
@@ -22,7 +22,7 @@ my $disp = Log::Dispatch::Buffer->new(
 
 ok(1); # If we made it this far, we're ok.
 
-my $logger = Log::Log4perl::Logger->get_logger("abc.def.ghi");
+my $logger = Log::Log4perl->get_logger("abc.def.ghi");
 $logger->add_appender('buf',$disp);
 $logger->layout('buf',"bugo %% %c{2} %-17F{ba} %L hugo",);
 $logger->debug("That's the message");
@@ -46,3 +46,13 @@ $logger->layout('buf',"[%r] %m");
 $logger->debug("That's the message");
 
 ok($disp->buffer() =~ /^\[\d+\] That's the message$/); 
+
+############################################################
+# Log the date/time
+############################################################
+$disp->buffer("");
+$logger->layout('buf',"%d> %m");
+$logger->debug("That's the message");
+
+ok($disp->buffer(), 
+   'm#^\d{4}/\d\d/\d\d \d\d:\d\d:\d\d> That\'s the message$#'); 

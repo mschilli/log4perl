@@ -3,7 +3,6 @@
 
 
 use Log::Log4perl;
-use Log::Log4perl::Config;
 use Test;
 
 
@@ -59,14 +58,14 @@ log4j.appender.l3.layout.ConversionPattern=%d %4r 666  [%t] %-5p  %c - %m%n
 EOL
 
 
-Log::Log4perl::Config->init(\$config);
+Log::Log4perl->init(\$config);
 
 
 # -----------------------------------------------------
 # (1) shotgun test
 #set to INFO
 
-my $logger = Log::Log4perl::Logger->get_logger('plant');
+my $logger = Log::Log4perl->get_logger('plant');
 
 #set to INFO
 $logger->debug("debugging message 1 ");
@@ -75,21 +74,21 @@ $logger->warn("warning message 1 ");
 $logger->fatal("fatal message 1 ");   
 
 #set to DEBUG
-my $doglogger = Log::Log4perl::Logger->get_logger('animal.dog');
+my $doglogger = Log::Log4perl->get_logger('animal.dog');
 $doglogger->debug("debugging message 2 ");
 $doglogger->info("info message 2 ");
 $doglogger->warn("warning message 2 ");
 $doglogger->fatal("fatal message 2 ");
 
 #set to INFO
-my $animallogger = Log::Log4perl::Logger->get_logger('animal');
+my $animallogger = Log::Log4perl->get_logger('animal');
 $animallogger->debug("debugging message 3 ");
 $animallogger->info("info message 3 ");
 $animallogger->warn("warning message 3 ");
 $animallogger->fatal("fatal message 3 ");
 
 #should default to animal::dog
-my $deeptreelogger = Log::Log4perl::Logger->get_logger('animal.dog.leg.toenail');
+my $deeptreelogger = Log::Log4perl->get_logger('animal.dog.leg.toenail');
 $deeptreelogger->debug("debug message");
 $animallogger->info("info message");
 $deeptreelogger->warn("warning message");
@@ -113,11 +112,11 @@ ok ($result, $expected);
 # ------------------------------------
 # (6)   test inheritance
 #a=INFO, a.b.c.d=WARN, a.b and a.b.c are undefined
-my $la = Log::Log4perl::Logger->get_logger('a');
-my $lab = Log::Log4perl::Logger->get_logger('a.b');
-my $labc = Log::Log4perl::Logger->get_logger('a.b.c');
-my $labcd = Log::Log4perl::Logger->get_logger('a.b.c.d');
-my $labcde = Log::Log4perl::Logger->get_logger('a.b.c.d.e');
+my $la = Log::Log4perl->get_logger('a');
+my $lab = Log::Log4perl->get_logger('a.b');
+my $labc = Log::Log4perl->get_logger('a.b.c');
+my $labcd = Log::Log4perl->get_logger('a.b.c.d');
+my $labcde = Log::Log4perl->get_logger('a.b.c.d.e');
 
 foreach my $l ($la, $lab, $labc, $labcd, $labcde){
    $l->debug("should not print");
@@ -146,11 +145,11 @@ ok($result, $expected);
 # ------------------------------------
 # (7)   test inheritance the other way
 #xa=WARN, xa.b.c.d=INFO, xa.b and xa.b.c are undefined
-my $xla = Log::Log4perl::Logger->get_logger('xa');
-my $xlab = Log::Log4perl::Logger->get_logger('xa.b');
-my $xlabc = Log::Log4perl::Logger->get_logger('xa.b.c');
-my $xlabcd = Log::Log4perl::Logger->get_logger('xa.b.c.d');
-my $xlabcde = Log::Log4perl::Logger->get_logger('xa.b.c.d.e');
+my $xla = Log::Log4perl->get_logger('xa');
+my $xlab = Log::Log4perl->get_logger('xa.b');
+my $xlabc = Log::Log4perl->get_logger('xa.b.c');
+my $xlabcd = Log::Log4perl->get_logger('xa.b.c.d');
+my $xlabcde = Log::Log4perl->get_logger('xa.b.c.d.e');
 
 foreach my $l ($xla, $xlab, $xlabc, $xlabcd, $xlabcde){
    $l->debug("should not print");

@@ -1,7 +1,10 @@
 ##################################################
 package Log::Log4perl::Layout;
 ##################################################
-# TODO: 'd', 'n' OS-specific, 't', 'x', 'X'
+# TODO: 'd', 't', 'x', 'X'
+# as documented in
+# http://jakarta.apache.org/log4j/docs/api/org/apache/log4j/PatternLayout.html
+##################################################
 
 use 5.006;
 use strict;
@@ -98,8 +101,16 @@ sub render {
     $info{p} = $priority;
     $info{r} = int((tv_interval ( $PROGRAM_START_TIME ))*1000);
 
+    if($self->{info_needed}->{d}) {
+        my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = 
+           localtime(time);
+
+        $info{d} = sprintf "%d/%02d/%02d %02d:%02d:%02d",
+                           $year + 1900, $mon+1, $mday, 
+                           $hour, $min, $sec;
+    }
+
         # As long as they're not implemented yet ..
-    $info{d} = "N/A";
     $info{t} = "N/A";
     $info{x} = "N/A";
     $info{X} = "N/A";
