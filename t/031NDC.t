@@ -51,7 +51,7 @@ Log::Log4perl::NDC->push("seventh");
 $loga->error("error");
 
 ok($app0->buffer(), 
-   "debug <first>info <sixth>warn <[undef]>error <seventh>");
+   "debug <first>info <first second third fourth sixth>warn <[undef]>error <seventh>");
 
 Log::Log4perl::TestBuffer->reset();
 

@@ -13,7 +13,8 @@ our $MAX_SIZE  = 5;
 sub get {
 ###########################################
     if(@NDC_STACK) {
-        return $NDC_STACK[0];
+        # Return elements blank separated
+        return join " ", @NDC_STACK;
     } else {
         return "[undef]";
     }
@@ -23,7 +24,7 @@ sub get {
 sub pop {
 ###########################################
     if(@NDC_STACK) {
-        return shift @NDC_STACK;
+        return pop @NDC_STACK;
     } else {
         return undef;
     }
@@ -40,10 +41,10 @@ sub push {
     }
 
     if(@NDC_STACK >= $MAX_SIZE) {
-        $#NDC_STACK = $MAX_SIZE-1;
+        CORE::pop(@NDC_STACK);
     }
 
-    return unshift @NDC_STACK, $text;
+    return push @NDC_STACK, $text;
 }
 
 ###########################################

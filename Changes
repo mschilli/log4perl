@@ -2,7 +2,11 @@
 Revision history for Log::Log4perl
 ##################################################
 
-0.27 11/12/2002
+0.28 (not yet released)
+    * (ms) NDC now prints entire stack, not just
+           top element (as mandated by Log4j)
+
+0.27 12/06/2002
     * (ms) Updated FAQ with "Recipes of the Week"
     * (ms) Added Log::Log4perl::NDC (Nested Diagnostic Contexts) and
            Log::Log4perl::MDC (Mapped Diagnostic Contexts)
