@@ -545,6 +545,18 @@ If you're an API kind of person, there's also this call:
     Log::Log4perl::Layout::PatternLayout::
                     add_global_cspec('Z', sub {'zzzzzzzz'}); #snooze?
 
+When the log messages is being put together, your anonymous sub 
+will be called with these arguments:
+
+    ($layout, $message, $category, $priority, $caller_level);
+    
+    layout: the PatternLayout object that called it
+    message: the logging message (%m)
+    category: e.g. groceries.beverages.adult.beer.schlitz
+    priority: e.g. DEBUG|WARN|INFO|ERROR|FATAL
+    caller_level: how many levels back up the call stack you have 
+        to go to find the caller
+
 There are currently some issues around providing API access to an 
 appender-specific cspec, but let us know if this is something you want.
 
