@@ -10,7 +10,7 @@ use strict;
 
 #########################
 # used Test::Simple to help debug the test script
-use Test::More tests => 53;
+use Test::More tests => 54;
 
 use Log::Log4perl;
 use Log::Log4perl::Level;
@@ -321,3 +321,15 @@ ok($stub_hook->{P}{login}{hostname}, 'a.jabber.server');
 ok($stub_hook->{P}{login}{password}, 'bunny');
 ok($stub_hook->{P}{to}[0], 'elmer@a.jabber.server');
 ok($stub_hook->{P}{to}[1], 'sam@another.jabber.server');
+
+# ------------------------------------
+# Check if we get all appenders
+    
+my $href   = Log::Log4perl->appenders(); 
+my $result = "";
+    
+for(sort keys %$href) {
+    $result .= "$_ => " . ref($href->{$_}->{appender});
+}
+
+like($result, qr/(app\d+.*?Log::Log4perl::Appender::TestBuffer){3}/);
