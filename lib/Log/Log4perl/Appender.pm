@@ -43,14 +43,18 @@ sub new {
            # anything in there that can't be class name.
         die "'$appenderclass' not a valid class name " if $appenderclass =~ /[^:\w]/;
 
+            # Check if the class/package is already in the namespace because
+            # something like Class::Prototyped injected it previously.
         no strict 'refs';
-        # see 'perldoc -f require' for why two evals
-        eval "require $appenderclass"
-             unless ${$appenderclass.'::IS_LOADED'};  #for unit tests, 
-                                                      #see 004Config
-             ;
-        die $@ if $@;
-
+        if(!scalar(keys %{"$appenderclass\::"})) {
+            # Not available yet, try to pull it in.
+            # see 'perldoc -f require' for why two evals
+            eval "require $appenderclass"
+                 unless ${$appenderclass.'::IS_LOADED'};  #for unit tests, 
+                                                          #see 004Config
+                 ;
+            die $@ if $@;
+        }
     };
 
     $@ and die "ERROR: can't load appenderclass '$appenderclass'\n$@";

@@ -916,7 +916,39 @@ somewhere where perl can find it and try it with a test script like
     Log::Log4perl->init("test.conf");
     ERROR("blah");
 
-to see the new colored output. Is this cool or what?
+to see the new colored output. Is this cool or what? 
+
+And it gets even better: You can write dynamically generated appender 
+classes using the C<Class::Prototyped> module. Here's an example of
+an appender prepending every outgoing message with a configurable
+number of bullets:
+
+    use Class::Prototyped;
+
+    my $class = Class::Prototyped->newPackage(
+      "MyAppenders::Bulletizer",
+      bullets => 1,
+      log     => sub {
+        my($self, %params) = @_;
+        print "*" x $self->bullets(),
+              $params{message};
+      },
+    );
+
+    use Log::Log4perl qw(:easy);
+
+    Log::Log4perl->init(\ q{
+      log4perl.logger = INFO, Bully
+    
+      log4perl.appender.Bully=MyAppenders::Bulletizer
+      log4perl.appender.Bully.bullets=3
+    
+      log4perl.appender.Bully.layout = PatternLayout
+      log4perl.appender.Bully.layout.ConversionPattern=%m %n
+    });
+
+        # ... prints: "***Boo!\n";
+    INFO "Boo!";
 
 =head2 How can I drill down on references before logging them?
 
