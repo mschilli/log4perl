@@ -233,7 +233,7 @@ sub generate_coderef {
     }
 
     my $code = <<EOL;
-    \$coderef = sub {
+    sub {
       my (\$logger)  = shift;
       my (\$level)   = pop;
       my \$message;
@@ -288,7 +288,7 @@ sub generate_coderef {
 
 EOL
 
-    eval $code or die "$@";
+    $coderef = eval $code or die "$@";
 
     return $coderef;
 }
