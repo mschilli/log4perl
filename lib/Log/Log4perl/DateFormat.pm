@@ -1,5 +1,5 @@
 ###########################################
-package Log4perl::DateFormat;
+package Log::Log4perl::DateFormat;
 ###########################################
 use warnings;
 use strict;
