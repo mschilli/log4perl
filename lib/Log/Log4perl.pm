@@ -881,8 +881,8 @@ while C<%d{yy, EEEE}> displays a two-digit year, followed by a spelled-out
 (like C<Wednesday>). 
 
 Similar options are available for shrinking the displayed category or
-limit file/path components, C<%f{1}> only displays the source file I<name>
-without any path components while C<%f> logs the full path. %c{2} only
+limit file/path components, C<%F{1}> only displays the source file I<name>
+without any path components while C<%F> logs the full path. %c{2} only
 logs the last two components of the current category, C<Foo::Bar::Baz> 
 becomes C<Bar::Baz> and saves space.
 
