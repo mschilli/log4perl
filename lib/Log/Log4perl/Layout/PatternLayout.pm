@@ -66,6 +66,15 @@ sub define {
 ##################################################
     my($self, $format) = @_;
 
+        # If the message contains a %m followed by a newline,
+        # make a note of that so that we can cut a superfluous 
+        # \n off the message later on
+    if($format =~ /%m%n/) {
+        $self->{message_chompable} = 1;
+    } else {
+        $self->{message_chompable} = 0;
+    }
+
     # Parse the format
     $format =~ s/%(-*\d*)
                        ([cCdfFILmMnprtxX%])
@@ -105,7 +114,10 @@ sub render {
     $caller_level = 0 unless defined  $caller_level;
 
     my %info    = ();
+
     $info{m}    = $message;
+        # See 'define'
+    chomp $info{m} if $self->{message_chompable};
 
     my @results = ();
 
@@ -138,12 +150,8 @@ sub render {
     }
 
     $info{c} = $category;
-        # %n means \n only if $message doesn't have a trailing newline already.
-    if($message =~ /\n\Z/) {
-        $info{n} = "";
-    } else {
-        $info{n} = "\n";
-    }
+
+    $info{n} = "\n";
     $info{p} = $priority;
 
     if($self->{info_needed}->{r}) {
