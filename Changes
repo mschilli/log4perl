@@ -2,6 +2,9 @@
 Revision history for Log::Log4perl
 ##################################################
 
+0.29 01/30/2003
+    * (kg) Removing debugging from 0.28, big woops
+
 0.28 (01/28/2003)
     * (ms) '#' in the conf file are now interpreted as comment starters only
            if they're at the start of a line with optional whitespace. 
@@ -304,6 +307,7 @@ TODO (not assigned to anybody yet):
 
 TODO Kevin:
 ##################################################
+    * use squirrel  http://www.perlmeister.com/scripts/squirrel?
     * document oneMessagePerAppender as a bona-fide feature
     * appender-by-name stuff?
     * Module for reading XML-style config files
