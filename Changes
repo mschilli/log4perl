@@ -7,6 +7,7 @@
            subsequent calls to return true.
     * (ms) run t/045Composite.t only if Storable is installed -- earlier
            perl versions (like 5.6.1) don't have it by default.
+    * (ms) fixed test case in t/020Easy.t for buggy perl 5.6.1
 
 0.46 (06/13/2004)
     * (ms) removed superfluous eval() in Log4perl.pm, reported anonymously
