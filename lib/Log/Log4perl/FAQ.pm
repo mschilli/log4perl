@@ -126,12 +126,19 @@ Log::Log4perl is fully supported on the Win32 platform. It has been tested
 with Activestate perl 5.6.1 under Windows 98 and rumor has it that it
 also runs smoothly on all other major flavors (Windows NT, 2000, XP, etc.).
 
+It also runs nicely with the buggy ActiveState 5.8.0 beta as of this
+writing, and, believe me, we had to jump through some major hoops for that.
+
 Typically, Win32 systems don't have the C<make> utility installed,
 so the standard C<perl Makefile.PL; make install> on the downloadable
 distribution won't work. But don't despair, there's a very easy solution!
 
 The C<Log::Log4perl> homepage provides a so-called PPD file for ActiveState's
 C<ppm> installer, which comes with ActiveState perl by default.
+
+=over 4
+
+=item Install on ActiveState 5.6.*
 
 The DOS command line
 
@@ -143,6 +150,27 @@ distribution and install it. If your ActiveState installation
 lacks any of the modules C<Log::Log4perl> depends upon, C<ppm> will 
 automatically contact ActivateState and download them from their CPAN-like
 repository.
+
+=item Install on ActiveState 5.8.*
+
+ActiveState's "Programmer's Package Manager" can be called from
+Window's Start Menu:
+Start-E<gt>Programs->E<gt>ActiveState ActivePerl 5.8E<gt>Perl Package Manager
+will invoke ppm. Since Log::Log4perl hasn't made it yet into the standard
+ActiveState repository (and you probably don't want their outdated packages
+anyway), just tell ppm the first time you call it to add the Log4perl 
+repository
+
+    ppm> repository add http://log4perl.sourceforge.net/ppm
+
+Then, just tell it to install Log::Log4perl and it will resolve all
+dependencies automatically and fetch them from log4perl.sourceforge.net
+if it can't find them in the main archives:
+
+    ppm> install Log::Log4perl
+
+=back
+
 That's it! Afterwards, just create a Perl script like
 
     use Log::Log4perl qw(:easy);
