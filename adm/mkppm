@@ -11,7 +11,6 @@ use LWP::Simple;
 use File::Basename;
 use File::Path;
 use File::Copy;
-use Archive::Tar;
 use Log::Log4perl qw(:easy);
 use PPM::Make;
 
@@ -20,6 +19,7 @@ Log::Log4perl->easy_init($DEBUG);
 my $PPM_DIR  = "ppm";
 my $CPAN_DIR = "http://www.cpan.org/authors/id";
 my $TAR      = "/bin/tar";
+my $GZIP     = "/bin/gzip";
 
 if(-d $PPM_DIR) {
     rmtree $PPM_DIR or LOGDIE("Cannot delete $PPM_DIR");
@@ -57,6 +57,12 @@ sub fetch_tarball {
     DEBUG("Searching in $author_dir");
 
     (my $mod_dir = $module) =~ s/::/-/g;
+
+    my($tb) = <$mod_dir*.tar.gz>;
+    if(defined $tb and -f $tb) {
+        INFO("$tb already exists");
+        return $tb;
+    }
 
     my $data = get $author_dir or LOGDIE("Cannot get $author_dir");
     my $tarball  = undef;
@@ -131,10 +137,11 @@ sub ppm_make {
     my $data = join '', <FILE>;
 
     $data =~ s#<ARCHITECTURE\s+NAME=".*?"\s*/>
-              #<ARCHITECTURE NAME="MSWin32-x86-multi-thread-5.8" />
-              #x;
+              ##x;
     $data =~ s/^.*?Test-More.*?\n//mg;
     $data =~ s/^.*?Test-Simple.*?\n//mg;
+        # Activestate has problems with compressed files
+    $data =~ s/\.tar\.gz/.tar/g;
     close FILE;
 
     open FILE, ">$ppd_file" or die "Cannot open $ppd_file";
@@ -142,13 +149,15 @@ sub ppm_make {
     close FILE;
 
     copy($ppd_file, "../$PPM_DIR") or die "Cannot copy $ppd_file";
-    copy("$mod_dir.tar.gz", "../$PPM_DIR") or 
-        die "Cannot copy $mod_dir.tar.gz";
+        # Activestate has problems with compressed files
+    system("$GZIP -d $mod_dir.tar.gz") and LOGDIE("decompression failed ($!)");
+    copy("$mod_dir.tar", "../$PPM_DIR") or 
+        die "Cannot copy $mod_dir.tar";
 
     chdir ".." or LOGDIE("Cannot chdir to ..");
 
     rmtree $topdir or die "Can't delete $topdir";
-    unlink $file;
+    #unlink $file;
 
     1;
 }
