@@ -19,6 +19,7 @@ use constant DEBUG => 0;
 our $ROOT_LOGGER;
 our $LOGGERS_BY_NAME;
 our %APPENDER_BY_NAME = ();
+our $INITIALIZED;
 
 our $DISPATCHER = Log::Dispatch->new();
 
@@ -30,20 +31,13 @@ our $LAST_CHANGED_AT;
 __PACKAGE__->reset();
 
 ##################################################
-sub init {
-##################################################
-    my($class) = @_;
-
-    return $ROOT_LOGGER;
-}
-
-##################################################
 sub reset {
 ##################################################
     $ROOT_LOGGER        = __PACKAGE__->_new("", $DEBUG);
     $LOGGERS_BY_NAME    = {};
     %APPENDER_BY_NAME   = ();
     $DISPATCHER         = Log::Dispatch->new();
+    undef $INITIALIZED;
     Log::Log4perl::Appender::reset();
 }
 
@@ -391,7 +385,7 @@ sub get_logger {
     my($class, $category) = @_;
 
     unless(defined $ROOT_LOGGER) {
-        die "Logger not initialized. No previous call to init()?";
+        die "Internal error: Root Logger not initialized.";
     }
 
     return $ROOT_LOGGER if $category eq "";
@@ -406,6 +400,9 @@ sub add_appender {
     my($self, $appender, $dont_reset_all) = @_;
 
     my $not_to_dispatcher = 0;
+
+        # We take this as an indicator that we're initialized.
+    $INITIALIZED = 1;
 
     my $appender_name = $appender->name();
 
@@ -465,6 +462,8 @@ sub log {
        # Just in case of 'init_and_watch' -- see Changes 0.21
     $_[0] = $LOGGERS_BY_NAME->{$_[0]->{category}} if defined $LAST_CHECKED_AT;
 
+    init_warn() unless $INITIALIZED;
+
     croak "priority $priority isn't numeric" if ($priority =~ /\D/);
 
     my $which = Log::Log4perl::Level::to_level($priority);
@@ -480,6 +479,7 @@ sub fatal {
    print "fatal: ($_[0]->{category}/$_[0]->{level}) [@_]\n" if DEBUG;
        # Just in case of 'init_and_watch' -- see Changes 0.21
    $_[0] = $LOGGERS_BY_NAME->{$_[0]->{category}} if defined $LAST_CHECKED_AT;
+   init_warn() unless $INITIALIZED;
    $_[0]->{FATAL}(@_, 'FATAL');
 }
 
@@ -487,6 +487,7 @@ sub error {
    print "error: ($_[0]->{category}/$_[0]->{level}) [@_]\n" if DEBUG;
        # Just in case of 'init_and_watch' -- see Changes 0.21
    $_[0] = $LOGGERS_BY_NAME->{$_[0]->{category}} if defined $LAST_CHECKED_AT;
+   init_warn() unless $INITIALIZED;
    $_[0]->{ERROR}(@_, 'ERROR');
 }
 
@@ -494,6 +495,7 @@ sub warn {
    print "warn: ($_[0]->{category}/$_[0]->{level}) [@_]\n" if DEBUG;
        # Just in case of 'init_and_watch' -- see Changes 0.21
    $_[0] = $LOGGERS_BY_NAME->{$_[0]->{category}} if defined $LAST_CHECKED_AT;
+   init_warn() unless $INITIALIZED;
    $_[0]->{WARN} (@_, 'WARN' );
 }
 
@@ -501,6 +503,7 @@ sub info {
    print "info: ($_[0]->{category}/$_[0]->{level}) [@_]\n" if DEBUG;
        # Just in case of 'init_and_watch' -- see Changes 0.21
    $_[0] = $LOGGERS_BY_NAME->{$_[0]->{category}} if defined $LAST_CHECKED_AT;
+   init_warn() unless $INITIALIZED;
    $_[0]->{INFO} (@_, 'INFO' );
 }
 
@@ -508,6 +511,7 @@ sub debug {
    print "debug: ($_[0]->{category}/$_[0]->{level}) [@_]\n" if DEBUG;
        # Just in case of 'init_and_watch'
    $_[0] = $LOGGERS_BY_NAME->{$_[0]->{category}} if defined $LAST_CHECKED_AT;
+   init_warn() unless $INITIALIZED;
    $_[0]->{DEBUG}(@_, 'DEBUG');
 }
 
@@ -516,6 +520,12 @@ sub is_info  { return $_[0]->level() >= $INFO; }
 sub is_warn  { return $_[0]->level() >= $WARN; }
 sub is_error { return $_[0]->level() >= $ERROR; }
 sub is_fatal { return $_[0]->level() >= $FATAL; }
+sub init_warn {
+    CORE::warn "Seems like no initialization happened. Forgot to call init()?\n";
+    # Only tell this once;
+    $INITIALIZED = 1;
+              }
+
 ##################################################
 
 1;

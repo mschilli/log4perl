@@ -20,8 +20,8 @@ use Log::Log4perl::TestBuffer;
 
 my $app = Log::Log4perl::Appender->new(
     "Log::Log4perl::TestBuffer");
-
 ok(1); # If we made it this far, we're ok.
+Log::Log4perl::init(\""); # Bogus init to avoid warning
 
 my $logger = Log::Log4perl->get_logger("abc.def.ghi");
 $logger->add_appender($app);

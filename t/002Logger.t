@@ -19,6 +19,9 @@ use Log::Log4perl::Level;
 
 ok(1); # If we made it this far, we're ok.
 
+    # Bogus init to avoid warning
+Log::Log4perl::init(\"");
+
 my $log1 = Log::Log4perl->get_logger("abc.def");
 my $log2 = Log::Log4perl->get_logger("abc.def");
 my $log3 = Log::Log4perl->get_logger("abc.def.ghi");

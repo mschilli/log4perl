@@ -63,6 +63,7 @@ sub _init {
     my($class, $config) = @_;
 
     print "Calling _init\n" if DEBUG;
+    $Log::Log4perl::Logger::INITIALIZED = 1;
 
     #keep track so we don't create the same one twice
     my %appenders_created = ();
