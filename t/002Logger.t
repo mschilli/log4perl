@@ -205,5 +205,27 @@ ok($app->buffer(), "DEBUG - debug message\nINFO - info message \n");
 ok($app2->buffer(),"DEBUG - debug message\nINFO - info message \n");
 ok($app3->buffer(),"INFO - info message \n");
 
+    ##################################################
+    # Check several messages concatenated
+    ##################################################
+$app->buffer("");
 
-BEGIN { plan tests => 44 };
+$log1->level($DEBUG);
+
+$log1->log($DEBUG, "1", " ", "2", " ");
+$log1->debug("3 ", "4 ");
+$log1->info("5 ", "6 ");
+$log1->warn("7 ", "8 ");
+$log1->error("9 ", "10 ");
+$log1->fatal("11 ", "12 ", "13 ");
+
+ok($app->buffer(), <<EOT);
+DEBUG - 1 2 
+DEBUG - 3 4 
+INFO - 5 6 
+WARN - 7 8 
+ERROR - 9 10 
+FATAL - 11 12 13
+EOT
+
+BEGIN { plan tests => 45 };

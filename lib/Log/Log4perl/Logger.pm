@@ -177,9 +177,9 @@ sub generate_coderef {
 
     my $code = <<EOL;
     \$coderef = sub {
-      my (\$logger) = shift;
-      my (\$message) = shift;
-      my (\$level) = shift;
+      my (\$logger)  = shift;
+      my (\$level)   = pop;
+      my (\$message) = join '', \@_;
       
       print("coderef: \$logger->{category}\n") if DEBUG;
 
@@ -222,9 +222,9 @@ sub generate_noop_coderef {
     if (defined $WATCH_DELAY) {
         $watch_delay_code = generate_watch_code();
         $watch_delay_code = <<EOL;
-        my (\$logger) = shift;
-        my (\$message) = shift;
-        my (\$level) = shift;
+        my (\$logger)  = shift;
+        my (\$level)   = pop;
+        my (\$message) = join '', \@_;
         $watch_delay_code
 EOL
     }
@@ -460,17 +460,17 @@ sub set_file_to_watch {
 sub log {
 # external api
 ##################################################
-    my ($self, $priority, $message) = @_;
+    my ($self, $priority, @messages) = @_;
 
-       # Just in case of 'init_and_watch'
+       # Just in case of 'init_and_watch' -- see Changes 0.21
     $_[0] = $LOGGERS_BY_NAME->{$_[0]->{category}} if defined $LAST_CHECKED_AT;
 
     croak "priority $priority isn't numeric" if ($priority =~ /\D/);
 
     my $which = Log::Log4perl::Level::to_level($priority);
 
-    $self->{$which}($self, $message, Log::Log4perl::Level::to_level($priority));
-
+    $self->{$which}($self, @messages, 
+                    Log::Log4perl::Level::to_level($priority));
 }
 
 ##################################################
@@ -478,24 +478,28 @@ sub log {
 
 sub fatal {
    print "fatal: ($_[0]->{category}/$_[0]->{level}) [@_]\n" if DEBUG;
+       # Just in case of 'init_and_watch' -- see Changes 0.21
    $_[0] = $LOGGERS_BY_NAME->{$_[0]->{category}} if defined $LAST_CHECKED_AT;
    $_[0]->{FATAL}(@_, 'FATAL');
 }
 
 sub error {
    print "error: ($_[0]->{category}/$_[0]->{level}) [@_]\n" if DEBUG;
+       # Just in case of 'init_and_watch' -- see Changes 0.21
    $_[0] = $LOGGERS_BY_NAME->{$_[0]->{category}} if defined $LAST_CHECKED_AT;
    $_[0]->{ERROR}(@_, 'ERROR');
 }
 
 sub warn {
    print "warn: ($_[0]->{category}/$_[0]->{level}) [@_]\n" if DEBUG;
+       # Just in case of 'init_and_watch' -- see Changes 0.21
    $_[0] = $LOGGERS_BY_NAME->{$_[0]->{category}} if defined $LAST_CHECKED_AT;
    $_[0]->{WARN} (@_, 'WARN' );
 }
 
 sub info {
    print "info: ($_[0]->{category}/$_[0]->{level}) [@_]\n" if DEBUG;
+       # Just in case of 'init_and_watch' -- see Changes 0.21
    $_[0] = $LOGGERS_BY_NAME->{$_[0]->{category}} if defined $LAST_CHECKED_AT;
    $_[0]->{INFO} (@_, 'INFO' );
 }
