@@ -94,6 +94,7 @@ t/040Filter.t
 t/041SafeEval.t
 t/042SyncApp.t
 t/043VarSubst.t
+t/044XML-Filter.t
 t/compare.pl
 t/deeper1.expected
 t/deeper6.expected
