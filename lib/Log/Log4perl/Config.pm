@@ -120,8 +120,11 @@ sub _init {
 
     my $data = config_read($config);
     
-    #use Data::Dumper;
-    #print Data::Dumper::Dumper($data) if _INTERNAL_DEBUG;
+    if(_INTERNAL_DEBUG) {
+        require Data::Dumper;
+        Data::Dumper->import();
+        print Data::Dumper::Dumper($data);
+    }
 
     my @loggers      = ();
     my %filter_names = ();
