@@ -263,6 +263,10 @@ This parses an XML file that conforms to the log4j.dtd, q.v..  It currently
 does B<not> handle any of the log4perl extensions we've been coming 
 up with, but that should hopefully follow shortly.
 
+You use it just like you would a properties config but if the data starts 
+with an xml declaration C<<\?xml...> then it gets parsed by this DOMConfigurator instead of the PropertiesConfigurator.
+
+
 It is brazenly modeled on log4j's DOMConfigurator class, (by 
 Christopher Taylor, Ceki Gulcu and Anders Kristensen) and any
 perceived similarity is not coincidental.
@@ -274,6 +278,8 @@ any problems.
 =head1 SEE ALSO
 
 Log::Log4perl::Config::PropertyConfigurator
+
+Log::Log4perl::Config::LDAPConfigurator (coming soon!)
 
 t/038XML-DOM.t
 
