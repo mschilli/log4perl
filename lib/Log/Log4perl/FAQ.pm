@@ -158,6 +158,46 @@ and run it. It should print something like
 If you find that something doesn't work, please let us know at
 log4perl-devel@lists.sourceforge.net -- we'll apprechiate it. Have fun!
 
+=head2 What's the easiest way to use Log4perl?
+
+If you just want to get all the comfort of logging, without much
+overhead, use I<Stealth Loggers>. If you use Log::Log4perl in 
+C<:easy> mode like
+
+    use Log::Log4perl qw(:easy);
+
+you'll have the following functions available in the current package:
+
+    DEBUG("message");
+    INFO("message");
+    WARN("message");
+    ERROR("message");
+    FATAL("message");
+
+Just make sure that every package of your code you're using them in
+pulls in C<use Log::Log4perl qw(:easy)> first, then you're set.
+
+These stealth loggers
+will absolutely silent until you initialize Log::Log4perl in 
+your main program with either 
+
+        # Define any Log4perl behaviour
+    Log::Log4perl->init("foo.conf");
+
+(using a full-blown Log4perl config file) or the super-easy method
+
+        # Just log to STDERR
+    Log::Log4perl->easy_init($DEBUG);
+
+or the parameter-style method with a complexity somewhat in between:
+
+        # Append to a log file
+    Log::Log4perl->easy_init( { level   => $DEBUG,
+                                file    => ">>test.log" } );
+
+For more info, please check out the "Stealth Loggers" section
+in the main Log::Log4perl documentation page.
+
 =head1 SEE ALSO
 
 Log::Log4perl
