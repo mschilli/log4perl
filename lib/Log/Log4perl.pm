@@ -30,6 +30,11 @@ sub init {
 ##################################################
     my($class, @args) = @_;
 
+    #woops, they called ::init instead of ->init, let's be forgiving
+    if ($class ne __PACKAGE__) {
+        unshift(@args, $class);
+    }
+
     # Delegate this to the config module
     return Log::Log4perl::Config->init(@args);
 }
