@@ -1,5 +1,5 @@
 ######################################################################
-    Log::Log4perl 0.37
+    Log::Log4perl 0.38
 ######################################################################
 
 NAME
@@ -1656,6 +1656,7 @@ AUTHORS
         Chris R. Donnelly <cdonnelly@digitalmotorworks.com>
         James FitzGibbon <james.fitzgibbon@target.com>
         Paul Harrington <Paul-Harrington@deshaw.com>
+        Brett Rann <brettrann@mail.com>
         Erik Selberg <erik@selberg.com>
         Aaron Straup Cope <asc@vineyard.net>
         Mac Yang <mac@proofpoint.com>
