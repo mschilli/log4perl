@@ -136,6 +136,19 @@ sub parse_children_of_logger_element {
             }
             print "parse cole: got param $name = $value\n"  if DEBUG;
             $l4p_branch->{$name} = {value => $value};
+        }elsif ($tag_name eq 'param-nested'){ #log4perl only
+            parse param-nested
+               can be param, param-text, param-nested
+
+        }elsif ($tag_name eq 'param-text'){ #log4perl only
+            my $name = $child->getAttribute('name');
+            my $value = $child->getText;
+            if ($value =~ /(all|debug|info|warn|error|fatal|off|null)/) {
+                $value = uc $value;
+            }
+            print "parse cole: got param $name = $value\n"  if DEBUG;
+            $l4p_branch->{$name} = {value => $value};
+
         }elsif ($tag_name eq 'appender-ref'){
             push @appenders, $child->getAttribute('ref');
             #DEBUG!!!! q.v.
@@ -252,23 +265,46 @@ Log::Log4perl::Config::DOMConfigurator - reads xml
 
 =head1 SYNOPSIS
 
-This is an internal class.
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 
-    Log::Log4perl::Config::DOMConfigurator::parse($text);
-    
+    <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+    <appender name="FileAppndr1" class="org.apache.log4j.FileAppender">
+        <layout class="Log::Log4perl::Layout::PatternLayout">
+                <param name="ConversionPattern"
+                       value="%d %4r [%t] %-5p %c %t - %m%n"/>
+        </layout>
+        <param name="File" value="t/tmp/DOMtest"/>
+        <param name="Append" value="false"/>
+    </appender>
+
+    <category name="a.b.c.d" additivity="false">
+        <level value="warn"/>  <!-- note lowercase! -->
+        <appender-ref ref="FileAppndr1"/>
+    </category>
+
+   <root>
+        <priority value="warn"/>
+        <appender-ref ref="FileAppndr1"/>
+   </root>
+
+   </log4j:configuration>
+
+
 
 =head1 DESCRIPTION
 
-This parses an XML file that conforms to the log4j.dtd, q.v..  It currently
+This parses an XML file that conforms to the log4j.dtd, q.v.  It currently
 does B<not> handle any of the log4perl extensions we've been coming 
 up with, but that should hopefully follow shortly.
 
 You use it just like you would a properties config but if the data starts 
-with an xml declaration C<<\?xml...> then it gets parsed by this DOMConfigurator instead of the PropertiesConfigurator.
+with an xml declaration C<<\?xml ...> then it gets parsed by this DOMConfigurator instead of the PropertiesConfigurator.
 
 Note that you need XML::DOM installed.
 
-It is brazenly modeled on log4j's DOMConfigurator class, (by 
+The code is brazenly modeled on log4j's DOMConfigurator class, (by 
 Christopher Taylor, Ceki Gülcü and Anders Kristensen) and any
 perceived similarity is not coincidental.
 
@@ -285,8 +321,6 @@ Log::Log4perl::Config
 Log::Log4perl::Config::PropertyConfigurator
 
 Log::Log4perl::Config::LDAPConfigurator (coming soon!)
-
-t/038XML-DOM.t
 
 =head1 AUTHOR
 
