@@ -40,6 +40,7 @@ t/017Watch.t
 t/018Init.t
 t/019Warn.t
 t/020Easy.t
+t/021AppThres.t
 t/deeper1.expected
 t/deeper6.expected
 t/deeper7.expected
