@@ -17,7 +17,7 @@ use constant DEBUG => 0;
 
     # Initialization
 our $ROOT_LOGGER;
-our $LOGGERS_BY_NAME;
+our $LOGGERS_BY_NAME = {};
 our %APPENDER_BY_NAME = ();
 our $INITIALIZED;
 
@@ -34,11 +34,17 @@ __PACKAGE__->reset();
 sub reset {
 ##################################################
     $ROOT_LOGGER        = __PACKAGE__->_new("", $DEBUG);
-    $LOGGERS_BY_NAME    = {};
+#    $LOGGERS_BY_NAME    = {};  #leave this alone, it's used by 
+                                #reset_all_output_methods when the config changes
     %APPENDER_BY_NAME   = ();
     $DISPATCHER         = Log::Dispatch->new();
     undef $INITIALIZED;
     Log::Log4perl::Appender::reset();
+
+    #clear out all the existing appenders
+    foreach my $logger (values %$LOGGERS_BY_NAME){
+        $logger->{appender_names} = ();
+    }
 }
 
 ##################################################
@@ -143,9 +149,9 @@ sub set_output_methods {
             $self->{$levelname} = $noop;
         }
 
-        print("  Setting $self->{category}.$levelname to ",
+        print("  Setting [$self] $self->{category}.$levelname to ",
               ($self->{$levelname} == $noop ? "NOOP" : 
-              ("Coderef: " . scalar @appenders . " appenders")), 
+              ("Coderef [$coderef]: " . scalar @appenders . " appenders")), 
               "\n") if DEBUG;
     }
 }
@@ -186,7 +192,6 @@ sub generate_coderef {
 
           print("  Sending message '\$message' (\$level) " .
                 "to \$appender_name\n") if DEBUG;
-    
           \$appender->log(
               #these get passed through to Log::Dispatch
               { name    => \$appender_name,
@@ -252,8 +257,9 @@ sub generate_watch_code {
                 
             print "  Config file has been modified\n" if DEBUG;
 
-            %APPENDER_BY_NAME = ();
-            $DISPATCHER = Log::Dispatch->new();
+            #these are now handled by the call to reset() in _init()
+            #%APPENDER_BY_NAME = ();
+            #$DISPATCHER = Log::Dispatch->new();
             
             Log::Log4perl->init_and_watch($FILE_TO_WATCH, $WATCH_DELAY);
             
@@ -479,40 +485,30 @@ sub log {
 
 sub fatal {
    print "fatal: ($_[0]->{category}/$_[0]->{level}) [@_]\n" if DEBUG;
-       # Just in case of 'init_and_watch' -- see Changes 0.21
-   $_[0] = $LOGGERS_BY_NAME->{$_[0]->{category}} if defined $LAST_CHECKED_AT;
    init_warn() unless $INITIALIZED;
    $_[0]->{FATAL}(@_, 'FATAL');
 }
 
 sub error {
    print "error: ($_[0]->{category}/$_[0]->{level}) [@_]\n" if DEBUG;
-       # Just in case of 'init_and_watch' -- see Changes 0.21
-   $_[0] = $LOGGERS_BY_NAME->{$_[0]->{category}} if defined $LAST_CHECKED_AT;
    init_warn() unless $INITIALIZED;
    $_[0]->{ERROR}(@_, 'ERROR');
 }
 
 sub warn {
    print "warn: ($_[0]->{category}/$_[0]->{level}) [@_]\n" if DEBUG;
-       # Just in case of 'init_and_watch' -- see Changes 0.21
-   $_[0] = $LOGGERS_BY_NAME->{$_[0]->{category}} if defined $LAST_CHECKED_AT;
    init_warn() unless $INITIALIZED;
    $_[0]->{WARN} (@_, 'WARN' );
 }
 
 sub info {
    print "info: ($_[0]->{category}/$_[0]->{level}) [@_]\n" if DEBUG;
-       # Just in case of 'init_and_watch' -- see Changes 0.21
-   $_[0] = $LOGGERS_BY_NAME->{$_[0]->{category}} if defined $LAST_CHECKED_AT;
    init_warn() unless $INITIALIZED;
    $_[0]->{INFO} (@_, 'INFO' );
 }
 
 sub debug {
    print "debug: ($_[0]->{category}/$_[0]->{level}) [@_]\n" if DEBUG;
-       # Just in case of 'init_and_watch'
-   $_[0] = $LOGGERS_BY_NAME->{$_[0]->{category}} if defined $LAST_CHECKED_AT;
    init_warn() unless $INITIALIZED;
    $_[0]->{DEBUG}(@_, 'DEBUG');
 }
@@ -523,7 +519,7 @@ sub is_warn  { return $_[0]->level() >= $WARN; }
 sub is_error { return $_[0]->level() >= $ERROR; }
 sub is_fatal { return $_[0]->level() >= $FATAL; }
 sub init_warn {
-    CORE::warn "Seems like no initialization happened. Forgot to call init()?\n";
+    CORE::warn "Log4perl: Seems like no initialization happened. Forgot to call init()?\n";
     # Only tell this once;
     $INITIALIZED = 1;
               }
