@@ -34,6 +34,7 @@ my @LEVEL_MAP_A = qw(
 
 our $WATCHER;
 our $DEFAULT_WATCH_DELAY = 60; # seconds
+our $OLD_CONFIG;
 
 ###########################################
 sub init {
@@ -84,13 +85,20 @@ sub init_and_watch {
                    );
     }
 
-    _init($class, $config);
+    eval { _init($class, $config); };
+
+    if($@) {
+        die "$@" unless defined $OLD_CONFIG;
+            # Call _init with a pre-parsed config to go back to old setting
+        _init($class, undef, $OLD_CONFIG);
+        warn "Loading new config failed, reverted to old one\n";
+    }
 }
 
 ##################################################
 sub _init {
 ##################################################
-    my($class, $config) = @_;
+    my($class, $config, $data) = @_;
 
     my %additivity = ();
 
@@ -118,7 +126,7 @@ sub _init {
     # Pretty scary. But it allows the lines of the config file to be
     # in *arbitrary* order.
 
-    my $data = config_read($config);
+    $data = config_read($config) unless defined $data;
     
     if(_INTERNAL_DEBUG) {
         require Data::Dumper;
@@ -280,6 +288,9 @@ sub _init {
         warn "Log::Log4perl configuration looks suspicious: ",
              "$CONFIG_INTEGRITY_ERROR";
     }
+
+        # Successful init(), save config for later
+    $OLD_CONFIG = $data;
 }
 
 ##################################################

@@ -3,8 +3,11 @@
 ##################################################
 
 0.49 (10/15/2004)
-    * (ms) init() now also accepts an open file handle (passed in as a glob) to
-           a configuration file or a ref to an IO::File object.
+    * (ms) init_and_watch() no longer die()s on reloading syntactically 
+           wrong configuration files but issues a warning and then 
+           reloads the last working config.
+    * (ms) init() now also accepts an open file handle (passed in as a
+           glob) to a configuration file or a ref to an IO::File object.
     * (ms) Jos I. Boumans <kane@xs4all.net> and 
            Chris Winters <chris@cwinters.com> reported an error thrown
            by L4p in their app SPOPS: During global construction. Looks
@@ -12,8 +15,8 @@
            the is_<level> method gets called, resulting in a runtime
            exception. Added proposed remedy checking if the called
            method is defined by ref.
-    * (ms) Added check to init_and_watch if obtaining the mod timestamp 
-           failed.
+    * (ms) Added check to init_and_watch if obtaining the mod
+           timestamp failed.
 
 0.48 (08/20/2004)
     * (ms) fixed bug reported by Chip Salzenberg <chip@pobox.com>: logdie()

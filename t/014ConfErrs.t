@@ -1,10 +1,6 @@
 use Log::Log4perl;
 use Test;
 
-
-$debug = 0;
-
-
 $testfile = 't/tmp/test12.log';
 
 unlink $testfile if (-e $testfile);
@@ -36,7 +32,7 @@ log4j.appender.myAppender.File   = $testfile
 EOL
 
 eval{
-    Log::Log4perl->init(\$conf, $debug);
+    Log::Log4perl->init(\$conf);
 };
 ok($@,'/ERROR: trying to set layout for myAppender to \'Log::Log4perl::Layout::SimpleLayoutx\' failed/');
 
@@ -97,7 +93,7 @@ log4j.appender.myAppender.File   = $testfile
 EOL
 
 eval{
-    Log::Log4perl->init(\$conf, $debug);
+    Log::Log4perl->init(\$conf);
 
 };
 ok($@,"/level 'xxINFO' is not a valid error level/");
@@ -115,7 +111,7 @@ log4j.appender.myAppender.File   = $testfile
 EOL
 
 eval{
-    Log::Log4perl->init(\$conf, $debug);
+    Log::Log4perl->init(\$conf);
 };
 ok($@,'/Layout not specified for appender myAppender at/');
 
@@ -131,7 +127,7 @@ EOL
 
 eval{
 
-    Log::Log4perl->init(\$conf, $debug);
+    Log::Log4perl->init(\$conf);
 
 };
 ok($@,"/ERROR: can't load appenderclass 't/tmp/test12.log'/");
@@ -149,7 +145,7 @@ log4j.appender.myAppender.File   = $testfile
 EOL
 
 eval{
-    Log::Log4perl->init(\$conf, $debug);
+    Log::Log4perl->init(\$conf);
 
 };
 ok($@,"/ERROR: you didn't tell me how to implement your appender 'XXmyAppender'/");
@@ -165,7 +161,7 @@ log4j.appender.myAppender        = Log::Log4perl::Appender::TestBuffer
 EOL
 
 eval{
-    Log::Log4perl->init(\$conf, $debug);
+    Log::Log4perl->init(\$conf);
 
 };
 ok($@,"/Layout not specified for appender myAppender/");
@@ -190,7 +186,7 @@ log4j.appender.myAppender.File   = $testfile
 EOL
 
 eval{
-    Log::Log4perl->init(\$conf, $debug);
+    Log::Log4perl->init(\$conf);
 
 };
 ok($@,"");
