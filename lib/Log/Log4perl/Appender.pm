@@ -115,13 +115,17 @@ sub log { # Relay this call to Log::Dispatch::Whatever
 
     #doing the rendering in here 'cause this is 
     #where we keep the layout
+
     $p->{message} = $self->{layout}->render($p->{message}, 
                                             $category,
                                             $level,
                                             3 + $Log::Log4perl::caller_depth,
                                             );
-    $self->{appender}->log(%$p);
 
+    $self->{appender}->log(%$p, 
+                            #these are used by our Appender::DBI
+                            log4p_category => $category,
+                            log4p_level  => $level,);
     return 1;
 }
 
