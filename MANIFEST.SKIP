@@ -2,3 +2,6 @@ blib
 Makefile
 ^modules
 ^Log4perl.pm
+CVS
+^t/bak
+.cvsignore

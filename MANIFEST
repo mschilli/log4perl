@@ -1,5 +1,6 @@
 Changes
 MANIFEST
+MANIFEST.SKIP
 Makefile.PL
 README
 lib/Log/Log4perl.pm
@@ -8,6 +9,9 @@ lib/Log/Log4perl/Logger.pm
 lib/Log/Log4perl/Level.pm
 lib/Log/Log4perl/Layout.pm
 lib/Log/Log4perl/Config.pm
+lib/Log/Log4perl/JavaMap.pm
+lib/Log/Log4perl/JavaMap/ConsoleAppender.pm
+lib/Log/Log4perl/JavaMap/FileAppender.pm
 t/002Logger.t
 t/003Layout.t
 t/001Level.t
@@ -17,6 +21,8 @@ t/005Config-Perl.t
 t/006Config-Java.t
 t/007LogPrio.t
 t/008ConfCat.t
+t/010JConsole.t
+t/011JFile.t
 eg/log4j-manual-3.conf
 eg/log4j-manual-1.conf
 eg/log4j-manual-2.conf
