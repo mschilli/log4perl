@@ -15,6 +15,9 @@
            (path fixed).
     * (ms) Lars Thegler <lars@thegler.dk> provided a patch to keep 
            compatibility with 5.005_03.
+    * (ms) Added a patch to avoid warnings on undefined MDC values referenced
+           via %X in PatternLayout. Now, the string "[undef]" is used. Bug
+           was reported by Ritu Kohli <Ritu.Kohli@ubs.com>
 
 0.42 (02/14/2004)
     * (kg) added filters to XML DOMConfig and DTD

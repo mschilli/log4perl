@@ -273,6 +273,7 @@ sub render {
                     $result = $info{$op}->format($self->{time_function}->());
                 }
             }
+            $result = "[undef]" unless defined $result;
             push @results, $result;
         } else {
             warn "Format %'$op' not implemented (yet)";

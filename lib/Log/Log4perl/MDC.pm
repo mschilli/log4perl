@@ -83,13 +83,13 @@ Store a value C<$value> under key C<$key> in the map.
 Retrieve the content of the map under the specified key.
 Typically done by C<%X{key}> in
 C<Log::Log4perl::Layout::PatternLayout>.
-If no value exists to the given key, the string C<"[undef]"> is being returned.
+If no value exists to the given key, C<undef> is returned.
 
 =item my $text = Log::Log4perl::MDC->remove();
 
 Delete all entries from the map.
 
-=item Log::Log4perl::NDC->get_context();
+=item Log::Log4perl::MDC->get_context();
 
 Returns a reference to the hash table.
 
