@@ -2,9 +2,16 @@
  Revision history for Log::Log4perl
 ##################################################
 
-0.49 (not yet released)
+0.49 (10/15/2004)
     * (ms) init() now also accepts an open file handle (passed in as a glob) to
            a configuration file or a ref to an IO::File object.
+    * (ms) Jos I. Boumans <kane@xs4all.net> and 
+           Chris Winters <chris@cwinters.com> reported an error thrown
+           by L4p in their app SPOPS: During global construction. Looks
+           like the Logger object's internal hash is cleared and then
+           the is_<level> method gets called, resulting in a runtime
+           exception. Added proposed remedy checking if the called
+           method is defined by ref.
 
 0.48 (08/20/2004)
     * (ms) fixed bug reported by Chip Salzenberg <chip@pobox.com>: logdie()

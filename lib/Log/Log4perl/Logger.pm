@@ -681,20 +681,22 @@ sub create_log_level_methods {
         print "$lclevel: ($_[0]->{category}/$_[0]->{level}) [@_]\n" 
             if _INTERNAL_DEBUG;
         init_warn() unless $INITIALIZED or $NON_INIT_WARNED;
-        $_[0]->{$level}->(@_, $level);
+        $_[0]->{$level}->(@_, $level) if defined $_[0]->{$level};
      };
 
   # Added these to have is_xxx functions as fast as xxx functions
   # -ms
 
   *{__PACKAGE__ . "::is_$lclevel"} = sub {
-      $_[0]->{"is_" . $level}->($_[0], "is_" . $lclevel);
+      $_[0]->{"is_" . $level}->($_[0], "is_" . $lclevel) if
+          defined $_[0]->{$level};
   };
   
   # Add the isXxxEnabled() methods as identical to the is_xxx
   # functions. - dviner
   
-  *{__PACKAGE__ . "::is".$initial_cap."Enabled"} = \&{__PACKAGE__ . "::is_$lclevel"};
+  *{__PACKAGE__ . "::is".$initial_cap."Enabled"} = 
+                           \&{__PACKAGE__ . "::is_$lclevel"};
   
   use strict qw(refs);
 
