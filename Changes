@@ -7,6 +7,7 @@ Revision history for Log::Log4perl
     * Added documentation to Log::Log4perl::Appender
     * Made Time::HiRes optional. If it's missing, PatternLayout will
       just use full seconds as %r.
+    * SimpleDateFormat added
 
 0.22 8/17/2002
     * Threshold settings of appenders: 
