@@ -242,42 +242,123 @@ sub format {
 
 __END__
 
-http://jakarta.apache.org/log4j/docs/api/org/apache/log4j/PatternLayout.html
+=head1 NAME
 
-"ABSOLUTE", 
-HH:mm:ss,SSS
-"15:49:37,459"
+Log::Log4perl::DateFormat - Log4perl advanced date formatter helper class
 
-"DATE" 
-"dd MMM YYYY HH:mm:ss,SSS"
-"06 Nov 1994 15:49:37,459"
+=head1 SYNOPSIS
 
-and "ISO8601"
-"YYYY-mm-dd HH:mm:ss,SSS"
-"1999-11-27 15:49:37,459"
+    use Log::Log4perl::DateFormat;
 
-%d{ISO8601} or %d{ABSOLUTE}
-%d{HH:mm:ss,SSS} or %d{dd MMM yyyy HH:mm:ss,SSS}
+    my $format = Log::Log4perl::DateFormat->new("HH:mm:ss,SSS");
 
-Symbol   Meaning                 Presentation        Example
-------   -------                 ------------        -------
-G        era designator          (Text)              AD
-y        year                    (Number)            1996
-M        month in year           (Text & Number)     July & 07
-d        day in month            (Number)            10
-h        hour in am/pm (1~12)    (Number)            12
-H        hour in day (0~23)      (Number)            0
-m        minute in hour          (Number)            30
-s        second in minute        (Number)            55
-S        millisecond             (Number)            978
-E        day in week             (Text)              Tuesday
-D        day in year             (Number)            189
-F        day of week in month    (Number)            2 (2nd Wed in July)
-w        week in year            (Number)            27
-W        week in month           (Number)            2
-a        am/pm marker            (Text)              PM
-k        hour in day (1~24)      (Number)            24
-K        hour in am/pm (0~11)    (Number)            0
-z        time zone               (Text)              Pacific Standard Time
-'        escape for text         (Delimiter)
-''       single quote            (Literal)           '
+    # Simple time, resolution in seconds
+    my $time = time();
+    print $format->format($time), "\n";
+        # => "17:02:39,000"
+
+    # Advanced time, resultion in milliseconds
+    use Time::HiRes;
+    my ($secs, $msecs) = Time::HiRes::gettimeofday();
+    print $format->format($secs, $msecs), "\n";
+        # => "17:02:39,959"
+
+=head1 DESCRIPTION
+
+C<Log::Log4perl::DateFormat> is a low-level helper class for the 
+advanced date formatting functions in C<Log::Log4perl::Layout::PatternLayout>.
+
+Unless you're writing your own Layout class like
+L<Log::Log4perl::Layout::PatternLayout>, there's probably not much use
+for you to read this.
+
+C<Log::Log4perl::DateFormat> is a formatter which allows dates to be
+formatted according to the log4j spec on
+
+    http://jakarta.apache.org/log4j/docs/api/org/apache/log4j/PatternLayout.html
+
+which allows the following placeholders to be recognized and processed:
+
+    Symbol Meaning              Presentation    Example
+    ------ -------              ------------    -------
+    G      era designator       (Text)          AD
+    y      year                 (Number)        1996
+    M      month in year        (Text & Number) July & 07
+    d      day in month         (Number)        10
+    h      hour in am/pm (1~12) (Number)        12
+    H      hour in day (0~23)   (Number)        0
+    m      minute in hour       (Number)        30
+    s      second in minute     (Number)        55
+    S      millisecond          (Number)        978
+    E      day in week          (Text)          Tuesday
+    D      day in year          (Number)        189
+    F      day of week in month (Number)        2 (2nd Wed in July)
+    w      week in year         (Number)        27
+    W      week in month        (Number)        2
+    a      am/pm marker         (Text)          PM
+    k      hour in day (1~24)   (Number)        24
+    K      hour in am/pm (0~11) (Number)        0
+    z      time zone            (Text)          Pacific Standard Time
+    '      escape for text      (Delimiter)
+    ''     single quote         (Literal)       '
+
+For example, if you want to format the current Unix time in 
+C<"MM/dd HH:mm"> format, all you have to do is this:
+
+    use Log::Log4perl::DateFormat;
+
+    my $format = Log::Log4perl::DateFormat->new("MM/dd HH:mm");
+
+    my $time = time();
+    print $format->format($time), "\n";
+
+While the C<new()> method is expensive, because it parses the format
+strings and sets up all kinds of structures behind the scenes, 
+followup calls to C<format()> are fast, because C<DateFormat> will
+just call C<localtime()> and C<sprintf()> once to return the formatted
+date/time string.
+
+So, typically, you would initialize the formatter once and then reuse
+it over and over again to display all kinds of time values.
+
+Also, for your convenience, 
+the following predefined formats are available, just as outlined in the
+log4j spec:
+
+    Format   Equivalent                 Example
+    ABSOLUTE "HH:mm:ss,SSS"             "15:49:37,459"
+    DATE     "dd MMM YYYY HH:mm:ss,SSS" "06 Nov 1994 15:49:37,459"
+    ISO8601  "YYYY-mm-dd HH:mm:ss,SSS"  "1999-11-27 15:49:37,459"
+
+So, instead of passing 
+
+    Log::Log4perl::DateFormat->new("HH:mm:ss,SSS");
+
+you could just as well say
+
+    Log::Log4perl::DateFormat->new("ABSOLUTE");
+
+and get the same result later on.
+
+=head2 Known Shortcomings
+ 
+The following placeholders are currently I<not> recognized, unless
+someone (and that could be you :) implements them:
+
+    F day of week in month
+    w week in year 
+    W week in month
+    k hour in day 
+    K hour in am/pm
+    z timezone
+
+Also, C<Log::Log4perl::DateFormat> just knows about English week and
+month names, internationalization support has to be added.
+
+=head1 SEE ALSO
+
+=head1 AUTHOR
+
+    Mike Schilli, <log4perl@perlmeister.com>
+
+=cut

@@ -20,6 +20,7 @@ Revision history for Log::Log4perl
            Paul Harrington <Paul-Harrington@deshaw.com>. Also added 
            %H as hostname
     * (kg) Added %min.max formatter to PatternLayout
+    * (ms) Updated docs for Log::Log4perl::DateFormat
 
 0.25 10/06/2002
     * (ms) backwards-compatibility with perl 5.00503

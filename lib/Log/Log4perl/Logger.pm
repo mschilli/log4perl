@@ -818,3 +818,25 @@ sub dec_level {
 1;
 
 __END__
+
+=head1 NAME
+
+Log::Log4perl::Logger - Main Logger Class
+
+=head1 SYNOPSIS
+
+    # It's not here
+
+=head1 DESCRIPTION
+
+While everything that makes Log4perl tick is implemented here,
+please refer to L<Log::Log4perl> for documentation.
+
+=head1 SEE ALSO
+
+=head1 AUTHOR
+
+    Mike Schilli, <log4perl@perlmeister.com>
+    Kevin Goess, <cpan@goess.org>
+
+=cut
