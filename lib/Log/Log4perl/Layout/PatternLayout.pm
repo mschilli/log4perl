@@ -90,7 +90,7 @@ sub define {
 
     # Parse the format
     $format =~ s/%(-*\d*)
-                       ([cCdfFILmMnprtxX%])
+                       ([cCdfFIlLmMnprtxX%])
                        (?:{(.*?)})*/
                        rep($self, $1, $2, $3);
                       /gex;
