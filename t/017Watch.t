@@ -47,7 +47,7 @@ log4j.category.animal.dog   = DEBUG, myAppender
 
 log4j.appender.myAppender          = Log::Dispatch::File
 log4j.appender.myAppender.layout = org.apache.log4j.PatternLayout
-log4j.appender.myAppender.layout.ConversionPattern=%-5p %c %X - %m%n
+log4j.appender.myAppender.layout.ConversionPattern=%-5p %c - %m%n
 
 log4j.appender.myAppender.filename = $testfile
 log4j.appender.myAppender.mode     = append
@@ -70,7 +70,7 @@ my @log = <LOG>;
 close LOG;
 my $log = join('',@log);
 
-ok($log, "INFO - info message\nDEBUG animal.dog N/A - 2nd debug message\nINFO  animal.dog N/A - 2nd info message\nINFO  animal.dog N/A - 2nd info message again\n");
+ok($log, "INFO - info message\nDEBUG animal.dog - 2nd debug message\nINFO  animal.dog - 2nd info message\nINFO  animal.dog - 2nd info message again\n");
 
 # ***************************************************************
 # do it 3rd time
@@ -101,7 +101,7 @@ open (LOG, $testfile) or die "can't open $testfile $!";
 close LOG;
 $log = join('',@log);
 
-ok($log, "INFO - info message\nDEBUG animal.dog N/A - 2nd debug message\nINFO  animal.dog N/A - 2nd info message\nINFO  animal.dog N/A - 2nd info message again\nINFO - 3rd info message\n");
+ok($log, "INFO - info message\nDEBUG animal.dog - 2nd debug message\nINFO  animal.dog - 2nd info message\nINFO  animal.dog - 2nd info message again\nINFO - 3rd info message\n");
 
 BEGIN {plan tests => 2};
 

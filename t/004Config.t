@@ -51,14 +51,14 @@ Log::Log4perl->init(\ <<EOT);
 log4j.rootLogger=DEBUG, A1
 log4j.appender.A1=Log::Log4perl::TestBuffer
 log4j.appender.A1.layout=org.apache.log4j.PatternLayout
-log4j.appender.A1.layout.ConversionPattern=%-4r [%t] %-5p %c %X - %m%n
+log4j.appender.A1.layout.ConversionPattern=%-4r [%t] %-5p %c - %m%n
 EOT
 
 $logger = Log::Log4perl->get_logger("foo");
 $logger->debug("Gurgel");
 
 ok(Log::Log4perl::TestBuffer->by_name("A1")->buffer(),
-    'm#^\d+\s+\[N/A\] DEBUG foo N/A - Gurgel$#'); 
+    'm#^\d+\s+\[N/A\] DEBUG foo - Gurgel$#'); 
 
 ######################################################################
 # Test init with a hashref
@@ -70,7 +70,7 @@ my %hash = (
     "log4j.appender.A1"        => "Log::Log4perl::TestBuffer",
     "log4j.appender.A1.layout" => "org.apache.log4j.PatternLayout",
     "log4j.appender.A1.layout.ConversionPattern" => 
-                                  "%-4r [%t] %-5p %c %X - %m%n"
+                                  "%-4r [%t] %-5p %c - %m%n"
     );
 
 Log::Log4perl->init(\%hash);
@@ -79,7 +79,7 @@ $logger = Log::Log4perl->get_logger("foo");
 $logger->debug("Gurgel");
 
 ok(Log::Log4perl::TestBuffer->by_name("A1")->buffer(),
-    'm#^\d+\s+\[N/A\] DEBUG foo N/A - Gurgel$#'); 
+    'm#^\d+\s+\[N/A\] DEBUG foo - Gurgel$#'); 
 
 
 ############################################################
