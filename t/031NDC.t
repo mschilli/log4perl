@@ -14,7 +14,7 @@ use Log::Log4perl::Appender::TestBuffer;
 use Log::Log4perl::NDC;
 use Log::Log4perl::MDC;
 
-BEGIN { plan tests => 2 }
+BEGIN { plan tests => 3 }
 
 # Have TestBuffer log the Log::Dispatch priority
 Log::Log4perl::Appender::TestBuffer->reset();

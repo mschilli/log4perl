@@ -27,7 +27,7 @@ unless (-e "$WORK_DIR"){
 
 my $testfile = File::Spec->catfile($WORK_DIR, "test26.log");
 
-BEGIN {plan tests => 9}
+BEGIN {plan tests => 10}
 
 END { unlink $testfile;
       unlink "${testfile}_1";
