@@ -22,7 +22,7 @@ EOL
 eval{
     Log::Log4perl->init(\$conf);
 };
-ok($@, '/ERROR: appenderclass Log::Log4perl::Appender::FileAppenderx doesn\'t exist/');
+ok($@, '/ERROR: appenderclass \'Log::Log4perl::Appender::FileAppenderx\' doesn\'t exist/');
 
 
 # *****************************************************
@@ -38,8 +38,53 @@ EOL
 eval{
     Log::Log4perl->init(\$conf, $debug);
 };
-ok($@,'/ERROR: trying to set layout for myAppender to Log::Log4perl::Layout::SimpleLayoutx failed/');
+ok($@,'/ERROR: trying to set layout for myAppender to \'Log::Log4perl::Layout::SimpleLayoutx\' failed/');
 
+# *****************************************************
+# nonexistent appender class containing a ';'
+$conf = <<EOL;
+log4j.category.simplelayout.test=INFO, myAppender
+
+log4j.appender.myAppender        = Log::Log4perl::TestBuffer;
+log4j.appender.myAppender.layout = Log::Log4perl::Layout::SimpleLayout
+log4j.appender.myAppender.File   = $testfile
+EOL
+
+eval{
+    Log::Log4perl->init(\$conf);
+};
+ok($@, '/ERROR: appenderclass \'Log::Log4perl::TestBuffer;\' doesn\'t exist/');
+
+# *****************************************************
+# nonexistent layout class containing a ';'
+$conf = <<EOL;
+log4j.category.simplelayout.test=INFO, myAppender
+
+log4j.appender.myAppender        = Log::Log4perl::TestBuffer
+log4j.appender.myAppender.layout = Log::Log4perl::Layout::SimpleLayout;
+log4j.appender.myAppender.File   = $testfile
+EOL
+
+eval{
+    Log::Log4perl->init(\$conf);
+};
+ok($@, '/Unknown layout \'Log::Log4perl::Layout::SimpleLayout;\'/');
+
+# *****************************************************
+# Relative Layout class
+$conf = <<EOL;
+log4j.category.simplelayout.test=INFO, myAppender
+
+log4j.appender.myAppender        = Log::Log4perl::TestBuffer
+log4j.appender.myAppender.layout = SimpleLayout
+log4j.appender.myAppender.File   = $testfile
+EOL
+
+eval{
+    Log::Log4perl->init(\$conf);
+};
+    # It's supposed to find it.
+ok($@, '');
 
 # *****************************************************
 # bad priority
@@ -154,7 +199,7 @@ eval{
 };
 ok($@,"");
 
-BEGIN { plan tests => 8, }
+BEGIN { plan tests => 11, }
 
 END{   
      unlink $testfile if (-e $testfile);
