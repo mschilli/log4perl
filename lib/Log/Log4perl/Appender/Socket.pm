@@ -30,7 +30,6 @@ sub log {
 ##################################################
     my($self, %params) = @_;
 
-    $self->{socket}->send("q\n");
     $self->{socket}->send($params{message});
     $self->{socket}->flush();
 
