@@ -2,7 +2,6 @@ package Log::Log4perl::JavaMap::ConsoleAppender;
 
 use Carp;
 use strict;
-use Data::Dump qw(dump);
 use Log::Dispatch::Screen;
 
 

@@ -10,7 +10,6 @@ use 5.006;
 use strict;
 use warnings;
 use Time::HiRes qw(gettimeofday tv_interval);
-use Data::Dump qw(dump);
 use Log::Log4perl::Level;
 
 use base qw(Log::Log4perl::Layout);

@@ -12,16 +12,6 @@ TODO:
 
 Kevin:
 ##################################################
-Notes to Kevin:
-* the 'new Class' syntax creates some syntactic ambiguities,
-  Class->new() is usually preferred (there's a funny paragraph
-  about it in Conway's oo-programming with perl).
-NOPE, GONE Config.pm, bottom: "The following classes are for mapping log4j"
-  still needed?
-* Just had a wild idea: Could we possibly utilize the compiler
-  frontend to eliminate log statements that are not going to be
-  triggered? This would be a HUGE performance increase!
-##################################################
 * I think we should not install Log::Dispatch::Buffer, we only use it
   for our test cases, we shouldn't infringe on the Log::Dispatch
   namespace, should we?
@@ -65,6 +55,15 @@ DONE Define default if there's no layout:
   http://jakarta.apache.org/log4j/docs/api/org/apache/log4j/SimpleLayout.html
 
 ##################################################
+
+0.15 07/10/2002
+    * There were name conflicts in Log::Dispatch, because we used *one* Log::Dispatch
+      object for the *all* loggers in the Log::Log4perl universe (it still worked
+      because we were using log_to() for Log::Dispatch to send messages to specific
+      appenders only). Now every logger has its own Log::Dispatch object. Logger.pm
+      doesn't call Kevin's anti-dupe logic anymore -- is this ok? Maybe there's 
+      some leftovers which need to be cleaned up.
+    * Kevin fixed t/014ConfErrs.t after last night's Appender.pm change
 
 0.14 07/09/2002
     * (!) Added new class Log::Log4perl::Appender as a wrapper around

@@ -11,15 +11,12 @@ use Log::Log4perl::Layout;
 use Log::Log4perl::Appender;
 use Log::Dispatch;
 use Carp;
-use Data::Dump qw(dump);
 
     # Initialization
 our $ROOT_LOGGER;
 our $LOGGERS_BY_NAME;
 our %LAYOUT_BY_APPENDER;
 our %APPENDER_BY_NAME = ();
-
-our $DISPATCHER = Log::Dispatch->new();
 
 __PACKAGE__->reset();
 
@@ -36,7 +33,6 @@ sub reset {
 ##################################################
     our $ROOT_LOGGER        = __PACKAGE__->_new("", $DEBUG);
     our $LOGGERS_BY_NAME    = {};
-    our $DISPATCHER = Log::Dispatch->new();
 }
 
 ##################################################
@@ -59,7 +55,7 @@ sub _new {
         num_appenders => 0,
         additivity    => 1,
         level         => $level,
-        dispatcher    => $DISPATCHER,
+        dispatcher    => Log::Dispatch->new(),
         layout        => undef,
                 };
 
@@ -195,7 +191,7 @@ sub get_logger {
 ##################################################
 sub add_appender {
 ##################################################
-    my($self, $appender, $not_to_dispatcher) = @_;
+    my($self, $appender) = @_;
 
     my $appender_name = $appender->name();
 
@@ -208,10 +204,7 @@ sub add_appender {
 
     $APPENDER_BY_NAME{$appender_name} = $appender;
 
-    $self->{dispatcher}->add($appender) unless $not_to_dispatcher;    
-        # ugly, but while we want to track the names of
-        # all the appenders in a category, we only
-        # want to add it to log_dispatch *once*
+    $self->{dispatcher}->add($appender);    
 }
 
 ##################################################

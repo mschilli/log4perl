@@ -2,7 +2,6 @@ package Log::Log4perl::JavaMap::FileAppender;
 
 use Carp;
 use strict;
-use Data::Dump qw(dump);
 use Log::Dispatch::File;
 
 

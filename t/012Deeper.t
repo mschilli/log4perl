@@ -5,6 +5,7 @@
 use Log::Log4perl;
 use Test;
 
+BEGIN { plan tests => 3, }
 
 my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
 my $today = sprintf("%4.4d%2.2d%2.2d",$year+1900, $mon+1, $mday);
@@ -108,7 +109,6 @@ my ($result, $expected);
 ok ($result, $expected);
 
 
-
 # ------------------------------------
 # (6)   test inheritance
 #a=INFO, a.b.c.d=WARN, a.b and a.b.c are undefined
@@ -174,8 +174,6 @@ foreach my $l ($xla, $xlab, $xlabc, $xlabcd, $xlabcde){
 
 ok($result, $expected);
 
-BEGIN { plan tests => 3, }
-   
 
    
 END{   

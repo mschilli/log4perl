@@ -2,7 +2,6 @@ package Log::Log4perl::JavaMap;
 
 use Carp;
 use strict;
-use Data::Dump qw(dump);
 
 our %translate = (
     'org.apache.log4j.ConsoleAppender' => 

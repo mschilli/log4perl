@@ -9,7 +9,7 @@ use warnings;
 use Log::Log4perl::Logger;
 use Log::Log4perl::Config;
 
-our $VERSION = '0.14';
+our $VERSION = '0.15';
 
 ##################################################
 sub new {
@@ -19,14 +19,14 @@ sub new {
 }
 
 ##################################################
-sub reset {
+sub reset { # Mainly for debugging/testing
 ##################################################
     # Delegate this to the logger ...
     return Log::Log4perl::Logger->reset();
 }
 
 ##################################################
-sub init {
+sub init { # Initialize the whole thing
 ##################################################
     my($class, @args) = @_;
 
@@ -40,7 +40,7 @@ sub init {
 }
 
 ##################################################
-sub get_logger {
+sub get_logger {  # Get an instance (shortcut)
 ##################################################
     my($class, @args) = @_;
 
@@ -61,11 +61,10 @@ Log::Log4perl - Log4j implementation for Perl
 C<Log::Log4perl> implements the widely popular C<Log4j> logging
 package ([1]) in pure Perl.
 
-A WORD OF CAUTION: THIS LIBRARY IS UNDER HEAVY CONSTRUCTION AND
-CURRENTLY IN 'ALPHA' STATE. THE MODULE IS ALWAYS GUARANTEED TO PASS THE
-CONTINUALLY GROWING REGRESSION TEST SUITE, BUT IF YOU'RE PLANNING TO USE
-IT ON A PRODUCTION SYSTEM, PLEASE WAIT UNTIL THE VERSION NUMBERS HAVE
-REACHED 1.0 OR BETTER.
+A WORD OF CAUTION: THIS LIBRARY IS STILL UNDER CONSTRUCTION -- ON
+http://log4perl.sourceforge.net YOU'LL GET THE LATEST SCOOP.
+THE API HAS REACHED A MATURE STATE, WE WILL NOT CHANGE UNLESS FOR
+A GOOD REASON.
 
 Logging beats a debugger when you want to know what's going on 
 in your code during runtime. However, traditional logging packages
