@@ -6,7 +6,6 @@
 use Test;
 
 use Log::Log4perl;
-use Log::Log4perl::Appender::DBI;
 our $no_DBD;
 
 BEGIN {
