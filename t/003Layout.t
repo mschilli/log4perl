@@ -10,7 +10,7 @@ use strict;
 # change 'tests => 1' to 'tests => last_test_to_print';
 #########################
 use Test;
-BEGIN { plan tests => 13 };
+BEGIN { plan tests => 16 };
 
 use Log::Log4perl;
 use Log::Log4perl::Layout;
@@ -152,3 +152,25 @@ $app->layout($layout);
 $logger->debug("That's the message\n");
 
 ok($app->buffer() =~ /^[^:]+:That's the message$/);
+
+############################################################
+# Test max width in the format specifiers
+############################################################
+#min width
+$app->buffer("");
+$layout = Log::Log4perl::Layout::PatternLayout->new("%5.5m");
+$app->layout($layout);
+$logger->debug("123");
+ok($app->buffer(), '  123');
+
+#max width
+$app->buffer("");
+$logger->debug("1234567");
+ok($app->buffer(), '12345');
+
+#left justify
+$app->buffer("");
+$layout = Log::Log4perl::Layout::PatternLayout->new("%-5.5m");
+$app->layout($layout);
+$logger->debug("123");
+ok($app->buffer(), '123  ');

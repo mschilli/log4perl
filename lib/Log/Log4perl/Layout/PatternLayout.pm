@@ -95,7 +95,7 @@ sub define {
     }
 
     # Parse the format
-    $format =~ s/%(-*\d*)
+    $format =~ s/%(-?\d*(?:\.\d+)?) 
                        ([cCdfFHIlLmMnpPrtxX%])
                        (?:{(.*?)})*/
                        rep($self, $1, $2, $3);
