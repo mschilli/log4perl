@@ -24,7 +24,7 @@ use Test::Harness;
 
 my($devprod) = @ARGV;
 
-system("adm/cvskwexp") and die "\$Log...\$ detected";
+system("adm/cvskwexp") and die "\$Log... detected";
 
     # Check if all the POD complies with the standard
 my $admdir = ".";

@@ -10,9 +10,11 @@ use File::Find;
 
 find(sub {
          return if /cvskwexp/;
+         my $file = $_;
+         # print "Examining $_\n";
          open FILE, "<$_" or die "Cannot open $_";
          while(<FILE>) {
-             die $_ if /\$\s*Log.*\$/;
+             die "$file: $_" if /\$\s*Log.*\$/;
          }
          close FILE;
      }, ".");

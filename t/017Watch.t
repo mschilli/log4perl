@@ -95,7 +95,8 @@ close CONF;
 $logger = Log::Log4perl::get_logger('animal.dog');
 
 $logger->debug('2nd debug message');
-is($Log::Log4perl::Config::CONFIG_FILE_READS, $how_many_reads + 1,
+is($Log::Log4perl::Config::CONFIG_FILE_READS, 
+   $how_many_reads + 1,
    "re-read if config has changed");
 
 $logger->info('2nd info message');

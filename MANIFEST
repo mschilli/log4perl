@@ -9,6 +9,8 @@ eg/log4j-manual-3.conf
 eg/override_appender
 eg/syslog.pl
 eg/yamlparser
+ldap/log4perl-2.ldif
+ldap/log4perl-unittest.ldif
 lib/Log/Log4perl.pm
 lib/Log/Log4perl/Appender.pm
 lib/Log/Log4perl/Appender/DBI.pm
