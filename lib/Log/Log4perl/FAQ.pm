@@ -1395,7 +1395,7 @@ Check L<Log::Log4perl::Appender::Synchronized> for details.
 
 =head2 Can I use Log::Log4perl with log4j's Chainsaw?
 
-Yes, Log::Log4perl can be configured to sent its events to log4j's 
+Yes, Log::Log4perl can be configured to send its events to log4j's 
 graphical log UI I<Chainsaw>.
 
 =for html
