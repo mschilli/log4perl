@@ -1359,6 +1359,40 @@ already initialized Log::Log4perl, it can do so by calling
 which will return a true value in case Log::Log4perl has been initialized 
 and a false value if not.
 
+=head2 How can I synchronize access to an appender?
+
+If you the same instance of an appender in multiple processes, 
+each passing on messages to it in parallel, you might end up with 
+overlapping log entries.
+
+Imagine a file appender that you create in the main program, and which
+will then be shared between the parent and a forked child process. When
+it comes to logging, Log::Log4perl won't synchronize access to it.
+Depending on your operating system's flush mechanism, buffer size and the size
+of your messages, there's a small chance of an overlap.
+
+A guaranteed way of having messages separated is putting a
+Log::Log4perl::Appender::Synchronized composite appender in 
+between Log::Log4perl and the real appender. It will make sure to
+let messages pass through this virtual gate one by one only. 
+
+Here's a sample configuration to synchronize access to a file appender:
+
+    log4perl.category.Bar.Twix          = WARN, Syncer
+
+    log4perl.appender.Logfile           = Log::Log4perl::Appender::File
+    log4perl.appender.Logfile.autoflush = 1
+    log4perl.appender.Logfile.filename  = test.log
+    log4perl.appender.Logfile.layout    = SimpleLayout
+    
+    log4perl.appender.Syncer            = Log::Log4perl::Appender::Synchronized
+    log4perl.appender.Syncer.appender   = Logfile
+
+C<Log::Log4perl::Appender::Synchronized> uses 
+the C<IPC::Shareable> module and its semaphores, which will slow down writing
+the log messages, but ensures sequential access featuring atomic checks.
+Check L<Log::Log4perl::Appender::Synchronized> for details.
+
 =cut
 
 =head1 SEE ALSO
