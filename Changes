@@ -2,8 +2,12 @@
 Revision history for Log::Log4perl
 ##################################################
 
+0.31 (not released yet)
     * (kg) fixed bug Appender::DBI where it was consuming the message
            array before other appenders could get to it
+    * (ms) changed config_and_watch to ignore clock differences between
+           system time and file system time (helpful with skewed NFS 
+           systems). Added Log::Log4perl::Config::Watch.
 
 0.30 03/14/2003
     * (ms) Added Log4perl custom filter logic and standard filter set
