@@ -10,6 +10,7 @@ use 5.006;
 use strict;
 use warnings;
 use Log::Log4perl::Level;
+use Log::Log4perl::DateFormat;
 
 our $TIME_HIRES_AVAILABLE;
 our $TIME_HIRES_AVAILABLE_WARNED = 0;
@@ -44,12 +45,8 @@ sub new {
 
     my ($layout_string);
      
-    #supporting both 
-    #    new Layout('myAppender', '%s %d %m %n');
-    #and 
-    #    new Layout('myAppender', $data) a la config reader
     if (ref $data){
-         $layout_string = $data->{ConversionPattern}{value};
+        $layout_string = $data->{ConversionPattern}{value};
     }else{
         $layout_string = $data;
     }
@@ -91,7 +88,14 @@ sub rep {
 
     return "%%" if $op eq "%";
 
-    push @{$self->{stack}}, [$op, $curlies];
+    # If it's a %d{...} construct, initialize a simple date
+    # format formatter, so that we can quickly render later on.
+    my $sdf;
+    if($op eq "d" and defined $curlies) {
+        $sdf = Log::Log4perl::DateFormat->new($curlies);
+    }
+
+    push @{$self->{stack}}, [$op, $sdf || $curlies];
 
     $self->{info_needed}->{$op}++;
 
@@ -199,6 +203,8 @@ sub curly_action {
         $data = shrink_category($data, $curlies);
     } elsif($ops eq "C") {
         $data = shrink_category($data, $curlies);
+    } elsif($ops eq "d") {
+        $data = $curlies->format(time());
     } elsif($ops eq "F") {
         my @parts = split m#/#, $data;
             # Limit it to max curlies entries
