@@ -2157,7 +2157,7 @@ will remove an appender, specified by name, from a given logger.
 Please note that this does
 I<not> remove an appender from the system.
 To eradicate an appender from the system, 
-you need to call C<$logger->remove_appender($appender_name)> on every 
+you need to call C<$logger-E<gt>remove_appender($appender_name)> on every 
 logger in the system using the appender (as defined in the configuration)
 and then stomp out the appender by calling its DESTROY method.
 
