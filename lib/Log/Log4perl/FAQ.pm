@@ -1552,7 +1552,7 @@ just define a C<__WARN__> handler where your program or module resides:
     use Log::Log4perl qw(:easy);
 
     $SIG{__WARN__} = sub {
-        local $Log::Log4perl::caller_depth = ;
+        local $Log::Log4perl::caller_depth =
             $Log::Log4perl::caller_depth + 1;
         WARN @_;
     };
