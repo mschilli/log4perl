@@ -85,6 +85,7 @@ These should/will/might be implemented
     SMTPAppender     - Log::Dispatch::Email::MailSender
     SyslogAppender - Log::Dispatch::Syslog
     SocketAppender - (pass a socket to Log::Dispatch)
+    JDBCAppender - Log::Dispatch::DBI
     
 
 These might be implemented but they don't have corresponding classes
@@ -97,7 +98,6 @@ in Log::Dispatch (yet):
 These might be simulated
 
     LF5Appender - use Tk?
-    JDBCAppender - using DBI?
     ExternallyRolledFileAppender - catch a HUP instead?
 
 These will probably not be implemented
