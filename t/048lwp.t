@@ -24,6 +24,7 @@ use Log::Log4perl qw(:easy);
 
 Log::Log4perl->easy_init(
     { level    => $DEBUG,
+      category => "LWP::UserAgent",
       file     => 'lwpout.txt'
     });
 
