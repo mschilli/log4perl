@@ -41,7 +41,8 @@ sub parse {
                next;
             }
 
-            $val =~ s/\${(.*?)}/basic_subst($1, \%var_subst)/ge;
+            $val =~ s/\${(.*?)}/
+                      Log::Log4perl::Config::basic_subst($1, \%var_subst)/gex;
 
             $val = eval_if_perl($val) if 
                 $key !~ /\.(cspec\.)|warp_message|filter/;
@@ -74,22 +75,6 @@ sub parse {
         }
     }
     return $data;
-}
-
-################################################
-sub basic_subst {
-################################################
-    my($varname, $subst_hash) = @_;
-
-        # Throw out blanks
-    $varname =~ s/\s+//g;
-
-    die "Undefined Variable '$varname'" unless $subst_hash->{$varname};
-
-    print "Replacing Variable: '$varname' => '$subst_hash->{$varname}'\n" 
-        if _INTERNAL_DEBUG;
-
-    return $subst_hash->{$varname};
 }
 
 1;
