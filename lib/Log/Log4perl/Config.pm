@@ -204,12 +204,30 @@ sub add_layout_by_name {
 
     eval {
         eval "require $layout_class";
+        if($@) {
+            my $old_err = $@;
+            eval "require Log::Log4perl::Layout::$layout_class";
+
+            if($@) {
+                # If it failed again, revert to the old error message
+                $@ = $old_err;
+            } else {
+                # If it succeeded, leave $@ as "", which indicates success
+                # downstream. And, fix the layout name.
+                $layout_class = "Log::Log4perl::Layout::$layout_class";
+            }
+        }
         die $@ if $@;
+           # Eval erroneously succeeds on unknown appender classes if
+           # the eval string just consists of valid perl code (e.g. an
+           # appended ';' in $appenderclass variable). Fail if we see
+           # anything in there that can't be class name.
+        die "Unknown layout '$layout_class'" if $layout_class =~ /[^:\w]/;
     };
 
     if ($@) {
         die "ERROR: trying to set layout for $appender_name to " .
-            "$layout_class failed\n$@";
+            "'$layout_class' failed\n$@";
     }
 
     $appender->layout($layout_class->new(
