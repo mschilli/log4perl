@@ -9,8 +9,6 @@ use warnings;
 use Log::Log4perl::Logger;
 use Log::Log4perl::Level;
 use Log::Log4perl::Config::PropertyConfigurator;
-use Log::Dispatch;
-use Log::Dispatch::File;
 use Log::Log4perl::JavaMap;
 use Log::Log4perl::Filter;
 use Log::Log4perl::Filter::Boolean;
@@ -817,15 +815,15 @@ C<log4perl> intro and the appender's name:
 
         # The Bar::Twix logger and its appender
     log4perl.logger.Bar.Twix = DEBUG, A1
-    log4perl.appender.A1=Log::Dispatch::File
+    log4perl.appender.A1=Log::Log4perl::Appender::File
     log4perl.appender.A1.filename=test.log
     log4perl.appender.A1.mode=append
     log4perl.appender.A1.layout=Log::Log4perl::Layout::SimpleLayout
 
 This sets a priority of C<DEBUG> for loggers in the C<Bar::Twix>
 hierarchy and assigns the C<A1> appender to it, which is later on
-resolved to be an appender of type C<Log::Dispatch::File>, simply
-appending to a log file. According to the C<Log::Dispatch::File>
+resolved to be an appender of type C<Log::Log4perl::Appender::File>, simply
+appending to a log file. According to the C<Log::Log4perl::Appender::File>
 manpage, the C<filename> parameter specifies the name of the log file
 and the C<mode> parameter can be set to C<append> or C<write> (the
 former will append to the logfile if one with the specified name
@@ -842,12 +840,12 @@ but let's not go there):
     log4perl.logger.Bar.Twix = DEBUG, A1
     log4perl.logger.Bar.Snickers = FATAL, A2
 
-    log4perl.appender.A1=Log::Dispatch::File
+    log4perl.appender.A1=Log::Log4perl::Appender::File
     log4perl.appender.A1.filename=test.log
     log4perl.appender.A1.mode=append
     log4perl.appender.A1.layout=Log::Log4perl::Layout::SimpleLayout
 
-    log4perl.appender.A2=Log::Dispatch::Screen
+    log4perl.appender.A2=Log::Log4perl::Appender::Screen
     log4perl.appender.A2.stderr=0
     log4perl.appender.A2.layout=Log::Log4perl::Layout::PatternLayout
     log4perl.appender.A2.layout.ConversionPattern = %d %m %n
@@ -863,7 +861,7 @@ Here's some examples of often-used Log4perl configuration files:
 =head2 Append to STDERR
 
     log4perl.category.Bar.Twix      = WARN, Screen
-    log4perl.appender.Screen        = Log::Dispatch::Screen
+    log4perl.appender.Screen        = Log::Log4perl::Appender::Screen
     log4perl.appender.Screen.layout = \
         Log::Log4perl::Layout::PatternLayout
     log4perl.appender.Screen.layout.ConversionPattern = %d %m %n
@@ -871,7 +869,7 @@ Here's some examples of often-used Log4perl configuration files:
 =head2 Append to STDOUT
 
     log4perl.category.Bar.Twix      = WARN, Screen
-    log4perl.appender.Screen        = Log::Dispatch::Screen
+    log4perl.appender.Screen        = Log::Log4perl::Appender::Screen
     log4perl.appender.Screen.layout = \
     log4perl.appender.Screen.stderr = 0
         Log::Log4perl::Layout::PatternLayout
@@ -880,7 +878,7 @@ Here's some examples of often-used Log4perl configuration files:
 =head2 Append to a log file
 
     log4perl.logger.Bar.Twix = DEBUG, A1
-    log4perl.appender.A1=Log::Dispatch::File
+    log4perl.appender.A1=Log::Log4perl::Appender::File
     log4perl.appender.A1.filename=test.log
     log4perl.appender.A1.mode=append
     log4perl.appender.A1.layout = \
@@ -892,7 +890,7 @@ Note that you could even leave out
     log4perl.appender.A1.mode=append
 
 and still have the logger append to the logfile by default, although
-the C<Log::Dispatch::File> module does exactly the opposite.
+the C<Log::Log4perl::Appender::File> module does exactly the opposite.
 This is due to some nasty trickery C<Log::Log4perl> performs behind 
 the scenes to make sure that beginner's CGI applications don't clobber 
 the log file every time they're called.
@@ -903,13 +901,13 @@ If you loathe the Log::Log4perl's append-by-default strategy, you can
 certainly override it:
 
     log4perl.logger.Bar.Twix = DEBUG, A1
-    log4perl.appender.A1=Log::Dispatch::File
+    log4perl.appender.A1=Log::Log4perl::Appender::File
     log4perl.appender.A1.filename=test.log
     log4perl.appender.A1.mode=write
     log4perl.appender.A1.layout=Log::Log4perl::Layout::SimpleLayout
 
-C<write> is the C<mode> that has C<Log::Dispatch::File> explicitely clobber
-the log file if it exists.
+C<write> is the C<mode> that has C<Log::Log4perl::Appender::File>
+explicitely clobber the log file if it exists.
 
 =head1 AUTHOR
 

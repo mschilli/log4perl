@@ -29,7 +29,7 @@ with its C<error()> method:
         # Define configuration
     my $conf = q(
         log4perl.logger                    = ERROR, FileApp
-        log4perl.appender.FileApp          = Log::Dispatch::File
+        log4perl.appender.FileApp          = Log::Log4perl::Appender::File
         log4perl.appender.FileApp.filename = test.log
         log4perl.appender.FileApp.layout   = PatternLayout
         log4perl.appender.FileApp.layout.ConversionPattern = %d> %m%n
@@ -60,7 +60,7 @@ scalar reference.
 
 The configuration as shown
 defines a logger of the root category, which has an appender of type 
-C<Log::Dispatch::File> attached. The line
+C<Log::Log4perl::Appender::File> attached. The line
 
     log4perl.logger = ERROR, FileApp
 
@@ -76,16 +76,16 @@ reference an appender defined later on.
 
 Appender settings in the configuration are defined as follows:
 
-    log4perl.appender.FileApp          = Log::Dispatch::File
+    log4perl.appender.FileApp          = Log::Log4perl::Appender::File
     log4perl.appender.FileApp.filename = test.log
 
-It selects the file appender of the C<Log::Dispatch> hierarchy, 
-which is tricked by Log::Log4perl into thinking that it should append to the
-file C<test.log> if it already exists. If we wanted to overwrite
-a potentially existing file, we would have to explicitly set the
-appropriate C<Log::Dispatch::File> parameter C<mode>:
+It selects the file appender of the C<Log::Log4perl::Appender>
+hierarchy, which will append to the file C<test.log> if it already
+exists. If we wanted to overwrite a potentially existing file, we would
+have to explicitly set the appropriate C<Log::Log4perl::Appender::File>
+parameter C<mode>:
 
-    log4perl.appender.FileApp          = Log::Dispatch::File
+    log4perl.appender.FileApp          = Log::Log4perl::Appender::File
     log4perl.appender.FileApp.filename = test.log
     log4perl.appender.FileApp.mode     = write
 
@@ -269,7 +269,7 @@ Assuming that you already have a Log4perl configuration file like
 
     log4perl.logger                    = DEBUG, FileApp
 
-    log4perl.appender.FileApp          = Log::Dispatch::File
+    log4perl.appender.FileApp          = Log::Log4perl::Appender::File
     log4perl.appender.FileApp.filename = test.log
     log4perl.appender.FileApp.layout   = PatternLayout
     log4perl.appender.FileApp.layout.ConversionPattern = %d> %m%n
@@ -281,12 +281,12 @@ just add another appender to the configuration file and you're done:
 
     log4perl.logger                    = DEBUG, FileApp, ScreenApp
 
-    log4perl.appender.FileApp          = Log::Dispatch::File
+    log4perl.appender.FileApp          = Log::Log4perl::Appender::File
     log4perl.appender.FileApp.filename = test.log
     log4perl.appender.FileApp.layout   = PatternLayout
     log4perl.appender.FileApp.layout.ConversionPattern = %d> %m%n
 
-    log4perl.appender.ScreenApp          = Log::Dispatch::Screen
+    log4perl.appender.ScreenApp          = Log::Log4perl::Appender::Screen
     log4perl.appender.ScreenApp.stderr   = 0
     log4perl.appender.ScreenApp.layout   = PatternLayout
     log4perl.appender.ScreenApp.layout.ConversionPattern = %d> %m%n
@@ -345,7 +345,7 @@ If you make sure you've configured with a root logger like this:
 
     Log::Log4perl->init(\q{
         log4perl.category         = FATAL, Logfile
-        log4perl.appender.Logfile = Log::Dispatch::File
+        log4perl.appender.Logfile = Log::Log4perl::Appender::File
         log4perl.appender.Logfile.filename = fatal_errors.log
         log4perl.appender.Logfile.layout = \
                    Log::Log4perl::Layout::PatternLayout
@@ -579,7 +579,7 @@ Here's some sample code implementing the command line interface above:
 
     my $conf = q(
     log4perl.category.Bar.Twix         = WARN, Logfile
-    log4perl.appender.Logfile          = Log::Dispatch::File
+    log4perl.appender.Logfile          = Log::Log4perl::Appender::File
     log4perl.appender.Logfile.filename = sub { logfile(); };
     log4perl.appender.Logfile.layout   = SimpleLayout
     );
@@ -704,7 +704,7 @@ phenomenon:
     log4perl.logger.Cat        = ERROR, Screen
     log4perl.logger.Cat.Subcat = WARN, Screen
 
-    log4perl.appender.Screen   = Log::Dispatch::Screen
+    log4perl.appender.Screen   = Log::Log4perl::Appender::Screen
     log4perl.appender.Screen.layout = SimpleLayout
 
 It defines two loggers, one for category C<Cat> and one for
@@ -745,7 +745,7 @@ C<0>:
     log4perl.logger.Cat.Subcat     = WARN, Screen
     log4perl.additivity.Cat.Subcat = 0
 
-    log4perl.appender.Screen   = Log::Dispatch::Screen
+    log4perl.appender.Screen   = Log::Log4perl::Appender::Screen
     log4perl.appender.Screen.layout = SimpleLayout
 
 The message will now be accepted by the C<Cat::Subcat> logger,
@@ -762,11 +762,11 @@ equal to the logger's level setting:
     log4perl.logger.Cat           = ERROR, Screen1
     log4perl.logger.Cat.Subcat    = WARN, Screen2
 
-    log4perl.appender.Screen1   = Log::Dispatch::Screen
+    log4perl.appender.Screen1   = Log::Log4perl::Appender::Screen
     log4perl.appender.Screen1.layout = SimpleLayout
     log4perl.appender.Screen1.Threshold = ERROR
 
-    log4perl.appender.Screen2   = Log::Dispatch::Screen
+    log4perl.appender.Screen2   = Log::Log4perl::Appender::Screen
     log4perl.appender.Screen2.layout = SimpleLayout
 
 Since the C<Screen1> appender now blocks every message with
@@ -783,7 +783,7 @@ with message duplication, there's a non-standard solution for you:
     log4perl.logger.Cat        = ERROR, Screen
     log4perl.logger.Cat.Subcat = WARN, Screen
 
-    log4perl.appender.Screen   = Log::Dispatch::Screen
+    log4perl.appender.Screen   = Log::Log4perl::Appender::Screen
     log4perl.appender.Screen.layout = SimpleLayout
 
     log4perl.oneMessagePerAppender = 1
@@ -815,7 +815,8 @@ sent out by your application, filling up the receipient's inbox.
 
 =head2 How can I write my own appender?
 
-First off, there's a lot of Log4perl-compatible appenders already
+First off, Log::Log4perl comes with a set of standard appenders. Then,
+there's a lot of Log4perl-compatible appenders already
 available on CPAN: Just run a search for C<Log::Dispatch> on 
 http://search.cpan.org and chances are that what you're looking for 
 has already been developed, debugged and been used successfully 
@@ -827,41 +828,35 @@ desire.
 
 But if you're up for a truly exotic task, you might have to write
 an appender yourself. That's very easy -- it takes no longer
-than a couple of minutes for the basic framework.
+than a couple of minutes.
 
 Say, we wanted to create an appender of the class
-C<Log::Dispatch::ColorScreen>, which logs messages
+C<ColorScreenAppender>, which logs messages
 to the screen in a configurable color. Just create a new class 
-in C<Log/Dispatch/ColorScreen.pm> and let it inherit from the base 
-class C<Log::Dispatch::Output>:
+in C<ColorScreenAppender.pm>:
 
-    package Log::Dispatch::ColorScreen;
-
-    use Log::Dispatch::Output;
-    use base qw( Log::Dispatch::Output );
+    package ColorScreen;
 
 Now let's assume that your Log::Log4perl
 configuration file C<test.conf> looks like this:
 
     log4perl.logger = INFO, ColorApp
 
-    log4perl.appender.ColorApp=Log::Dispatch::ColorScreen
+    log4perl.appender.ColorApp=ColorScreenAppender
     log4perl.appender.ColorApp.color=blue
 
     log4perl.appender.ColorApp.layout = PatternLayout
     log4perl.appender.ColorApp.layout.ConversionPattern=%d %m %n
  
 This will cause Log::Log4perl on C<init()> to look for a class
-Log::Dispatch::ColorScreen and call its constructor new(). Let's add
-new() to Log/Dispatch/ColorScreen.pm:
+ColorScreenAppender and call its constructor new(). Let's add
+new() to ColorScreenAppender.pm:
 
     sub new {
         my($class, %options) = @_;
     
         my $self = { %options };
         bless $self, $class;
-    
-        $self->_basic_init( %options );
     
         return $self;
     }
@@ -870,31 +865,28 @@ To initialize this appender, Log::Log4perl will call
 and pass all attributes of the appender as defined in the configuration
 file to the constructor as name/value pairs (in this case just one):
 
-    Log::Dispatch::ColorScreen->new(color => "blue");
+    ColorScreenAppender->new(color => "blue");
 
 The new() method listed above stores the contents of the
 %options hash in the object's
-instance data hash (referred to by $self)
-and calls C<_basic_init> with all name/value
-pairs to initialize the appender in the Log::Dispatch world.
+instance data hash (referred to by $self).
 That's all for initializing a new appender with Log::Log4perl.
 
-Second, Log::Dispatch::ColorScreen needs to expose a 
-C<log_message()> method, which will be called by Log::Log4perl 
+Second, ColorScreenAppender needs to expose a 
+C<log()> method, which will be called by Log::Log4perl 
 every time it thinks the appender should fire. Along with the
-object reference (as usual in Perl's object world), log_message()
+object reference (as usual in Perl's object world), log()
 will receive a list of name/value pairs, of which only the one
 under the key C<message> shall be of interest for now since it is the
 message string to be logged. At this point, Log::Log4perl has already taken
 care of joining the message to be a single string.
 
-For our special appender Log::Dispatch::ColorScreen, 
-we're using the Term::ANSIColor module
-to colorize the output:
+For our special appender ColorScreenAppender, we're using the
+Term::ANSIColor module to colorize the output:
 
     use Term::ANSIColor;
 
-    sub log_message {
+    sub log {
         my($self, %params) = @_;
     
         print colored($params{message},
@@ -907,9 +899,8 @@ forget to return
 
     1;
 
-at the end of ColorScreen.pm and you're done. Install the new appender
-somewhere where perl can find it (like Log/Dispatch/ColorScreen.pm)
-and try it with a test script like 
+at the end of ColorScreenAppender.pm and you're done. Install the new appender
+somewhere where perl can find it and try it with a test script like 
 
     use Log::Log4perl qw(:easy);
     Log::Log4perl->init("test.conf");
@@ -962,7 +953,7 @@ and send them to a separate log file?
 If you define a root logger like this:
 
     log4perl.logger                  = FATAL, File
-    log4perl.appender.File           = Log::Dispatch::File
+    log4perl.appender.File           = Log::Log4perl::Appender::File
     log4perl.appender.File.filename  = /tmp/fatal.txt
     log4perl.appender.File.layout    = PatternLayout
     log4perl.appender.File.layout.ConversionPattern= %d %m %n
@@ -1014,9 +1005,7 @@ appender.
 
 Let's define a new appender like
 
-    package Log::Dispatch::Tally;
-    use Log::Dispatch::Output;
-    use base qw( Log::Dispatch::Output );
+    package TallyAppender;
 
     sub new {
         my($class, %options) = @_;
@@ -1026,8 +1015,6 @@ Let's define a new appender like
                    };
     
         bless $self, $class;
-    
-        $self->_basic_init( %options );
     
         $self->{last_message}        = "";
         $self->{last_message_count}  = 0;
@@ -1042,14 +1029,14 @@ a configuration parameter C<maxcount> which defaults to 5 in the
 snippet above but can be set in the Log4perl configuration file like this:
  
     log4perl.logger = INFO, A
-    log4perl.appender.A=Log::Dispatch::Tally
+    log4perl.appender.A=TallyAppender
     log4perl.appender.A.maxcount = 3
 
-The main tallying logic lies in the appender's C<log_message> method,
+The main tallying logic lies in the appender's C<log> method,
 which is called every time Log4perl thinks a message needs to get logged
 by our appender:
 
-    sub log_message {
+    sub log {
         my($self, %params) = @_;
 
             # Message changed? Print buffer.
@@ -1148,13 +1135,13 @@ to those matching a given priority:
     log4perl.filter.MatchWarn.AcceptOnMatch = true
 
         # Error appender
-    log4perl.appender.AppError = Log::Dispatch::File
+    log4perl.appender.AppError = Log::Log4perl::Appender::File
     log4perl.appender.AppError.filename = /tmp/app.err
     log4perl.appender.AppError.layout   = SimpleLayout
     log4perl.appender.AppError.Filter   = MatchError
 
         # Warning appender
-    log4perl.appender.AppWarn = Log::Dispatch::File
+    log4perl.appender.AppWarn = Log::Log4perl::Appender::File
     log4perl.appender.AppWarn.filename = /tmp/app.warn
     log4perl.appender.AppWarn.layout   = SimpleLayout
     log4perl.appender.AppWarn.Filter   = MatchWarn
@@ -1172,7 +1159,7 @@ dynamically. Let's say that one of your appenders expects the host's IP address
 as one of its attributes. Now, you could certainly roll out different 
 configuration files for every host and specify the value like
 
-    log4perl.appender.MyAppender    = Log::Dispatch::SomeAppender
+    log4perl.appender.MyAppender    = Log::Log4perl::Appender::SomeAppender
     log4perl.appender.MyAppender.ip = 10.0.0.127
 
 but that's a maintenance nightmare. Instead, you can have Log::Log4perl 
@@ -1180,7 +1167,7 @@ figure out the IP address at configuration time and set the appender's
 value correctly:
 
         # Set the IP address dynamically
-    log4perl.appender.MyAppender    = Log::Dispatch::SomeAppender
+    log4perl.appender.MyAppender    = Log::Log4perl::Appender::SomeAppender
     log4perl.appender.MyAppender.ip = sub { \
        use Sys::Hostname; \
        use Socket; \
@@ -1205,7 +1192,7 @@ chances are that you've written it like this:
 
     Log::Log4perl->init( \ <<END_HERE);
         log4perl.logger = WARN, A1
-        log4perl.appender.A1 = Log::Dispatch::Screen
+        log4perl.appender.A1 = Log::Log4perl::Appender::Screen
         log4perl.appender.A1.layout = \
             Log::Log4perl::Layout::PatternLayout
         log4perl.appender.A1.layout.ConversionPattern = %m%n
@@ -1233,7 +1220,7 @@ the non-interpreting mode of the here-document like in
 
     Log::Log4perl->init( \ <<'END_HERE');
         log4perl.logger = WARN, A1
-        log4perl.appender.A1 = Log::Dispatch::Screen
+        log4perl.appender.A1 = Log::Log4perl::Appender::Screen
         log4perl.appender.A1.layout = \
             Log::Log4perl::Layout::PatternLayout
         log4perl.appender.A1.layout.ConversionPattern = %m%n
@@ -1273,7 +1260,7 @@ parameters:
     
     Log::Log4perl::init( \ <<'EOT' );
         log4perl.logger             = INFO, A1
-        log4perl.appender.A1        = Log::Dispatch::Screen
+        log4perl.appender.A1        = Log::Log4perl::Appender::Screen
         log4perl.appender.A1.layout = \
             Log::Log4perl::Layout::PatternLayout
         log4perl.appender.A1.layout.ConversionPattern = %m%n

@@ -34,8 +34,7 @@ if($@) {
 WriteMakefile(
     'NAME'		=> 'Log::Log4perl',
     'VERSION_FROM'	=> 'lib/Log/Log4perl.pm', # finds $VERSION
-    'PREREQ_PM'		=> { Log::Dispatch => 2.00,
-	                     Test::Simple  => 0.43,
+    'PREREQ_PM'		=> { Test::Simple  => 0.43,
                              Test::More    => 0.45,
                              File::Spec    => 0.82,
                            }, # e.g., Module::Name => 1.1

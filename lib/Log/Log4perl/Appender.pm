@@ -57,6 +57,7 @@ sub new {
 
     # If it's a Log::Dispatch::File appender, default to append 
     # mode (Log::Dispatch::File defaults to 'clobber') -- consensus 9/2002
+    # (Log::Log4perl::Appender::File already defaults to 'append')
     if ($appenderclass eq 'Log::Dispatch::File' &&
         ! exists $params{mode}) {
         $params{mode} = 'append';
@@ -109,7 +110,10 @@ sub threshold { # Set/Get the appender threshold
 }
 
 ##################################################
-sub log { # Relay this call to Log::Dispatch::Whatever
+sub log { 
+##################################################
+# Relay this call to Log::Log4perl::Appender:* or
+# Log::Dispatch::*
 ##################################################
     my ($self, $p, $category, $level) = @_;
 
@@ -224,7 +228,11 @@ sub filter { # Set filter
 }
 
 ##################################################
-sub AUTOLOAD { # Relay everything else to the underlying Log::Dispatch object
+sub AUTOLOAD { 
+##################################################
+# Relay everything else to the underlying 
+# Log::Log4perl::Appender::* or Log::Dispatch::*
+#  object
 ##################################################
     my $self = shift;
 
@@ -262,7 +270,7 @@ Log::Log4perl::Appender - Log appender class
 
       # Define an appender
   my $appender = Log::Log4perl::Appender->new(
-                   "Log::Dispatch::Screen",
+                   "Log::Log4perl::Appender::Screen",
                    name => 'dumpy');
 
       # Set the appender's layout
@@ -271,40 +279,42 @@ Log::Log4perl::Appender - Log appender class
 
 =head1 DESCRIPTION
 
-This class is a wrapper around the C<Log::Dispatch::*> collection of
-dispatchers, so they can be used by C<Log::Log4perl>. 
-The module hides the idiosyncrasies of C<Log::Dispatch>
-(e.g. every dispatcher gotta have a name, but there's no 
-accessor to retrieve it)
-from C<Log::Log4perl> and yet re-uses the extremely useful 
-variety of dispatchers already created and tested
-in C<Log::Dispatch>.
+This class is a wrapper around the C<Log::Log4perl::Appender>
+appender set. 
+
+It also supports the <Log::Dispatch::*> collections of appenders. The
+module hides the idiosyncrasies of C<Log::Dispatch> (e.g. every
+dispatcher gotta have a name, but there's no accessor to retrieve it)
+from C<Log::Log4perl> and yet re-uses the extremely useful variety of
+dispatchers already created and tested in C<Log::Dispatch>.
 
 =head1 FUNCTIONS
 
-=head2 Log::Dispatch::Appender->new($dispatcher_class_name, ...);
+=head2 Log::Log4perl::Appender->new($dispatcher_class_name, ...);
 
-The constructor C<new()> takes the name of the C<Log::Dispatcher>
+The constructor C<new()> takes the name of the appender
 class to be created as a I<string> (!) argument, optionally followed by 
-a number of C<Log::Dispatcher::Whatever>-specific parameters,
+a number of appender-specific parameters,
 for example:
 
       # Define an appender
-  my $appender = Log::Log4perl::Appender->new("Log::Dispatch::File"
-                                              name => 'dumpy',
-                                              file => 'out.log');
+  my $appender = Log::Log4perl::Appender->new(
+      "Log::Log4perl::Appender::File"
+      file => 'out.log');
 
-If no C<name> parameter is specified, the appender object will create
+In case of C<Log::Dispatch> appenders,
+if no C<name> parameter is specified, the appender object will create
 a unique one (format C<appNNN>), which can be retrieved later via
 the C<name()> method:
 
   print "The appender's name is ", $appender->name(), "\n";
 
-Other parameters are specific to the C<Log::Dispatch> module being used.
+Other parameters are specific to the appender class being used.
 In the case above, the C<file> parameter specifies the name of 
-the C<Log::Dispatch::File> dispatcher used. 
+the C<Log::Log4perl::Appender::File> dispatcher used. 
 
-However, if you're using a C<Log::Dispatch::Email> dispatcher to send you 
+However, if, for instance, 
+you're using a C<Log::Dispatch::Email> dispatcher to send you 
 email, you'll have to specify C<from> and C<to> email addresses.
 Every dispatcher is different.
 Please check the C<Log::Dispatch::*> documentation for the appender used
@@ -352,6 +362,28 @@ C<Log4perl> doesn't care which ones you use, they're all handled in
 the same way via the C<Log::Log4perl::Appender> interface.
 Please check the well-written manual pages of the 
 C<Log::Dispatch> hierarchy on how to use each one of them.
+
+=head1 Parameters passed on to the appender's log() method
+
+When calling the appender's log()-Funktion, Log::Log4perl will 
+submit a list of key/value pairs. Entries to the following keys are
+guaranteed to be present:
+
+=over 4
+
+=item message
+
+Text of the rendered message
+
+=item log4p_category
+
+Name of the category of the logger that triggered the event.
+
+=item log4p_level
+
+Log::Log4perl level of the event
+
+=back
 
 =head1 Pitfalls
 

@@ -6,6 +6,10 @@ Revision history for Log::Log4perl
 0.33 
     * (kg) CPAN rt#2636, coordinating XML::DOM version required across modules
            and unit tests
+    * (ms) Removed Log::Dispatch dependency, added standard 
+           Log::Log4perl::Appender appenders File and Screen. 
+           Log::Dispatch is still supported for backwards compatibility
+           and special purpose appenders implemented within this hierarchy.
 
 0.32 05/17/2003
     * (ms) Added fix to Makefile.PL to compensate for MakeMaker bug

@@ -9,7 +9,6 @@ use warnings;
 use Log::Log4perl::Level;
 use Log::Log4perl::Layout;
 use Log::Log4perl::Appender;
-use Log::Dispatch;
 use Carp;
 
 use constant DEBUG => 0;
@@ -19,8 +18,6 @@ our $ROOT_LOGGER;
 our $LOGGERS_BY_NAME = {};
 our %APPENDER_BY_NAME = ();
 our $INITIALIZED;
-
-our $DISPATCHER = Log::Dispatch->new();
 
 __PACKAGE__->reset();
 
@@ -39,7 +36,6 @@ sub reset {
                     exists $APPENDER_BY_NAME{$appendername}->{appender});
     }
     %APPENDER_BY_NAME   = ();
-    $DISPATCHER         = Log::Dispatch->new();
     undef $INITIALIZED;
     Log::Log4perl::Appender::reset();
 
@@ -456,13 +452,6 @@ sub add_appender {
     &reset_all_output_methods
                 unless $dont_reset_all;  # keep us from getting overworked
                                          # if it's  the config file calling us
-
-
-    #$self->{dispatcher}->add($appender) unless $not_to_dispatcher;    
-    $DISPATCHER->add($appender) unless $not_to_dispatcher;    
-        # while we want to track the names of
-        # all the appenders in a category, we only
-        # want to add it to log_dispatch *once*
 }
 
 ##################################################

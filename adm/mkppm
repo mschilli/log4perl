@@ -33,8 +33,8 @@ LOGDIE("No tarball for Log4perl found") unless defined $log4perl_tarball;
 
 mkdir $PPM_DIR, 0755 or LOGDIE("Cannot mkdir $PPM_DIR");
 
-doall("Log::Dispatch", "DROLSKY");
-doall("Params::Validate", "DROLSKY");
+#doall("Log::Dispatch", "DROLSKY");
+#doall("Params::Validate", "DROLSKY");
 ppm_make("Log::Log4perl", $log4perl_tarball);
 
 ###########################################

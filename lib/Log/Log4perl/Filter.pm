@@ -111,7 +111,7 @@ Log::Log4perl::Filter - Log4perl Custom Filter Base Class
   Log::Log4perl->init(<<'EOT');
     log4perl.logger = INFO, Screen
     log4perl.filter.MyFilter        = sub { /let this through/ }
-    log4perl.appender.Screen        = Log::Dispatch::Screen
+    log4perl.appender.Screen        = Log::Log4perl::Appender::Screen
     log4perl.appender.Screen.Filter = MyFilter
     log4perl.appender.Screen.layout = Log::Log4perl::Layout::SimpleLayout
   EOT
@@ -163,7 +163,7 @@ if it wants the message to be logged or a false value if doesn't.
 
 Also, Log::Log4perl will pass a hash to the C<ok()> method,
 containing all key/value pairs that it would pass to the corresponding 
-appender, as the Log::Dispatch specification requires. Here's an
+appender, as specified in Log::Log4perl::Appender. Here's an
 example of a filter checking the priority of the oncoming message:
 
   log4perl.filter.MyFilter        = sub {    \
@@ -250,7 +250,7 @@ in arbitrary ways, using boolean expressions:
     log4perl.filter.MyBoolean       = Log::Log4perl::Filter::Boolean
     log4perl.filter.MyBoolean.logic = Match1 || Match2
 
-    log4perl.appender.Screen        = Log::Dispatch::Screen
+    log4perl.appender.Screen        = Log::Log4perl::Appender::Screen
     log4perl.appender.Screen.Filter = MyBoolean
     log4perl.appender.Screen.layout = Log::Log4perl::Layout::SimpleLayout
 

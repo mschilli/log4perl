@@ -6,16 +6,14 @@ use 5.006;
 use strict;
 use warnings;
 
-use Log::Dispatch::Base;
 use Log::Log4perl::Logger;
 use Log::Log4perl::Level;
 use Log::Log4perl::Config;
-use Log::Dispatch::Screen;
 use Log::Log4perl::Appender;
 
 use constant DEBUG => 1;
 
-our $VERSION = '0.32';
+our $VERSION = '0.33';
 
    # set this to '1' if you're using a wrapper
    # around Log::Log4perl
@@ -235,14 +233,17 @@ sub easy_init { # Initialize the root logger with a screen appender
         my $app;
 
         if($logger->{file} =~ /^stderr$/i) {
-            $app = Log::Log4perl::Appender->new("Log::Dispatch::Screen");
+            $app = Log::Log4perl::Appender->new(
+                "Log::Log4perl::Appender::Screen");
         } elsif($logger->{file} =~ /^stdout$/i) {
-            $app = Log::Log4perl::Appender->new("Log::Dispatch::Screen",
-                                                stderr => 0);
+            $app = Log::Log4perl::Appender->new(
+                "Log::Log4perl::Appender::Screen",
+                stderr => 0);
         } elsif($logger->{file} =~ /^(>)?(>)?/) {
             my $mode = ($2 ? "append" : "write");
             $logger->{file} =~ s/>+//g;
-            $app = Log::Log4perl::Appender->new("Log::Dispatch::File",
+            $app = Log::Log4perl::Appender->new(
+                "Log::Log4perl::Appender::File",
                 filename => $logger->{file},
                 mode     => $mode);
         }
@@ -310,7 +311,7 @@ Log::Log4perl - Log4j implementation for Perl
     log4perl.logger.house              = WARN,  FileAppndr1
     log4perl.logger.house.bedroom.desk = DEBUG,  FileAppndr1
     
-    log4perl.appender.FileAppndr1          = Log::Dispatch::File
+    log4perl.appender.FileAppndr1          = Log::Log4perl::Appender::File
     log4perl.appender.FileAppndr1.filename = desk.log 
     log4perl.appender.FileAppndr1.layout   = \
                             Log::Log4perl::Layout::SimpleLayout
@@ -392,13 +393,13 @@ This is the easiest way to prepare your system for using
 C<Log::Log4perl>. Use a configuration file like this:
 
     ############################################################
-    # A simple root logger with a Log::Dispatch file appender
-    # in Perl.
+    # A simple root logger with a Log::Log4perl::Appender::File 
+    # file appender in Perl.
     # Mike Schilli 2002 m@perlmeister.com
     ############################################################
     log4perl.rootLogger=ERROR, LOGFILE
     
-    log4perl.appender.LOGFILE=Log::Dispatch::File
+    log4perl.appender.LOGFILE=Log::Log4perl::Appender::File
     log4perl.appender.LOGFILE.filename=/var/log/myerrs.log
     log4perl.appender.LOGFILE.mode=append
     
@@ -492,10 +493,10 @@ higher prioritized messages to the C</tmp/my.log> logfile:
   # Initialize the logger
 
   use Log::Log4perl qw(:levels);
-  use Log::Dispatch::Screen;
+  use Log::Log4perl::Appender::Screen;
   use Log::Log4perl::Appender;
 
-  my $app = Log::Log4perl::Appender->new("Log::Dispatch::Screen");
+  my $app = Log::Log4perl::Appender->new("Log::Log4perl::Appender::Screen");
   my $layout = Log::Log4perl::Layout::PatternLayout
                                         ->new("%d> %F %L %m %n");
   $app->layout($layout);
@@ -631,10 +632,18 @@ to be logged and not suppressed.
 C<Log::Log4perl> doesn't define any appenders by default, not even the root
 logger has one.
 
-C<Log::Log4perl> utilizes I<Dave Rolskys> excellent C<Log::Dispatch>
-module to implement a wide variety of different appenders. You can have
-your messages written to STDOUT, to a file or to a database -- or to
-all of them at once if you desire to do so.
+C<Log::Log4perl> already comes with a standard set of appenders:
+
+    Log::Log4perl::Appender::Screen
+    Log::Log4perl::Appender::File
+    Log::Log4perl::Appender::DBI
+
+to log to the screen, to files and to databases.
+
+=head2 Additional Appenders via Log::Dispatch
+
+C<Log::Log4perl> also supports I<Dave Rolskys> excellent C<Log::Dispatch>
+framework which implements a wide variety of different appenders. 
 
 Here's the list of appender modules currently available via C<Log::Dispatch>:
 
@@ -652,16 +661,22 @@ Here's the list of appender modules currently available via C<Log::Dispatch>:
        Log::Dispatch::Syslog
        Log::Dispatch::Tk (by Dominique Dumont)
 
+Please note that in order to use any of these additional appenders, you
+have to fetch Log::Dispatch from CPAN and install it. Also the particular
+appender you're using might require installing the particular module.
+
 For additional information on appenders, please check the
 L<Log::Log4perl::Appender> manual page.
 
-Now let's assume that we want to go overboard and log C<info()> or
+=head2 Appender Example
+
+Now let's assume that we want to log C<info()> or
 higher prioritized messages in the C<My::Category> class
 to both STDOUT and to a log file, say C</tmp/my.log>.
 In the initialisation section of your system,
 just define two appenders using the readily available
-C<Log::Dispatch::File> and C<Log::Dispatch::Screen> modules
-via the C<Log::Log4perl::Appender> wrapper:
+C<Log::Log4perl::Appender::File> and C<Log::Log4perl::Appender::Screen> 
+modules via the C<Log::Log4perl::Appender> wrapper:
 
   ########################
   # Initialisation section
@@ -678,14 +693,14 @@ via the C<Log::Log4perl::Appender> wrapper:
 
      # Define a file appender
   my $file_appender = Log::Log4perl::Appender->new(
-                          "Log::Dispatch::File",
+                          "Log::Log4perl::Appender::File",
                           name      => "filelog",
                           filename  => "/tmp/my.log");
 
 
      # Define a stdout appender
   my $stdout_appender =  Log::Log4perl::Appender->new(
-                          "Log::Dispatch::Screen",
+                          "Log::Log4perl::Appender::Screen",
                           name      => "screenlog",
                           stderr    => 0);
 
@@ -697,19 +712,20 @@ via the C<Log::Log4perl::Appender> wrapper:
   $log->add_appender($file_appender);
   $log->level($INFO);
 
-Please note the class of the C<Log::Dispatch> object is passed as a
-I<string> to C<Log::Log4perl::Appender> in the I<first> argument. 
-Behind the scenes, C<Log::Log4perl::Appender> will create the necessary
-C<Log::Dispatch::*> object and pass along the name value pairs we provided
-to C<Log::Log4perl::Appender-E<gt>new()> after the first argument.
+Please note the class of the appender object is passed as a I<string> to
+C<Log::Log4perl::Appender> in the I<first> argument. Behind the scenes,
+C<Log::Log4perl::Appender> will create the necessary
+C<Log::Log4perl::Appender::*> (or C<Log::Dispatch::*>) object and pass
+along the name value pairs we provided to
+C<Log::Log4perl::Appender-E<gt>new()> after the first argument.
 
 The C<name> value is optional and if you don't provide one,
 C<Log::Log4perl::Appender-E<gt>new()> will create a unique one for you.
 The names and values of additional parameters are dependent on the requirements
-of the particular C<Log::Dispatch::*> class and can be looked up in their
+of the particular appender class and can be looked up in their
 manual pages.
 
-On a side note: In case you're wondering if
+A side note: In case you're wondering if
 C<Log::Log4perl::Appender-E<gt>new()> will also take care of the
 C<min_level> argument to the C<Log::Dispatch::*> constructors called
 behind the scenes -- yes, it does. This is because we want the
@@ -817,12 +833,12 @@ This enables messages of priority C<debug> or higher in the root
 hierarchy and has the system write them to the console. 
 C<ConsoleAppender> is a Java appender, but C<Log::Log4perl> jumps
 through a significant number of hoops internally to map these to their
-corresponding Perl classes, C<Log::Dispatch::Screen> in this case.
+corresponding Perl classes, C<Log::Log4perl::Appender::Screen> in this case.
 
 Second example:
 
     log4perl.rootLogger=DEBUG, A1
-    log4perl.appender.A1=Log::Dispatch::Screen
+    log4perl.appender.A1=Log::Log4perl::Appender::Screen
     log4perl.appender.A1.layout=PatternLayout
     log4perl.appender.A1.layout.ConversionPattern=%d %-5p %c - %m%n
     log4perl.logger.com.foo=WARN
@@ -851,7 +867,7 @@ Third example:
 
 The root logger defines two appenders here: C<stdout>, which uses 
 C<org.apache.log4j.ConsoleAppender> (ultimately mapped by C<Log::Log4perl>
-to C<Log::Dispatch::Screen>) to write to the screen. And
+to C<Log::Log4perl::Appender::Screen>) to write to the screen. And
 C<R>, a C<org.apache.log4j.RollingFileAppender> 
 (mapped by C<Log::Log4perl> to 
 C<Log::Dispatch::FileRotate> with the C<File> attribute specifying the
@@ -965,7 +981,7 @@ Every appender has exactly one layout assigned to it. You assign
 the layout to the appender using the appender's C<layout()> object:
 
     my $app =  Log::Log4perl::Appender->new(
-                  "Log::Dispatch::Screen",
+                  "Log::Log4perl::Appender::Screen",
                   name      => "screenlog",
                   stderr    => 0);
 
@@ -1192,7 +1208,7 @@ Imagine the following class setup:
     ###########################################
     Log::Log4perl->init(\ qq{
     log4perl.category.Bar.Twix = DEBUG, Screen
-    log4perl.appender.Screen = Log::Dispatch::Screen
+    log4perl.appender.Screen = Log::Log4perl::Appender::Screen
     log4perl.appender.Screen.layout = SimpleLayout
     });
 
@@ -1262,7 +1278,7 @@ a reference to it:
 
     my %key_value_pairs = (
         "log4perl.rootLogger"       => "error, LOGFILE",
-        "log4perl.appender.LOGFILE" => "Log::Dispatch::File",
+        "log4perl.appender.LOGFILE" => "Log::Log4perl::Appender::File",
         ...
     );
 
@@ -1390,7 +1406,7 @@ is confusing, consider the following:
  
  my $config = <<'END';
   log4perl.logger = INFO, Main
-  log4perl.appender.Main = Log::Dispatch::File
+  log4perl.appender.Main = Log::Log4perl::Appender::File
   log4perl.appender.Main.filename = \
       sub { "example" . getpwuid($<) . ".log" }
   log4perl.appender.Main.layout = Log::Log4perl::Layout::SimpleLayout
@@ -1632,10 +1648,10 @@ C<%d %m%n> for C<layout>:
 
 The C<file> parameter takes file names preceded by C<"E<gt>">
 (overwrite) and C<"E<gt>E<gt>"> (append) as arguments. This will
-cause C<Log::Dispatch::File> appenders to be created behind the scenes.
-Also the keywords C<STDOUT> and C<STDERR> (no C<E<gt>> or C<E<gt>E<gt>>)
-are recognized, which will utilize and configure
-C<Log::Dispatch::Screen> appropriately.
+cause C<Log::Log4perl::Appender::File> appenders to be created behind
+the scenes. Also the keywords C<STDOUT> and C<STDERR> (no C<E<gt>> or
+C<E<gt>E<gt>>) are recognized, which will utilize and configure
+C<Log::Log4perl::Appender::Screen> appropriately.
 
 The stealth loggers can be used in different packages, you just need to make
 sure you're calling the "use" function in every package you're using
@@ -1849,7 +1865,7 @@ A simple example to cut-and-paste and get started:
     
     my $conf = q(
     log4perl.category.Bar.Twix         = WARN, Logfile
-    log4perl.appender.Logfile          = Log::Dispatch::File
+    log4perl.appender.Logfile          = Log::Log4perl::Appender::File
     log4perl.appender.Logfile.filename = test.log
     log4perl.appender.Logfile.layout = \
         Log::Log4perl::Layout::PatternLayout
@@ -1870,13 +1886,18 @@ create it if it doesn't exist already.
 
 =head1 INSTALLATION
 
-C<Log::Log4perl> needs C<Log::Dispatch> (2.00 or better) from CPAN,
+If you want to use external appenders provided with C<Log::Dispatch>,
+you need to install C<Log::Dispatch> (2.00 or better) from CPAN,
 which itself depends on C<Attribute-Handlers> and
-C<Params-Validate>. 
-Everything's automatically fetched from CPAN if you're using the CPAN 
-shell (CPAN.pm), because they're listed as dependencies.
-Also, C<Test::Simple>, C<Test::Harness> and C<File::Spec> are needed,
+C<Params-Validate>. And a lot of other modules, that's the reason
+why we're now shipping Log::Log4perl with its own standard appenders
+and only if you wish to use additional ones, you'll have to go through
+the grueling C<Log::Dispatch> installation process.
+
+Log::Log4perl needs C<Test::Simple>, C<Test::Harness> and C<File::Spec>, 
 but they already come with fairly recent versions of perl.
+If not, everything's automatically fetched from CPAN if you're using the CPAN 
+shell (CPAN.pm), because they're listed as dependencies.
 
 C<Time::HiRes> (1.20 or better) is required only if you need the
 fine-grained time stamps of the C<%r> parameter in
