@@ -25,9 +25,9 @@ unless (-e "$WORK_DIR"){
     mkdir("$WORK_DIR", 0755) || die "can't create $WORK_DIR ($!)";
 }
 
-my $testfile = File::Spec->catfile(qw(t tmp test26.log));
+my $testfile = File::Spec->catfile($WORK_DIR, "test26.log");
 
-BEGIN {plan tests => 5}
+BEGIN {plan tests => 7}
 
 END { unlink $testfile;
       unlink "${testfile}_1";
@@ -126,7 +126,7 @@ EOT
     $log->info("Shu-wa-chi!");
 
     for(qw(1 2)) {
-        open FILE, "<${testfile}_$_" or die "Cannot create ${testfile}_$_";
+        open FILE, "<${testfile}_$_" or die "Cannot open ${testfile}_$_";
         $content = join '', <FILE>;
         close FILE;
     
@@ -137,4 +137,34 @@ EOT
     # We don't have Log::Dispatch, skip these cases
     ok(1);
     ok(1);
+}
+
+#########################################################
+# Check if the 0.33 Log::Log4perl::Appender::File bug is
+# fixed which caused all messages to end up in the same 
+# file.
+#########################################################
+$data = <<EOT;
+log4perl.category = INFO, FileAppndr1, FileAppndr2
+log4perl.appender.FileAppndr1          = Log::Log4perl::Appender::File
+log4perl.appender.FileAppndr1.filename = ${testfile}_1
+log4perl.appender.FileAppndr1.mode     = write
+log4perl.appender.FileAppndr1.layout   = Log::Log4perl::Layout::SimpleLayout
+
+log4perl.appender.FileAppndr2          = Log::Log4perl::Appender::File
+log4perl.appender.FileAppndr2.filename = ${testfile}_2
+log4perl.appender.FileAppndr2.mode     = write
+log4perl.appender.FileAppndr2.layout   = Log::Log4perl::Layout::SimpleLayout
+EOT
+
+Log::Log4perl::init(\$data);
+$log = Log::Log4perl::get_logger("");
+$log->info("Shu-wa-chi!");
+
+for(qw(1 2)) {
+    open FILE, "<${testfile}_$_" or die "Cannot open ${testfile}_$_";
+    $content = join '', <FILE>;
+    close FILE;
+
+    ok($content, "INFO - Shu-wa-chi!\n");
 }
