@@ -202,9 +202,18 @@ sub render {
         if($self->{info_needed}->{M} or
            $self->{info_needed}->{l} or
            0) {
-            # For the name of the subroutine the logger was triggered,
-            # we need to go one more level up
-            $subroutine = (caller($caller_level+1))[3];
+            # To obtain the name of the subroutine which triggered the 
+            # logger, we need to go one additional level up.
+            my $levels_up = 1; 
+            {
+                $subroutine = (caller($caller_level+$levels_up))[3];
+                    # If we're inside an eval, go up one level further.
+                if(defined $subroutine and
+                   $subroutine eq "(eval)") {
+                    $levels_up++;
+                    redo;
+                }
+            }
             $subroutine = "main::" unless $subroutine;
             $info{M} = $subroutine;
             $info{l} = "$subroutine $filename ($line)";
