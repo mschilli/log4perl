@@ -15,9 +15,9 @@ sub new {
 
     my $mode;
     if (defined($data->{Append}{value})){
-        if (lc $data->{Append}{value} eq 'true' || $data->{Append}{value}){
+        if (lc $data->{Append}{value} eq 'true' || $data->{Append}{value} == 1){
             $mode = 'append';
-        }elsif (lc $data->{Append}{value} eq 'true' || ! $data->{Append}{value}) {
+        }elsif (lc $data->{Append}{value} eq 'false' || $data->{Append}{value} == 0) {
             $mode = 'write';
         }elsif($data->{Append} =~ /^(write|append)$/){
             $mode = $data->{Append}
