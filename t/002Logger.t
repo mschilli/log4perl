@@ -10,7 +10,7 @@ use strict;
 
 #########################
 # used Test::Simple to help debug the test script
-use Test::Simple tests => 50;
+use Test::Simple tests => 53;
 
 use Log::Log4perl;
 use Log::Log4perl::Level;
@@ -56,8 +56,14 @@ $log1->level($ERROR);
 
 # warn "level is: ", $log1->level(), "\n";
 
-$log1->error("Error Message");
-$log1->debug("Debug Message");
+my $ret;
+
+$ret = $log1->error("Error Message");
+ok($ret == 1);
+
+$ret = $log1->debug("Debug Message");
+ok(!defined $ret);
+
 ok($app->buffer() eq "ERROR - Error Message\n", "log1 app buffer contains ERROR - Error Message");
 
 # warn "app buffer is: \"", $app->buffer(), "\"\n";
@@ -125,7 +131,8 @@ $app3->buffer("");
 $log1->add_appender($app);
 $log2->add_appender($app2);
 # log3 already has app3 attached
-$log1->error("Error Message");
+$ret = $log1->error("Error Message");
+ok($ret == 3);
 ok($app->buffer() eq "ERROR - Error Message\n", "app buffer contains ERROR");
 ok($app2->buffer() eq "ERROR - Error Message\n", "app2 buffer contains ERROR");
 ok($app3->buffer() eq "ERROR - Error Message\n", "app3 buffer contains ERROR");

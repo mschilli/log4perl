@@ -106,8 +106,8 @@ sub log { # Relay this call to Log::Dispatch::Whatever
     # of an "appender threshold"
     if($self->{level} > $
                         Log::Log4perl::Level::PRIORITY{$level}) {
-      print "$self->{level} > $level, aborting\n" if DEBUG;
-        return;
+        print "$self->{level} > $level, aborting\n" if DEBUG;
+        return undef;
     }
 
     $self->{layout} || $self->layout();  #set to default if not already
@@ -120,7 +120,9 @@ sub log { # Relay this call to Log::Dispatch::Whatever
                                             $level,
                                             3 + $Log::Log4perl::caller_depth,
                                             );
-    return $self->{appender}->log(%$p);
+    $self->{appender}->log(%$p);
+
+    return 1;
 }
 
 ##################################################

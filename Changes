@@ -7,6 +7,11 @@ Revision history for Log::Log4perl
     * (ms) Added Log::Log4perl::NDC (Nested Diagnostic Contexts) and
            Log::Log4perl::MDC (Mapped Diagnostic Contexts)
     * (ms) LOGDIE and LOGWARN added to stealth loggers
+    * (ms) Logging methods ($lo->debug(), $lo->info() ...) now return
+           a value, indicating the number of appenders that the message
+           was propagated to. If the message was suppressed due to level
+           constraints, undef is returned. Updated manpage (new section
+           "return values").
 
 0.26 11/11/2002
     * (kg) enabled %l (was missing from PatternLayout::define)

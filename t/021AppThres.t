@@ -11,7 +11,7 @@ use Test;
 use Log::Log4perl qw(get_logger);
 use Log::Log4perl::Level;
 
-BEGIN { plan tests => 12 }
+BEGIN { plan tests => 14 }
 
 ok(1); # If we made it this far, we're ok.
 
@@ -49,10 +49,16 @@ ok($app1->buffer(), "");
 ##################################################
 # Inherited appender
 ##################################################
+my $ret;
+
 $app0->buffer("");
 $app1->buffer("");
-$log1->info("Don't want to see this");
-$log1->warn("Yeah, log1");
+
+$ret = $log1->info("Don't want to see this");
+ok($ret, 0);
+
+$ret = $log1->warn("Yeah, log1");
+ok($ret, 1);
 
 ok($app0->buffer(), "");
 ok($app1->buffer(), "WARN - Yeah, log1\n");

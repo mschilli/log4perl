@@ -1046,6 +1046,39 @@ choice. Think about the people taking over your code one day: The
 class hierarchy is probably what they know right up front, so it's easy
 for them to tune the logging to their needs.
 
+=head2 Return Values
+
+All logging methods return values indicating if their message
+actually reached one or more appenders. If the message has been
+suppressed because of level constraints, C<undef> is returned.
+
+For example,
+
+    my $ret = $logger->info("Message");
+
+will return C<undef> if the system debug level for the current category
+is not C<INFO> or more permissive. 
+If Log::Log4perl
+forwarded the message to one or more appenders, the number of appenders
+is returned.
+
+If appenders decide to veto on the message with an appender threshold,
+the log method's return value will have them excluded. This means that if
+you've got one appender holding an appender threshold and you're 
+logging a message
+which passes the system's log level hurdle but not the appender threshold,
+C<0> will be returned by the log function.
+
+The bottom line is: Logging functions will return a I<true> value if the message
+made it through to one or more appenders and a I<false> value if it didn't.
+This allows for constructs like
+
+    $logger->fatal("@_") or print STDERR "@_\n";
+
+which will ensure that the fatal message isn't lost
+if the current level is lower than FATAL or printed twice if 
+the level is acceptable but an appender already points to STDERR.
+
 =head2 Pitfalls with Categories
 
 Be careful with just blindly reusing the system's packages as
