@@ -126,7 +126,7 @@ $app->layout($layout);
 $logger->debug("That's the message");
 
 ok($app->buffer(), File::Spec->catfile(qw(t 003Layout.t)) .
-                   "-111 That's the message"); 
+                   "-126 That's the message"); 
 
 ############################################################
 # Don't append a newline if the message already contains one
