@@ -6,6 +6,8 @@ use 5.006;
 use strict;
 use warnings;
 
+use Log::Log4perl::Level;
+
 our $unique_counter = 0;
 
 ##################################################
@@ -51,6 +53,7 @@ sub new {
                  appender => $appender,
                  name     => $params{name},
                  layout   => undef,
+                 level    => $DEBUG,
                };
     
     bless $self, $class;
@@ -59,9 +62,27 @@ sub new {
 }
 
 ##################################################
+sub threshold { # Set/Get the appender threshold
+##################################################
+    my ($self, $level) = @_;
+
+    if(defined $level) {
+        $self->{level} = $level;
+    }
+
+    return $self->{level};
+}
+
+##################################################
 sub log { # Relay this call to Log::Dispatch::Whatever
 ##################################################
     my ($self, $p, $category, $level) = @_;
+
+    # Check if the appender has a last-minute veto in form
+    # of an "appender threshold"
+    if($self->{level} < $Log::Log4perl::Level::PRIORITY{$level}) {
+        return;
+    }
 
     $self->{layout} || $self->layout();  #set to default if not already
                                          #can this be moved?
