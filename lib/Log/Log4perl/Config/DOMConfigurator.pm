@@ -308,6 +308,8 @@ The code is brazenly modeled on log4j's DOMConfigurator class, (by
 Christopher Taylor, Ceki Gülcü and Anders Kristensen) and any
 perceived similarity is not coincidental.
 
+=CAVEAT
+
 It is still (version 0.02 Jan-2002) very fresh, alpha software, please 
 check it out thoroughly before use and let me know if you find
 any problems.
