@@ -61,13 +61,16 @@ $logger = Log::Log4perl::get_logger('animal.dog');
 
 $logger->debug('2nd debug message');
 $logger->info('2nd info message');
+print "sleeping for 3 secs\n";
+sleep 3;
+$logger->info('2nd info message again');
 
 open (LOG, $testfile) or die "can't open $testfile $!";
 my @log = <LOG>;
 close LOG;
 my $log = join('',@log);
 
-ok($log, "INFO - info message\nDEBUG animal.dog N/A - 2nd debug message\nINFO  animal.dog N/A - 2nd info message\n");
+ok($log, "INFO - info message\nDEBUG animal.dog N/A - 2nd debug message\nINFO  animal.dog N/A - 2nd info message\nINFO  animal.dog N/A - 2nd info message again\n");
 
 # ***************************************************************
 # do it 3rd time
@@ -98,7 +101,7 @@ open (LOG, $testfile) or die "can't open $testfile $!";
 close LOG;
 $log = join('',@log);
 
-ok($log, "INFO - info message\nDEBUG animal.dog N/A - 2nd debug message\nINFO  animal.dog N/A - 2nd info message\nINFO - 3rd info message\n");
+ok($log, "INFO - info message\nDEBUG animal.dog N/A - 2nd debug message\nINFO  animal.dog N/A - 2nd info message\nINFO  animal.dog N/A - 2nd info message again\nINFO - 3rd info message\n");
 
 BEGIN {plan tests => 2};
 
