@@ -11,7 +11,7 @@ Revision history for Log::Log4perl
     * (kg) got rid of warnings during make test in 014ConfErrs.t
            added user-defined hooks to JavaMap
     * Jim Cromie <jcromie@divsol.com> provided a patch to get
-      rid of deprechated our-if syntax in Level.pm
+      rid of deprecated our-if syntax in Level.pm
     * (ms) removed test case for RollingFileAppender because of recent
       instability. Added dependency for Log::Dispatch::RollingFile 1.10
       in Log/Log4perl/JavaMap/RollingFileAppender.pm.
