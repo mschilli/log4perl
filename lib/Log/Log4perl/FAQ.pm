@@ -206,7 +206,7 @@ log messages to include the current client's IP address. Most certainly,
 you don't want to include it in each and every log message like in
 
     $logger->debug( $r->connection->remote_ip,
-                    " retrieving user data from DB" );
+                    " Retrieving user data from DB" );
 
 do you? Instead, you want to set it in a global data structure and
 have Log::Log4perl include it automatically via a PatternLayout setting
@@ -223,7 +223,7 @@ you've set once via
 at the start of the request handler. Note that this is a
 I<static> (class) method, there's no logger object involved.
 You can use this method with as many key/value pairs as you like as long
-as you refer them under different names.
+as you reference them under different names.
 
 The mappings are stored in a global hash table within Log::Log4perl.
 Luckily, because the thread
