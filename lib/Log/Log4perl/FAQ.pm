@@ -167,7 +167,7 @@ Then, just tell it to install Log::Log4perl and it will resolve all
 dependencies automatically and fetch them from log4perl.sourceforge.net
 if it can't find them in the main archives:
 
-    ppm> install Log::Log4perl
+    ppm> install Log-Log4perl
 
 =back
 
