@@ -2,12 +2,12 @@
  Revision history for Log::Log4perl
 ##################################################
 
-0.48 (not yet released)
+0.48 (08/20/2004)
     * (ms) fixed bug reported by Chip Salzenberg <chip@pobox.com>: logdie()
            and logwarn() are now compliant with the warn() and die() 
            standard which suppresses the "at file line x" message if
            the message ends with a "\n".
-    * (ms) New interface for config parsers. 
+    * (ms) New interface for custom config parsers. 
            Log::Log4perl::Config::BaseConfigurator now provides a base class
            for new config parsers. Init can now be called like
            Log::Log4perl->init($parser) with a parser object, which is
