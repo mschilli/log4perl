@@ -46,6 +46,7 @@ t/022Wrap.t
 t/023Date.t
 t/024WarnDieCarp.t
 t/025CustLevels.t
+t/026FileApp.t
 t/027Watch2.t
 t/deeper1.expected
 t/deeper6.expected
