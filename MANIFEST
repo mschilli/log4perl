@@ -12,6 +12,7 @@ lib/Log/Log4perl.pm
 lib/Log/Log4perl/Appender.pm
 lib/Log/Log4perl/Appender/DBI.pm
 lib/Log/Log4perl/Appender/File.pm
+lib/Log/Log4perl/Appender/Limit.pm
 lib/Log/Log4perl/Appender/Screen.pm
 lib/Log/Log4perl/Appender/Socket.pm
 lib/Log/Log4perl/Appender/Synchronized.pm
