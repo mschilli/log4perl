@@ -3,6 +3,7 @@ Revision history for Log::Log4perl
 ##################################################
 
 0.42 (not yet released)
+    * (kg) added filters to XML DOMConfig and DTD
     * (ms) Fixed caller level to cspecs by adding one
     * (ms) Added init_once() and documentation
 
