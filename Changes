@@ -6,6 +6,8 @@ Revision history for Log::Log4perl
     * (ms) Matthew Keene <mkeene@netspace.net.au> suggested to have
       an accessor for all appenders currently defined -- added 
       appenders() method
+    * (ms) Test case 041SafeEval.t didn't share $0 explicitely and
+      created some warnings, fixed that with (jf)'s help.
 
 0.35 06/21/2003
     * (kg) got rid of warnings during make test in 014ConfErrs.t
