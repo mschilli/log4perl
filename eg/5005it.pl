@@ -39,11 +39,11 @@ sub process_file {
     $data =~ s/^our\s+[\$%@][\w_]+.*/rep_our($&)/meg;
 
         # Replace 'use 5.006' lines
-    $data =~ s/^use\s+5\.006/use 5.00503/mg;
+    $data =~ s/^use\s+5\.006/\nuse 5.00503/mg;
 
-        # Delete 'no/use warnings;'
-    $data =~ s/^\s*use warnings;/ \n/mg;
-    $data =~ s/^\s*no warnings;/ \n/mg;
+        # Delete 'no/use warnings;': \s seems to eat newlines, so use []
+    $data =~ s/^[ \t]*use warnings;//mg;
+    $data =~ s/^[ \t]*no warnings;//mg;
 
         # 5.00503 can't handle constants that start with a _
     $data =~ s/_INTERNAL_DEBUG/INTERNAL_DEBUG/g;
