@@ -10,8 +10,8 @@ Revision history for Log::Log4perl
       Log::Log4perl::Appender::Synchronized, an appender guaranteeing 
       atomic logging of messages via semaphores.
     * (ms) Added basic substitution to PropertyConfigurator. Now you can
-      define variables (like in "name=value") and subsequent occurrences
-      of "{$name}" will be replaced by "value" in the configuration file.
+      define variables (like in "name=value") and subsequent patterns
+      of "${name}" will be replaced by "value" in the configuration file.
 
 0.38 (09/29/2003)
     * (kg) fixed bug where custom_levels beneath DEBUG didn't work
