@@ -313,6 +313,7 @@ which allows the following placeholders to be recognized and processed:
     k      hour in day (1~24)   (Number)        24
     K      hour in am/pm (0~11) (Number)        0
     z      time zone            (Text)          Pacific Standard Time
+    Z      RFC 822 time zone    (Text)          -0800
     '      escape for text      (Delimiter)
     ''     single quote         (Literal)       '
 
@@ -364,7 +365,7 @@ someone (and that could be you :) implements them:
     W week in month
     k hour in day 
     K hour in am/pm
-    z timezone
+    z timezone (but we got 'Z' for the numeric time zone value)
 
 Also, C<Log::Log4perl::DateFormat> just knows about English week and
 month names, internationalization support has to be added.
