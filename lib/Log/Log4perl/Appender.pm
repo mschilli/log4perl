@@ -151,46 +151,43 @@ sub log {
         }
     }
 
-        # No more default layout (composite appenders)
-    #$self->{layout} || $self->layout();  #set to default if not already
-                                          #can this be moved?
+    unless($self->composite()) {
 
-    #doing the rendering in here 'cause this is 
-    #where we keep the layout
+            #not defined, the normal case
+        if (! defined $self->{warp_message} ){
+                #join any message elements
+            $p->{message} = 
+                join($Log::Log4perl::JOIN_MSG_ARRAY_CHAR, 
+                     @{$p->{message}} 
+                     ) if ref $p->{message} eq "ARRAY";
+            
+            #defined but false, e.g. Appender::DBI
+        } elsif (! $self->{warp_message}) {
+            ;  #leave the message alone
+    
+        } elsif (ref($self->{warp_message}) eq "CODE") {
+            #defined and a subref
+            $p->{message} = 
+                [$self->{warp_message}->(@{$p->{message}})];
+        } else {
+            #defined and a function name?
+            no strict qw(refs);
+            $p->{message} = 
+                [$self->{warp_message}->(@{$p->{message}})];
+        }
 
-        #not defined, the normal case
-    if (! defined $self->{warp_message} ){ 
-            #join any message elements
-        $p->{message} = 
-            join($Log::Log4perl::JOIN_MSG_ARRAY_CHAR, 
-                 @{$p->{message}} 
-                 );
-        
-        #defined but false, e.g. Appender::DBI
-    } elsif (! $self->{warp_message}) {
-        ;  #leave the message alone
-
-    } elsif (ref($self->{warp_message}) eq "CODE") {
-        #defined and a subref
-        $p->{message} = 
-            [$self->{warp_message}->(@{$p->{message}})];
-    } else {
-        #defined and a function name?
-        no strict qw(refs);
-        $p->{message} = 
-            [$self->{warp_message}->(@{$p->{message}})];
+        $p->{message} = $self->{layout}->render($p->{message}, 
+            $category,
+            $level,
+            3 + $Log::Log4perl::caller_depth,
+        ) if $self->layout();
     }
-
-    $p->{message} = $self->{layout}->render($p->{message}, 
-                                            $category,
-                                            $level,
-                                            3 + $Log::Log4perl::caller_depth,
-                                            ) if $self->layout();
 
     $self->{appender}->log(%$p, 
                             #these are used by our Appender::DBI
                             log4p_category => $category,
-                            log4p_level  => $level,);
+                            log4p_level    => $level,
+                          );
     return 1;
 }
 

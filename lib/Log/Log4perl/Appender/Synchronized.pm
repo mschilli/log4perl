@@ -11,10 +11,13 @@ package Log::Log4perl::Appender::Synchronized;
 
 use strict;
 use warnings;
+
+our @ISA = qw(Log::Log4perl::Appender);
+
 use IPC::Shareable qw(:lock);
 use IPC::Semaphore;
 
-our $CVSVERSION   = '$Revision: 1.1 $';
+our $CVSVERSION   = '$Revision: 1.2 $';
 our ($VERSION)    = ($CVSVERSION =~ /(\d+\.\d+)/);
 
 ###########################################
@@ -61,7 +64,15 @@ sub log {
     
     $self->{ipc_shareable}->shlock();
     #warn "pid $$ entered\n";
-    $self->{app}->{appender}->log(%params);
+
+    # Relay that to the SUPER class which needs to render the
+    # message according to the appender's layout, first.
+    $Log::Log4perl::caller_depth +=2;
+    $self->{app}->SUPER::log(\%params, 
+                             $params{log4p_category},
+                             $params{log4p_level});
+    $Log::Log4perl::caller_depth -=2;
+
     #warn "pid $$ leaves\n";
     $self->{ipc_shareable}->shunlock();
 }

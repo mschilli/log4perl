@@ -53,7 +53,8 @@ log4perl.category.Bar.Twix          = WARN, Syncer
 log4perl.appender.Logfile           = Log::Log4perl::Appender::TestFileCreeper
 log4perl.appender.Logfile.autoflush = 1
 log4perl.appender.Logfile.filename  = $logfile
-log4perl.appender.Logfile.layout    = SimpleLayout
+log4perl.appender.Logfile.layout    = Log::Log4perl::Layout::PatternLayout
+log4perl.appender.Logfile.layout.ConversionPattern = %F{1}%L> %m%n
 
 log4perl.appender.Syncer           = Log::Log4perl::Appender::Synchronized
 log4perl.appender.Syncer.appender  = Logfile
@@ -103,6 +104,8 @@ while(<FILE>) {
 close FILE;
 
 unlink $logfile;
+#print $logfile, "\n";
+#exit 0;
 
 $locker->clean_up;
 

@@ -254,38 +254,8 @@ sub _init {
         for my $appname (@appnames) {
 
             my $appender = create_appender_instance(
-                $data, $appname, \%appenders_created, \@post_config_subs);
-
-            add_layout_by_name($data, $appender, $appname) unless
-                $appender->composite();
-
-                # Check for appender thresholds
-            my $threshold = 
-               $data->{appender}->{$appname}->{Threshold}->{value};
-            if(defined $threshold) {
-                    # Need to split into two lines because of CVS
-                $appender->threshold($
-                    Log::Log4perl::Level::PRIORITY{$threshold});
-            }
-
-                # Check for custom filters attached to the appender
-            my $filtername = 
-               $data->{appender}->{$appname}->{Filter}->{value};
-            if(defined $filtername) {
-                    # Need to split into two lines because of CVS
-                my $filter = Log::Log4perl::Filter::by_name($filtername);
-                die "Filter $filtername doesn't exist" unless defined $filter;
-                $appender->filter($filter);
-            }
-
-            if($system_wide_threshold) {
-                $appender->threshold($
-                    Log::Log4perl::Level::PRIORITY{$system_wide_threshold});
-            }
-
-            if($data->{appender}->{$appname}->{threshold}) {
-                    die "threshold keyword needs to be uppercase";
-            }
+                $data, $appname, \%appenders_created, \@post_config_subs,
+                $system_wide_threshold);
 
             $logger->add_appender($appender, 'dont_reset_all');
             set_appender_by_name($appname, $appender, \%appenders_created);
@@ -304,7 +274,8 @@ sub _init {
 ##################################################
 sub create_appender_instance {
 ##################################################
-    my($data, $appname, $appenders_created, $post_config_subs) = @_;
+    my($data, $appname, $appenders_created, $post_config_subs,
+       $system_wide_threshold) = @_;
 
     my $appenderclass = get_appender_by_name(
             $data, $appname, $appenders_created);
@@ -397,6 +368,37 @@ sub create_appender_instance {
                 Log::Log4perl::Logger::APPENDER_BY_NAME{$_} = $app;
             }
         }
+    }
+
+    add_layout_by_name($data, $appender, $appname) unless
+        $appender->composite();
+
+       # Check for appender thresholds
+    my $threshold = 
+       $data->{appender}->{$appname}->{Threshold}->{value};
+    if(defined $threshold) {
+            # Need to split into two lines because of CVS
+        $appender->threshold($
+            Log::Log4perl::Level::PRIORITY{$threshold});
+    }
+
+        # Check for custom filters attached to the appender
+    my $filtername = 
+       $data->{appender}->{$appname}->{Filter}->{value};
+    if(defined $filtername) {
+            # Need to split into two lines because of CVS
+        my $filter = Log::Log4perl::Filter::by_name($filtername);
+        die "Filter $filtername doesn't exist" unless defined $filter;
+        $appender->filter($filter);
+    }
+
+    if($system_wide_threshold) {
+        $appender->threshold($
+            Log::Log4perl::Level::PRIORITY{$system_wide_threshold});
+    }
+
+    if($data->{appender}->{$appname}->{threshold}) {
+            die "threshold keyword needs to be uppercase";
     }
 
     return $appender;
