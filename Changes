@@ -11,6 +11,8 @@
            as a path separator on both Unix and Win32, while Log4perl's
            layouts (derived from caller() info) use '\' on Win32 and '/' 
            on Unix. Changed tests to only verify file name, not path.
+    * (ms) Added 'appender_by_name()' to retrieve an appender defined
+           in the configuration file by name later.
 
 0.49 (11/07/2004)
     * (ms) init_and_watch() no longer die()s on reloading syntactically 

@@ -1736,6 +1736,65 @@ compile it with
 
 to make sure the appender class gets included.
 
+=head2 How can I access a custom appender defined in the configuration?
+
+Any appender defined in the configuration file or somewhere in the code
+can be accessed later via 
+C<Log::Log4perl-E<gt>appender_by_name("appender_name")>,
+which returns a reference the the appender object.
+
+Once you've got a hold of the object, it can be queried or modified to 
+your liking. For example, see the custom C<IndentAppender> defined below:
+After calling C<init()> to define the Log4perl settings, the
+appender object is retrieved to call its C<indent_more()> and C<indent_less()>
+methods to control indentation of messages:
+
+    package IndentAppender;
+
+    sub new {
+        bless { indent => 0 }, $_[0];
+    }
+
+    sub indent_more  { $_[0]->{indent}++ }
+    sub indent_less  { $_[0]->{indent}-- }
+
+    sub log {
+        my($self, %params) = @_;
+        print " " x $self->{indent}, $params{message};
+    }
+
+    package main;
+
+    use Log::Log4perl qw(:easy);
+
+    my $conf = q(
+    log4perl.category          = DEBUG, Indented
+    log4perl.appender.Indented = IndentAppender
+    log4perl.appender.Indented.layout = Log::Log4perl::Layout::SimpleLayout
+    );
+    
+    Log::Log4perl::init(\$conf);
+
+    my $appender = Log::Log4perl->appender_by_name("Indented");
+    
+    DEBUG "No identation";
+    $appender->indent_more();
+    DEBUG "One more";
+    $appender->indent_more();
+    DEBUG "Two more";
+    $appender->indent_less();
+    DEBUG "One less";
+
+As you would expect, this will print
+
+    DEBUG - No identation
+     DEBUG - One more
+      DEBUG - Two more
+     DEBUG - One less
+
+because the very appender used by Log4perl is modified dynamically at
+runtime.
+
 =cut
 
 =head1 SEE ALSO

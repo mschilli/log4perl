@@ -322,6 +322,21 @@ sub appenders {  # Get all defined appenders hashref
 }
 
 ##################################################
+sub appender_by_name {  # Get an appender by name
+##################################################
+        # If someone calls L4p->appender_by_name and not L4p::appender_by_name
+    shift if $_[0] eq __PACKAGE__;
+
+    my($name) = @_;
+
+    if(exists $Log::Log4perl::Logger::APPENDER_BY_NAME{$name}) {
+        return $Log::Log4perl::Logger::APPENDER_BY_NAME{$name}->{appender};
+    } else {
+        return undef;
+    }
+}
+
+##################################################
 sub infiltrate_lwp {  # 
 ##################################################
     no warnings qw(redefine);
@@ -1956,6 +1971,13 @@ and the script will run nevertheless (but of course without logging):
     ###l4p INFO "Really!";
 
 because everything's a regular comment now.
+
+=head2 Access defined appenders
+
+All appenders defined in the configuration file or via Perl code
+can be retrieved by the C<appender_by_name()> class method. This comes
+in handy if you want to manipulate or query appender properties after
+the Log4perl configuration has been loaded via C<init()>.
 
 =head1 Advanced configuration within Perl
 
