@@ -743,7 +743,7 @@ REFERENCES
     [2] Vipan Singla, "Don't Use System.out.println! Use Log4j.",
         http://www.vipan.com/htdocs/log4jhelp.html
 
-    [3] The Log::Log4perl project home page: http://log4perl.sorceforge.net
+    [3] The Log::Log4perl project home page: http://log4perl.sourceforge.net
 
 CONTACT
     Please send bug reports or requests for enhancements to the authors via
