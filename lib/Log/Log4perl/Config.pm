@@ -12,6 +12,8 @@ use Log::Log4perl::Config::PropertyConfigurator;
 use Log::Dispatch;
 use Log::Dispatch::File;
 use Log::Log4perl::JavaMap;
+use Log::Log4perl::Filter;
+
 use constant DEBUG => 0;
 
 # How to map lib4j levels to Log::Dispatch levels
@@ -89,6 +91,9 @@ sub _init {
 
     my $data = config_read($config);
     
+    #use Data::Dumper;
+    #print Data::Dumper::Dumper($data) if DEBUG;
+
     my @loggers = ();
     my $system_wide_threshold;
 
@@ -103,6 +108,7 @@ sub _init {
             # yes, we do.
         $system_wide_threshold = $data->{threshold}->{value};
     }
+
     if (exists $data->{oneMessagePerAppender}){
                     $Log::Log4perl::one_message_per_appender = 
                         $data->{oneMessagePerAppender}->{value};
@@ -111,11 +117,13 @@ sub _init {
         # Continue with lower level loggers. Both 'logger' and 'category'
         # are valid keywords. Also 'additivity' is one, having a logger
         # attached. We'll differenciate between the two further down.
-    for my $key (qw(logger category additivity PatternLayout)) {
+    for my $key (qw(logger category additivity PatternLayout filter)) {
 
         if(exists $data->{$key}) {
 
             for my $path (@{leaf_paths($data->{$key})}) {
+
+                print "Path before: @$path\n" if DEBUG;
 
                 my $value = pop @$path;
 
@@ -133,6 +141,13 @@ sub _init {
                     #a global user-defined conversion specifier (cspec)
                 }elsif ($key eq "PatternLayout"){
                     &add_global_cspec(@$path[-1], $value);
+
+                }elsif ($key eq "filter"){
+                    # That's either a filter sub or a filter class
+                    print "filter value is @$path, $value\n" if DEBUG;
+                    my $entry = compile_if_perl($value);
+                    print "entry is $entry\n" if DEBUG;
+                    Log::Log4perl::Filter->new(@$path[-1], $entry);
 
                 } else {
                     # This is a regular logger
@@ -232,6 +247,16 @@ sub _init {
                     # Need to split into two lines because of CVS
                 $appender->threshold($
                     Log::Log4perl::Level::PRIORITY{$threshold});
+            }
+
+                # Check for custom filters attached to the appender
+            my $filtername = 
+               $data->{appender}->{$appname}->{Filter}->{value};
+            if(defined $filtername) {
+                    # Need to split into two lines because of CVS
+                my $filter = Log::Log4perl::Filter::by_name($filtername);
+                die "Filter $filtername doesn't exist" unless defined $filter;
+                $appender->filter($filter);
             }
 
             if($system_wide_threshold) {
@@ -553,11 +578,6 @@ accomplished by simply omitting the name:
 
 This sets the root appender's level to C<FATAL> and also attaches the 
 later-to-be-defined appenders C<Database> and C<Mailer> to it.
-
-Loggers carrying a threshold, can be defined using the C<Threshold>
-keyword after the logger's name:
-
-    log4perl.logger.Bar.Twix.Threshold = ERROR
 
 The additivity flag of a logger is set or cleared via the 
 C<additivity> keyword:

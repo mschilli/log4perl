@@ -121,6 +121,20 @@ sub log { # Relay this call to Log::Dispatch::Whatever
         return undef;
     }
 
+    # Run against the (yes only one) customized filter (which in turn
+    # might call other filters via the Bool filter) and check if it 
+    # decides if it lets our message pass or blocks.
+    if($self->{filter}) {
+        if($self->{filter}->decide(%$p,
+                                   log4p_category => $category,
+                                   log4p_level    => $level )) {
+            print "Filter $self->{filter}->{name} passes\n" if DEBUG;
+        } else {
+            print "Filter $self->{filter}->{name} blocks\n" if DEBUG;
+            return undef;
+        }
+    }
+
     $self->{layout} || $self->layout();  #set to default if not already
                                          #can this be moved?
 
@@ -194,6 +208,19 @@ sub layout { # Set/Get the layout object
     }
 
     return $self->{layout};
+}
+
+##################################################
+sub filter { # Set filter
+##################################################
+    my ($self, $filter) = @_;
+
+    if($filter) {
+        print "Setting filter to $filter->{name}\n" if DEBUG;
+        $self->{filter} = $filter;
+    }
+
+    return $self->{filter};
 }
 
 ##################################################
