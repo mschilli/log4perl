@@ -26,9 +26,9 @@ Log::Log4perl->init("$EG_DIR/log4j-manual-3.conf");
 my $logger = Log::Log4perl->get_logger("");
 $logger->debug("Gurgel");
 
-ok($Log::Log4perl::TestBuffer::POPULATION[0]->buffer(), 
+ok(Log::Log4perl::TestBuffer->by_name("stdout")->buffer(), 
    'm#^\S+\s+\[N/A\] \(\S+?:\d+\) - Gurgel$#'); 
-ok($Log::Log4perl::TestBuffer::POPULATION[1]->buffer(), 
+ok(Log::Log4perl::TestBuffer->by_name("R")->buffer(), 
    'm#^\S+\s+N/A\s+\'\' - Gurgel$#'); 
 
 ######################################################################
@@ -42,8 +42,7 @@ Log::Log4perl->init("$EG_DIR/log4j-manual-3.conf");
 $logger = Log::Log4perl->get_logger("foo");
 $logger->debug("Gurgel");
 
-ok($Log::Log4perl::TestBuffer::POPULATION[1]->buffer(),
+ok(Log::Log4perl::TestBuffer->by_name("R")->buffer(), 
     'm#^\S+\s+N/A \'foo\' - Gurgel\n#'); 
-ok($Log::Log4perl::TestBuffer::POPULATION[1]->buffer(),
+ok(Log::Log4perl::TestBuffer->by_name("R")->buffer(), 
     'm#^\S+\s+N/A \'foo\' - Gurgel\n$#'); 
-#print "BUFFER= '", $Log::Log4perl::TestBuffer::POPULATION[1]->buffer(), "'\n";

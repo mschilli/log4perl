@@ -30,7 +30,7 @@ Log::Log4perl->init("$EG_DIR/log4j-manual-2.conf");
 my $logger = Log::Log4perl->get_logger("foo.bar.baz");
 $logger->debug("Gurgel");
 
-ok($Log::Log4perl::TestBuffer::POPULATION[0]->buffer(),
+ok(Log::Log4perl::TestBuffer->by_name("A1")->buffer(),
    "m#$date_regex \\[N/A\\] DEBUG foo.bar.baz - Gurgel#");
 
 ######################################################################
@@ -45,6 +45,5 @@ Log::Log4perl->init("$EG_DIR/log4j-manual-2.conf");
 $logger = Log::Log4perl->get_logger("foo");
 $logger->debug("Gurgel");
 
-ok($Log::Log4perl::TestBuffer::POPULATION[0]->buffer(),
+ok(Log::Log4perl::TestBuffer->by_name("A1")->buffer(),
    "m#$date_regex \\[N/A\\] DEBUG foo - Gurgel#");
-#print "BUFFER= '", $Log::Log4perl::TestBuffer::POPULATION[1]->buffer(), "'\n";

@@ -3,7 +3,7 @@ Revision history for Log::Log4perl
 ##################################################
 
 0.24 09/17/2002
-    * (kg) Fix for init_and_watch and test cases [in progress]
+    * (kg) Fix for init_and_watch and test cases
     * (ms) Added documentation for Log::Log4perl::Config
     * (ms) Added log4perl.additivity.loggerName conf file syntax
     * (ms) Assume Log::Log4perl::Layout prefix of 'relative'
@@ -11,6 +11,10 @@ Revision history for Log::Log4perl
            instead of 'Log::Log4perl::Layout::SimpleLayout').
     * (ms) accidently appending a ';' at the end of an appender
       class in a conf file now spits out a reasonable error message
+    * (ms) added a by_name() method to TestBuffer to retrieve an
+           instance of the TestBuffer population by name instead of
+           relying on the order of creation via POPULATION[x] 
+           (for testing only).
 
 0.23 09/14/2002
     * Both Log4perl/log4perl is now accepted in conf file

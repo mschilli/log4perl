@@ -80,6 +80,26 @@ sub DESTROY {
     @POPULATION = grep { defined $_ && $_ != $self } @POPULATION;
 }
 
+##################################################
+sub by_name {   
+##################################################
+    my($self, $name) = @_;
+
+    # Return a TestBuffer by appender name. This is useful if
+    # test buffers are created behind our back (e.g. via the
+    # Log4perl config file) and later on we want to 
+    # retrieve an instance to query its content.
+
+    die "No name given"  unless defined $name;
+
+    for my $appender (@POPULATION) {
+        if($appender->name() eq $name) {
+            return $appender;
+        }
+    }
+    return undef;
+}
+
 1;
 
 __END__

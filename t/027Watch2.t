@@ -8,14 +8,12 @@ use warnings;
 use strict;
 
 use Log::Log4perl;
+use Log::Log4perl::TestBuffer;
 
 my $testconf= 't/tmp/test27.conf';
 unlink $testconf if (-e $testconf);
 
-$
- Log::Log4perl::TestBuffer::POPULATION = undef;  #for warnings
-
-
+Log::Log4perl::TestBuffer->reset();
 
 my $conf1 = <<EOL;
 log4j.category   = WARN, myAppender
@@ -40,8 +38,7 @@ Log::Log4perl->init_and_watch($testconf, 1);
 
 my $logger = Log::Log4perl::get_logger('animal.dog');
 
-my $app0 = $   #cvs fodder
-        Log::Log4perl::TestBuffer::POPULATION[0];
+my $app0 = Log::Log4perl::TestBuffer->by_name("myAppender");
 
 $logger->debug('debug message, should appear');
 

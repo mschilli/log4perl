@@ -32,8 +32,8 @@ EOT
 my $logger = get_logger("Twix::Bar");
 $logger->info("Percolate this!");
 
-my $buf1 = $Log::Log4perl::TestBuffer::POPULATION[0]->buffer();
-my $buf2 = $Log::Log4perl::TestBuffer::POPULATION[1]->buffer();
+my $buf1 = Log::Log4perl::TestBuffer->by_name("A1")->buffer();
+my $buf2 = Log::Log4perl::TestBuffer->by_name("A2")->buffer();
 
 ok($buf1, "INFO - Percolate this!\n");
 ok($buf2, "INFO - Percolate this!\n");
@@ -56,8 +56,8 @@ EOT
 my $logger = get_logger("Twix::Bar");
 $logger->info("Percolate this!");
 
-my $buf1 = $Log::Log4perl::TestBuffer::POPULATION[0]->buffer();
-my $buf2 = $Log::Log4perl::TestBuffer::POPULATION[1]->buffer();
+$buf1 = Log::Log4perl::TestBuffer->by_name("A1")->buffer();
+$buf2 = Log::Log4perl::TestBuffer->by_name("A2")->buffer();
 
 ok($buf1, ""); # Not supposed to show up in the root logger
 ok($buf2, "INFO - Percolate this!\n");
@@ -80,8 +80,8 @@ EOT
 my $logger = get_logger("Twix::Bar");
 $logger->info("Percolate this!");
 
-my $buf1 = $Log::Log4perl::TestBuffer::POPULATION[0]->buffer();
-my $buf2 = $Log::Log4perl::TestBuffer::POPULATION[1]->buffer();
+$buf1 = Log::Log4perl::TestBuffer->by_name("A1")->buffer();
+$buf2 = Log::Log4perl::TestBuffer->by_name("A2")->buffer();
 
 ok($buf1, "INFO - Percolate this!\n");
 ok($buf2, "INFO - Percolate this!\n");

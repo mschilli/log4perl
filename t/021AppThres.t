@@ -72,7 +72,7 @@ ok($app1->buffer(), "ERROR - Yeah, log2\n");
 # Appender threshold with config file
 ##################################################
 # Reset appender population
-@Log::Log4perl::TestBuffer::POPULATION = ();
+Log::Log4perl::TestBuffer->reset();
 
 my $conf = <<EOT;
 log4perl.logger   = ERROR, BUF0
@@ -87,11 +87,8 @@ EOT
 
 Log::Log4perl::init(\$conf);
 
-    # Sorry 'bout that, but CVS is too stupid to grok that that's not a macro
-$app0 = $
-        Log::Log4perl::TestBuffer::POPULATION[0];
-$app1 = $
-        Log::Log4perl::TestBuffer::POPULATION[1];
+$app0 = Log::Log4perl::TestBuffer->by_name("BUF0");
+$app1 = Log::Log4perl::TestBuffer->by_name("BUF1");
 
 my $loga = get_logger("a");
 

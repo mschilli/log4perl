@@ -26,7 +26,7 @@ my $logger = Log::Log4perl->get_logger("");
 $logger->debug("Gurgel");
 
 
-ok($Log::Log4perl::TestBuffer::POPULATION[0]->buffer(), 
+ok(Log::Log4perl::TestBuffer->by_name("A1")->buffer(), 
    'm#^\d+\s+\[N/A\] DEBUG  N/A - Gurgel$#'); 
 
 ######################################################################
@@ -39,7 +39,7 @@ Log::Log4perl->init("$EG_DIR/log4j-manual-1.conf");
 $logger = Log::Log4perl->get_logger("foo");
 $logger->debug("Gurgel");
 
-ok($Log::Log4perl::TestBuffer::POPULATION[0]->buffer(),
+ok(Log::Log4perl::TestBuffer->by_name("A1")->buffer(),
     'm#^\d+\s+\[N/A\] DEBUG foo N/A - Gurgel$#'); 
 
 ######################################################################
@@ -57,7 +57,7 @@ EOT
 $logger = Log::Log4perl->get_logger("foo");
 $logger->debug("Gurgel");
 
-ok($Log::Log4perl::TestBuffer::POPULATION[0]->buffer(),
+ok(Log::Log4perl::TestBuffer->by_name("A1")->buffer(),
     'm#^\d+\s+\[N/A\] DEBUG foo N/A - Gurgel$#'); 
 
 ######################################################################
@@ -78,5 +78,5 @@ Log::Log4perl->init(\%hash);
 $logger = Log::Log4perl->get_logger("foo");
 $logger->debug("Gurgel");
 
-ok($Log::Log4perl::TestBuffer::POPULATION[0]->buffer(),
+ok(Log::Log4perl::TestBuffer->by_name("A1")->buffer(),
     'm#^\d+\s+\[N/A\] DEBUG foo N/A - Gurgel$#'); 

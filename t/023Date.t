@@ -118,5 +118,5 @@ Log::Log4perl::init(\$conf);
 my $logger = get_logger("Bar::Twix");
 $logger->error("Blah");
 
-ok($Log::Log4perl::TestBuffer::POPULATION[0]->buffer(), 
+ok(Log::Log4perl::TestBuffer->by_name("Buffer")->buffer(), 
      qr/\d\d:\d\d:\d\d ERROR Blah/);
