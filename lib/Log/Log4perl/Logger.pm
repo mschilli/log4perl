@@ -10,7 +10,6 @@ use Log::Log4perl::Level;
 use Log::Log4perl::Layout;
 use Log::Log4perl::Appender;
 use Log::Dispatch;
-use Data::Dumper;
 use Carp;
 
 use constant DEBUG => 0;
