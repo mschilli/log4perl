@@ -2,6 +2,8 @@
 #not meant to be used for ANYTHING yet --kg 5/2004
 
 package Log::Log4perl::Config::LDAPConfigurator;
+use Log::Log4perl::Config::BaseConfigurator;
+our @ISA = qw(Log::Log4perl::Config::BaseConfigurator);
 
 use Net::LDAP;
 use URI;
@@ -18,11 +20,15 @@ our $VERSION = 0.01;
 *unlog4j      = \&Log::Log4perl::Config::unlog4j;
 
 
-
+############################################
 sub parse {
-    my ($uri) = @_;
+############################################
+    my($self, $newtext) = @_;
 
-    my $uri = 
+    $self->text($newtext) if defined $newtext;
+    my $uri = $self->{text}->[0];
+
+    $uri = 
         URI->new($uri); #ldap://localhost/dc=testsystem,dc=log4perl,dc=goess,dc=org??sub?
 
 

@@ -1,6 +1,10 @@
 package Log::Log4perl::Config::PropertyConfigurator;
+use Log::Log4perl::Config::BaseConfigurator;
 
+use warnings;
 use strict;
+
+our @ISA = qw(Log::Log4perl::Config::BaseConfigurator);
 
 #poor man's export
 *eval_if_perl = \&Log::Log4perl::Config::eval_if_perl;
@@ -11,7 +15,13 @@ use constant _INTERNAL_DEBUG => 0;
 ################################################
 sub parse {
 ################################################
-    my $text = shift;
+    my($self, $newtext) = @_;
+
+    $self->text($newtext) if defined $newtext;
+
+    my $text = $self->{text};
+
+    die "Config parser has nothing to parse" unless defined $text;
 
     my $data = {};
     my %var_subst = ();
@@ -105,6 +115,8 @@ configuration is equivalent to the previous one:
 =head1 SEE ALSO
 
 Log::Log4perl::Config
+
+Log::Log4perl::Config::BaseConfigurator
 
 Log::Log4perl::Config::DOMConfigurator
 

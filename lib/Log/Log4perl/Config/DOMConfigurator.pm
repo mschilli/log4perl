@@ -1,4 +1,8 @@
 package Log::Log4perl::Config::DOMConfigurator;
+use Log::Log4perl::Config::BaseConfigurator;
+
+our @ISA = qw(Log::Log4perl::Config::BaseConfigurator);
+
 #todo
 # DONE(param-text) some params not attrs but values, like <sql>...</sql>
 # DONE see DEBUG!!!  below
@@ -40,9 +44,13 @@ our $LOG4PERL_PREFIX = 'log4perl';
 *unlog4j      = \&Log::Log4perl::Config::unlog4j;
 
 
-
+###################################################
 sub parse {
-    my ($text) = @_;
+###################################################
+    my($self, $newtext) = @_;
+
+    $self->text($newtext) if defined $newtext;
+    my $text = $self->{text};
 
     my $parser = $PARSER_CLASS->new;
     my $doc = $parser->parse (join('',@$text));

@@ -7,6 +7,16 @@
            and logwarn() are now compliant with the warn() and die() 
            standard which suppresses the "at file line x" message if
            the message ends with a "\n".
+    * (ms) New interface for config parsers. 
+           Log::Log4perl::Config::BaseConfigurator now provides a base class
+           for new config parsers. Init can now be called like
+           Log::Log4perl->init($parser) with a parser object, which is
+           derived from Log::Log4perl::Config::BaseConfigurator and 
+           provides a parse() method (no arguments). The file (or whatever)
+           to be parsed can be set by calling $parser->text(\@lines) or 
+           $parser->file($name) before calling L4p->init($parser).
+           The Property, DOM and LDAP configurators have been
+           adapted, check their implementation for details.
 
 0.47 (07/11/2004)
     * (ms) Added suggestion by Hutton Davidson <Davidson.Hutton@ftid.com>

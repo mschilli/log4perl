@@ -509,8 +509,14 @@ sub config_read {
                                     # of name/value pairs
         @text = map { $_ . '=' . $config->{$_} } keys %{$config};
 
-    } elsif (ref $config) {
+    } elsif (ref $config eq 'SCALAR') {
         @text = split(/\n/,$$config);
+
+    } elsif (ref $config) {
+            # Caller provided a config parser object, which already
+            # knows which file (or DB or whatever) to parse.
+        $data = $config->parse();
+        return $data;
 
     #TBD
     }elsif ($config =~ m|^ldap://|){
@@ -567,9 +573,11 @@ sub config_read {
         eval { require XML::DOM; require Log::Log4perl::Config::DOMConfigurator; };
         if ($@){die "Log4perl: missing XML::DOM needed to parse xml config files\n$@\n"}
         XML::DOM->VERSION($Log::Log4perl::DOM_VERSION_REQUIRED);
-        $data = Log::Log4perl::Config::DOMConfigurator::parse(\@text);
-    }else{
-        $data = Log::Log4perl::Config::PropertyConfigurator::parse(\@text)
+        my $parser = Log::Log4perl::Config::DOMConfigurator->new();
+        $data = $parser->parse(\@text);
+    } else {
+        my $parser = Log::Log4perl::Config::PropertyConfigurator->new();
+        $data = $parser->parse(\@text);
     }
 
     return $data;
@@ -722,11 +730,13 @@ sub vars_shared_with_safe_compartment {
     }
     elsif( @args == 1 ) {
         # return vars for given package
-        return $Log::Log4perl::VARS_SHARED_WITH_SAFE_COMPARTMENT{$args[0]};
+        return $Log::Log4perl::VARS_SHARED_WITH_SAFE_COMPARTMENT{
+               $args[0]};
     }
     elsif( @args == 2 ) {
         # add/replace package/var pair
-        $Log::Log4perl::VARS_SHARED_WITH_SAFE_COMPARTMENT{$args[0]} = $args[1];
+        $Log::Log4perl::VARS_SHARED_WITH_SAFE_COMPARTMENT{
+           $args[0]} = $args[1];
     }
 
     return wantarray ? %Log::Log4perl::VARS_SHARED_WITH_SAFE_COMPARTMENT
@@ -775,7 +785,8 @@ sub allowed_code_ops_convenience_map {
     }
     elsif( @args == 1 ) {
         # return single opcode mask
-        return $Log::Log4perl::ALLOWED_CODE_OPS{$args[0]};
+        return $Log::Log4perl::ALLOWED_CODE_OPS{
+                   $args[0]};
     }
     elsif( @args == 2 ) {
         # make sure the mask is an array ref
@@ -783,7 +794,8 @@ sub allowed_code_ops_convenience_map {
             die "invalid mask (not an array ref) for convenience name '$args[0]'";
         }
         # add name/mask pair
-        $Log::Log4perl::ALLOWED_CODE_OPS{$args[0]} = $args[1];
+        $Log::Log4perl::ALLOWED_CODE_OPS{
+            $args[0]} = $args[1];
     }
 
     return wantarray ? %Log::Log4perl::ALLOWED_CODE_OPS
@@ -801,7 +813,8 @@ sub allow_code {
     }
    
     if(@args) {
-        $Log::Log4perl::ALLOW_CODE_IN_CONFIG_FILE = $args[0];
+        $Log::Log4perl::ALLOW_CODE_IN_CONFIG_FILE = 
+            $args[0];
     }
 
     return $Log::Log4perl::ALLOW_CODE_IN_CONFIG_FILE;

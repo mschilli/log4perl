@@ -6,8 +6,8 @@
 #########################
 # change 'tests => 1' to 'tests => last_test_to_print';
 #########################
-use Test;
-BEGIN { plan tests => 11 };
+use Test::More;
+BEGIN { plan tests => 12 };
 
 use Log::Log4perl;
 use Log::Log4perl::Appender::TestBuffer;
@@ -15,7 +15,7 @@ use Log::Log4perl::Appender::TestBuffer;
 my $EG_DIR = "eg";
 $EG_DIR = "../eg" unless -d $EG_DIR;
 
-ok(1); # If we made it this far, we're ok.
+ok(1); # If we made it this far, we are ok.
 
 ######################################################################
 # Test the root logger on a configuration file defining a file appender
@@ -26,8 +26,8 @@ my $logger = Log::Log4perl->get_logger("");
 $logger->debug("Gurgel");
 
 
-ok(Log::Log4perl::Appender::TestBuffer->by_name("A1")->buffer(), 
-   'm#^\d+\s+\[N/A\] DEBUG  N/A - Gurgel$#'); 
+like(Log::Log4perl::Appender::TestBuffer->by_name("A1")->buffer(), 
+   qr#^\d+\s+\[N/A\] DEBUG  N/A - Gurgel$#); 
 
 ######################################################################
 # Test the root logger via inheritance (discovered by Kevin Goess)
@@ -39,8 +39,8 @@ Log::Log4perl->init("$EG_DIR/log4j-manual-1.conf");
 $logger = Log::Log4perl->get_logger("foo");
 $logger->debug("Gurgel");
 
-ok(Log::Log4perl::Appender::TestBuffer->by_name("A1")->buffer(),
-    'm#^\d+\s+\[N/A\] DEBUG foo N/A - Gurgel$#'); 
+like(Log::Log4perl::Appender::TestBuffer->by_name("A1")->buffer(),
+    qr#^\d+\s+\[N/A\] DEBUG foo N/A - Gurgel$#); 
 
 ######################################################################
 # Test init with a string
@@ -57,8 +57,8 @@ EOT
 $logger = Log::Log4perl->get_logger("foo");
 $logger->debug("Gurgel");
 
-ok(Log::Log4perl::Appender::TestBuffer->by_name("A1")->buffer(),
-    'm#^\d+\s+\[N/A\] DEBUG foo - Gurgel$#'); 
+like(Log::Log4perl::Appender::TestBuffer->by_name("A1")->buffer(),
+    qr#^\d+\s+\[N/A\] DEBUG foo - Gurgel$#); 
 
 ######################################################################
 # Test init with a hashref
@@ -78,8 +78,8 @@ Log::Log4perl->init(\%hash);
 $logger = Log::Log4perl->get_logger("foo");
 $logger->debug("Gurgel");
 
-ok(Log::Log4perl::Appender::TestBuffer->by_name("A1")->buffer(),
-    'm#^\d+\s+\[N/A\] DEBUG foo - Gurgel$#'); 
+like(Log::Log4perl::Appender::TestBuffer->by_name("A1")->buffer(),
+    qr#^\d+\s+\[N/A\] DEBUG foo - Gurgel$#); 
 
 
 ############################################################
@@ -89,7 +89,7 @@ ok(Log::Log4perl::Appender::TestBuffer->by_name("A1")->buffer(),
 our $stub_hook;
 
 # -----------------------------------
-# here's a stub
+# here is a stub
 package Log::Log4perl::AppenderTester;
 use vars qw($IS_LOADED);
 $IS_LOADED = 1; 
@@ -108,7 +108,7 @@ package main;
 # -----------------------------------
 
 Log::Log4perl->init(\ <<'EOT');
-#here's an example of using Log::Dispatch::Jabber
+#here is an example of using Log::Dispatch::Jabber
 
 log4j.category.animal.dog   = INFO, jabbender
 
@@ -137,10 +137,10 @@ EOT
 #  },
 
 
-ok($stub_hook->{P}{login}{hostname}, 'a.jabber.server');
-ok($stub_hook->{P}{login}{password}, 'bunny');
-ok($stub_hook->{P}{to}[0], 'elmer@a.jabber.server');
-ok($stub_hook->{P}{to}[1], 'sam@another.jabber.server');
+is($stub_hook->{P}{login}{hostname}, 'a.jabber.server');
+is($stub_hook->{P}{login}{password}, 'bunny');
+is($stub_hook->{P}{to}[0], 'elmer@a.jabber.server');
+is($stub_hook->{P}{to}[1], 'sam@another.jabber.server');
 
 ##########################################################################
 # Test what happens if we define a PatternLayout without ConversionPattern
@@ -160,7 +160,7 @@ eval { Log::Log4perl->init(\$conf); };
 #actually, it turns out that log4j handles this, if no ConversionPattern
 #specified is uses DEFAULT_LAYOUT_PATTERN, %m%n
 #ok($@, '/No ConversionPattern given for PatternLayout/'); 
-ok($@, ''); 
+is($@, ''); 
 
 ######################################################################
 # Test with $/ set to undef
@@ -171,7 +171,28 @@ Log::Log4perl->init("$EG_DIR/log4j-manual-1.conf");
 $logger = Log::Log4perl->get_logger("");
 $logger->debug("Gurgel");
 
+like(Log::Log4perl::Appender::TestBuffer->by_name("A1")->buffer(), 
+     qr#^\d+\s+\[N/A\] DEBUG  N/A - Gurgel$#); 
 
-ok(Log::Log4perl::Appender::TestBuffer->by_name("A1")->buffer(), 
-   'm#^\d+\s+\[N/A\] DEBUG  N/A - Gurgel$#'); 
+######################################################################
+# Test init with a config parser object
+######################################################################
+Log::Log4perl::Appender::TestBuffer->reset();
+
+my $parser = Log::Log4perl::Config::PropertyConfigurator->new();
+my @lines = split "\n", <<EOT;
+log4j.rootLogger         = DEBUG, A1
+log4j.appender.A1        = Log::Log4perl::Appender::TestBuffer
+log4j.appender.A1.layout = org.apache.log4j.PatternLayout
+log4j.appender.A1.layout.ConversionPattern = object%m%n
+EOT
+$parser->text(\@lines);
+
+Log::Log4perl->init($parser);
+
+$logger = Log::Log4perl->get_logger("foo");
+$logger->debug("Gurgel");
+
+is(Log::Log4perl::Appender::TestBuffer->by_name("A1")->buffer(), 
+   "objectGurgel\n"); 
 

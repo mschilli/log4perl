@@ -260,9 +260,8 @@ sub AUTOLOAD {
 ##################################################
 sub DESTROY {
 ##################################################
-    warn "Destroying appender $_[0]" if $Log::Log4perl::CHATTY_DESTROY_METHODS;
-
     foreach my $key (keys %{$_[0]}) {
+        # print "deleting $key\n";
         delete $_[0]->{$key};
     }
 }

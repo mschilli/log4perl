@@ -1,7 +1,7 @@
 # http://module-build.sourceforge.net/META-spec.html
 #XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
 name:         Log-Log4perl
-version:      0.47
+version:      0.48_01
 version_from: lib/Log/Log4perl.pm
 installdirs:  site
 requires:
@@ -10,4 +10,4 @@ requires:
     Test::Simple:                  0.43
 
 distribution_type: module
-generated_by: ExtUtils::MakeMaker version 6.21
+generated_by: ExtUtils::MakeMaker version 6.17

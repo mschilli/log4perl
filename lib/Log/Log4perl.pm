@@ -2,7 +2,6 @@
 package Log::Log4perl;
 ##################################################
 
-    # Have this first to execute last
 END { local($?); Log::Log4perl::Logger::cleanup(); }
 
 use 5.006;
@@ -17,7 +16,7 @@ use Log::Log4perl::Appender;
 
 use constant _INTERNAL_DEBUG => 1;
 
-our $VERSION = '0.47';
+our $VERSION = '0.48_01';
 
    # set this to '1' if you're using a wrapper
    # around Log::Log4perl
