@@ -1,0 +1,64 @@
+##################################################
+Revision history for Log::Log4perl
+##################################################
+
+TODO:
+
+Kevin:
+* Create new module negotiating between Java-style config files
+  and perl-style appenders
+* Module for reading XML-style config files
+
+Mike:
+* Define default if there's no layout:
+  http://jakarta.apache.org/log4j/docs/api/org/apache/log4j/SimpleLayout.html
+* Tune performance of level() lookups
+* %% bug in Layout.pm
+* Layout.pm: 'd', 't', 'x', 'X'
+* Documentation
+* Signal to re-read the conf file.
+* Several appenders in one config line:
+    log4j.rootLogger=debug, stdout, R
+* Additivity flag -- set/get as API and in cfg file
+* Simplify interface to go through Log::Log4perl->blah()
+  instead Log::Log4perl::Logger->blah() as suggested by Kevin
+
+##################################################
+
+0.08  07/03/2002
+    * Non-root loggers are working now off the config file
+
+0.07  07/02/2002
+    * Updated documentation
+    * removed "diagnostics"
+
+0.06  07/01/2002
+    * Bug discovered by Kevin Goess <cpan@goess.org>, revealed
+      in 004-Config.t: Wrong layout used if Appender is inherited.
+      Fixed.
+    * Changed Log::Dispatch::Buffer to keep track of the
+      object population -- so we can easily reference them
+      in the Log::Log4perl test cases. Got rid of get_buffer().
+    * Added a reset() method to Log::Log4perl and Log::Log4perl::Logger
+      for easier testing. It resets all persistent loggers to 
+      the inital state.
+    * Added documentation
+
+0.05  06/30/2002
+    * Fixed bug with mapped priorities between java/Log::Dispatch
+    * Java/Perl integration with conf file
+
+0.04  06/30/2002
+    * Layout tests
+    * %r to layout
+    * Added lib4j configuration file stuff and tests
+
+0.03  06/30/2002
+    * Layout
+    * Curly braces in Layout first ops
+
+0.02  06/30/2002
+    * Created Logger and test cases
+
+0.01  06/22/2002
+    * Where it all began
