@@ -8,6 +8,8 @@ Revision history for Log::Log4perl
     * (kg) Nested configuration structures for appenders like L::D::Jabber
     * (ms) ::Log4perl::Appender::threshold() accepts strings or integer
            levels (as submitted by Aaron Straup Cope <asc@vineyard.net>)
+    * (ms) Fixed logdie/logwarn caller(x) offset bug reported by 
+           Brian Duffy <Brian.Duffy@DFA.STATE.NY.US>
 
 0.24 09/26/2002
     * (kg) Fix for init_and_watch and test cases

@@ -17,8 +17,8 @@
 use warnings;
 use strict;
 
-use Test::Simple tests => 49;
-use Log::Log4perl;
+use Test::Simple tests => 50;
+use Log::Log4perl qw(get_logger);
 use Log::Log4perl::Level;
 
 my $warnstr;
@@ -114,3 +114,22 @@ foreach my $f ("error_die", "logdie", "logcroak", "logconfess") {
   dietest_nooutput(sub {$log->$f(@_)}, "Test $test: $f", "Test $test: $f", $app, "$f");
   $test++;
 }
+
+######################################################################
+# Check if logdie %F%L lists the right file/line
+######################################################################
+Log::Log4perl->init(\<<'EOT');
+    log4perl.rootLogger=DEBUG, A1
+    log4perl.appender.A1=Log::Log4perl::TestBuffer
+    log4perl.appender.A1.layout=org.apache.log4j.PatternLayout
+    log4perl.appender.A1.layout.ConversionPattern=%F-%L: %m
+EOT
+
+my $logger = get_logger("Twix::Bar");
+
+eval { $logger->logdie("Log and die!"); };
+
+my $app0 = Log::Log4perl::TestBuffer->by_name("A1");
+# print "Buffer: ", $app0->buffer(), "\n";
+ok($app0->buffer() eq "t/024WarnDieCarp.t-130: Log and die!", "%F-%L adjustment");
+

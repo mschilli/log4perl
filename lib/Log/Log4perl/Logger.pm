@@ -685,7 +685,10 @@ sub and_die {
 sub logwarn {
   my $self = shift;
   if ($self->is_warn()) {
+        # Since we're one caller level off now, compensate for that.
+    $Log::Log4perl::caller_depth++;
     $self->warn(@_);
+    $Log::Log4perl::caller_depth--;
     $self->and_warn(@_);
   }
 }
@@ -693,7 +696,10 @@ sub logwarn {
 sub logdie {
   my $self = shift;
   if ($self->is_fatal()) {
+        # Since we're one caller level off now, compensate for that.
+    $Log::Log4perl::caller_depth++;
     $self->fatal(@_);
+    $Log::Log4perl::caller_depth--;
   }
   # no matter what, we die... 'cuz logdie wants you to die.
   $self->and_die(@_);
