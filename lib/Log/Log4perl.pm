@@ -1180,14 +1180,17 @@ create it if it doesn't exist already.
 
 =head1 INSTALLATION
 
-C<Log::Log4perl> needs C<Log::Dispatch> (2.00 or better) from CPAN.
+C<Log::Log4perl> needs C<Log::Dispatch> (2.00 or better) from CPAN,
+which itself depends on C<Attribute-Handlers> and
+C<Params-Validate>. 
+Everything's automatically fetched from CPAN if you're using the CPAN 
+shell (CPAN.pm), because they're listed as dependencies.
+Also, C<Test::Simple> and C<Test::Harness> are needed,
+but they already come with fairly recent versions of perl.
+
 C<Time::HiRes> (1.20 or better) is required only if you need the
 fine-grained time stamps of the C<%r> parameter in
 C<Log::Log4perl::Layout::PatternLayout>.
-
-C<Log::Dispatch> is automatically fetched from CPAN
-if you're using the CPAN shell (CPAN.pm), because it's listed as 
-requirement in Makefile.PL.
 
 Manual installation works as usual with
 

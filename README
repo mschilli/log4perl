@@ -952,13 +952,16 @@ EXAMPLE
     if it doesn't exist already.
 
 INSTALLATION
-    "Log::Log4perl" needs "Log::Dispatch" (2.00 or better) from CPAN.
+    "Log::Log4perl" needs "Log::Dispatch" (2.00 or better) from CPAN, which
+    itself depends on "Attribute-Handlers" and "Params-Validate".
+    Everything's automatically fetched from CPAN if you're using the CPAN
+    shell (CPAN.pm), because they're listed as dependencies. Also,
+    "Test::Simple" and "Test::Harness" are needed, but they already come
+    with fairly recent versions of perl.
+
     "Time::HiRes" (1.20 or better) is required only if you need the
     fine-grained time stamps of the %r parameter in
     "Log::Log4perl::Layout::PatternLayout".
-
-    "Log::Dispatch" is automatically fetched from CPAN if you're using the
-    CPAN shell (CPAN.pm), because it's listed as requirement in Makefile.PL.
 
     Manual installation works as usual with
 

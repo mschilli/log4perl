@@ -15,6 +15,7 @@ Revision history for Log::Log4perl
            instance of the TestBuffer population by name instead of
            relying on the order of creation via POPULATION[x] 
            (for testing only).
+    * (kg) Win32 compatibility fixes
 
 0.23 09/14/2002
     * Both Log4perl/log4perl is now accepted in conf file
