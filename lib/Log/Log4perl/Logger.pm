@@ -10,7 +10,10 @@ use Log::Log4perl::Level;
 use Log::Log4perl::Layout;
 use Log::Log4perl::Appender;
 use Log::Dispatch;
+use Data::Dumper;
 use Carp;
+
+use constant DEBUG => 0;
 
     # Initialization
 our $ROOT_LOGGER;
@@ -37,17 +40,20 @@ sub init {
 ##################################################
 sub reset {
 ##################################################
-    our $ROOT_LOGGER        = __PACKAGE__->_new("", $DEBUG);
-    our $LOGGERS_BY_NAME    = {};
-#    our %APPENDER_BY_NAME = ();
-    our $DISPATCHER = Log::Dispatch->new();
+    $ROOT_LOGGER        = __PACKAGE__->_new("", $DEBUG);
+    $LOGGERS_BY_NAME    = {};
+    %APPENDER_BY_NAME   = ();
+    $DISPATCHER         = Log::Dispatch->new();
+    Log::Log4perl::Appender::reset();
 }
 
 ##################################################
 sub _new {
 ##################################################
     my($class, $category, $level) = @_;
-    
+
+    print("_new: $class/$category/", defined $level ? $level : "undef",
+          "\n") if DEBUG;
 
     die "usage: __PACKAGE__->_new(category)" unless
         defined $category;
@@ -56,6 +62,7 @@ sub _new {
 
        # Have we created it previously?
     if(exists $LOGGERS_BY_NAME->{$category}) {
+        print "_new: exists already\n" if DEBUG;
         return $LOGGERS_BY_NAME->{$category};
     }
 
@@ -64,7 +71,6 @@ sub _new {
         num_appenders => 0,
         additivity    => 1,
         level         => $level,
-        #dispatcher    => $DISPATCHER,  #use package obj instead
         layout        => undef,
                 };
 
@@ -83,6 +89,8 @@ sub _new {
 ##################################################
 sub reset_all_output_methods {
 ##################################################
+    print "reset_all_output_methods: \n" if DEBUG;
+
     foreach my $loggername ( keys %$LOGGERS_BY_NAME){
         $LOGGERS_BY_NAME->{$loggername}->set_output_methods;
     }
@@ -99,10 +107,11 @@ sub set_output_methods {
 ##################################################
    my ($self) = @_;
     
-
    my (@appenders, %seen);
 
    my ($level) = $self->level();
+
+   print "set_output_methods: $self->{category}/$level\n" if DEBUG;
 
    #collect the appenders in effect for this category    
 
@@ -128,23 +137,22 @@ sub set_output_methods {
        #make a coderef
     my $coderef = (! @appenders ? $noop : &generate_coderef(\@appenders)); 
 
-
-    #our %PRIORITY = (
-    # "FATAL" => 0,
-    # "ERROR" => 3,
-    # "WARN"  => 4,
-    # "INFO"  => 6,
-    # "DEBUG" => 7,
-    #);
-
     my %priority = %Log::Log4perl::Level::PRIORITY; #convenience and cvs
 
     foreach my $levelname (keys %priority){
         if ($priority{$levelname} <= $level) {
+            print "  ($priority{$levelname} <= $level)\n"
+                  if DEBUG;
             $self->{$levelname} = $coderef;
         }else{
+            print "  ($priority{$levelname} > $level)\n" if DEBUG;
             $self->{$levelname} = $noop;
         }
+
+        print("  Setting $self->{category}.$levelname to ",
+              ($self->{$levelname} == $noop ? "NOOP" : 
+              ("Coderef: " . scalar @appenders . " appenders")), 
+              "\n") if DEBUG;
     }
 }
 
@@ -153,9 +161,11 @@ sub generate_coderef {
 ##################################################
     my $appenders = shift;
                     
+    print "generate_coderef: ", scalar @$appenders, 
+          " appenders\n" if DEBUG;
+
     my $coderef = '';
     my $watch_delay_code = '';
-
 
     # Doing this with eval strings to sacrifice init/reload time
     # for runtime efficiency, so the conditional won't be included
@@ -165,17 +175,21 @@ sub generate_coderef {
         $watch_delay_code = generate_watch_code();
     }
 
-
     my $code = <<EOL;
     \$coderef = sub {
       my (\$logger) = shift;
       my (\$message) = shift;
       my (\$level) = shift;
       
+      print("coderef: \$logger->{category}\n") if DEBUG;
+
       $watch_delay_code;  #note interpolation here
       
       foreach my \$a (\@\$appenders) {   #note the closure here
           my (\$appender_name, \$appender) = \@\$a;
+
+          print("  Sending message '\$message' (\$level) " .
+                "to \$appender_name\n") if DEBUG;
     
           \$appender->log(
               #these get passed through to Log::Dispatch
@@ -194,10 +208,9 @@ sub generate_coderef {
 
 EOL
 
-    eval $code;
+    eval $code or die "$@";
 
     return $coderef;
-
 }
 
 ##################################################
@@ -218,32 +231,39 @@ EOL
 
     my $code = <<EOL;
     \$coderef = sub {
+        print("noop: \n") if DEBUG;
         $watch_delay_code
      };
 EOL
 
-    eval $code;
+    eval $code or die "$@";
 
     return $coderef;
-
 }
 
 
 ##################################################
 sub generate_watch_code {
 ##################################################
+    print "generate_watch_code:\n" if DEBUG;
+
     return <<'EOL';
+        print "exe_watch_code:\n" if DEBUG;
+
         #more closures here
         if ( (($LAST_CHECKED_AT + $WATCH_DELAY) < time())
                 &&  ($LAST_CHANGED_AT < (stat($FILE_TO_WATCH))[9] )){
                 
-            our %APPENDER_BY_NAME = ();
-            our $DISPATCHER = Log::Dispatch->new();
+            print "  Config file has been modified\n" if DEBUG;
+
+            %APPENDER_BY_NAME = ();
+            $DISPATCHER = Log::Dispatch->new();
             
             Log::Log4perl->init_and_watch($FILE_TO_WATCH, $WATCH_DELAY);
             
             my $methodname = lc($level);
-            $logger->$methodname($message); #send the message to the new configuration
+            $logger->$methodname($message); # send the message 
+                                            # to the new configuration
             
             $LAST_CHECKED_AT = time();
             
@@ -425,14 +445,15 @@ sub has_appenders {
 ##################################################
 sub init_watch {
 ##################################################
-    our $WATCH_DELAY = shift;
+    $WATCH_DELAY = shift;
 
     $LAST_CHECKED_AT = $LAST_CHANGED_AT = time();
 }
+
 ##################################################
 sub set_file_to_watch {
 ##################################################
-    our $FILE_TO_WATCH = shift;
+    $FILE_TO_WATCH = shift;
 }
 
 ##################################################
@@ -440,6 +461,9 @@ sub log {
 # external api
 ##################################################
     my ($self, $priority, $message) = @_;
+
+       # Just in case of 'init_and_watch'
+    $_[0] = $LOGGERS_BY_NAME->{$_[0]->{category}} if defined $LAST_CHECKED_AT;
 
     croak "priority $priority isn't numeric" if ($priority =~ /\D/);
 
@@ -449,30 +473,39 @@ sub log {
 
 }
 
-
 ##################################################
 #expected args are $logger, $msg, $levelname
+
 sub fatal {
+   print "fatal: ($_[0]->{category}/$_[0]->{level}) [@_]\n" if DEBUG;
+   $_[0] = $LOGGERS_BY_NAME->{$_[0]->{category}} if defined $LAST_CHECKED_AT;
    $_[0]->{FATAL}(@_, 'FATAL');
 }
+
 sub error {
+   print "error: ($_[0]->{category}/$_[0]->{level}) [@_]\n" if DEBUG;
+   $_[0] = $LOGGERS_BY_NAME->{$_[0]->{category}} if defined $LAST_CHECKED_AT;
    $_[0]->{ERROR}(@_, 'ERROR');
 }
+
 sub warn {
+   print "warn: ($_[0]->{category}/$_[0]->{level}) [@_]\n" if DEBUG;
+   $_[0] = $LOGGERS_BY_NAME->{$_[0]->{category}} if defined $LAST_CHECKED_AT;
    $_[0]->{WARN} (@_, 'WARN' );
 }
+
 sub info {
+   print "info: ($_[0]->{category}/$_[0]->{level}) [@_]\n" if DEBUG;
+   $_[0] = $LOGGERS_BY_NAME->{$_[0]->{category}} if defined $LAST_CHECKED_AT;
    $_[0]->{INFO} (@_, 'INFO' );
 }
+
 sub debug {
+   print "debug: ($_[0]->{category}/$_[0]->{level}) [@_]\n" if DEBUG;
+       # Just in case of 'init_and_watch'
+   $_[0] = $LOGGERS_BY_NAME->{$_[0]->{category}} if defined $LAST_CHECKED_AT;
    $_[0]->{DEBUG}(@_, 'DEBUG');
 }
-
-#sub debug { &log($_[0], 'DEBUG', $DEBUG, @_[1,]); }
-#sub info  { &log($_[0], 'INFO',  $INFO,  @_[1,]); }
-#sub warn  { &log($_[0], 'WARN',  $WARN,  @_[1,]); }
-#sub error { &log($_[0], 'ERROR', $ERROR, @_[1,]); }
-#sub fatal { &log($_[0], 'FATAL', $FATAL, @_[1,]); }
 
 sub is_debug { return $_[0]->level() >= $DEBUG; }
 sub is_info  { return $_[0]->level() >= $INFO; }
