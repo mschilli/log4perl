@@ -12,7 +12,6 @@ our $no_DBD;
 BEGIN {
     eval {
         require DBD::CSV;
-        require Log::Dispatch;
     };
     if ($@) {
         plan skip_all => "only with Log::Dispatch and DBD::CSV";
