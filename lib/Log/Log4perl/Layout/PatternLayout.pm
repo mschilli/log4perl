@@ -89,7 +89,7 @@ sub rep {
 ##################################################
 sub render {
 ##################################################
-    my($self, $logger, $message, $category, $priority, $caller_level) = @_;
+    my($self, $message, $category, $priority, $caller_level) = @_;
 
     $caller_level = 0 unless defined  $caller_level;
 

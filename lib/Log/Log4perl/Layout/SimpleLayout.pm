@@ -33,7 +33,7 @@ sub new {
 ##################################################
 sub render {
 ##################################################
-    my($self, $logger, $message, $category, $priority, $caller_level) = @_;
+    my($self, $message, $category, $priority, $caller_level) = @_;
 
     return "$priority - $message\n";
 }
