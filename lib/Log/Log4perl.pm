@@ -1293,6 +1293,15 @@ Manual installation works as usual with
     make test
     make install
 
+If you're running Windows, and you're too lazy to rummage through all of 
+Log-Log4perl's dependencies, don't despair: We're providing a PPM package
+which installs easily with your Activestate Perl. Just type
+
+    ppm install "http://log4perl.sourceforge.net/ppm/Log-Log4perl.ppd"
+
+on the command line and Log4perl including all dependencies will be 
+installed automatically on your system.
+
 =head1 DEVELOPMENT
 
 C<Log::Log4perl> is under heavy development. The latest CVS tarball
