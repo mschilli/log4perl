@@ -2,7 +2,7 @@
 Revision history for Log::Log4perl
 ##################################################
 
-0.42 (not yet released)
+0.42 (02/14/2004)
     * (kg) added filters to XML DOMConfig and DTD
     * (ms) Fixed caller level to cspecs by adding one
     * (ms) Added init_once() and documentation
@@ -19,7 +19,8 @@ Revision history for Log::Log4perl
            method is called within one (or more) eval {} block(s). 
            caller(n+m) will be called repeatedly if necessary
            to get the next real subroutine. Anonymous subroutines will 
-           still be called __ANON__, but this can be overridden by defining
+           still be called __ANON__, but this can be overridden by 
+           defining
                local *__ANON__ = "subroutine_name";
            in them explicitely (thanks, Perlmonks :).
 
