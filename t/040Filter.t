@@ -5,7 +5,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 9;
+use Test::More tests => 14;
 
 use Log::Log4perl;
 
@@ -115,6 +115,73 @@ $buffer->buffer("");
     # Block
 $logger->info("let this through - and that, too - suppress");
 is($buffer->buffer(), "", "Boolean 5");
+$buffer->buffer("");
+
+Log::Log4perl->reset();
+$buffer->reset();
+
+#############################################
+# LevelMatchFilter
+#############################################
+Log::Log4perl->init(\ <<'EOT');
+    log4perl.logger = INFO, A1
+    log4perl.filter.Match1      = Log::Log4perl::Filter::LevelMatch
+    log4perl.filter.Match1.LevelToMatch = INFO
+    log4perl.filter.Match1.AcceptOnMatch = true
+    log4perl.appender.A1        = Log::Log4perl::Appender::TestBuffer
+    log4perl.appender.A1.Filter = Match1
+    log4perl.appender.A1.layout = Log::Log4perl::Layout::SimpleLayout
+EOT
+
+$buffer = Log::Log4perl::Appender::TestBuffer->by_name("A1");
+
+    # Define a logger
+$logger = Log::Log4perl->get_logger("Some.Where");
+
+    # Let through
+$logger->info("let this through");
+like($buffer->buffer(), qr(let this through), "Matched Level");
+$buffer->buffer("");
+
+    # Block
+$logger->warn("suppress, let this through");
+is($buffer->buffer(), "", "Non-Matched Level 1");
+$buffer->buffer("");
+
+    # Block
+$logger->debug("and that, too");
+is($buffer->buffer(), "", "Non-Matched Level 2");
+$buffer->buffer("");
+
+Log::Log4perl->reset();
+$buffer->reset();
+
+#############################################
+# StringMatchFilter
+#############################################
+Log::Log4perl->init(\ <<'EOT');
+    log4perl.logger = INFO, A1
+    log4perl.filter.Match1      = Log::Log4perl::Filter::StringMatch
+    log4perl.filter.Match1.StringToMatch = block this
+    log4perl.filter.Match1.AcceptOnMatch = false
+    log4perl.appender.A1        = Log::Log4perl::Appender::TestBuffer
+    log4perl.appender.A1.Filter = Match1
+    log4perl.appender.A1.layout = Log::Log4perl::Layout::SimpleLayout
+EOT
+
+$buffer = Log::Log4perl::Appender::TestBuffer->by_name("A1");
+
+    # Define a logger
+$logger = Log::Log4perl->get_logger("Some.Where");
+
+    # Let through
+$logger->info("let this through");
+like($buffer->buffer(), qr(let this through), "StringMatch - passed");
+$buffer->buffer("");
+
+    # Block
+$logger->info("block this");
+is($buffer->buffer(), "", "StringMatch - blocked");
 $buffer->buffer("");
 
 Log::Log4perl->reset();

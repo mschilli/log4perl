@@ -95,7 +95,9 @@ sub _init {
     #use Data::Dumper;
     #print Data::Dumper::Dumper($data) if DEBUG;
 
-    my @loggers = ();
+    my @loggers      = ();
+    my %filter_names = ();
+
     my $system_wide_threshold;
 
         # Find all logger definitions in the conf file. Start
@@ -129,11 +131,7 @@ sub _init {
 
                 print "Path before: @$path\n" if DEBUG;
 
-                my $value = pop @$path;
-
-                    # Translate boolean to perlish
-                $value = 1 if $value =~ /^true$/i;
-                $value = 0 if $value =~ /^false$/i;
+                my $value = boolean_to_perlish(pop @$path);
 
                 pop @$path; # Drop the 'value' keyword part
 
@@ -147,27 +145,54 @@ sub _init {
                     &add_global_cspec(@$path[-1], $value);
 
                 }elsif ($key eq "filter"){
-                        # The bool filter needs all other filters already
-                        # initialized, defer its initialization
                     print "Found entry @$path\n" if DEBUG;
-                    if($data->{$key}->{$path->[0]}->{value} eq
-                       "Log::Log4perl::Filter::Bool") {
-                        print "Bool filter ($path->[0])\n" if DEBUG;
-                        $bool_filters{$path->[0]}++;
-                        next;
-                    }
-
-                    # That's either a filter sub or a filter class
-                    print "filter value is @$path, $value\n" if DEBUG;
-                    my $entry = compile_if_perl($value);
-                    print "entry is $entry\n" if DEBUG;
-                    Log::Log4perl::Filter->new(@$path[-1], $entry);
-
+                    $filter_names{@$path[0]}++;
                 } else {
                     # This is a regular logger
                     push @loggers, [join('.', @$path), $value];
                 }
             }
+        }
+    }
+
+        # Now go over all filters found by name
+    for my $filter_name (keys %filter_names) {
+
+        print "Checking filter $filter_name\n" if DEBUG;
+
+            # The bool filter needs all other filters already
+            # initialized, defer its initialization
+        if($data->{filter}->{$filter_name}->{value} eq
+           "Log::Log4perl::Filter::Bool") {
+            print "Bool filter ($filter_name)\n" if DEBUG;
+            $bool_filters{$filter_name}++;
+            next;
+        }
+
+        my $type = $data->{filter}->{$filter_name}->{value};
+        if(my $code = compile_if_perl($type)) {
+            $type = $code;
+        }
+        
+        print "Filter $filter_name is of type $type\n" if DEBUG;
+
+        if(ref($type) eq "CODE") {
+                # Subroutine - map into generic Log::Log4perl::Filter class
+            Log::Log4perl::Filter->new($filter_name, $type);
+        } else {
+                # Filter class
+                eval "require $type";
+                if($@) { 
+                    die "$type doesn't exist";
+                }
+
+                # Invoke with all defined parameter
+                # key/values (except the key 'value' which is the entry 
+                # for the class)
+            $type->new(name => $filter_name,
+                map { $_ => $data->{filter}->{$filter_name}->{$_}->{value} } 
+                grep { $_ ne "value" } 
+                keys %{$data->{filter}->{$filter_name}});
         }
     }
 
@@ -537,6 +562,18 @@ sub compile_if_perl {
     }
 
     return undef;
+}
+
+###########################################
+sub boolean_to_perlish {
+###########################################
+    my($value) = @_;
+
+        # Translate boolean to perlish
+    $value = 1 if $value =~ /^true$/i;
+    $value = 0 if $value =~ /^false$/i;
+
+    return $value;
 }
 
 1;
