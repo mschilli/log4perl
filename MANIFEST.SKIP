@@ -8,3 +8,4 @@ CVS
 ^t/tmp/
 .cvsignore
 docs
+lib/Log/Dispatch

@@ -1,8 +1,9 @@
 Changes
-Makefile.PL
 LICENSE
 MANIFEST
 MANIFEST.SKIP
+MANIFEST.bak
+Makefile.PL
 README
 eg/log4j-file-append-java.conf
 eg/log4j-file-append-perl.conf
@@ -37,6 +38,7 @@ t/013Bench.t
 t/014ConfErrs.t
 t/016Export.t
 t/017Watch.t
+t/018Init.t
 t/deeper1.expected
 t/deeper6.expected
 t/deeper7.expected
