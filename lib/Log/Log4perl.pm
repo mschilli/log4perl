@@ -839,7 +839,12 @@ replaced by the logging engine when it's time to log the message:
     %P pid of the current process
     %r Number of milliseconds elapsed from program start to logging 
        event
+    %x The topmost NDC (see below)
+    %X{key} The entry 'key' of the MDC (see below)
     %% A literal percent (%) sign
+
+NDC and MDC are explained in L<"Nested Diagnostic Context (NDC)">
+and L<"Mapped Diagnostic Context (MDC)">.
 
 Also, C<%d> can be fine-tuned to display only certain characteristics
 of a date, according to the SimpleDateFormat in the Java World

@@ -304,7 +304,12 @@ replaced by the logging engine when it's time to log the message:
     %P pid of the current process
     %r Number of milliseconds elapsed from program start to logging 
        event
+    %x The topmost NDC (see below)
+    %X{key} The entry 'key' of the MDC (see below)
     %% A literal percent (%) sign
+
+NDC and MDC are explained in L<Log::Log4perl/"Nested Diagnostic Context (NDC)">
+and L<Log::Log4perl/"Mapped Diagnostic Context (MDC)">.
 
 =head2 Quantify placeholders
 
