@@ -35,14 +35,6 @@ sub render {
 ##################################################
     my($self, $message, $category, $priority, $caller_level) = @_;
 
-    if (ref $message eq 'ARRAY' ) {
-        if ($self->{dontCollapseArrayRefs}) {
-            return $message;
-        }else{
-            $message = join($Log::Log4perl::JOIN_ARRAYREFS_CHAR, @$message);
-        }
-    }
-
     return "$priority - $message\n";
 }
 
