@@ -11,6 +11,8 @@ Revision history for Log::Log4perl
       to William McKee <william@knowmad.com> for bringing this up.
     * (ms) fixed bug with error_die() - printed the wrong function/line/file.
       Reported by Brett Rann <brettrann@mail.com>.
+    * (ms) added %T to PatternLayout as a stack traced as suggested by
+      Brett Rann <brettrann@mail.com>.
 
 0.37 (09/14/2003)
     * (kg) adjusting tests for XML::Parser 2.32 having broken
