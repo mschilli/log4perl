@@ -1496,6 +1496,7 @@ our
 
     Contributors:
     Chris R. Donnelly <cdonnelly@digitalmotorworks.com>
+    Paul Harrington <Paul-Harrington@deshaw.com>
     Erik Selberg <erik@selberg.com>
     Aaron Straup Cope <asc@vineyard.net>
 
