@@ -610,6 +610,16 @@ How to use it
             }
         }
 
+    If you're afraid that the way you're generating the parameters to the of
+    the logging function is fairly expensive, use closures:
+
+            # Passed as subroutine ref
+        use Data::Dumper;
+        $Logger->debug(sub { Dumper($data) } );
+
+    This won't unravel $data via Dumper() unless it's actually needed
+    because it's logged.
+
 Categories
     "Log::Log4perl" uses *categories* to determine if a log statement in a
     component should be executed or suppressed at the current logging level.
@@ -732,6 +742,8 @@ REFERENCES
 
     [2] Vipan Singla, "Don't Use System.out.println! Use Log4j.",
         http://www.vipan.com/htdocs/log4jhelp.html
+
+    [3] The Log::Log4perl project home page: http://log4perl.sorceforge.net
 
 CONTACT
     Please send bug reports or requests for enhancements to the authors via
