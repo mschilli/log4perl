@@ -15,7 +15,7 @@ use Storable;
 
 our @ISA = qw(Log::Log4perl::Appender);
 
-our $CVSVERSION   = '$Revision: 1.2 $';
+our $CVSVERSION   = '$Revision: 1.3 $';
 our ($VERSION)    = ($CVSVERSION =~ /(\d+\.\d+)/);
 
 ###########################################
@@ -76,18 +76,7 @@ sub log {
     $Log::Log4perl::caller_depth += 2;
 
         # Log pending messages if we have any
-    for(@{$self->{buffer}}) {
-            # Trick the renderer into using the original event time
-        local $self->{app}->{layout}->{time_function};
-        $self->{app}->{layout}->{time_function} = 
-                                    sub { $_->{log4p_logtime} };
-        $self->{app}->SUPER::log($_,
-                                 $_->{log4p_category},
-                                 $_->{log4p_level});
-    }
-
-        # Empty buffer
-    $self->{buffer} = [];
+    $self->flush();
 
         # Log current message as well
     $self->{app}->SUPER::log(\%params,
@@ -144,6 +133,26 @@ sub restore {
             die "Cannot retrieve messages from $self->{persistent} ($!)";
         ($self->{buffer}, $self->{sent_last}) = @$pdata;
     }
+}
+
+###########################################
+sub flush {
+###########################################
+    my($self) = @_;
+
+        # Log pending messages if we have any
+    for(@{$self->{buffer}}) {
+            # Trick the renderer into using the original event time
+        local $self->{app}->{layout}->{time_function};
+        $self->{app}->{layout}->{time_function} = 
+                                    sub { $_->{log4p_logtime} };
+        $self->{app}->SUPER::log($_,
+                                 $_->{log4p_category},
+                                 $_->{log4p_level});
+    }
+
+        # Empty buffer
+    $self->{buffer} = [];
 }
 
 ###########################################
