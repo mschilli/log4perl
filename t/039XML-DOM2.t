@@ -14,7 +14,7 @@ BEGIN {
         $no_XMLDOM = 1;
         plan tests => 1;
     }else{
-        plan tests => 1;
+        plan tests => 3;
     }
 }
 
@@ -39,10 +39,8 @@ my $xmlconfig = <<'EOL';
                 <param name="resource" value="logger"/>
                 <param name="username" value="bobjones"/>
          </param-nested>
-         <param-nested name="to">
-                <param-item>bob@a.jabber.server</param-item>
-                <param-item>mary@another.jabber.server</param-item>
-          </param-nested>
+         <param name="to" value="bob@a.jabber.server"/>
+         <param-text name="to">mary@another.jabber.server</param-text>
           <layout class="Log::Log4perl::Layout::SimpleLayout"/>
          
 </log4perl:appender>
@@ -80,8 +78,6 @@ my $xmlconfig = <<'EOL';
 </log4perl:configuration>
 EOL
 
-
-#Log::Log4perl::init(\$config);
 
 my $xmldata = Log::Log4perl::Config::config_read(\$xmlconfig);
 
@@ -147,4 +143,126 @@ ok(Compare($xmldata, $propsdata)) ||
           }
         };
 
+# ------------------------------------------------
+#ok, let's get more hairy, make-believe
+
+$xmlconfig = <<'EOL';
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE log4perl:configuration SYSTEM "log4perl.dtd">
+
+<log4perl:configuration xmlns:log4perl="http://log4perl.sourceforge.net/">
+
+<log4perl:appender name="A1" class="Log::Dispatch::Jabber">
+          <param-nested name="A">
+                <param-text name="1">fffff</param-text>
+                <param name="list" value="11111"/>
+                <param name="list" value="22222"/>
+                <param-nested name="subnest">
+                    <param-text name="a">hhhhh</param-text>
+                    <param name="list" value="aaaaa"/>
+                    <param name="list" value="bbbbb"/>
+                </param-nested>
+         </param-nested>
+         <param-text name="to">mary@another.jabber.server</param-text>
+          <layout class="Log::Log4perl::Layout::SimpleLayout"/>
+</log4perl:appender>
+
+</log4perl:configuration>
+
+EOL
+
+$propsconfig = <<'EOL';
+
+log4j.appender.A1= Log::Dispatch::Jabber
+log4j.appender.A1.A.1=fffff
+log4j.appender.A1.A.list=11111
+log4j.appender.A1.A.list=22222
+log4j.appender.A1.A.subnest.a=hhhhh
+log4j.appender.A1.A.subnest.list=aaaaa
+log4j.appender.A1.A.subnest.list=bbbbb
+log4j.appender.A1.to=mary@another.jabber.server
+log4j.appender.A1.layout=Log::Log4perl::Layout::SimpleLayout
+EOL
+
+$xmldata = Log::Log4perl::Config::config_read(\$xmlconfig);
+$propsdata = Log::Log4perl::Config::config_read(\$propsconfig);
+
+ok(Compare($xmldata, $propsdata)) || 
+        do {
+          if ($dump_available) {
+              print STDERR "got: ",Data::Dump::dump($xmldata),"\n================\n";
+              print STDERR "expected: ", Data::Dump::dump($propsdata),"\n";
+          }
+        };
+
+
+# ------------------------------------------------
+#now testing things like cspecs, code refs
+
+$xmlconfig = <<'EOL';
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE log4perl:configuration SYSTEM "log4perl.dtd">
+
+<log4perl:configuration xmlns:log4perl="http://log4perl.sourceforge.net/">
+
+
+
+<log4perl:appender name="appndr1" class="Log::Log4perl::Appender::TestBuffer">
+    <log4perl:layout class="org.apache.log4j.PatternLayout">
+        <param name="ConversionPattern" value = "%K xx %G %U"/>
+        <cspec name="K">
+            sub { return sprintf "%1x", $$}
+        </cspec>
+        <cspec name="G">
+            sub {return 'thisistheGcspec'}
+        </cspec>
+    </log4perl:layout>
+</log4perl:appender>
+
+<category name="plant">
+        <priority value="debug"/>  
+        <appender-ref ref="appndr1"/>
+</category>
+
+<PatternLayout>
+    <cspec name="U"><![CDATA[
+        sub {                       return "UID $< GID $("; }                          
+    ]]></cspec>
+</PatternLayout>
+
+
+
+</log4perl:configuration>
+
+
+EOL
+
+
+$propsconfig = <<'EOL';
+log4j.category.plant    = DEBUG, appndr1
+
+log4j.PatternLayout.cspec.U =       \
+        sub {                       \
+            return "UID $< GID $("; \
+        }                           \
+
+log4j.appender.appndr1        = Log::Log4perl::Appender::TestBuffer
+log4j.appender.appndr1.layout = org.apache.log4j.PatternLayout
+log4j.appender.appndr1.layout.ConversionPattern = %K xx %G %U
+
+log4j.appender.appndr1.layout.cspec.K = sub { return sprintf "%1x", $$}
+
+log4j.appender.appndr1.layout.cspec.G = sub {return 'thisistheGcspec'}
+EOL
+
+$xmldata = Log::Log4perl::Config::config_read(\$xmlconfig);
+$propsdata = Log::Log4perl::Config::config_read(\$propsconfig);
+
+ok(Compare($xmldata, $propsdata)) || 
+        do {
+          if ($dump_available) {
+              print STDERR "got: ",Data::Dump::dump($xmldata),"\n================\n";
+              print STDERR "expected: ", Data::Dump::dump($propsdata),"\n";
+          }
+        };
 
