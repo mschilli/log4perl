@@ -6,11 +6,12 @@ use warnings;
 use strict;
 
 use Log::Log4perl;
+use File::Spec;
 
-my $testfile = 't/tmp/test17.log';
+my $testfile = File::Spec->catfile(qw(t tmp test17.log));
 unlink $testfile if (-e $testfile);
 
-my $testconf= 't/tmp/test17.conf';
+my $testconf= File::Spec->catfile(qw(t tmp test17.conf));
 unlink $testconf if (-e $testconf);
 
 

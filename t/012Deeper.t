@@ -4,15 +4,17 @@
 
 use Log::Log4perl;
 use Test;
+use File::Spec;
 
 BEGIN { plan tests => 3, }
 
 my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
 my $today = sprintf("%4.4d%2.2d%2.2d",$year+1900, $mon+1, $mday);
-our @outfiles = ("t/tmp/deeper1.log",
-             "t/tmp/deeper6.log",
-             "t/tmp/deeper7.log",
-             );
+use vars qw($logfile1 $logfile6 $logfile7);
+$logfile1 = File::Spec->catfile(qw(t tmp deeper1.log));
+$logfile6 = File::Spec->catfile(qw(t tmp deeper6.log));
+$logfile7 = File::Spec->catfile(qw(t tmp deeper7.log)); 
+our @outfiles = ($logfile1, $logfile6, $logfile6);
 
 foreach my $f (@outfiles){
     unlink $f if (-e $f);
@@ -25,11 +27,13 @@ log4j.category.plant     = INFO,  FileAppndr1
 log4j.category.animal        = INFO,  FileAppndr1
 log4j.category.animal.dog = DEBUG, FileAppndr1
 
+log4j.oneMessagePerAppender = 1
+
 
 # ---------------------------------------------
 # FileAppndr1
 log4j.appender.FileAppndr1        = org.apache.log4j.FileAppender
-log4j.appender.FileAppndr1.File   = t/tmp/deeper1.log
+log4j.appender.FileAppndr1.File   = $logfile1
 
 log4j.appender.FileAppndr1.layout = org.apache.log4j.PatternLayout
 log4j.appender.FileAppndr1.layout.ConversionPattern=%d %4r [%t] %-5p %c %t - %m%n
@@ -41,7 +45,7 @@ log4j.category.a       = INFO, l2
 log4j.category.a.b.c.d = WARN, l2
 
 log4j.appender.l2        = org.apache.log4j.FileAppender
-log4j.appender.l2.File   = t/tmp/deeper6.log
+log4j.appender.l2.File   = $logfile6
 log4j.appender.l2.layout = org.apache.log4j.PatternLayout
 log4j.appender.l2.layout.ConversionPattern=%d %4r [%t] %-5p %c - %m%n
 
@@ -52,7 +56,7 @@ log4j.category.xa       = WARN, l3
 log4j.category.xa.b.c.d = INFO, l3
 
 log4j.appender.l3       = org.apache.log4j.FileAppender
-log4j.appender.l3.File  = t/tmp/deeper7.log
+log4j.appender.l3.File  = $logfile7
 log4j.appender.l3.layout= org.apache.log4j.PatternLayout
 log4j.appender.l3.layout.ConversionPattern=%d %4r 666  [%t] %-5p  %c - %m%n
 
@@ -98,9 +102,9 @@ $animallogger->fatal("fatal message");
 my ($result, $expected);
 
 {local $/ = undef;
- open (F, 't/deeper1.expected') || die $!;
+ open (F, File::Spec->catfile(qw(t deeper1.expected))) || die $!;
  $expected = <F>;
- open (F, 't/tmp/deeper1.log') || die $!;
+ open (F, $logfile1) || die $!;
  $result = <F>;
  close F;
  $result =~ s/.+?] //g;
@@ -131,9 +135,9 @@ foreach my $l ($la, $lab, $labc, $labcd, $labcde){
    $l->fatal("should print for a, a.b, a.b.c, a.b.c.d, a.b.c.d.e");
 }
 {local $/ = undef;
- open (F, 't/deeper6.expected');
+ open (F, File::Spec->catfile(qw(t deeper6.expected)));
  $expected = <F>;
- open (F, 't/tmp/deeper6.log');
+ open (F, $logfile6);
  $result = <F>;
  close F;
  $result =~ s/.+?] //g;
@@ -164,9 +168,9 @@ foreach my $l ($xla, $xlab, $xlabc, $xlabcd, $xlabcde){
    $l->fatal("should print for xa, xa.b, xa.b.c, xa.b.c.d, xa.b.c.d.e");
 }
 {local $/ = undef;
- open (F, 't/deeper7.expected') or die $!;
+ open (F, File::Spec->catfile(qw(t deeper7.expected)));
  $expected = <F>;
- open (F, 't/tmp/deeper7.log');
+ open (F, $logfile7);
  $result = <F>;
  close F;
  $result =~ s/.+?] //g;

@@ -5,8 +5,9 @@ use strict;
 
 use Test;
 use Log::Log4perl qw(:easy);
+use File::Spec;
 
-my $TMP_FILE = "t/tmp/easy";
+my $TMP_FILE = File::Spec->catfile(qw(t tmp easy));
 $TMP_FILE = "tmp/easy" if ! -d "t";
 
 BEGIN { plan tests => 8 }

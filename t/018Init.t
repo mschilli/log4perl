@@ -6,11 +6,12 @@ use warnings;
 use strict;
 
 use Log::Log4perl;
+use File::Spec;
 
-my $testfilea = 't/tmp/test18a.log';
+my $testfilea = File::Spec->catfile(qw(t tmp test18a.log));
 unlink $testfilea if (-e $testfilea);
 
-my $testfileb = 't/tmp/test18b.log';
+my $testfileb = File::Spec->catfile(qw(t tmp test18b.log));
 unlink $testfileb if (-e $testfileb);
 
 BEGIN {plan tests => 2}

@@ -1,10 +1,14 @@
 use Log::Log4perl;
 use Log::Log4perl::TestBuffer;
 use Log::Dispatch::File;
+use File::Spec;
 use Test;
 
-my $WORK_DIR = 't/tmp';
-use vars qw(@outfiles); @outfiles = ("$WORK_DIR/test1.log",);
+
+my $WORK_DIR = File::Spec->catfile(qw(t tmp));
+use vars qw(@outfiles, $test_logfile); 
+$test_logfile = File::Spec->catfile($WORK_DIR,'test1.log');
+@outfiles = ($test_logfile,);
 unless (-e "$WORK_DIR"){
     mkdir("$WORK_DIR", 0755) || die "can't create $WORK_DIR $!";
 }
@@ -29,9 +33,9 @@ my $logger = Log::Log4perl->get_logger('cat1');
 #hmm, I wonder how portable this is, maybe check $^O first?
 use vars qw($OLDOUT); #for -w
 open(OLDOUT, ">&STDOUT");
-open (TOUCH, ">>$WORK_DIR/test1.log");# `touch $WORK_DIR/test1.log`;
+open (TOUCH, ">>$test_logfile");# `touch $test_logfile`;
 close TOUCH;
-open(STDOUT, ">$WORK_DIR/test1.log") || die "Can't redirect stdout $WORK_DIR/test1.log $!";
+open(STDOUT, ">$test_logfile") || die "Can't redirect stdout $test_logfile $!";
 select(STDOUT); $| = 1;     # make unbuffered
 
 
@@ -55,7 +59,7 @@ FATAL cat1 - fatal message 1
 EOL
 
 {local $/ = undef;
- open (F, "$WORK_DIR/test1.log") || die $!;
+ open (F, "$test_logfile") || die $!;
  $result = <F>;
  close F;
 }

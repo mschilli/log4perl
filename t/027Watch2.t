@@ -9,8 +9,9 @@ use strict;
 
 use Log::Log4perl;
 use Log::Log4perl::TestBuffer;
+use File::Spec;
 
-my $testconf= 't/tmp/test27.conf';
+my $testconf= File::Spec->catfile(qw(t tmp test27.conf));
 unlink $testconf if (-e $testconf);
 
 Log::Log4perl::TestBuffer->reset();

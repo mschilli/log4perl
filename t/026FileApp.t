@@ -6,8 +6,9 @@ use warnings;
 use strict;
 
 use Log::Log4perl;
+use File::Spec;
 
-my $testfile = 't/tmp/test26.log';
+my $testfile = File::Spec->catfile(qw(t tmp test26.log));
 
 BEGIN {plan tests => 3}
 

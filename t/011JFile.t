@@ -1,8 +1,12 @@
 use Log::Log4perl;
 use Test;
+use File::Spec;
 
-my $WORK_DIR = 't/tmp';
-use vars qw(@outfiles); @outfiles = ("$WORK_DIR/test2.log",);
+File::Spec->catfile($WORK_DIR,'test1.log')
+my $WORK_DIR = File::Spec->catfile(qw(t tmp));
+use vars qw(@outfiles, $test_logfile); 
+$test_logfile = File::Spec->catfile($WORK_DIR, 'test2.log');
+@outfiles = ($test_logfile,);
 unless (-e "$WORK_DIR"){
     mkdir("$WORK_DIR", 0755) || die "can't create $WORK_DIR $!";
 }
@@ -15,7 +19,7 @@ my $conf = <<CONF;
 log4j.category.cat1      = INFO, myAppender
 
 log4j.appender.myAppender=org.apache.log4j.FileAppender
-log4j.appender.myAppender.File=$WORK_DIR/test2.log
+log4j.appender.myAppender.File=$test_logfile
 log4j.appender.myAppender.layout=org.apache.log4j.PatternLayout
 log4j.appender.myAppender.layout.ConversionPattern=%-5p %c - %m%n
 CONF
@@ -39,7 +43,7 @@ FATAL cat1 - fatal message 1
 EOL
 
 {local $/ = undef;
- open (F, "$WORK_DIR/test2.log") || die $!;
+ open (F, "$test_logfile") || die $!;
  $result = <F>;
  close F;
 }

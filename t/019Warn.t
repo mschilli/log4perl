@@ -5,8 +5,9 @@ use strict;
 
 use Test;
 use Log::Log4perl;
+use File::Spec;
 
-my $TMP_FILE = "t/tmp/warnings";
+my $TMP_FILE = File::Spec->catfile(qw(t tmp warnings));
 $TMP_FILE = "tmp/warnings" if ! -d "t";
 
 BEGIN { plan tests => 2 }

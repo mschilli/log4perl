@@ -22,7 +22,9 @@ ok(1); # If we made it this far, we're ok.
 my $LOGFILE = "example.log";
 unlink $LOGFILE;
 
-Log::Log4perl->init("$EG_DIR/log4j-file-append-java.conf");
+Log::Log4perl->init(
+	File::Spec->catfile($EG_DIR, 'log4j-file-append-java.conf'));
+
 
 my $logger = Log::Log4perl->get_logger("");
 $logger->debug("Gurgel");
