@@ -32,6 +32,6 @@ sub podok {
     plan tests => $nof_tests;
 
     for(@pms) {
-        pod_ok($_);
+        pod_file_ok($_);
     }
 }
