@@ -8,6 +8,14 @@ use strict;
 use Log::Log4perl;
 use File::Spec;
 
+BEGIN {
+    if ($] < 5.006) {
+        plan skip_all => "Only with perl >= 5.006";
+    } else {
+        plan tests => 19;
+    }
+}
+
 my $WORK_DIR = "tmp";
 if(-d "t") {
     $WORK_DIR = File::Spec->catfile(qw(t tmp));
@@ -142,8 +150,6 @@ close LOG;
 $log = join('',@log);
 
 is($log, "INFO - info message\nDEBUG animal.dog - 2nd debug message\nINFO  animal.dog - 2nd info message\nINFO  animal.dog - 2nd info message again\nINFO - 3rd info message\n", "after reload");
-
-BEGIN {plan tests => 19};
 
 unlink $testfile if (-e $testfile);
 unlink $testconf if (-e $testconf);
