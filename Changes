@@ -3,6 +3,8 @@ Revision history for Log::Log4perl
 ##################################################
 
 0.20 
+    * Strip trailing spaces in config file
+    * Accept line continuations in properties file
     * Refactored Logger.pm for speed, defined the logging behavior when 
       the logger is created, not when a message is logged
     * Fixing test suites so that SimpleFormat newline is accounted for
