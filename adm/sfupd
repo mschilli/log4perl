@@ -1,0 +1,121 @@
+#!/usr/bin/perl
+###########################################
+# Upload a tarball to sourceforge, log in
+# and create file release for L4p
+# Mike Schilli, 2003 (m@perlmeister.com)
+###########################################
+use warnings;
+use strict;
+
+use Net::FTP;
+use WWW::Mechanize;
+use LWP::UserAgent;
+use Data::Dumper;
+use HTTP::Request::Common;
+use File::Basename;
+use Log::Log4perl qw(:easy);
+use Term::ReadKey;
+
+Log::Log4perl->easy_init({level => $INFO, layout => '%m%n'});
+
+my $LOGIN_URL = "http://sourceforge.net/account/login.php?return_to=%2Fproject%2Fadmin%2F%3Fgroup_id%3D56939";
+my $PACKAGE_URL = "https://sourceforge.net/project/admin/newrelease.php?package_id=52323&group_id=56939";
+
+my $changes = get_latest_changes();
+(my $version) = ($changes =~ /(\d+\.\d+)/);
+
+my $RELEASE = "Log-Log4perl-$version";
+my $TARBALL = "$RELEASE.tar.gz";
+$TARBALL = "../$TARBALL" unless -f $TARBALL;
+die "No tarball found" unless -f $TARBALL;
+my $FTPSERVER = "upload.sourceforge.net";
+
+INFO "Releasing $RELEASE";
+
+INFO "FTPing tarball $TARBALL over ...";
+my $ftp = Net::FTP->new($FTPSERVER);
+$ftp->login('anonymous', 'a@b.com') or die "Can't login";
+$ftp->cwd('incoming') or die "Can't cwd incoming";
+$ftp->binary();
+$ftp->put($TARBALL, basename($TARBALL)) or warn "Can't ftp (exists?)";
+$ftp->quit();
+
+INFO "Preparing release page";
+my $agent = WWW::Mechanize->new();
+push @{ $agent->requests_redirectable }, 'POST';
+
+INFO "Logging in";
+
+my $sn = readin("sn", "mschilli", 0);
+my $pw = readin("pw", "", 1);
+$agent->get($LOGIN_URL);
+$agent->form_number(4);
+$agent->field(form_loginname => $sn);
+$agent->field(form_pw        => $pw);
+$agent->field(stay_in_ssl    => "1");
+$agent->click();
+$agent->get($PACKAGE_URL);
+
+$agent->form_number(4);
+$agent->field(release_name => $RELEASE);
+$agent->click();
+ 
+$agent->form_number(4);
+$agent->field(release_changes => $changes);
+$agent->field(preformatted    => 1);
+$agent->click();
+ 
+$agent->form_number(5);
+$agent->field('file_list[]' => basename($TARBALL));
+$agent->click();
+ 
+$agent->form_number(6);
+$agent->field('processor_id' => 8500);
+$agent->field('type_id' => 5002);
+$agent->click();
+ 
+print Data::Dumper::Dumper($agent);
+
+###########################################
+sub get_latest_changes {
+###########################################
+
+    my $changes = "Changes";
+    $changes = "../Changes" unless -f $changes;
+    my $data;
+
+    open FILE, "<$changes" or die "Cannot open $changes";
+    while(<FILE>) {
+        if(/^\d/..1) {
+            last if /^\s*$/;
+            $data .= $_;
+        }
+    }
+    close FILE;
+
+    return $data;
+}
+
+###########################################
+sub readin {
+###########################################
+    my ($prompt, $default, $hide) = @_;
+
+    $| = 1;
+
+    print "$prompt ($default):";
+
+    if($hide) {
+        ReadMode 'noecho';
+    }
+
+    my $in = ReadLine 0;
+    chomp $in;
+    $in = $default unless $in =~ /\S/;
+
+    if($hide) {
+        ReadMode 'normal';
+    }
+
+    return $in;
+}
