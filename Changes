@@ -2,7 +2,7 @@
  Revision history for Log::Log4perl
 ##################################################
 
-0.46 (not yet released)
+0.46 (06/13/2004)
     * (ms) removed superfluous eval() in Log4perl.pm, reported anonymously
            on the CPAN bugtracker.
     * (ms) Added a cleanup() function to Logger.pm which is used by an
