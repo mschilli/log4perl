@@ -2,8 +2,13 @@
 Revision history for Log::Log4perl
 ##################################################
 
+0.34 06/08/2003
+    * (ms) James FitzGibbon <james.fitzgibbon@target.com> noticed a major
+           bug in Log::Log4perl::Appender::File and provided a patch. Problem
+           was that 0.33 was reusing the same file handle for every opened file,
+           causing all messages to end up in the same file.
 
-0.33 
+0.33 05/30/2003
     * (kg) CPAN rt#2636, coordinating XML::DOM version required across modules
            and unit tests
     * (ms) Removed Log::Dispatch dependency, added standard 
