@@ -120,6 +120,44 @@ to forward it to its attached appender. By contrast, the following
 doesn't make it through, because the root logger sports a higher setting
 (ERROR and up) than the WARN priority of the message.
 
+=head2 How can I install Log::Log4perl on Microsoft Windows?
+
+Log::Log4perl is fully supported on the Win32 platform. It has been tested 
+with Activestate perl 5.6.1 under Windows 98 and rumor has it that it
+also runs smoothly on all other major flavors (Windows NT, 2000, XP, etc.).
+
+Typically, Win32 systems don't have the C<make> utility installed,
+so the standard C<perl Makefile.PL; make install> on the downloadable
+distribution won't work. But don't despair, there's a very easy solution!
+
+The C<Log::Log4perl> homepage provides a so-called PPD file for ActiveState's
+C<ppm> installer, which comes with ActiveState perl by default.
+
+The DOS command line
+
+    ppm install "http://log4perl.sourceforge.net/ppm/Log-Log4perl.ppd"
+
+will contact the Log4perl homepage, download the latest
+C<Log::Log4perl>
+distribution and install it. If your ActiveState installation
+lacks any of the modules C<Log::Log4perl> depends upon, C<ppm> will 
+automatically contact ActivateState and download them from their CPAN-like
+repository.
+That's it! Afterwards, just create a Perl script like
+
+    use Log::Log4perl qw(:easy);
+    Log::Log4perl->easy_init($DEBUG);
+
+    my $logger = get_logger("Twix::Bar");
+    $logger->debug("Watch me!");
+
+and run it. It should print something like 
+
+    2002/11/06 01:22:05 Watch me!
+
+If you find that something doesn't work, please let us know at
+log4perl-devel@lists.sourceforge.net -- we'll apprechiate it. Have fun!
+
 =head1 SEE ALSO
 
 Log::Log4perl
