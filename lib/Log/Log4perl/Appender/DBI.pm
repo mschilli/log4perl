@@ -268,17 +268,17 @@ Log::Log4perl::Appender::DBI - implements appending to a DB
                                   #4 is the message from log()
                                   #5 is ipaddr from log()
         
-    log4j.appender.DBAppndr.layout    = Log::Log4perl::Layout::PatternLayout
     
     log4j.appender.DBAppndr.usePreparedStmt = 1
      #--or--
     log4j.appender.DBAppndr.bufferSize = 2
     
+    #just pass through the array of message items in the log statement 
+    log4j.appender.DBAppndr.layout    = Log::Log4perl::Layout::NoopLayout
+    log4j.appender.DBAppndr.filter_message = 0
     
-    log4j.appender.DBAppndr.layout.dontCollapseArrayRefs = 1
     
-    
-    $logger->warn( [$custid, 'big problem!!', $ip_addr] );
+    $logger->warn( $custid, 'big problem!!', $ip_addr );
 
 
 
@@ -325,7 +325,7 @@ But the downsides to that usage are:
 You'd better be darn sure there are not quotes in your log message, or your
 insert could have unforseen consequences!  This is a very insecure way to
 handle database inserts, using place holders and bind values is much better, 
-keep reading.
+keep reading. (Note that the log4j docs warn "Be careful of quotes in your messages! ").
 
 =item *
 
@@ -348,7 +348,6 @@ prepared statement handle at the beginning and just reuse it
        INSERT INTO logtbl \
           (custid, loglevel, message) \
           VALUES (?,?,?)
-    log4j.appender.DBAppndr.layout    = Log::Log4perl::Layout::PatternLayout
 
     #---------------------------------------------------
     #now the bind values:
@@ -356,12 +355,14 @@ prepared statement handle at the beginning and just reuse it
     log4j.appender.DBAppndr.params.2 = %p    
                                   #3 is the message
     #---------------------------------------------------
-    log4j.appender.DBAppndr.layout.dontCollapseArrayRefs = 1
+
+    log4j.appender.DBAppndr.layout    = Log::Log4perl::Layout::NoopLayout
+    log4j.appender.DBAppndr.filter_message = 1
     
     log4j.appender.DBAppndr.usePreparedStmt = 1
     
     
-    $logger->warn( [1234, 'warning message'] ); #note the arrayref!
+    $logger->warn( 1234, 'warning message' ); #note the arrayref!
 
 
 Now see how we're using the '?' placeholders in our statement?  This
@@ -371,23 +372,22 @@ means we don't have to worry about messages that look like
 
 fubaring our database!
 
-Passing the values in the C<warn> statement as an array reference
+Normally a list of things in the logging statement get concatenated into 
+a single string, but setting C<filter_message> to 0 and using the 
+NoopLayout means that 
 
-    $logger->warn( [1234, 'warning message'] );
+    $logger->warn( 1234, 'warning message' );
 
-after setting this in the layout
-
-    log4j.appender.DBAppndr.layout.dontCollapseArrayRefs = 1
-
-
-keeps the values available for the DBI later on.  You can mix them up
-as you see fit, the logger will populate the question marks
-with params you've defined in the config file and populate the
-rest with values from your arrayref.  
+keeps the list values available for the DBI appender later on.  You can mix up
+the order the placeholders with %x specifiers as you see fit, the logger 
+will populate the question marks with params you've defined in the config 
+file and populate the rest with values from your arrayref.  If there
+are more ? placeholders than there are values in your message, it will
+use undef for the rest. 
 
 If the logger statement is also being handled by other non-DBI appenders,
 they will just join the arrayrefs into a string, joined with 
-C<$Log::Log4perl::JOIN_ARRAYREFS_CHAR> (default is a space).
+C<$Log::Log4perl::JOIN_MSG_ARRAY_CHAR> (default is an empty string).
 
 And see the C<usePreparedStmt>?  That creates a statement handle when
 the logger object is created and just reuses it.  That, however, may
@@ -414,7 +414,7 @@ The idea is that if you're logging to a database table, you probably
 want specific parts of your log information in certain columns.  To this
 end, you pass an arrayref to the log statement, like 
 
-    $logger->warn(['big problem!!',$userid,$subpoena_nr,$ip_addr]);
+    $logger->warn('big problem!!',$userid,$subpoena_nr,$ip_addr);
 
 and the array members drop into the positions defined by the placeholders
 in your SQL statement. You can also define information in the config
