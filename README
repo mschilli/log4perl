@@ -717,6 +717,20 @@ How about Log::Dispatch::Config?
     defining everything in a configuration file. I've designed
     "Log::Log4perl" to be more flexible.
 
+Using Log::Log4perl from wrapper classes
+    If you don't use "Log::Log4perl" as described above, but from a wrapper
+    class (like your own Logging class which in turn uses "Log::Log4perl"),
+    the pattern layout will generate wrong data for %F, %C, %L and the like.
+    Reason for this is that "Log::Log4perl"'s loggers assume a static caller
+    depth to the application that's using them. If you're using one (or
+    more) wrapper classes, "Log::Log4perl" will indicate where your logger
+    classes called the loggers, not where your application called your
+    wrapper, which is probably what you want in this case. But don't
+    dispair, there's a solution: Just increase the value of
+    $Log::Log4perl::caller_depth (defaults to 0) by one for every wrapper
+    that's in between your application and "Log::Log4perl", then
+    "Log::Log4perl" will compensate for the difference.
+
 INSTALLATION
     "Log::Log4perl" needs "Log::Dispatch" (2.00 or better) and "Time::HiRes"
     (1.20 or better) from CPAN. They're automatically fetched if you're
@@ -752,9 +766,12 @@ CONTACT
     log4perl-devel@lists.sourceforge.net
 
 AUTHORS
-    *   Mike Schilli, m@perlmeister.com
+        Mike Schilli <m@perlmeister.com>
+        Kevin Goess <cpan@goess.org>
 
-    *   Kevin Goess, cpan@goess.org
+        Contributors:
+
+        Chris R. Donnelly <cdonnelly@digitalmotorworks.com>
 
 COPYRIGHT AND LICENSE
     Copyright 2002 by Mike Schilli <m@perlmeister.com> and Kevin Goess
