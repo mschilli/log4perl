@@ -24,6 +24,8 @@ my @LEVEL_MAP_A = qw(
  FATAL  emergency
 );
 
+our $DEFAULT_WATCH_DELAY = 60; #seconds
+
 ##################################################
 sub init {
 ##################################################
@@ -124,6 +126,25 @@ sub init {
     Log::Log4perl::Logger::reset_all_output_methods();
 }
 
+
+###########################################
+sub init_and_watch {
+###########################################
+    my ($class, $config, $delay) = @_;
+
+    defined ($delay) or $delay = $DEFAULT_WATCH_DELAY;  
+
+    $delay =~ /\D/ && die "illegal non-numerica value for delay: $delay";
+
+    if (ref $config) {
+        die "can only watch a file, not a string of configuration information";
+    }
+
+    Log::Log4perl::Logger::init_watch($delay);
+
+    &init($class, $config);
+}
+
 ###########################################
 sub add_layout_by_name {
 ###########################################
@@ -185,6 +206,7 @@ sub config_read {
     if (ref $config) {
         @text = split(/\n/,$$config);
     }else{
+        Log::Log4perl::Logger::set_file_to_watch($config);
         open FILE, "<$config" or die "Cannot open config file '$config'";
         @text = <FILE>;
         close FILE;

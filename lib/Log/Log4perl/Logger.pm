@@ -19,6 +19,11 @@ our %APPENDER_BY_NAME = ();
 
 our $DISPATCHER = Log::Dispatch->new();
 
+our $WATCH_DELAY;
+our $FILE_TO_WATCH;
+our $LAST_CHECKED_AT;
+our $LAST_CHANGED_AT;
+
 __PACKAGE__->reset();
 
 ##################################################
@@ -34,6 +39,7 @@ sub reset {
 ##################################################
     our $ROOT_LOGGER        = __PACKAGE__->_new("", $DEBUG);
     our $LOGGERS_BY_NAME    = {};
+#    our %APPENDER_BY_NAME = ();
     our $DISPATCHER = Log::Dispatch->new();
 }
 
@@ -58,7 +64,7 @@ sub _new {
         num_appenders => 0,
         additivity    => 1,
         level         => $level,
-        dispatcher    => $DISPATCHER,
+        #dispatcher    => $DISPATCHER,  #use package obj instead
         layout        => undef,
                 };
 
@@ -117,33 +123,10 @@ sub set_output_methods {
     }
 
         #make a no-op coderef for inactive levels
-    my $noop = sub {};
+    my $noop = generate_noop_coderef();
 
        #make a coderef
-    my $coderef = (! @appenders ? $noop : 
-        sub {
-          my ($logger) = shift;
-          my ($message) = shift;
-          my ($level) = shift;
-          foreach my $a (@appenders) {   #note the closure here
-              my ($appender_name, $appender) = @$a;
-
-              $appender->log(
-                  #these get passed through to Log::Dispatch
-                  { name    => $appender_name,
-                    level   => 0,   
-                    message => $message,
-                  },
-                  #these we need
-                  $logger->{category},
-                  $level,
-              );
-
-          } #end foreach appenders
-
-        } #end coderef
-
-    ); #end assignment via ternary
+    my $coderef = (! @appenders ? $noop : &generate_coderef(\@appenders)); 
 
 
     #our %PRIORITY = (
@@ -163,6 +146,112 @@ sub set_output_methods {
             $self->{$levelname} = $noop;
         }
     }
+}
+
+##################################################
+sub generate_coderef {
+##################################################
+    my $appenders = shift;
+                    
+    my $coderef = '';
+    my $watch_delay_code = '';
+
+
+    # Doing this with eval strings to sacrifice init/reload time
+    # for runtime efficiency, so the conditional won't be included
+    # if it's not needed
+
+    if (defined $WATCH_DELAY) {
+        $watch_delay_code = generate_watch_code();
+    }
+
+
+    my $code = <<EOL;
+    \$coderef = sub {
+      my (\$logger) = shift;
+      my (\$message) = shift;
+      my (\$level) = shift;
+      
+      $watch_delay_code;  #note interpolation here
+      
+      foreach my \$a (\@\$appenders) {   #note the closure here
+          my (\$appender_name, \$appender) = \@\$a;
+    
+          \$appender->log(
+              #these get passed through to Log::Dispatch
+              { name    => \$appender_name,
+                level   => 0,   
+                message => \$message,
+              },
+              #these we need
+              \$logger->{category},
+              \$level,
+          );
+    
+      } #end foreach appenders
+    
+    }; #end coderef
+
+EOL
+
+    eval $code;
+
+    return $coderef;
+
+}
+
+##################################################
+sub generate_noop_coderef {
+##################################################
+    my $coderef = '';
+    my $watch_delay_code = '';
+
+    if (defined $WATCH_DELAY) {
+        $watch_delay_code = generate_watch_code();
+        $watch_delay_code = <<EOL;
+        my (\$logger) = shift;
+        my (\$message) = shift;
+        my (\$level) = shift;
+        $watch_delay_code
+EOL
+    }
+
+    my $code = <<EOL;
+    \$coderef = sub {
+        $watch_delay_code
+     };
+EOL
+
+    eval $code;
+
+    return $coderef;
+
+}
+
+
+##################################################
+sub generate_watch_code {
+##################################################
+    return <<'EOL';
+        #more closures here
+        if ( (($LAST_CHECKED_AT + $WATCH_DELAY) < time())
+                &&  ($LAST_CHANGED_AT < (stat($FILE_TO_WATCH))[9] )){
+                
+            our %APPENDER_BY_NAME = ();
+            our $DISPATCHER = Log::Dispatch->new();
+            
+            Log::Log4perl->init_and_watch($FILE_TO_WATCH, $WATCH_DELAY);
+            
+            my $methodname = lc($level);
+            $logger->$methodname($message); #send the message to the new configuration
+            
+            $LAST_CHECKED_AT = time();
+            
+            return;
+        }else{
+            $LAST_CHECKED_AT = time();
+        }
+EOL
 }
 
 ##################################################
@@ -318,7 +407,8 @@ sub add_appender {
                                          # if it's  the config file calling us
 
 
-    $self->{dispatcher}->add($appender) unless $not_to_dispatcher;    
+    #$self->{dispatcher}->add($appender) unless $not_to_dispatcher;    
+    $DISPATCHER->add($appender) unless $not_to_dispatcher;    
         # while we want to track the names of
         # all the appenders in a category, we only
         # want to add it to log_dispatch *once*
@@ -330,6 +420,19 @@ sub has_appenders {
     my($self) = @_;
 
     return $self->{num_appenders};
+}
+
+##################################################
+sub init_watch {
+##################################################
+    our $WATCH_DELAY = shift;
+
+    $LAST_CHECKED_AT = $LAST_CHANGED_AT = time();
+}
+##################################################
+sub set_file_to_watch {
+##################################################
+    our $FILE_TO_WATCH = shift;
 }
 
 ##################################################
