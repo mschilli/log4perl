@@ -49,4 +49,35 @@ WriteMakefile(
 	# Un-comment this if you add C files to link with later:
     # 'OBJECT'		=> '$(O_FILES)', # link all the C files too
     'clean'             => {FILES => "*.tar.gz *.ppd pod2htm*"},
+    get_man3pods(), 
 );
+
+##########################################
+sub get_man3pods {
+##########################################
+        # Only done for versions < 5.8.0
+    return () if $] >= 5.008;
+
+    print <<EOT;
+##################################################
+# Detected buggy MakeMaker version, creating man #
+# pages manually                                 #
+##################################################
+EOT
+    require File::Find;
+
+    my @pms = ();
+
+    File::Find::find(sub { 
+        push @pms, $File::Find::name if /\.pm$/
+    }, "lib");
+
+    return('MAN3PODS', {
+        map { my @comps = split /\//, $_;
+              shift @comps;
+              my $csep = join '::', @comps;
+              $csep =~ s/\.pm$//;
+              ($_, "\$(INST_MAN3DIR)/$csep.\$(MAN3EXT)");
+            } @pms
+    });
+}

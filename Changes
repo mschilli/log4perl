@@ -3,6 +3,10 @@ Revision history for Log::Log4perl
 ##################################################
 
 0.32 (not yet released)
+    * (ms) Added fix to Makefile.PL to compensate for MakeMaker bug
+           in perl < 5.8.0, causing man pages below Log::Log4perl::Config 
+           not to be installed. Thanks to Mathieu Arnold <mat@mat.cc> 
+           for bringing this up.
     * (ms) 0.31 had a Win32 test suite glitch, replaced getpwuid() 
            (not implemented) by stat() for Safe test.
 
