@@ -722,6 +722,7 @@ sub callerline {
   # my ($pack, $file, $line) = caller(2);
   # but if we every bury this further, it'll break. So we do this
   # little trick stolen and paraphrased from Carp/Heavy.pm
+  my($message) = @_;
 
   my $i = 0;
   my (undef, $localfile, undef) = caller($i++);
@@ -730,14 +731,20 @@ sub callerline {
     ($pack, $file, $line) = caller($i++);
   } while ($file && $file eq $localfile);
 
-  # now, create the return message
-  my $mess = " at $file line $line";
+  my $has_newline;
+
+  $has_newline++ if $message =~ /\n/;
+
+  chomp $message;
+
+  $message .= " at $file line $line" if !$has_newline;
+
   # Someday, we'll use Threads. Really.
   if (defined &Thread::tid) {
     my $tid = Thread->self->tid;
-    $mess .= " thread $tid" if $tid;
+    $message .= " thread $tid" if $tid and !$has_newline;
   }
-  return (@_, $mess, "\n");
+  return ($message, "\n");
 }
 
 #######################################################
@@ -745,7 +752,6 @@ sub and_warn {
 #######################################################
   my $self = shift;
   my $msg = join("", @_[0 .. $#_]);
-  chomp $msg;
   CORE::warn(callerline($msg));
 }
 
@@ -754,7 +760,6 @@ sub and_die {
 #######################################################
   my $self = shift;
   my $msg = join("", @_[0 .. $#_]);
-  chomp $msg;
   die(callerline($msg));
 }
 
@@ -765,7 +770,9 @@ sub logwarn {
   if ($self->is_warn()) {
         # Since we're one caller level off now, compensate for that.
     $Log::Log4perl::caller_depth++;
-    $self->warn(@_);
+    my @chomped = @_;
+    chomp($chomped[-1]);
+    $self->warn(@chomped);
     $Log::Log4perl::caller_depth--;
     $self->and_warn(@_);
   }
@@ -778,7 +785,9 @@ sub logdie {
   if ($self->is_fatal()) {
         # Since we're one caller level off now, compensate for that.
     $Log::Log4perl::caller_depth++;
-    $self->fatal(@_);
+    my @chomped = @_;
+    chomp($chomped[-1]);
+    $self->fatal(@chomped);
     $Log::Log4perl::caller_depth--;
   }
   # no matter what, we die... 'cuz logdie wants you to die.

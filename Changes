@@ -2,6 +2,12 @@
  Revision history for Log::Log4perl
 ##################################################
 
+0.48 (not yet released)
+    * (ms) fixed bug reported by Chip Salzenberg <chip@pobox.com>: logdie()
+           and logwarn() are now compliant with the warn() and die() 
+           standard which suppresses the "at file line x" message if
+           the message ends with a "\n".
+
 0.47 (07/11/2004)
     * (ms) Added suggestion by Hutton Davidson <Davidson.Hutton@ftid.com>
            to make the socket appender more forgiving. New option
