@@ -20,6 +20,7 @@ lib/Log/Log4perl/Appender/TestBuffer.pm
 lib/Log/Log4perl/Config.pm
 lib/Log/Log4perl/Config/DOMConfigurator.pm
 lib/Log/Log4perl/Config/PropertyConfigurator.pm
+lib/Log/Log4perl/Config/Watch.pm
 lib/Log/Log4perl/DateFormat.pm
 lib/Log/Log4perl/FAQ.pm
 lib/Log/Log4perl/Filter.pm
