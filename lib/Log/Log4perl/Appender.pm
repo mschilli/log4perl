@@ -37,7 +37,8 @@ sub new {
         no strict 'refs';
         # see 'perldoc -f require' for why two evals
         eval "require $appenderclass"
-             unless ${$appenderclass.'::IS_LOADED'};  #for unit tests, see 004Config
+             unless ${$appenderclass.'::IS_LOADED'};  #for unit tests, 
+                                                      #see 004Config
              ;
         die $@ if $@;
 
@@ -74,6 +75,9 @@ sub new {
                  layout   => undef,
                  level    => $DEBUG,
                };
+
+        #whether to collapse arrays, etc.
+    $self->{filter_message} = $params{filter_message};
     
     bless $self, $class;
 
@@ -115,6 +119,24 @@ sub log { # Relay this call to Log::Dispatch::Whatever
 
     #doing the rendering in here 'cause this is 
     #where we keep the layout
+
+        #not defined, the normal case
+    if (! defined $self->{filter_message} ){ 
+            #join any message elements
+        $p->{message} = 
+            join($Log::Log4perl::JOIN_MSG_ARRAY_CHAR, 
+                 @{$p->{message}} 
+                 );
+        
+        #defined but false, e.g. Appender::DBI
+    }elsif (! $self->{filter_message}) {
+        ;  #leave the message alone
+
+        #defined and true
+    }else{
+        $p->{message} = 
+            $self->{filter_message}->($p->{message}); #syntax ok for perl5?
+    }
 
     $p->{message} = $self->{layout}->render($p->{message}, 
                                             $category,
