@@ -2,7 +2,7 @@
 Revision history for Log::Log4perl
 ##################################################
 
-0.28 (not officially released yet)
+0.28 (01/28/2003)
     * (ms) '#' in the conf file are now interpreted as comment starters only
            if they're at the start of a line with optional whitespace. 
            The previous setting (comments starting anywhere) had problems 
