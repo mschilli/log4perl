@@ -2,15 +2,17 @@ package Log::Log4perl::Config::DOMConfigurator;
 #todo
 # DONE(param-text) some params not attrs but values, like <sql>...</sql>
 # DONE see DEBUG!!!  below
-# appender-ref in <appender>
+# NO, (really is only used for AsyncAppender) appender-ref in <appender>
 # DONE check multiple appenders in a category
 # DONE in Config.pm re URL loading, steal from XML::DOM
 # DONE, OK see PropConfigurator re importing unlog4j, eval_if_perl
-# NO - is specified in DTD - need to handle 0/1, true/false?
+# NO (is specified in DTD) - need to handle 0/1, true/false?
 # DONEsee Config, need to check version of XML::DOM
-# user defined levels? see below
+# OK user defined levels? see parse_level
 # OK make sure 2nd test is using log4perl constructs, not log4j
 # handle new filter stuff
+# make sure sample code actually works
+# try removing namespace prefixes in the xml
 
 use XML::DOM;
 use Log::Log4perl::Level;
@@ -203,7 +205,6 @@ sub parse_children_of_logger_element {
 }
 
 
-#DEBUG!! what about user-defined, will work?  can do in xml?
 sub parse_level {
     my $node = shift;
 
@@ -254,9 +255,13 @@ sub parse_appender {
             die "errorHandlers not supported yet";
 
         }elsif ($tag_name eq 'appender-ref'){
-            #dtd: Appenders may also reference (or include) other appenders. -->
-            #TDB DEBUG!!!
-            die "Log4perl: in config file, appender-ref unsupported in <appender>";
+            #dtd: Appenders may also reference (or include) other appenders. 
+            #This feature in log4j is only for appenders who implement the 
+            #AppenderAttachable interface, and the only one that does that
+            #is the AsyncAppender, which writes logs in a separate thread.
+            #I don't see the need to support this on the perl side any 
+            #time soon.  --kg 3/2003
+            die "Log4perl: in config file, <appender-ref> tag is unsupported in <appender>";
         }
     }
     $l4p_tree->{appender}{$name} = $l4p_branch;
