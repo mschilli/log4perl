@@ -1177,6 +1177,18 @@ real class name as an argument and all other methods can determine it
 via C<ref($self)>), so it shouldn't be a problem to get the right class
 every time.
 
+=head1 Custom Filters
+
+Log4perl allows the use of customized filters in its appenders
+to control the output of messages. These filters might grep for
+certain text chunks in a message, verify that its priority
+matches or exceeds a certain level or that this is the 10th
+time the same message has been submitted -- and come to a log/no log 
+decision based upon these circumstantial facts.
+
+Check out L<Log::Log4perl::Filter> for detailed instructions 
+on how to use them.
+
 =head1 Cool Tricks
 
 =head2 Shortcuts
