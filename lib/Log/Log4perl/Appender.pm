@@ -96,7 +96,7 @@ sub log { # Relay this call to Log::Dispatch::Whatever
     $p->{message} = $self->{layout}->render($p->{message}, 
                                             $category,
                                             $level,
-                                            3,
+                                            3 + $Log::Log4perl::caller_depth,
                                             );
     return $self->{appender}->log(%$p);
 }
