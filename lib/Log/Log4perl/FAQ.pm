@@ -616,6 +616,51 @@ executing I<any> Perl code in the config file (including
 code for custom conversion specifiers 
 (see L<Log::Log4perl::Layout::PatternLayout/"Custom cspecs">).
 
+=head2 How can I roll over my logfiles automatically at midnight?
+
+Long-running applications tend to produce ever-increasing logfiles.
+For backup and cleanup purposes, however, it is often desirable to move
+the current logfile to a different location from time to time and
+start writing a new one.
+
+This is a non-trivial task, because it has to happen in sync with 
+the logging system in order not to lose any messages in the process.
+
+Luckily, I<Mark Pfeiffer>'s C<Log::Dispatch::FileRotate> appender
+works well with Log::Log4perl to rotate your logfiles in a variety of ways.
+All you have to do is specify it in your Log::Log4perl configuration file
+and your logfiles will be rotated automatically.
+
+You can choose between rolling based on a maximum size ("roll if greater
+than 10 MB") or based on a date pattern ("roll everyday at midnight").
+In both cases, C<Log::Dispatch::FileRotate> allows you to define a 
+number C<max> of saved files to keep around until it starts overwriting
+the oldest ones. If you set the C<max> parameter to 2 and the name of
+your logfile is C<test.log>, C<Log::Dispatch::FileRotate> will
+move C<test.log> to C<test.log.1> on the first rollover. On the second
+rollover, it will move C<test.log.1> to C<test.log.2> and then C<test.log>
+to C<test.log.1>. On the third rollover, it will move C<test.log.1> to 
+C<test.log.2> (therefore discarding the old C<test.log.2>) and 
+C<test.log> to C<test.log.1>. And so forth. This way, there's always 
+going to be a maximum of 2 saved log files around.
+
+Here's an example of a Log::Log4perl configuration file, defining a
+daily rollover at midnight (date pattern C<yyyy-MM-dd>), keeping
+a maximum of 5 saved logfiles around:
+
+    log4perl.category         = WARN, Logfile
+    log4perl.appender.Logfile = Log::Dispatch::FileRotate
+    log4perl.appender.Logfile.filename    = test.log
+    log4perl.appender.Logfile.max         = 5
+    log4perl.appender.Logfile.DatePattern = yyyy-MM-dd
+    log4perl.appender.Logfile.TZ          = PST
+    log4perl.appender.Logfile.layout = \
+        Log::Log4perl::Layout::PatternLayout 
+    log4perl.appender.Logfile.layout.ConversionPattern = %d %m %n 
+
+Please see the C<Log::Dispatch::FileRotate> documentation for details.
+C<Log::Dispatch::FileRotate> is available on CPAN.
+
 =cut
 
 =head1 SEE ALSO
