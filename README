@@ -1031,7 +1031,9 @@ Cool Tricks
 
     where "pid" is the process ID of the application. This will bring you
     back to about 85% of Log::Log4perl's normal execution speed for
-    suppressed statements. For details, check out "Performance".
+    suppressed statements. For details, check out "Performance". For more
+    info on the signal handler, look for "SIGNAL MODE" in
+    Log::Log4perl::Config::Watch.
 
     One thing to watch out for: If the configuration file contains a syntax
     or other fatal error, a running application will stop with "die" if this
@@ -1656,6 +1658,7 @@ AUTHORS
         Paul Harrington <Paul-Harrington@deshaw.com>
         Erik Selberg <erik@selberg.com>
         Aaron Straup Cope <asc@vineyard.net>
+        Mac Yang <mac@proofpoint.com>
 
 COPYRIGHT AND LICENSE
     Copyright 2002 by Mike Schilli <m@perlmeister.com> and Kevin Goess
