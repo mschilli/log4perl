@@ -34,8 +34,7 @@ if($@) {
 WriteMakefile(
     'NAME'		=> 'Log::Log4perl',
     'VERSION_FROM'	=> 'lib/Log/Log4perl.pm', # finds $VERSION
-    'PREREQ_PM'		=> { Test::Simple  => 0.43,
-                             Test::More    => 0.45,
+    'PREREQ_PM'		=> { Test::More    => 0.45,
                              File::Spec    => 0.82,
                            }, # e.g., Module::Name => 1.1
     ($] >= 5.005 ?    ## Add these new keywords supported since 5.005

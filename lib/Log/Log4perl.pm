@@ -322,6 +322,42 @@ sub appenders {  # Get all defined appenders hashref
 }
 
 ##################################################
+sub appender_thresholds_adjust {  # Readjust appender thresholds
+##################################################
+        # If someone calls L4p-> and not L4p::
+    shift if $_[0] eq __PACKAGE__;
+    my($delta, $appenders) = @_;
+
+    if(defined $appenders) {
+            # Map names to objects
+        $appenders = [map { 
+                       die "Unkown appender: '$_'" unless exists
+                          $Log::Log4perl::Logger::APPENDER_BY_NAME{$_};
+                       $Log::Log4perl::Logger::APPENDER_BY_NAME{$_} 
+                      } @$appenders];
+    } else {
+            # Just hand over all known appenders
+        $appenders = [values %{Log::Log4perl::appenders()}] unless 
+            defined $appenders;
+    }
+
+        # Change all appender thresholds;
+    foreach my $app (@$appenders) {
+        my $old_thres = $app->threshold();
+        my $new_thres;
+        if($delta > 0) {
+            $new_thres = Log::Log4perl::Level::get_higher_level(
+                             $old_thres, $delta);
+        } else {
+            $new_thres = Log::Log4perl::Level::get_lower_level(
+                             $old_thres, -$delta);
+        }
+
+        $app->threshold($new_thres);
+    }
+}
+
+##################################################
 sub appender_by_name {  # Get an appender by name
 ##################################################
         # If someone calls L4p->appender_by_name and not L4p::appender_by_name
@@ -1979,6 +2015,23 @@ can be retrieved by the C<appender_by_name()> class method. This comes
 in handy if you want to manipulate or query appender properties after
 the Log4perl configuration has been loaded via C<init()>.
 
+=head2 Modify appender thresholds
+
+To conveniently adjust appender thresholds (e.g. because a script
+uses more_logging()), use
+
+       # decrease thresholds of all appenders
+    Log::Log4perl->appender_thresholds_adjust(-1);
+
+This will decrease the thresholds of all appenders in the system by
+one level, i.e. WARN becomes INFO, INFO becomes DEBUG, etc. To only modify 
+selected ones, use
+
+       # decrease thresholds of all appenders
+    Log::Log4perl->appender_thresholds_adjust(-1, ['AppName1', ...]);
+
+and pass the names of affected appeders in a ref to an array.
+
 =head1 Advanced configuration within Perl
 
 Initializing Log::Log4perl can certainly also be done from within Perl.
@@ -2202,7 +2255,7 @@ why we're now shipping Log::Log4perl with its own standard appenders
 and only if you wish to use additional ones, you'll have to go through
 the C<Log::Dispatch> installation process.
 
-Log::Log4perl needs C<Test::Simple>, C<Test::Harness> and C<File::Spec>, 
+Log::Log4perl needs C<Test::More>, C<Test::Harness> and C<File::Spec>, 
 but they already come with fairly recent versions of perl.
 If not, everything's automatically fetched from CPAN if you're using the CPAN 
 shell (CPAN.pm), because they're listed as dependencies.

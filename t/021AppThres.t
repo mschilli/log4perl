@@ -6,12 +6,12 @@
 use warnings;
 use strict;
 
-use Test;
+use Test::More;
 
 use Log::Log4perl qw(get_logger);
 use Log::Log4perl::Level;
 
-BEGIN { plan tests => 14 }
+BEGIN { plan tests => 20 }
 
 ok(1); # If we made it this far, we're ok.
 
@@ -43,8 +43,8 @@ $app1->buffer("");
 $log0->warn("Don't want to see this");
 $log0->error("Yeah, log0");
 
-ok($app0->buffer(), "ERROR - Yeah, log0\n");
-ok($app1->buffer(), "");
+is($app0->buffer(), "ERROR - Yeah, log0\n", "Threshold ERROR");
+is($app1->buffer(), "", "Threshold WARN");
 
 ##################################################
 # Inherited appender
@@ -55,13 +55,13 @@ $app0->buffer("");
 $app1->buffer("");
 
 $ret = $log1->info("Don't want to see this");
-ok($ret, 0);
+is($ret, 0, "Info suppressed");
 
 $ret = $log1->warn("Yeah, log1");
-ok($ret, 1);
+is($ret, 1, "inherited");
 
-ok($app0->buffer(), "");
-ok($app1->buffer(), "WARN - Yeah, log1\n");
+is($app0->buffer(), "", "inherited");
+is($app1->buffer(), "WARN - Yeah, log1\n", "inherited");
 
 ##################################################
 # Inherited appender over two hierarchies
@@ -71,8 +71,8 @@ $app1->buffer("");
 $log2->info("Don't want to see this");
 $log2->error("Yeah, log2");
 
-ok($app0->buffer(), "ERROR - Yeah, log2\n");
-ok($app1->buffer(), "ERROR - Yeah, log2\n");
+is($app0->buffer(), "ERROR - Yeah, log2\n", "two hierarchies");
+is($app1->buffer(), "ERROR - Yeah, log2\n", "two hierarchies");
 
 ##################################################
 # Appender threshold with config file
@@ -101,8 +101,8 @@ my $loga = get_logger("a");
 $loga->info("Don't want to see this");
 $loga->error("Yeah, loga");
 
-ok($app0->buffer(), "ERROR - Yeah, loga\n");
-ok($app1->buffer(), "ERROR - Yeah, loga\n");
+is($app0->buffer(), "ERROR - Yeah, loga\n", "appender threshold");
+is($app1->buffer(), "ERROR - Yeah, loga\n", "appender threshold");
 
 ##################################################
 # Appender threshold with config file and a Java
@@ -132,8 +132,8 @@ $loga = get_logger("a");
 $loga->info("Don't want to see this");
 $loga->error("Yeah, loga");
 
-ok($app0->buffer(), "ERROR - Yeah, loga\n");
-ok($app1->buffer(), "ERROR - Yeah, loga\n");
+is($app0->buffer(), "ERROR - Yeah, loga\n", "threshold/java");
+is($app1->buffer(), "ERROR - Yeah, loga\n", "threshold/java");
 
 ##################################################
 # 'threshold' vs. 'Threshold'
@@ -152,7 +152,74 @@ EOT
 eval { Log::Log4perl::init(\$conf); };
 
 if($@) {
-    ok($@, '/uppercase/');
+    like($@, qr/uppercase/, "warn on misspelled 'threshold'");
 } else {
-    ok(0);
+    ok(0, "Abort on misspelled 'threshold'");
 }
+
+##################################################
+# Increase threshold of all appenders
+##################################################
+$conf = <<EOT;
+log4perl.category                 = WARN, BUF0, BUF1
+
+log4perl.appender.BUF0            = Log::Log4perl::Appender::TestBuffer
+log4perl.appender.BUF0.Threshold  = WARN
+log4perl.appender.BUF0.layout     = SimpleLayout
+
+log4perl.appender.BUF1            = Log::Log4perl::Appender::TestBuffer
+log4perl.appender.BUF1.Threshold  = ERROR
+log4perl.appender.BUF1.layout     = SimpleLayout
+EOT
+
+Log::Log4perl::init(\$conf);
+
+$app0 = Log::Log4perl::Appender::TestBuffer->by_name("BUF0");
+$app1 = Log::Log4perl::Appender::TestBuffer->by_name("BUF1");
+
+my $logger = get_logger("");
+
+$logger->info("Info");
+$logger->warn("Warning");
+$logger->error("Error");
+
+is($app0->buffer(), "WARN - Warning\nERROR - Error\n", "appender threshold");
+is($app1->buffer(), "ERROR - Error\n", "appender threshold");
+
+Log::Log4perl->appender_thresholds_adjust(-1);
+
+$app0->buffer("");
+$app1->buffer("");
+
+$logger->more_logging();
+$logger->info("Info");
+$logger->warn("Warning");
+$logger->error("Error");
+
+is($app0->buffer(), "INFO - Info\nWARN - Warning\nERROR - Error\n", 
+                    "adjusted appender threshold");
+is($app1->buffer(), "WARN - Warning\nERROR - Error\n", 
+                    "appender threshold");
+
+$app0->buffer("");
+$app1->buffer("");
+
+   # reset previous thresholds
+Log::Log4perl->appender_thresholds_adjust(1);
+
+$app0->buffer("");
+$app1->buffer("");
+
+   # rig just one threshold
+Log::Log4perl->appender_thresholds_adjust(-1, ['BUF0']);
+
+$logger->more_logging();
+$logger->info("Info");
+$logger->warn("Warning");
+$logger->error("Error");
+
+is($app0->buffer(), "INFO - Info\nWARN - Warning\nERROR - Error\n", 
+                    "adjusted appender threshold");
+is($app1->buffer(), "ERROR - Error\n", 
+                    "appender threshold");
+

@@ -17,7 +17,7 @@
 use warnings;
 use strict;
 
-use Test::Simple tests => 50;
+use Test::More tests => 50;
 use Log::Log4perl qw(get_logger);
 use Log::Log4perl::Level;
 use File::Spec;
@@ -33,8 +33,10 @@ sub warndietest {
 
   eval { &$method($in_str) };
   
-  ok($warnstr =~ /$out_str/, "$mname($in_str): STDERR contains \"$out_str\"");
-  ok($app->buffer() =~ /$out_str/, "$mname($in_str): Buffer contains \"$out_str\"");
+  like($warnstr, qr/$out_str/, 
+       "$mname($in_str): STDERR contains \"$out_str\"");
+  like($app->buffer(), qr/$out_str/, 
+       "$mname($in_str): Buffer contains \"$out_str\"");
   $app->buffer("");
 }
 
@@ -44,8 +46,10 @@ sub warndietest_nooutput {
 
   eval { &$method($in_str) };
   
-  ok($warnstr !~ /$out_str/, "$mname($in_str): STDERR does NOT contain \"$out_str\"");
-  ok($app->buffer() !~ /$out_str/, "$mname($in_str): Buffer does NOT contain \"$out_str\"");
+  unlike($warnstr, qr/$out_str/, 
+       "$mname($in_str): STDERR does NOT contain \"$out_str\"");
+  unlike($app->buffer(), qr/$out_str/, 
+       "$mname($in_str): Buffer does NOT contain \"$out_str\"");
 }
 
 # same as above, just look for no output in buffer, but output in STDERR
@@ -54,8 +58,9 @@ sub dietest_nooutput {
 
   eval { &$method($in_str) };
   
-  ok($warnstr =~ /$out_str/, "$mname($in_str): STDERR contains \"$out_str\"");
-  ok($app->buffer() !~ /$out_str/, "$mname($in_str): Buffer does NOT contain \"$out_str\"");
+  like($warnstr, qr/$out_str/, "$mname($in_str): STDERR contains \"$out_str\"");
+  unlike($app->buffer(), qr/$out_str/, 
+         "$mname($in_str): Buffer does NOT contain \"$out_str\"");
 }
 
 
@@ -134,9 +139,5 @@ eval { $logger->logdie("Log and die!"); };
 my $app0 = Log::Log4perl::Appender::TestBuffer->by_name("A1");
 # print "Buffer: ", $app0->buffer(), "\n";
 
-my $expected = File::Spec->catfile('t','024WarnDieCarp.t-132').": Log and die!";
-
-ok($app0->buffer() eq $expected, "%F-%L adjustment, got ".$app0->buffer().", expected $expected");
-
-
-
+like($app0->buffer(), qr/024WarnDieCarp.t-137: Log and die!/,
+   "%F-%L adjustment");
