@@ -2,7 +2,7 @@
 Revision history for Log::Log4perl
 ##################################################
 
-0.21 8/03/2002
+0.21 8/08/2002
     * Synopsis shows code samples in Log4perl.pm/README
     * Slight Log4j incompatibility but useful: %F{n} lets you
       limit the number of entries the source file path is logged
