@@ -7,7 +7,7 @@ Revision history for Log::Log4perl
     * Added documentation to Log::Log4perl::Appender
     * Made Time::HiRes optional. If it's missing, PatternLayout will
       just use full seconds as %r.
-    * SimpleDateFormat "%d{HH:SS}" added
+    * SimpleDateFormat "%d{HH:SS}", including predefined formats (DATE etc.)
     * Added another cut-and-paste example to the docs (EXAMPLE)
     * Added new logdie/logwarn/error_warn/error_die/logcarp/
       logcluck/logcroak/logconfess functions written by 
