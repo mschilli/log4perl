@@ -3,9 +3,14 @@ Revision history for Log::Log4perl
 ##################################################
 
 0.28 (not officially released yet)
+    * (ms) '#' in the conf file are now interpreted as comment starters only
+           if they're at the start of a line with optional whitespace. 
+           The previous setting (comments starting anywhere) had problems 
+           with code containing '#''s, like in layout.cref = sub { $#_ = 1 }
+    * (ms) warp_message accepts code refs or function names
     * (kg) Split config bits into PropertyConfigurator and implemented
            DOMConfigurator for XML configs.
-    * (kg) Adding appender.filter_message parameter as a help to DBI 
+    * (kg) Adding appender.warp_message parameter as a help to DBI 
            appender
     * (kg) Added NoopLayout to help DBI appender
     * (ms) Added message output filters:

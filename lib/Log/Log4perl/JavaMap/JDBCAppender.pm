@@ -53,8 +53,8 @@ sub new {
         password      => $pwd, 
         sql           => $sql,
         params        => \%bind_value_params,
-            #filter_message also not a log4j thing, but see above
-        filter_message=> $data->{filter_message}{value},  
+            #warp_message also not a log4j thing, but see above
+        warp_message=> $data->{warp_message}{value},  
     );
 }
 

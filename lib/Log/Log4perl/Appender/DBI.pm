@@ -288,7 +288,7 @@ Log::Log4perl::Appender::DBI - implements appending to a DB
     
     #just pass through the array of message items in the log statement 
     log4j.appender.DBAppndr.layout    = Log::Log4perl::Layout::NoopLayout
-    log4j.appender.DBAppndr.filter_message = 0
+    log4j.appender.DBAppndr.warp_message = 0
     
     
     $logger->warn( $custid, 'big problem!!', $ip_addr );
@@ -370,7 +370,7 @@ prepared statement handle at the beginning and just reuse it
     #---------------------------------------------------
 
     log4j.appender.DBAppndr.layout    = Log::Log4perl::Layout::NoopLayout
-    log4j.appender.DBAppndr.filter_message = 0
+    log4j.appender.DBAppndr.warp_message = 0
     
     log4j.appender.DBAppndr.usePreparedStmt = 1
     
@@ -386,16 +386,16 @@ means we don't have to worry about messages that look like
 fubaring our database!
 
 Normally a list of things in the logging statement gets concatenated into 
-a single string, but setting C<filter_message> to 0 and using the 
+a single string, but setting C<warp_message> to 0 and using the 
 NoopLayout means that in
 
     $logger->warn( 1234, 'warning message', 'bgates' );
 
 the individual list values will still be available for the DBI appender later 
-on.  (If C<filter_message> is not set to 0, the default behavior is to
+on.  (If C<warp_message> is not set to 0, the default behavior is to
 join the list elements into a single string.   If PatternLayout or SimpleLayout
 are used, their attempt to C<render()> your layout will result in something 
-like "ARRAY(0x841d8dc)" in your logs.  More information on C<filter_message>
+like "ARRAY(0x841d8dc)" in your logs.  More information on C<warp_message>
 is in Log::Log4perl::Appender.)
 
 In your insert SQL you can mix up '?' placeholders with conversion specifiers 
@@ -411,7 +411,7 @@ your message, it will use undef for the rest.  For instance,
 	log4j.appender.DBAppndr.params.1 = %p
 	log4j.appender.DBAppndr.params.3 = %d
 
-	log4j.appender.DBAppndr.filter_message=0
+	log4j.appender.DBAppndr.warp_message=0
 
 
 	$logger->info('arrest him!', $subpoena_id);
@@ -475,7 +475,7 @@ filled in with the values from your log statement's array.
 
 See above.
 
-=item filter_message
+=item warp_message
 
 see Log::Log4perl::Appender
 

@@ -73,7 +73,7 @@ log4j.appender.DBAppndr.params.6 = %C
 #-----------------------------#7,8 are also runtime
 
 log4j.appender.DBAppndr.bufferSize=2
-log4j.appender.DBAppndr.filter_message=0
+log4j.appender.DBAppndr.warp_message=0
     
 #noop layout to pass it through
 log4j.appender.DBAppndr.layout    = Log::Log4perl::Layout::NoopLayout

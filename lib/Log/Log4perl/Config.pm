@@ -467,6 +467,18 @@ sub eval_if_perl {
 ###########################################
     my($value) = @_;
 
+    if(my $cref = compile_if_perl($value)) {
+        return $cref->();
+    }
+
+    return $value;
+}
+
+###########################################
+sub compile_if_perl {
+###########################################
+    my($value) = @_;
+
     if($value =~ /^\s*sub\s*{/ ) {
         unless($Log::Log4perl::ALLOW_CODE_IN_CONFIG_FILE) {
             die "\$Log::Log4perl::ALLOW_CODE_IN_CONFIG_FILE setting " .
@@ -474,10 +486,10 @@ sub eval_if_perl {
         }
         my $cref = eval "package main; $value" or 
             die "Can't evaluate '$value' ($@)";
-        $value = $cref->();
+        return $cref;
     }
 
-    return $value;
+    return undef;
 }
 
 1;

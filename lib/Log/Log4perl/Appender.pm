@@ -7,6 +7,8 @@ use strict;
 use warnings;
 
 use Log::Log4perl::Level;
+use Log::Log4perl::Config;
+
 use constant DEBUG => 0;
 
 our $unique_counter = 0;
@@ -77,7 +79,12 @@ sub new {
                };
 
         #whether to collapse arrays, etc.
-    $self->{filter_message} = $params{filter_message};
+    $self->{warp_message} = $params{warp_message};
+    if($self->{warp_message} and
+       my $cref = 
+       Log::Log4perl::Config::compile_if_perl($self->{warp_message})) {
+        $self->{warp_message} = $cref;
+    }
     
     bless $self, $class;
 
@@ -121,7 +128,7 @@ sub log { # Relay this call to Log::Dispatch::Whatever
     #where we keep the layout
 
         #not defined, the normal case
-    if (! defined $self->{filter_message} ){ 
+    if (! defined $self->{warp_message} ){ 
             #join any message elements
         $p->{message} = 
             join($Log::Log4perl::JOIN_MSG_ARRAY_CHAR, 
@@ -129,14 +136,18 @@ sub log { # Relay this call to Log::Dispatch::Whatever
                  );
         
         #defined but false, e.g. Appender::DBI
-    } elsif (! $self->{filter_message}) {
+    } elsif (! $self->{warp_message}) {
         ;  #leave the message alone
 
+    } elsif (ref($self->{warp_message}) eq "CODE") {
+        #defined and a subref
+        $p->{message} = 
+            [$self->{warp_message}->(@{$p->{message}})];
     } else {
-        #defined and a function name
+        #defined and a function name?
         no strict qw(refs);
         $p->{message} = 
-            $self->{filter_message}->($p->{message}); #syntax ok for perl5?
+            [$self->{warp_message}->(@{$p->{message}})];
     }
 
     $p->{message} = $self->{layout}->render($p->{message}, 
@@ -360,12 +371,12 @@ appender like C<Log::Log4perl::Appender::DBI> might take the
 three arguments passed to the logger and put them in three separate
 rows into the DB.
 
-The  C<filter_message> appender option is used to specify the desired 
+The  C<warp_message> appender option is used to specify the desired 
 behaviour.
 If no setting for the appender property
 
     # *** Not defined ***
-    # log4perl.appender.SomeApp.filter_message
+    # log4perl.appender.SomeApp.warp_message
 
 is defined in the Log4perl configuration file, the
 appender referenced by C<SomeApp> will fall back to the standard behaviour
@@ -375,7 +386,7 @@ C<$Log::Log4perl::JOIN_MSG_ARRAY_CHAR>.
 If, on the other hand, it is set to a false value, like in
 
     log4perl.appender.A1.layout=NoopLayout
-    log4perl.appender.SomeApp.filter_message = 0
+    log4perl.appender.SomeApp.warp_message = 0
 
 then the message chunks are passed unmodified to the appender as an
 array reference. Please note that you need to set the appender's
@@ -385,7 +396,7 @@ conversion specifiers.
 
 B<Please note that the standard appenders in the Log::Dispatch hierarchy
 will choke on a bunch of messages passed to them as an array reference. 
-You can't use C<filter_message = 0> (or the function name syntax
+You can't use C<warp_message = 0> (or the function name syntax
 defined below) on them.
 Only special appenders like Log::Log4perl::Appender::DBI can deal with
 this.>
@@ -395,12 +406,27 @@ an appender expects message chunks, but we would
 like to pre-inspect and probably modify them before they're 
 actually passed to the appender's C<log>
 method, an inspection subroutine can be defined with the
-appender's C<filter_message> property:
+appender's C<warp_message> property:
 
     log4perl.appender.A1.layout=NoopLayout
-    log4perl.appender.SomeApp.filter_message = main::filter_my_message
+    log4perl.appender.SomeApp.warp_message = sub { \
+                                           $#_ = 2 if @_ > 3; \
+                                           return @_; }
 
-And, if somewhere in the C<main> package, we've got a function like
+The inspection subroutine defined by the C<warp_message> 
+property will receive the list of message chunks, like they were
+passed to the logger and is expected to return a corrected list.
+The example above simply limits the argument list to a maximum of
+three by cutting off excess elements and returning the shortened list.
+
+Also, the warp function can be specified by name like in
+
+    log4perl.appender.A1.layout=NoopLayout
+    log4perl.appender.SomeApp.warp_message = main::filter_my_message
+
+In this example,
+C<filter_my_message> is a function in the C<main> package, 
+defined like this:
 
     my $COUNTER = 0;
 
@@ -410,16 +436,10 @@ And, if somewhere in the C<main> package, we've got a function like
         return \@chunks;
     }
 
-then the subroutine above will add an ever increasing counter
+The subroutine above will add an ever increasing counter
 as an additional first field to 
 every message passed to the C<SomeApp> appender -- but not to
 any other appender in the system.
-
-The inspection subroutine defined by the C<filter_message> 
-property will receive a reference to
-an array of message chunks and is expected to return a reference
-to an array of corrected message chunks. It is free to remove, add
-or modify any elements.
 
 =head1 SEE ALSO
 

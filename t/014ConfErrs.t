@@ -187,9 +187,10 @@ log4j.category.simplelayout.test=\\
 
 log4j.appender.myAppender        \\
                     = Log::Log4perl::Appender::TestBuffer
+    #this is stupid, I know
 log4j.appender.myAppender.layout = Log::Log4perl::Lay\\
                         out::SimpleL\\
-                            ayout     #this is stupid, I know
+                            ayout     
 log4j.appender.myAppender.File   = $testfile
 EOL
 

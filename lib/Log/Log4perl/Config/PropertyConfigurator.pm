@@ -15,20 +15,20 @@ sub parse {
 
     while (@$text) {
         $_ = shift @$text;
-        s/#.*//;
+        s/^\s*#.*//;
         next unless /\S/;
     
         while (/(.+?)\\\s*$/) {
             my $prev = $1;
             my $next = shift(@$text);
             $next =~ s/^ +//g;  #leading spaces
-            $next =~ s/#.*//;
+            $next =~ s/^#.*//;
             $_ = $prev. $next;
             chomp;
         }
         if(my($key, $val) = /(\S+?)\s*=\s*(.*)/) {
             $val =~ s/\s+$//;
-            $val = eval_if_perl($val) if $key !~ /\.cspec\./;
+            $val = eval_if_perl($val) if $key !~ /\.(cspec\.)|warp_message/;
             $key = unlog4j($key);
             my $how_deep = 0;
             my $ptr = $data;
