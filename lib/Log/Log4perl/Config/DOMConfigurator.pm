@@ -36,6 +36,8 @@ sub parse {
              &parse_appender($l4p_tree, $kid);
          }elsif ($tag_name eq 'category'){
              &parse_category($l4p_tree, $kid);
+         }elsif ($tag_name eq 'root'){
+             &parse_root($l4p_tree, $kid);
          }
      }
     
@@ -45,14 +47,34 @@ sub parse {
 
 }
 
+sub parse_root {
+    my ($l4p_tree, $node) = @_;
+
+    my $l4p_branch = {};
+
+    &parse_children_of_logger_element($l4p_branch, $node);
+
+    $l4p_tree->{category}{value} = $l4p_branch->{value};#inconsistent--fix later (kg)
+
+}
+   
 
 sub parse_category {
     my ($l4p_tree, $node) = @_;
 
     my $name = $node->getAttribute('name');
 
+    $l4p_tree->{category} ||= {};
+ 
+    my $ptr = $l4p_tree->{category};
 
-    my $l4p_branch = {};
+    for my $part (split /\.|::/, $name) {
+        $ptr->{$part} = {} unless exists $ptr->{$part};
+        $ptr = $ptr->{$part};
+        #++$how_deep;
+    }
+
+    my $l4p_branch = $ptr;
 
     my $class = $node->getAttribute('class');
     $class                       && 
@@ -65,7 +87,7 @@ sub parse_category {
 
     &parse_children_of_logger_element($l4p_branch, $node);
 
-    $l4p_tree->{category}{$name} = $l4p_branch;
+    $ptr  = $l4p_branch;
 }
 
 sub parse_children_of_logger_element {
@@ -93,7 +115,7 @@ sub parse_children_of_logger_element {
             $priority = &parse_priority($child);
         }
     }
-    $l4p_branch->{value} = $priority.', '.join(', ', @appenders);
+    $l4p_branch->{value} = $priority.', '.join(',', @appenders);
 }
 
 
@@ -174,8 +196,8 @@ sub parse_layout {
         if ($child->getTagName() eq 'param') {
             my $name = $child->getAttribute('name');
             my $value = $child->getAttribute('value');
-            $layout_tree->{$name} = $value;
             print "\tgot param $name = $value\n"  if DEBUG;
+            $layout_tree->{$name}{value} = $value;  #DEBUG!!! --is this right in cases other than ConversionPattern?
         }
     }
     return $layout_tree;
