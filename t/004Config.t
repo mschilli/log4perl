@@ -28,14 +28,11 @@ $logger->debug("Gurgel");
 
 ok($Log::Log4perl::TestBuffer::POPULATION[0]->buffer(), 
    'm#^\d+\s+\[N/A\] DEBUG  N/A - Gurgel$#'); 
-#print "BUFFER= '", $Log::Log4perl::TestBuffer::POPULATION[0]->buffer(), "'\n";
 
 ######################################################################
 # Test the root logger via inheritance (discovered by Kevin Goess)
 ######################################################################
-Log::Log4perl->reset();
-
-$Log::Log4perl::TestBuffer::POPULATION[0]->buffer('');
+Log::Log4perl::TestBuffer->reset();
 
 Log::Log4perl->init("$EG_DIR/log4j-manual-1.conf");
 
@@ -44,4 +41,3 @@ $logger->debug("Gurgel");
 
 ok($Log::Log4perl::TestBuffer::POPULATION[0]->buffer(),
     'm#^\d+\s+\[N/A\] DEBUG foo N/A - Gurgel$#'); 
-#print "BUFFER= '", $Log::Log4perl::TestBuffer::POPULATION[1]->buffer(), "'\n";
