@@ -191,7 +191,7 @@ sub generate_coderef {
       my (\$level)   = pop;
       my \$message;
 
-      \$message = join('', map { ref \$_ eq "CODE" ? \$_->() : \$_ || '' } \@_);
+      \$message = join('', map { ref \$_ eq "CODE" ? \$_->() : defined \$_ ? \$_ : '' } \@_);
       
       print("coderef: \$logger->{category}\n") if DEBUG;
 
