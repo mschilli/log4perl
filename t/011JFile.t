@@ -4,7 +4,7 @@ use Test;
 my $WORK_DIR = 't/tmp';
 our @outfiles = ("$WORK_DIR/test2.log",);
 unless (-e "$WORK_DIR"){
-    mkdir "$WORK_DIR" || die "can't create $WORK_DIR $!";
+    mkdir("$WORK_DIR", 0644) || die "can't create $WORK_DIR $!";
 }
 foreach my $f (@outfiles){
     unlink $f if (-e $f);
