@@ -1074,6 +1074,18 @@ config file, but note that your config file probably won't be
 portable to another log4perl or log4j environment unless you've
 made the appropriate mods there too.
 
+=head2 System-wide log levels
+
+As a fairly drastic measure to decrease (or increase) the logging level
+all over the system with one single configuration option, use the C<threshold>
+keyword in the Log4perl configuration file:
+
+    log4perl.threshold = ERROR
+
+sets the system-wide (or hierarchy-wide according to the log4j documentation)
+to ERROR and therefore deprives every logger in the system of the right 
+to log lower-prio messages.
+
 =head2 Easy Mode
 
 For teaching purposes (especially for [1]), I've put C<:easy> mode into 
