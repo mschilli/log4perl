@@ -85,7 +85,7 @@ DESCRIPTION
 
 How to use it
     The "Log::Log4perl" package can be initialized in two ways: Either via
-    Perl commands or via a "lib4j"-style configuration file.
+    Perl commands or via a "log4j"-style configuration file.
 
   Initialize via a configuration file
     This is the easiest way to prepare your system for using

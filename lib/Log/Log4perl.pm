@@ -323,7 +323,7 @@ while it's running!
 =head1 How to use it
 
 The C<Log::Log4perl> package can be initialized in two ways: Either
-via Perl commands or via a C<lib4j>-style configuration file.
+via Perl commands or via a C<log4j>-style configuration file.
 
 =head2 Initialize via a configuration file
 
