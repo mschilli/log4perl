@@ -11,7 +11,7 @@ use Log::Log4perl::Level;
 use Log::Log4perl::Config;
 use Log::Log4perl::Appender;
 
-use constant DEBUG => 1;
+use constant _INTERNAL_DEBUG => 1;
 
 our $VERSION = '0.37';
 

@@ -9,7 +9,7 @@ use warnings;
 use Log::Log4perl::Level;
 use Log::Log4perl::Config;
 
-use constant DEBUG => 0;
+use constant _INTERNAL_DEBUG => 0;
 
 our $unique_counter = 0;
 
@@ -99,7 +99,7 @@ sub threshold { # Set/Get the appender threshold
 ##################################################
     my ($self, $level) = @_;
 
-    print "Setting threshold to $level\n" if DEBUG;
+    print "Setting threshold to $level\n" if _INTERNAL_DEBUG;
 
     if(defined $level) {
         # Checking for \d makes for a faster regex(p)
@@ -123,7 +123,7 @@ sub log {
     # of an "appender threshold"
     if($self->{level} > $
                         Log::Log4perl::Level::PRIORITY{$level}) {
-        print "$self->{level} > $level, aborting\n" if DEBUG;
+        print "$self->{level} > $level, aborting\n" if _INTERNAL_DEBUG;
         return undef;
     }
 
@@ -134,9 +134,9 @@ sub log {
         if($self->{filter}->ok(%$p,
                                log4p_category => $category,
                                log4p_level    => $level )) {
-            print "Filter $self->{filter}->{name} passes\n" if DEBUG;
+            print "Filter $self->{filter}->{name} passes\n" if _INTERNAL_DEBUG;
         } else {
-            print "Filter $self->{filter}->{name} blocks\n" if DEBUG;
+            print "Filter $self->{filter}->{name} blocks\n" if _INTERNAL_DEBUG;
             return undef;
         }
     }
@@ -222,7 +222,7 @@ sub filter { # Set filter
     my ($self, $filter) = @_;
 
     if($filter) {
-        print "Setting filter to $filter->{name}\n" if DEBUG;
+        print "Setting filter to $filter->{name}\n" if _INTERNAL_DEBUG;
         $self->{filter} = $filter;
     }
 

@@ -10,7 +10,7 @@ use warnings;
 use Log::Log4perl::Level;
 use Log::Log4perl::Config;
 
-use constant DEBUG => 0;
+use constant _INTERNAL_DEBUG => 0;
 
 use base qw(Log::Log4perl::Filter);
 
@@ -38,10 +38,10 @@ sub ok {
      my ($self, %p) = @_;
 
      if($self->{LevelToMatch} eq $p{log4p_level}) {
-         print "Levels match\n" if DEBUG;
+         print "Levels match\n" if _INTERNAL_DEBUG;
          return $self->{AcceptOnMatch};
      } else {
-         print "Levels don't match\n" if DEBUG;
+         print "Levels don't match\n" if _INTERNAL_DEBUG;
          return !$self->{AcceptOnMatch};
      }
 }

@@ -10,7 +10,7 @@ use warnings;
 use Log::Log4perl::Level;
 use Log::Log4perl::Config;
 
-use constant DEBUG => 0;
+use constant _INTERNAL_DEBUG => 0;
 
 use base "Log::Log4perl::Filter";
 

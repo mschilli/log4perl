@@ -18,7 +18,7 @@ use XML::DOM;
 use Log::Log4perl::Level;
 use strict;
 
-use constant DEBUG => 0;
+use constant _INTERNAL_DEBUG => 0;
 
 our $VERSION = 0.03;
 
@@ -229,7 +229,7 @@ sub parse_appender {
 
     $l4p_branch->{value} = $class;
 
-    print "looking at $name----------------------\n"  if DEBUG;
+    print "looking at $name----------------------\n"  if _INTERNAL_DEBUG;
 
     for my $child ($node->getChildNodes) {
         next unless $child->getNodeType == ELEMENT_NODE;
@@ -275,7 +275,7 @@ sub parse_any_param {
     my $name = $child->getAttribute('name');
     my $value;
 
-    print "parse_any_param: <$tag_name name=$name\n" if DEBUG;
+    print "parse_any_param: <$tag_name name=$name\n" if _INTERNAL_DEBUG;
 
     #<param-nested>
     #note we don't set it to { value => $value }
@@ -294,7 +294,8 @@ sub parse_any_param {
 
          $value = $child->getAttribute('value');
 
-         print "parse_param_nested: got param $name = $value\n"  if DEBUG;
+         print "parse_param_nested: got param $name = $value\n"  
+             if _INTERNAL_DEBUG;
         
          if ($value =~ /^(all|debug|info|warn|error|fatal|off|null)$/) {
              $value = uc $value;
@@ -360,7 +361,7 @@ sub parse_layout {
     
     $layout_tree->{value} = $class_name;
     #
-    print "\tparsing layout $class_name\n"  if DEBUG;  
+    print "\tparsing layout $class_name\n"  if _INTERNAL_DEBUG;  
     for my $child ($node->getChildNodes) {
         next unless $child->getNodeType == ELEMENT_NODE;
         if ($child->getTagName() eq 'param') {
@@ -369,7 +370,8 @@ sub parse_layout {
             if ($value =~ /^(all|debug|info|warn|error|fatal|off|null)$/) {
                 $value = uc $value;
             }
-            print "\tparse_layout: got param $name = $value\n"  if DEBUG;
+            print "\tparse_layout: got param $name = $value\n"
+                if _INTERNAL_DEBUG;
             $layout_tree->{$name}{value} = $value;  
 
         }elsif ($child->getTagName() eq 'cspec') {

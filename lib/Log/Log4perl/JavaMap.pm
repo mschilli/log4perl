@@ -3,7 +3,7 @@ package Log::Log4perl::JavaMap;
 use Carp;
 use strict;
 
-use constant DEBUG => 0;
+use constant _INTERNAL_DEBUG => 0;
 
 our %translate = (
     'org.apache.log4j.ConsoleAppender' => 
@@ -27,7 +27,7 @@ our %user_defined;
 sub get {
     my ($appender_name, $appender_data) = @_;
 
-    print "Trying to map $appender_name\n" if DEBUG;
+    print "Trying to map $appender_name\n" if _INTERNAL_DEBUG;
 
     $appender_data->{value} ||
             die "ERROR: you didn't tell me how to implement your appender " .

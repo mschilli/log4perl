@@ -9,7 +9,7 @@ use warnings;
 
 use Log::Log4perl::Config;
 
-use constant DEBUG => 0;
+use constant _INTERNAL_DEBUG => 0;
 
 use base "Log::Log4perl::Filter";
 
@@ -18,7 +18,7 @@ sub new {
 ##################################################
      my ($class, %options) = @_;
 
-     print join('-', %options) if DEBUG;
+     print join('-', %options) if _INTERNAL_DEBUG;
 
      my $self = { StringToMatch => '',
                   AcceptOnMatch => 1,
@@ -44,10 +44,11 @@ sub ok {
                      Log::Log4perl::JOIN_MSG_ARRAY_CHAR, @{$p{message}};
 
      if($_ =~ $self->{StringToMatch}) {
-         print "Strings match\n" if DEBUG;
+         print "Strings match\n" if _INTERNAL_DEBUG;
          return $self->{AcceptOnMatch};
      } else {
-         print "Strings don't match ($_/$self->{StringToMatch})\n" if DEBUG;
+         print "Strings don't match ($_/$self->{StringToMatch})\n" 
+             if _INTERNAL_DEBUG;
          return !$self->{AcceptOnMatch};
      }
 }

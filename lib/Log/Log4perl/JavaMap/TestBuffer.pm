@@ -4,7 +4,7 @@ use Carp;
 use strict;
 use Log::Log4perl::Appender::TestBuffer;
 
-use constant DEBUG => 0;
+use constant _INTERNAL_DEBUG => 0;
 
 sub new {
     my ($class, $appender_name, $data) = @_;

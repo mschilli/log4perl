@@ -9,7 +9,7 @@ use warnings;
 use Log::Log4perl::Level;
 use Log::Log4perl::Config;
 
-use constant DEBUG => 0;
+use constant _INTERNAL_DEBUG => 0;
 
 our %FILTERS_DEFINED = ();
 
@@ -18,7 +18,7 @@ sub new {
 ##################################################
     my($class, $name, $action) = @_;
   
-    print "Creating filter $name\n" if DEBUG;
+    print "Creating filter $name\n" if _INTERNAL_DEBUG;
 
     my $self = { name => $name };
     bless $self, $class;
@@ -70,7 +70,7 @@ sub ok {
 ##################################################
     my($self, %p) = @_;
 
-    print "Calling $self->{name}'s ok method\n" if DEBUG;
+    print "Calling $self->{name}'s ok method\n" if _INTERNAL_DEBUG;
 
         # Force filter classes to define their own
         # ok(). Exempt are only sub {..} ok functions,
@@ -86,12 +86,12 @@ sub ok {
         # Split because of CVS
     local($_) = join $
                      Log::Log4perl::JOIN_MSG_ARRAY_CHAR, @{$p{message}};
-    print "\$_ is '$_'\n" if DEBUG;
+    print "\$_ is '$_'\n" if _INTERNAL_DEBUG;
 
     my $decision = $self->{ok}->(%p);
 
     print "$self->{name}'s ok'ed: ", 
-          ($decision ? "yes" : "no"), "\n" if DEBUG;
+          ($decision ? "yes" : "no"), "\n" if _INTERNAL_DEBUG;
 
     return $decision;
 }

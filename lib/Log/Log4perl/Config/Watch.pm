@@ -5,7 +5,7 @@ use strict;
 
 package Log::Log4perl::Config::Watch;
 
-use constant DEBUG => 0;
+use constant _INTERNAL_DEBUG => 0;
 
 our $NEXT_CHECK_TIME;
 our $SIGNAL_CAUGHT;
@@ -69,12 +69,12 @@ sub change_detected {
 
     $time = time() unless defined $time;
 
-    print "Calling change_detected (time=$time)\n" if DEBUG;
+    print "Calling change_detected (time=$time)\n" if _INTERNAL_DEBUG;
 
         # Do we need to check?
     if($self->{_last_checked_at} + 
        $self->{check_interval} > $time) {
-        print "No need to check\n" if DEBUG;
+        print "No need to check\n" if _INTERNAL_DEBUG;
         return ""; # don't need to check, return false
     }
        
@@ -87,12 +87,12 @@ sub change_detected {
 
     if($new_timestamp > $self->{_last_timestamp}) {
         $self->{_last_timestamp} = $new_timestamp;
-        print "Change detected (store=$new_timestamp)!\n" if DEBUG;
+        print "Change detected (store=$new_timestamp)!\n" if _INTERNAL_DEBUG;
         return 1; # Has changed
     }
        
     print "Hasn't changed (file=$new_timestamp ",
-          "stored=$self->{_last_timestamp})!\n" if DEBUG;
+          "stored=$self->{_last_timestamp})!\n" if _INTERNAL_DEBUG;
     return "";  # Hasn't changed
 }
 

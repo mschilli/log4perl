@@ -10,7 +10,7 @@ use warnings;
 use Log::Log4perl::Level;
 use Log::Log4perl::Config;
 
-use constant DEBUG => 0;
+use constant _INTERNAL_DEBUG => 0;
 
 use base qw(Log::Log4perl::Filter);
 
@@ -25,7 +25,7 @@ sub new {
      
     bless $self, $class;
      
-    print "Compiling '$options{logic}'\n" if DEBUG;
+    print "Compiling '$options{logic}'\n" if _INTERNAL_DEBUG;
 
         # Set up meta-decider for later
     $self->compile_logic($options{logic});
@@ -73,7 +73,7 @@ sub compile_logic {
         }
 EOT
 
-    print "func=$func\n" if DEBUG;
+    print "func=$func\n" if _INTERNAL_DEBUG;
 
     my $eval_func = eval $func;
 
@@ -96,14 +96,14 @@ sub eval_logic {
         # not predictable, it is consistent :)
     for my $param (keys %{$self->{params}}) {
             # Call ok() and map the result to 1 or 0
-        print "Calling filter $param\n" if DEBUG;
+        print "Calling filter $param\n" if _INTERNAL_DEBUG;
         push @plist, ($self->{params}->{$param}->ok(%$p) ? 1 : 0);
     }
 
         # Now pipe the parameters into the canned function,
         # have it evaluate the logic and return the final
         # decision
-    print "Passing in (", join(', ', @plist), ")\n" if DEBUG;
+    print "Passing in (", join(', ', @plist), ")\n" if _INTERNAL_DEBUG;
     return $self->{eval_func}->(@plist);
 }
 

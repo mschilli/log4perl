@@ -12,7 +12,7 @@ use Log::Log4perl::Appender;
 use Log::Log4perl::Filter;
 use Carp;
 
-use constant DEBUG => 0;
+use constant _INTERNAL_DEBUG => 0;
 
     # Initialization
 our $ROOT_LOGGER;
@@ -64,7 +64,7 @@ sub _new {
     my($class, $category, $level) = @_;
 
     print("_new: $class/$category/", defined $level ? $level : "undef",
-          "\n") if DEBUG;
+          "\n") if _INTERNAL_DEBUG;
 
     die "usage: __PACKAGE__->_new(category)" unless
         defined $category;
@@ -73,7 +73,7 @@ sub _new {
 
        # Have we created it previously?
     if(exists $LOGGERS_BY_NAME->{$category}) {
-        print "_new: exists already\n" if DEBUG;
+        print "_new: exists already\n" if _INTERNAL_DEBUG;
         return $LOGGERS_BY_NAME->{$category};
     }
 
@@ -100,7 +100,7 @@ sub _new {
 ##################################################
 sub reset_all_output_methods {
 ##################################################
-    print "reset_all_output_methods: \n" if DEBUG;
+    print "reset_all_output_methods: \n" if _INTERNAL_DEBUG;
 
     foreach my $loggername ( keys %$LOGGERS_BY_NAME){
         $LOGGERS_BY_NAME->{$loggername}->set_output_methods;
@@ -122,7 +122,7 @@ sub set_output_methods {
 
    my ($level) = $self->level();
 
-   print "set_output_methods: $self->{category}/$level\n" if DEBUG;
+   print "set_output_methods: $self->{category}/$level\n" if _INTERNAL_DEBUG;
 
    #collect the appenders in effect for this category    
 
@@ -157,12 +157,12 @@ sub set_output_methods {
 						   $priority{$levelname}
 						   )) {
             print "  ($priority{$levelname} <= $level)\n"
-                  if DEBUG;
+                  if _INTERNAL_DEBUG;
             $self->{$levelname}      = $coderef;
             $self->{"is_$levelname"} = generate_is_xxx_coderef("1");
             #$self->{"is_$levelname"} = sub { 1 };
         }else{
-            print "  ($priority{$levelname} > $level)\n" if DEBUG;
+            print "  ($priority{$levelname} > $level)\n" if _INTERNAL_DEBUG;
             $self->{$levelname}      = $noop;
             $self->{"is_$levelname"} = generate_is_xxx_coderef("0");
             #$self->{"is_$levelname"} = sub { 0 };
@@ -171,7 +171,7 @@ sub set_output_methods {
         print("  Setting [$self] $self->{category}.$levelname to ",
               ($self->{$levelname} == $noop ? "NOOP" : 
               ("Coderef [$coderef]: " . scalar @appenders . " appenders")), 
-              "\n") if DEBUG;
+              "\n") if _INTERNAL_DEBUG;
     }
 }
 
@@ -181,7 +181,7 @@ sub generate_coderef {
     my $appenders = shift;
                     
     print "generate_coderef: ", scalar @$appenders, 
-          " appenders\n" if DEBUG;
+          " appenders\n" if _INTERNAL_DEBUG;
 
     my $coderef = '';
     my $watch_delay_code = '';
@@ -219,7 +219,7 @@ sub generate_coderef {
                                \$_->() : \$_ 
                           } \@_];                  
       
-      print("coderef: \$logger->{category}\n") if DEBUG;
+      print("coderef: \$logger->{category}\n") if _INTERNAL_DEBUG;
 
       $watch_delay_code;  #note interpolation here
       
@@ -227,7 +227,7 @@ sub generate_coderef {
           my (\$appender_name, \$appender) = \@\$a;
 
           print("  Sending message '<\$message>' (\$level) " .
-                "to \$appender_name\n") if DEBUG;
+                "to \$appender_name\n") if _INTERNAL_DEBUG;
                 
           \$appender->log(
               #these get passed through to Log::Dispatch
@@ -272,7 +272,7 @@ EOL
 
     my $code = <<EOL;
     \$coderef = sub {
-        print("noop: \n") if DEBUG;
+        print("noop: \n") if _INTERNAL_DEBUG;
         $watch_delay_code
         return undef;
      };
@@ -317,12 +317,12 @@ EOL
 ##################################################
 sub generate_watch_code {
 ##################################################
-    print "generate_watch_code:\n" if DEBUG;
+    print "generate_watch_code:\n" if _INTERNAL_DEBUG;
 
     my $cond = generate_watch_conditional();
 
     return <<EOL;
-        print "exe_watch_code:\n" if DEBUG;
+        print "exe_watch_code:\n" if _INTERNAL_DEBUG;
                        
         # more closures here
         if($cond) {
@@ -592,7 +592,7 @@ sub create_custom_level {
 
   Log::Log4perl::Level::add_priority($level, $cust_prio, $syslog_equiv);
 
-  print("Adding prio $level at $cust_prio\n") if DEBUG;
+  print("Adding prio $level at $cust_prio\n") if _INTERNAL_DEBUG;
 
   # get $LEVEL into namespace of Log::Log4perl::Logger to 
   # create $logger->foo nd $logger->is_foo
@@ -633,7 +633,8 @@ sub create_log_level_methods {
   # -erik
 
   *{__PACKAGE__ . "::$lclevel"} = sub {
-        print "$lclevel: ($_[0]->{category}/$_[0]->{level}) [@_]\n" if DEBUG;
+        print "$lclevel: ($_[0]->{category}/$_[0]->{level}) [@_]\n" 
+            if _INTERNAL_DEBUG;
         init_warn() unless $INITIALIZED;
         $_[0]->{$level}->(@_, $level);
      };
