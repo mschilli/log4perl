@@ -103,7 +103,7 @@ $log = get_logger();
 eval { LOGDIE("logdie"); };
 
 like($@, qr/logdie at .*?020Easy.t line 103/);
-like(readstderr(), qr/^[\d:\/ ]+logdie$/);
+like(readstderr(), qr/^[\d:\/ ]+logdie$/m);
 
 LOGWARN("logwarn");
 like(readstderr(), qr/logwarn/);
