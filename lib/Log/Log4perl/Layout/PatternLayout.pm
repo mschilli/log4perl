@@ -65,10 +65,11 @@ sub new {
     my ($data) = @_;
 
     my ($layout_string);
-     
+
     if (ref $data && !exists $data->{ConversionPattern}{value} or
         !defined $data) {
-        die "No ConversionPattern given for PatternLayout\n";
+        #die "No ConversionPattern given for PatternLayout\n";
+        $layout_string = '%m%n';  #this is better per http://jakarta.apache.org/log4j/docs/api/org/apache/log4j/PatternLayout.html
     } elsif (ref $data) {
         $layout_string = $data->{ConversionPattern}{value};
     } else {
@@ -80,6 +81,7 @@ sub new {
         info_needed => {},
         stack       => [],
         CSPECS      => $CSPECS,
+        dontCollapseArrayRefs => $data->{dontCollapseArrayRefs}{value},
     };
 
     bless $self, $class;
@@ -156,6 +158,14 @@ sub rep {
 sub render {
 ##################################################
     my($self, $message, $category, $priority, $caller_level) = @_;
+
+    if (ref $message eq 'ARRAY' ) {
+        if ($self->{dontCollapseArrayRefs}) {
+            return $message;
+        }else{
+            $message = join($Log::Log4perl::JOIN_ARRAYREFS_CHAR, @$message);
+        }
+    }
 
     $caller_level = 0 unless defined  $caller_level;
 
@@ -246,7 +256,7 @@ sub render {
         }
     }
 
-    #print STDERR "sprintf $self->{printformat}\n";
+    #print STDERR "sprintf $self->{printformat}--$results[0]--\n";
 
     return (sprintf $self->{printformat}, @results);
 }
