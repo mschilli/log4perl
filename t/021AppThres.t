@@ -11,7 +11,7 @@ use Test;
 use Log::Log4perl qw(get_logger);
 use Log::Log4perl::Level;
 
-BEGIN { plan tests => 9 }
+BEGIN { plan tests => 12 }
 
 ok(1); # If we made it this far, we're ok.
 
@@ -97,3 +97,56 @@ $loga->error("Yeah, loga");
 
 ok($app0->buffer(), "ERROR - Yeah, loga\n");
 ok($app1->buffer(), "ERROR - Yeah, loga\n");
+
+##################################################
+# Appender threshold with config file and a Java
+# Class
+##################################################
+# Reset appender population
+Log::Log4perl::TestBuffer->reset();
+
+$conf = <<EOT;
+log4j.logger   = ERROR, BUF0
+log4j.logger.a = INFO, BUF1
+log4j.appender.BUF0           = org.apache.log4j.TestBuffer
+log4j.appender.BUF0.layout    = SimpleLayout
+log4j.appender.BUF0.Threshold = ERROR
+log4j.appender.BUF1           = org.apache.log4j.TestBuffer
+log4j.appender.BUF1.layout    = SimpleLayout
+log4j.appender.BUF1.Threshold = WARN
+EOT
+
+Log::Log4perl::init(\$conf);
+
+$app0 = Log::Log4perl::TestBuffer->by_name("BUF0");
+$app1 = Log::Log4perl::TestBuffer->by_name("BUF1");
+
+$loga = get_logger("a");
+
+$loga->info("Don't want to see this");
+$loga->error("Yeah, loga");
+
+ok($app0->buffer(), "ERROR - Yeah, loga\n");
+ok($app1->buffer(), "ERROR - Yeah, loga\n");
+
+##################################################
+# 'threshold' vs. 'Threshold'
+##################################################
+$conf = <<EOT;
+log4j.logger   = ERROR, BUF0
+log4j.logger.a = INFO, BUF1
+log4j.appender.BUF0           = org.apache.log4j.TestBuffer
+log4j.appender.BUF0.layout    = SimpleLayout
+log4j.appender.BUF0.Threshold = ERROR
+log4j.appender.BUF1           = org.apache.log4j.TestBuffer
+log4j.appender.BUF1.layout    = SimpleLayout
+log4j.appender.BUF1.threshold = WARN
+EOT
+
+eval { Log::Log4perl::init(\$conf); };
+
+if($@) {
+    ok($@, '/uppercase/');
+} else {
+    ok(0);
+}
