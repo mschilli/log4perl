@@ -2,6 +2,9 @@
 Revision history for Log::Log4perl
 ##################################################
 
+    * (kg) fixed bug Appender::DBI where it was consuming the message
+           array before other appenders could get to it
+
 0.30 03/14/2003
     * (ms) Added Log4perl custom filter logic and standard filter set
     * (kg) Added url support to init(), finally documenting it

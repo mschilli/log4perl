@@ -146,6 +146,8 @@ sub calculate_bind_values {
     my @qmarks;
     my $user_ph_idx = 0;
 
+    my $i=0;
+    
     if ($self->{bind_value_layouts}) {
 
         my $prev_pnum = 0;
@@ -173,7 +175,8 @@ sub calculate_bind_values {
                #we don't have a bind_value_layout, so get
                #a message bit
             }elsif (ref $p->{message} eq 'ARRAY' && @{$p->{message}}){
-                $msg = shift @{$p->{message}};
+                #$msg = shift @{$p->{message}};
+                $msg = $p->{message}->[$i++];
 
                #here handle cases where we ran out of message bits
                #before we ran out of bind_value_layouts, just keep going
@@ -199,7 +202,9 @@ sub calculate_bind_values {
 
     #handle leftovers
     if (ref $p->{message} eq 'ARRAY' && @{$p->{message}} ) {
-        push @qmarks, @{$p->{message}};
+        #push @qmarks, @{$p->{message}};
+        push @qmarks, @{$p->{message}}[$i..@{$p->{message}}-1];
+
     }
 
     return \@qmarks;
