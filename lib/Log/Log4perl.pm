@@ -307,7 +307,7 @@ has to at least match the priority of the logging message.
 
 If your configured logging level is C<WARN>, then messages logged 
 with C<info()> and C<debug()> message will be suppressed. 
-C<fatal()>, C<error()> and C<warn()> will make their way, though,
+C<fatal()>, C<error()> and C<warn()> will make their way through,
 because their priority is higher or equal than the configured setting.
 
 Instead of calling the methods
@@ -334,16 +334,31 @@ levels than these predefined ones. If you think you do, I would
 suggest you look into steering your logging behaviour via
 the category mechanism.
 
-The constants defined in C<Log::Log4perl::Level>
-will come in handy later, however, when we want to block unnecessary
-expensive parameter construction in case the logging level is too
-low to log anyway like in:
+If you need to find out if the currently configured logging
+level would allow a logger's logging statement to go through, use the
+logger's C<is_I<level>()> methods:
 
-    if($logger->level() >= $ERROR) {
+    $logger->is_debug()    # True if debug messages would go through
+    $logger->is_info()     # True if info messages would go through
+    $logger->is_warn()     # True if warn messages would go through
+    $logger->is_error()    # True if error messages would go through
+    $logger->is_fatal()    # True if fatal messages would go through
+
+Example: C<$logger-E<gt>is_warn()> returns true if the logger's current
+level, as derived from either the logger's category (or, in absence of
+that, one of the logger's parent's level setting) is 
+C<$WARN>, C<$ERROR> or C<$FATAL>.
+
+These level checking functions
+will come in handy later, when we want to block unnecessary
+expensive parameter construction in case the logging level is too
+low to log the statement anyway, like in:
+
+    if($logger->is_error()) {
         $logger->error("Erroneous array: @super_long_array");
     }
 
-If we just had written
+If we had just written
 
     $logger->error("Erroneous array: @super_long_array");
 
