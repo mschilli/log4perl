@@ -25,11 +25,14 @@ if(-d $PPM_DIR) {
     rmtree $PPM_DIR or LOGDIE("Cannot delete $PPM_DIR");
 }
 
+my ($log4perl_tarball) = <../Log-Log4perl-*.tar.gz>;
+LOGDIE("No tarball for Log4perl found") unless defined $log4perl_tarball;
+
 mkdir $PPM_DIR, 0755 or LOGDIE("Cannot mkdir $PPM_DIR");
 
 doall("Log::Dispatch", "DROLSKY");
 doall("Params::Validate", "DROLSKY");
-ppm_make("Log::Log4perl", <../Log-Log4perl-*.tar.gz>);
+ppm_make("Log::Log4perl", $log4perl_tarball);
 
 ###########################################
 sub doall {
@@ -87,16 +90,18 @@ sub ppm_make {
 ###########################################
     my($module, $file) = @_;
 
+    DEBUG("ppm_make $module $file");
+
     (my $mod_dir = $module) =~ s/::/-/g;
 
     my @files = ();
 
-    open PIPE, "$TAR ztf $file |" or LOGDIE("Can't open $TAR");
+    open PIPE, "$TAR ztf $file |" or LOGDIE("Can't open $TAR ($!)");
     while(<PIPE>) {
         chomp;
         push @files, $_;
     }
-    close PIPE or LOGDIE("Can't untar $file");
+    close PIPE or LOGDIE("Can't untar $file ($!)");
 
     DEBUG("Archive contains ", scalar @files, " files");
 

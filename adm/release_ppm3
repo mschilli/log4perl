@@ -7,10 +7,10 @@ use warnings;
 use strict;
 
 # Win32 package
-system("cd adm; rm -f ppm3; ./mkppm; mv ppm ppm3; tar zcfv ppm3.tgz ppm3");
+system("rm -f ppm3; mv ppm ppm3; tar zcfv ppm3.tgz ppm3");
 
 print "Copying ppm to log4perl.sourceforge.net ...\n";
-system("scp ppm.tgz log4perl.sourceforge.net:");
+system("scp ppm3.tgz log4perl.sourceforge.net:");
 
 print "Releasing it on sourceforge.net ...\n";
-system("ssh log4perl.sourceforge.net bin/relppm\n");
+system("ssh log4perl.sourceforge.net bin/relppm3\n");
