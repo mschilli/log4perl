@@ -860,7 +860,7 @@ replaced by the logging engine when it's time to log the message:
     %P pid of the current process
     %r Number of milliseconds elapsed from program start to logging 
        event
-    %x The topmost NDC (see below)
+    %x The elements of the NDC stack (see below)
     %X{key} The entry 'key' of the MDC (see below)
     %% A literal percent (%) sign
 
@@ -1424,34 +1424,52 @@ whatsoever.
 
 If you find that your application could use a global (thread-specific)
 data stack which your loggers throughout the system have easy access to,
-use Nested Diagnostic Contexts (NDCs).
+use Nested Diagnostic Contexts (NDCs). Also check out
+L<"Mapped Diagnostic Context (MDC)">, this might turn out to be even more
+useful.
 
 For example, when handling a request of a web client, it's probably 
 useful to have the user's IP address available in all log statements
 within code dealing with this particular request. Instead of passing
-this piece of data between your application functions, you can just
+this piece of data around between your application functions, you can just
 use the global (but thread-specific) NDC mechanism. It allows you
 to push data pieces (scalars usually) onto its stack via
 
-    Log::Log4perl::NDC->push("data piece");
+    Log::Log4perl::NDC->push("San");
+    Log::Log4perl::NDC->push("Francisco");
 
 and have your loggers retrieve them again via the "%x" placeholder in
-the PatternLayout. The stack mechanism allows for nested structures.
-Just make sure that at the end of the request, you decrease the stack
-by calling
+the PatternLayout. With the stack values above and a PatternLayout format
+like "%x %m%n", the call
+
+    $logger->debug("rocks");
+
+will end up as 
+
+    San Francisco rocks
+
+in the log appender.
+
+The stack mechanism allows for nested structures.
+Just make sure that at the end of the request, you either decrease the stack
+one by one by calling
 
     Log::Log4perl::NDC->pop();
+    Log::Log4perl::NDC->pop();
 
-Even if you should forget to do that, C<Log::Log4perl> won't grow the stack
-indefinitely, but limit it to a maximum, defined in C<Log::Log4perl::NDC>.
-
-To clear out the NDC stack, just call
+or clear out the entire NDC stack by calling
 
     Log::Log4perl::NDC->remove();
 
-Again, the top of the stack is always available via the "%x" placeholder
+Even if you should forget to do that, C<Log::Log4perl> won't grow the stack
+indefinitely, but limit it to a maximum, defined in C<Log::Log4perl::NDC>
+(currently 5). A call to C<push()> on a full stack will just replace
+the topmost element by the new value.
+
+Again, the stack is always available via the "%x" placeholder
 in the Log::Log4perl::Layout::PatternLayout class whenever a logger
-fires. What it does is just call
+fires. It will replace "%x" by the blank-separated list of the
+values on the stack. It does that by just calling
 
     Log::Log4perl::NDC->get();
 

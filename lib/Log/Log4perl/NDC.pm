@@ -72,8 +72,8 @@ onto the stack to provide it for other loggers down the road without
 having to pass the data from function to function.
 
 The Log::Log4perl::Layout::PatternLayout class even provides the handy
-C<%x> placeholder which is replaced with whatever is on top of the NBC stack
-at the time.
+C<%x> placeholder which is replaced by the blank-separated list
+of elements currently on the stack.
 
 This module maintains a simple stack which you can push data on to, query
 what's on top, pop it off again or delete the entire stack.
@@ -90,7 +90,9 @@ global data is by definition thread-specific.
 =item Log::Log4perl::NDC->push($text);
 
 Push an item onto the stack. If the stack grows beyond the defined
-limit (C<$Log::Log4perl::NDC::MAX_SIZE>), it will automatically be truncated.
+limit (C<$Log::Log4perl::NDC::MAX_SIZE>), just the topmost element
+will be replated.
+
 This is typically done when a context is entered.
 
 =item Log::Log4perl::NDC->pop();
@@ -100,8 +102,8 @@ a context is left.
 
 =item my $text = Log::Log4perl::NDC->get();
 
-Retrieve the content of the topmost element of the stack without disrupting
-the stack structure. Typically done by C<%x>.
+Retrieve the content of the stack as a string of blank-separated values
+without disrupting the stack structure. Typically done by C<%x>.
 If the stack is empty the value C<"[undef]"> is being returned.
 
 =item Log::Log4perl::NDC->remove();
