@@ -23,6 +23,15 @@ sub new {
 
     bless $self, $class;
 
+        # Predefined formats
+    if($format eq "ABSOLUTE") {
+        $format = "HH:mm:ss,SSS";
+    } elsif($format eq "DATE") {
+        $format = "dd MMM yyyy HH:mm:ss,SSS";
+    } elsif($format eq "ISO8601") {
+        $format = "yyyy-mm-dd HH:mm:ss,SSS";
+    }
+
     if($format) { 
         $self->prepare($format);
     }
@@ -173,9 +182,17 @@ sub rep {
         push @{$self->{stack}}, [2, sub { $_[0] < 12 ? "AM" : "PM" }];
         return "%${len}s";
 
+######################
+#S - milliseconds    #
+######################
+    } elsif($first eq "S") {
+        push @{$self->{stack}}, 
+             [9, sub { substr sprintf("%06d", $_[0]), 0, $len }];
+        return "%s";
+
 #############################
 #Something that's not defined
-#(S=milliseconds F=day of week in month
+#(F=day of week in month
 # w=week in year W=week in month
 # k=hour in day K=hour in am/pm
 # z=timezone
@@ -190,9 +207,13 @@ sub rep {
 ###########################################
 sub format {
 ###########################################
-    my($self, $time) = @_;
+    my($self, $secs, $msecs) = @_;
 
-    my @time = localtime($time);
+    $msecs = 0 unless defined $msecs;
+
+    my @time = localtime($secs);
+        # add milliseconds
+    push @time, $msecs;
 
     my @values = ();
 
