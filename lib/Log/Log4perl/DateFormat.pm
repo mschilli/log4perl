@@ -32,6 +32,8 @@ sub new {
         $format = "dd MMM yyyy HH:mm:ss,SSS";
     } elsif($format eq "ISO8601") {
         $format = "yyyy-MM-dd HH:mm:ss,SSS";
+    } elsif($format eq "APACHE") {
+        $format = "[EEE MMM dd HH:mm:ss yyyy]";
     }
 
     if($format) { 
@@ -124,7 +126,11 @@ sub rep {
         if($len >= 3) {
             # Use month name
             push @{$self->{stack}}, [4, sub { return $MONTH_NAMES[$_[0]] }];
-            return "%s";
+           if($len >= 4) {
+                return "%s";
+            } else {
+               return "%.3s";
+            }
         } elsif($len == 2) {
             # Use zero-padded month number
             push @{$self->{stack}}, [4, sub { $_[0]+1 }];
@@ -175,7 +181,11 @@ sub rep {
 ##################
     } elsif($first eq "E") {
         push @{$self->{stack}}, [6, sub { $WEEK_DAYS[$_[0]] }];
-        return "%${len}s";
+       if($len >= 4) {
+            return "%${len}s";
+        } else {
+           return "%.3s";
+        }
 
 ######################
 #D - day of the year #
@@ -289,7 +299,7 @@ for you to read this.
 C<Log::Log4perl::DateFormat> is a formatter which allows dates to be
 formatted according to the log4j spec on
 
-    http://jakarta.apache.org/log4j/docs/api/org/apache/log4j/PatternLayout.html
+    http://java.sun.com/j2se/1.5.0/docs/api/java/text/SimpleDateFormat.html
 
 which allows the following placeholders to be recognized and processed:
 
@@ -340,10 +350,11 @@ Also, for your convenience,
 the following predefined formats are available, just as outlined in the
 log4j spec:
 
-    Format   Equivalent                 Example
-    ABSOLUTE "HH:mm:ss,SSS"             "15:49:37,459"
-    DATE     "dd MMM yyyy HH:mm:ss,SSS" "06 Nov 1994 15:49:37,459"
-    ISO8601  "yyyy-MM-dd HH:mm:ss,SSS"  "1999-11-27 15:49:37,459"
+    Format   Equivalent                     Example
+    ABSOLUTE "HH:mm:ss,SSS"                 "15:49:37,459"
+    DATE     "dd MMM yyyy HH:mm:ss,SSS"     "06 Nov 1994 15:49:37,459"
+    ISO8601  "yyyy-MM-dd HH:mm:ss,SSS"      "1999-11-27 15:49:37,459"
+    APACHE   "[EEE MMM dd HH:mm:ss yyyy]"   "[Wed Mar 16 15:49:37 2005]"
 
 So, instead of passing 
 

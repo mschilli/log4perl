@@ -2,7 +2,10 @@
  Revision history for Log::Log4perl
 ##################################################
 
-0.51 (not yet released)
+0.52 (03/26/2005)
+    * (ms) Jonathan Manning <jmanning@alisa-jon.net> provided a patch
+           for DateFormat.pm to fix 3-letter month abbreviations and a
+           shortcut to simulate Apache's log format.
 
 0.51 (01/08/2005)
     * (ms) Jon Bjornstad noticed that the file appender wasn't including

@@ -8,7 +8,7 @@ use strict;
 
 use Test;
 
-BEGIN { plan tests => 16 }
+BEGIN { plan tests => 18 }
 
 use Log::Log4perl qw(get_logger);
 use Log::Log4perl::DateFormat;
@@ -29,6 +29,12 @@ ok($formatter->format($GMTIME), "2002 02 2002");
 ###########################################
 $formatter = Log::Log4perl::DateFormat->new("MM M MMMM yyyy");
 ok($formatter->format($GMTIME), "08 8 August 2002");
+
+###########################################
+# Month
+###########################################
+$formatter = Log::Log4perl::DateFormat->new("MMM yyyy");
+ok($formatter->format($GMTIME), "Aug 2002");
 
 ###########################################
 # Day-of-Month
@@ -64,7 +70,7 @@ ok($formatter->format($GMTIME), "22 22 022 0022");
 # Day of Week
 ###########################################
 $formatter = Log::Log4perl::DateFormat->new("E EE EEE EEEE");
-ok($formatter->format($GMTIME), "Monday Monday Monday Monday");
+ok($formatter->format($GMTIME), "Mon Mon Mon Monday");
 
 ###########################################
 # Day of Year
@@ -88,13 +94,16 @@ ok($formatter->format($GMTIME, 123456), "1 12 123 1234 12345 123456");
 # Predefined formats
 ###########################################
 $formatter = Log::Log4perl::DateFormat->new("DATE");
-ok($formatter->format($GMTIME, 123456), "26 August 2002 23:32:22,123");
+ok($formatter->format($GMTIME, 123456), "26 Aug 2002 23:32:22,123");
 
 $formatter = Log::Log4perl::DateFormat->new("ISO8601");
 ok($formatter->format($GMTIME, 123456), "2002-08-26 23:32:22,123");
 
 $formatter = Log::Log4perl::DateFormat->new("ABSOLUTE");
 ok($formatter->format($GMTIME, 123456), "23:32:22,123");
+
+$formatter = Log::Log4perl::DateFormat->new("APACHE");
+ok($formatter->format($GMTIME, 123456), "[Mon Aug 26 23:32:22 2002]");
 
 ###########################################
 # Unknown
