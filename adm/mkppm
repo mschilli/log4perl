@@ -132,7 +132,7 @@ sub ppm_make {
 
         # For some reason, ActiveState 5.8.0 has problems with the tarfile,
         # make our own.
-    system("$TAR czf $mod_dir.tar.gz blib") and 
+    system("rm -rf blib pm_to_blib; make; rm -rf blib/man3; $TAR czf $mod_dir.tar.gz blib") and 
         LOGDIE("Can't tar $mod_dir.tar.gz ($!)");
 
     my $ppd_file = "$mod_dir.ppd";
