@@ -409,7 +409,7 @@ sub subst {
     my $val = shift;
 
     $val =~ s/\${(.*?)}/
-                      Log::Log4perl::Config::basic_subst($1, {})/gex;
+                      Log::Log4perl::Config::var_subst($1, {})/gex;
     return $val;
 }
 
