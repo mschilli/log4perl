@@ -41,8 +41,24 @@ sub new {
         $autoflush = 1;
     }
 
-    my $max = $data->{MaxBackupIndex}{value};
-    defined $max or ($max = 1);
+    my $max;
+    if (defined $data->{MaxBackupIndex}{value}) {
+        $max = $data->{MaxBackupIndex}{value};
+    }elsif (defined $data->{max}{value}){
+        $max = $data->{max}{value};
+    }else{
+        $max = 1;
+
+    }
+
+    my $size;
+    if (defined $data->{MaxFileSize}{value}) {
+        $size = $data->{MaxFileSize}{value}
+    }elsif (defined $data->{size}{value}){
+        $size = $data->{size}{value};
+    }else{
+        $size = 10_000_000;
+    }
 
 
     return Log::Log4perl::Appender->new("Log::Dispatch::FileRotate",
@@ -50,7 +66,7 @@ sub new {
         filename  => $filename,
         mode      => $mode,
         autoflush => $autoflush,
-        size      => ($data->{MaxFileSize}{value} || 10_000_000),
+        size      => $size,
         max       => $max,
     );
 }
