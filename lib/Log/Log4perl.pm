@@ -20,6 +20,10 @@ our $VERSION = '0.27alpha';
    # around Log::Log4perl
 our $caller_depth = 0;
 
+    #for the security-conscious who don't want people
+    #writing code within the config file
+our $DONT_ALLOW_USER_DEFINED_CSPECS = 0;
+
 ##################################################
 sub import {
 ##################################################
@@ -877,6 +881,21 @@ without any path components while C<%f> logs the full path. %c{2} only
 logs the last two components of the current category, C<Foo::Bar::Baz> 
 becomes C<Bar::Baz> and saves space.
 
+If those placeholders aren't enough, then you can define your own right in
+the config file like this:
+
+    log4j.PatternLayout.cspec.U = sub { return "UID $<" }
+    
+SECURITY NOTE: this feature means arbitrary perl code can be embedded in the 
+config file.  In the rare case where the people who have access to your config 
+file are different from the people who write your code and shouldn't have 
+execute rights, you might want to set
+
+    $Log::Log4perl::DONT_ALLOW_USER_DEFINED_CSPECS = 1;
+
+before you call init().
+
+
 See L<Log::Log4perl::Layout::PatternLayout> for details.
 
 =back
@@ -1240,9 +1259,9 @@ You'd do such as follows:
 And that's it! create_custom_level() creates the following functions /
 variables for level FOO:
 
-    $FOO_INT		# integer to use in toLevel()
-    $logger->foo()	# log function to log if level = FOO
-    $logger->is_foo()	# true if current level is >= FOO
+    $FOO_INT        # integer to use in toLevel()
+    $logger->foo()  # log function to log if level = FOO
+    $logger->is_foo()   # true if current level is >= FOO
 
 These levels can also be used in your
 config file, but note that your config file probably won't be
