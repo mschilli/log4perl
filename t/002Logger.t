@@ -225,7 +225,7 @@ DEBUG - 3 4
 INFO - 5 6 
 WARN - 7 8 
 ERROR - 9 10 
-FATAL - 11 12 13
+FATAL - 11 12 13 
 EOT
 
 BEGIN { plan tests => 45 };
