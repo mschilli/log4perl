@@ -1,10 +1,6 @@
 ##################################################
 package Log::Log4perl::Layout::PatternLayout;
 ##################################################
-# TODO: 'd', 't', 'x', 'X'
-# lib4j PatternLayout as documented in
-# http://jakarta.apache.org/log4j/docs/api/org/apache/log4j/PatternLayout.html
-##################################################
 
 use 5.006;
 use strict;
@@ -33,7 +29,6 @@ BEGIN {
 use base qw(Log::Log4perl::Layout);
 
 no strict qw(refs);
-
 
 ##################################################
 sub new {
@@ -244,19 +239,105 @@ Log::Log4perl::Layout::PatternLayout - Pattern Layout
 
   use Log::Log4perl::Layout::PatternLayout;
 
-  my $layout = Log::Log4perl::Layout::PatternLayout->("%d (%F:%L)> %m");
+  my $layout = Log::Log4perl::Layout::PatternLayout->new(
+                                                   "%d (%F:%L)> %m");
 
 =head1 DESCRIPTION
 
 Creates a pattern layout according to
 http://jakarta.apache.org/log4j/docs/api/org/apache/log4j/PatternLayout.html.
-Please check this page for documentation on the various C<%x> format
-tags.
 
-C<Log::Log4perl::Layout::PatternLayout> 
-is used in connection with the C<Log::Log4perl::Appender> object,
-which knows how to access its methods to render a message according
-to the given C<printf>-like format.
+The C<new()> method creates a new PatternLayout, specifying its log
+format. The format
+string can contain a number of placeholders which will be
+replaced by the logging engine when it's time to log the message:
+
+    %c Category of the logging event.
+    %C Fully qualified package (or class) name of the caller
+    %d Current date in yyyy/mm/dd hh:mm:ss format
+    %F File where the logging event occurred
+    %l Fully qualified name of the calling method followed by the
+       callers source the file name and line number between 
+       parentheses.
+    %L Line number within the file where the log statement was issued
+    %m The message to be logged
+    %M Method or function where the logging request was issued
+    %n Newline (OS-independent)
+    %p Priority of the logging event
+    %r Number of milliseconds elapsed from program start to logging 
+       event
+    %% A literal percent (%) sign
+
+=head2 Quantify placeholders
+
+All placeholders can be extended with formatting instructions,
+just like in I<printf>:
+
+    %20c   Reserve 20 chars for the category, left-justify and fill
+           with blanks if it is shorter
+    %-20c  Same as %20c, but right-justify and fill the left side 
+           with blanks
+    %09r   Zero-pad the number of milliseconds to 9 digits
+
+=head2 Fine-tuning with curlies
+
+Some placeholders have special functions defined if you add curlies 
+with content after them:
+
+    %c{1}  Just show the right-most category compontent, useful in large
+           class hierarchies (Foo::Baz::Bar -> Bar)
+    %c{2}  Just show the two right most category components
+           (Foo::Baz::Bar -> Baz::Bar)
+
+    %f     Display source file including full path
+    %f{1}  Just display filename
+    %f{2}  Display filename and last path component (dir/test.log)
+    %f{3}  Display filename and last two path components (d1/d2/test.log)
+
+In this way, you're able to shrink the displayed category or
+limit file/path components to save space in your logs.
+
+=head2 Fine-tune the date
+
+If you're not happy with the default %d format for the date which 
+looks like
+
+    YYYY/MM/DD HH:mm::ss
+
+you're free to fine-tune it in order to display only certain characteristics
+of a date, according to the SimpleDateFormat in the Java World
+(http://java.sun.com/j2se/1.3/docs/api/java/text/SimpleDateFormat.html):
+
+    %d{HH:mm}     "23:45" -- Just display hours and minutes
+    %d{yy, EEEE}  "02, Monday" -- Just display two-digit year 
+                                  and spelled-out weekday
+
+Here's the symbols and their meaning, according to the SimpleDateFormat
+specification:
+
+    Symbol   Meaning                 Presentation     Example
+    ------   -------                 ------------     -------
+    G        era designator          (Text)           AD
+    y        year                    (Number)         1996 
+    M        month in year           (Text & Number)  July & 07
+    d        day in month            (Number)         10
+    h        hour in am/pm (1-12)    (Number)         12
+    H        hour in day (0-23)      (Number)         0
+    m        minute in hour          (Number)         30
+    s        second in minute        (Number)         55
+    E        day in week             (Text)           Tuesday
+    D        day in year             (Number)         189
+    a        am/pm marker            (Text)           PM
+
+    (Text): 4 or more pattern letters--use full form, < 4--use short or 
+            abbreviated form if one exists. 
+
+    (Number): the minimum number of digits. Shorter numbers are 
+              zero-padded to this amount. Year is handled 
+              specially; that is, if the count of 'y' is 2, the 
+              Year will be truncated to 2 digits. 
+
+    (Text & Number): 3 or over, use text, otherwise use number. 
 
 =head1 SEE ALSO
 
