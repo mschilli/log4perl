@@ -198,7 +198,7 @@ Log::Log4perl - Log4j implementation for Perl
 C<Log::Log4perl> implements the widely popular C<Log4j> logging
 package ([1]) in pure Perl.
 
-A WORD OF CAUTION: THIS LIBRARY IS STILL UNDER CONSTRUCTION -- ON
+A WORD OF CAUTION: THIS LIBRARY IS ALPHA SOFTWARE AND STILL UNDER CONSTRUCTION -- ON
 http://log4perl.sourceforge.net YOU'LL GET THE LATEST SCOOP.
 THE API HAS REACHED A MATURE STATE, WE WILL NOT CHANGE IT UNLESS FOR
 A GOOD REASON.
