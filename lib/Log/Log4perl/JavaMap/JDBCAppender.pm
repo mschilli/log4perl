@@ -47,13 +47,14 @@ sub new {
         $bind_value_params{$p} =  $data->{params}{$p}{value};
     }
 
-
     return Log::Log4perl::Appender->new("Log::Log4perl::Appender::DBI",
         datasource    => $dsn,
         username      => $username,
         password      => $pwd, 
         sql           => $sql,
         params        => \%bind_value_params,
+            #filter_message also not a log4j thing, but see above
+        filter_message=> $data->{filter_message}{value},  
     );
 }
 
