@@ -1,5 +1,5 @@
 ######################################################################
-    Log::Log4perl 0.27
+    Log::Log4perl 0.28dev
 ######################################################################
 
 NAME
@@ -577,7 +577,7 @@ How to use it
             %P pid of the current process
             %r Number of milliseconds elapsed from program start to logging 
                event
-            %x The topmost NDC (see below)
+            %x The elements of the NDC stack (see below)
             %X{key} The entry 'key' of the MDC (see below)
             %% A literal percent (%) sign
 
@@ -610,7 +610,7 @@ How to use it
         write your code and shouldn't have execute rights, you might want to
         set
 
-            $Log::Log4perl::DONT_ALLOW_USER_DEFINED_CSPECS = 1;
+            $Log::Log4perl::ALLOW_CODE_IN_CONFIG_FILE = 0;
 
         before you call init().
 
@@ -892,6 +892,43 @@ Cool Tricks
 
         Log::Log4perl->init( \%key_value_pairs );
 
+  Perl Hooks in the Configuration File
+    If some of the values used in the Log4perl configuration file need to be
+    dynamically modified by the program, use Perl hooks:
+
+        log4perl.appender.File.filename = \
+            sub { return getLogfileName(); }
+
+    Each value starting with the string "sub {..." is interpreted as Perl
+    code to be executed at the time the application parses the configuration
+    via "Log::Log4perl::init()". The return value of the subroutine is used
+    by Log::Log4perl as the configuration value.
+
+    The Perl code is executed in the "main" package, functions in other
+    packages have to be called in fully-qualified notation.
+
+    Here's another example, utilizing an environment variable as a username
+    for a DBI appender:
+
+        log4perl.appender.DB.username = \
+            sub { $ENV{DB_USER_NAME } }
+
+    However, please note the difference between these code snippets and
+    those used for user-defined conversion specifiers as discussed in
+    Log::Log4perl::PatternLayout: While the snippets above are run *once*
+    when "Log::Log4perl::init()" is called, the conversion specifier
+    snippets are executed *each time* a message is rendered according to the
+    PatternLayout.
+
+    SECURITY NOTE: this feature means arbitrary perl code can be embedded in
+    the config file. In the rare case where the people who have access to
+    your config file are different from the people who write your code and
+    shouldn't have execute rights, you might want to set
+
+        $Log::Log4perl::ALLOW_CODE_IN_CONFIG_FILE = 0;
+
+    before you call init().
+
   Incrementing and Decrementing the Log Levels
     Log4perl provides some internal functions for quickly adjusting the log
     level from within a running Perl program.
@@ -1115,35 +1152,51 @@ Cool Tricks
   Nested Diagnostic Context (NDC)
     If you find that your application could use a global (thread-specific)
     data stack which your loggers throughout the system have easy access to,
-    use Nested Diagnostic Contexts (NDCs).
+    use Nested Diagnostic Contexts (NDCs). Also check out "Mapped Diagnostic
+    Context (MDC)", this might turn out to be even more useful.
 
     For example, when handling a request of a web client, it's probably
     useful to have the user's IP address available in all log statements
     within code dealing with this particular request. Instead of passing
-    this piece of data between your application functions, you can just use
-    the global (but thread-specific) NDC mechanism. It allows you to push
-    data pieces (scalars usually) onto its stack via
+    this piece of data around between your application functions, you can
+    just use the global (but thread-specific) NDC mechanism. It allows you
+    to push data pieces (scalars usually) onto its stack via
 
-        Log::Log4perl::NDC->push("data piece");
+        Log::Log4perl::NDC->push("San");
+        Log::Log4perl::NDC->push("Francisco");
 
     and have your loggers retrieve them again via the "%x" placeholder in
-    the PatternLayout. The stack mechanism allows for nested structures.
-    Just make sure that at the end of the request, you decrease the stack by
+    the PatternLayout. With the stack values above and a PatternLayout
+    format like "%x %m%n", the call
+
+        $logger->debug("rocks");
+
+    will end up as
+
+        San Francisco rocks
+
+    in the log appender.
+
+    The stack mechanism allows for nested structures. Just make sure that at
+    the end of the request, you either decrease the stack one by one by
     calling
 
         Log::Log4perl::NDC->pop();
+        Log::Log4perl::NDC->pop();
 
-    Even if you should forget to do that, "Log::Log4perl" won't grow the
-    stack indefinitely, but limit it to a maximum, defined in
-    "Log::Log4perl::NDC".
-
-    To clear out the NDC stack, just call
+    or clear out the entire NDC stack by calling
 
         Log::Log4perl::NDC->remove();
 
-    Again, the top of the stack is always available via the "%x" placeholder
-    in the Log::Log4perl::Layout::PatternLayout class whenever a logger
-    fires. What it does is just call
+    Even if you should forget to do that, "Log::Log4perl" won't grow the
+    stack indefinitely, but limit it to a maximum, defined in
+    "Log::Log4perl::NDC" (currently 5). A call to "push()" on a full stack
+    will just replace the topmost element by the new value.
+
+    Again, the stack is always available via the "%x" placeholder in the
+    Log::Log4perl::Layout::PatternLayout class whenever a logger fires. It
+    will replace "%x" by the blank-separated list of the values on the
+    stack. It does that by just calling
 
         Log::Log4perl::NDC->get();
 

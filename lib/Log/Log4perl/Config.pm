@@ -456,7 +456,11 @@ sub eval_if_perl {
 ###########################################
     my($value) = @_;
 
-    if($value =~ /^\s*sub\s*{/) {
+    if($value =~ /^\s*sub\s*{/ ) {
+        unless($Log::Log4perl::ALLOW_CODE_IN_CONFIG_FILE) {
+            die "\$Log::Log4perl::ALLOW_CODE_IN_CONFIG_FILE setting " .
+                "prohibits Perl code in config file";
+        }
         my $cref = eval "package main; $value" or 
             die "Can't evaluate '$value'";
         $value = $cref->();

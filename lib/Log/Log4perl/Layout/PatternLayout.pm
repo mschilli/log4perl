@@ -298,8 +298,10 @@ sub add_global_cspec {
 # Accepts a coderef or text
 ##################################################
 
-    die "User Defined cspecs are not allowed\n"
-        if ($Log::Log4perl::DONT_ALLOW_USER_DEFINED_CSPECS);
+    unless($Log::Log4perl::ALLOW_CODE_IN_CONFIG_FILE) {
+        die "\$Log::Log4perl::ALLOW_CODE_IN_CONFIG_FILE setting " .
+            "prohibits user defined cspecs";
+    }
 
     my ($letter, $perlcode) = @_;
 
@@ -340,8 +342,10 @@ sub add_layout_cspec {
 ##################################################
     my ($self, $letter, $perlcode) = @_;
 
-    die "User Defined cspecs are not allowed\n"
-        if ($Log::Log4perl::DONT_ALLOW_USER_DEFINED_CSPECS);
+    unless($Log::Log4perl::ALLOW_CODE_IN_CONFIG_FILE) {
+        die "\$Log::Log4perl::ALLOW_CODE_IN_CONFIG_FILE setting " .
+            "prohibits user defined cspecs";
+    }
 
     croak "Illegal value '$letter' in call to add_layout_cspec()"
         unless ($letter =~ /^[a-zA-Z]$/);
@@ -430,15 +434,6 @@ replaced by the logging engine when it's time to log the message:
 
 NDC and MDC are explained in L<Log::Log4perl/"Nested Diagnostic Context (NDC)">
 and L<Log::Log4perl/"Mapped Diagnostic Context (MDC)">.
-
-=head2 SECURITY NOTE
-
-The L<Custom cspecs> feature described below means arbitrary perl code can be 
-embedded in the config file.  In the rare case where the people who have 
-access to your config file are different from the people who write your code 
-and shouldn't have execute rights, you might want to set
-
-    $Log::Log4perl::DONT_ALLOW_USER_DEFINED_CSPECS = 1;
 
 =head2 Quantify placeholders
 
@@ -568,10 +563,9 @@ embedded in the config file.  In the rare case where the people who have
 access to your config file are different from the people who write your code 
 and shouldn't have execute rights, you might want to set
 
-    $Log::Log4perl::DONT_ALLOW_USER_DEFINED_CSPECS = 1;
+    $Log::Log4perl::ALLOW_CODE_IN_CONFIG_FILE = 1;
 
 before you call init().
-
 
 =head1 SEE ALSO
 

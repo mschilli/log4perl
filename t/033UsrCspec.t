@@ -127,7 +127,9 @@ $logger->debug("That's the message");
 
 ok($app->buffer(), "That's the message zzzzzzzz");
 
+###########################################################
 #testing perl code snippets in Log4perl configuration files
+###########################################################
 
 Log::Log4perl::TestBuffer->reset();
 
@@ -162,4 +164,63 @@ my $buffer = Log::Log4perl::TestBuffer->by_name("appndr");
 
 ok($buffer->buffer(), "log_message env_value\nlog_message2 env_value2\n");
 
-BEGIN { plan tests => 12, }
+###########################################################
+#testing perl code snippets with ALLOW_CODE_IN_CONFIG_FILE 
+#disabled
+###########################################################
+
+Log::Log4perl::TestBuffer->reset();
+
+$config = <<'EOL';
+log4perl.category.some = DEBUG, appndr
+
+    # This should be evaluated at config parse time
+log4perl.appender.appndr = Log::Log4perl::TestBuffer
+log4perl.appender.appndr.layout = Log::Log4perl::Layout::PatternLayout
+    # This should be evaluated at config parse time ("%m %K%n")
+log4perl.appender.appndr.layout.ConversionPattern = sub{ "%m" . \
+    chr(109) . " %n"; }
+EOL
+
+$Log::Log4perl::ALLOW_CODE_IN_CONFIG_FILE = 0;
+
+eval {
+    Log::Log4perl::init(\$config);
+};
+
+print "ERR is $@\n";
+
+if($@ and $@ =~ /prohibits/) {
+    ok(1);
+} else {
+    ok(0);
+}
+
+# Test if cspecs are denied
+Log::Log4perl::TestBuffer->reset();
+
+$config = <<'EOL';
+log4perl.category.some = DEBUG, appndr
+
+    # This should be evaluated at config parse time
+log4perl.appender.appndr = Log::Log4perl::TestBuffer
+log4perl.appender.appndr.layout = Log::Log4perl::Layout::PatternLayout
+log4perl.appender.appndr.layout.ConversionPattern = %m %n
+log4perl.appender.appndr.layout.cspec.K = sub { $ENV{TEST_VALUE} }
+EOL
+
+$Log::Log4perl::ALLOW_CODE_IN_CONFIG_FILE = 0;
+
+eval {
+    Log::Log4perl::init(\$config);
+};
+
+print "ERR is $@\n";
+
+if($@ and $@ =~ /prohibits/) {
+    ok(1);
+} else {
+    ok(0);
+}
+
+BEGIN { plan tests => 14, }

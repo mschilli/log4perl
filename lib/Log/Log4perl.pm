@@ -14,15 +14,15 @@ use Log::Log4perl::Appender;
 
 use constant DEBUG => 1;
 
-our $VERSION = '0.27';
+our $VERSION = '0.28dev';
 
    # set this to '1' if you're using a wrapper
    # around Log::Log4perl
 our $caller_depth = 0;
 
     #for the security-conscious who don't want people
-    #writing code within the config file
-our $DONT_ALLOW_USER_DEFINED_CSPECS = 0;
+    #writing code within the config file, set this to 0
+our $ALLOW_CODE_IN_CONFIG_FILE = 1;
 
 ##################################################
 sub import {
@@ -891,10 +891,9 @@ config file.  In the rare case where the people who have access to your config
 file are different from the people who write your code and shouldn't have 
 execute rights, you might want to set
 
-    $Log::Log4perl::DONT_ALLOW_USER_DEFINED_CSPECS = 1;
+    $Log::Log4perl::ALLOW_CODE_IN_CONFIG_FILE = 0;
 
 before you call init().
-
 
 See L<Log::Log4perl::Layout::PatternLayout> for details.
 
@@ -1218,6 +1217,15 @@ L<Log::Log4perl::PatternLayout>: While the snippets above are run I<once>
 when C<Log::Log4perl::init()> is called, the conversion specifier
 snippets are executed I<each time> a message is rendered according to
 the PatternLayout.
+
+SECURITY NOTE: this feature means arbitrary perl code can be embedded in the 
+config file.  In the rare case where the people who have access to your config 
+file are different from the people who write your code and shouldn't have 
+execute rights, you might want to set
+
+    $Log::Log4perl::ALLOW_CODE_IN_CONFIG_FILE = 0;
+
+before you call init().
 
 =head2 Incrementing and Decrementing the Log Levels
 
