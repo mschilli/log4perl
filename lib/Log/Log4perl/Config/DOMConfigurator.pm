@@ -11,6 +11,10 @@ package Log::Log4perl::Config::DOMConfigurator;
 # user defined levels? see below
 # OK make sure 2nd test is using log4perl constructs, not log4j
 # handle new filter stuff
+#note <?xml version="1.0"?> <!DOCTYPE memories SYSTEM "memory.dtd">
+#<memories>
+#   <memory tapeid="23412">
+#      <subdat
 
 use XML::DOM;
 use Log::Log4perl::Level;
