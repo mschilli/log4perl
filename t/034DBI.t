@@ -112,7 +112,7 @@ LOGLEVEL,MESSAGE,SHORTCALLER,THINGID,CATEGORY,PKG,RUNTIME1,RUNTIME2
 EOL
   $got =~ s/[^\w ,"()]//g;  #silly DBD_CSV uses funny EOL chars
   $expected =~ s/[^\w ,"()]//g;
-  $got = lc $got;
+  $got = lc $got;   #accounting for variations in DBD::CSV behavior
   $expected = lc $expected;
   ok($got, $expected);
 }
@@ -134,7 +134,7 @@ EOL
   $expected =~ s/[^\w ,"()]//g;
   $got =~ s/HASH\(.+?\)//;
   $expected =~ s/HASH\(.+?\)//;
-  $got = lc $got;
+  $got = lc $got; #accounting for variations in DBD::CSV behavior
   $expected = lc $expected;
   ok($got, $expected);
 }
@@ -224,7 +224,7 @@ FATAL,"warning message"
 EOL
   $got =~ s/[^\w ,"()]//g;  #silly DBD_CSV uses funny EOL chars
   $expected =~ s/[^\w ,"()]//g;
-  $got = lc $got;
+  $got = lc $got; #accounting for variations in DBD::CSV behavior
   $expected = lc $expected;
   ok($got, $expected);
 }
