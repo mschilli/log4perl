@@ -269,7 +269,7 @@ with an xml declaration C<<\?xml...> then it gets parsed by this DOMConfigurator
 Note that you need XML::DOM installed.
 
 It is brazenly modeled on log4j's DOMConfigurator class, (by 
-Christopher Taylor, Ceki Gulcu and Anders Kristensen) and any
+Christopher Taylor, Ceki Gülcü and Anders Kristensen) and any
 perceived similarity is not coincidental.
 
 It is still (version 0.02 Jan-2002) very fresh, alpha software, please 
