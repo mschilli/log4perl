@@ -10,17 +10,7 @@ use Log::Dispatch::Output;
 use base qw( Log::Dispatch::Output );
 use fields qw( stderr );
 
-    # This is a dirty trick for testing: Keep track
-    # of the entire object population. So we'll 
-    # be able to access the buffers even if the
-    # objects are created behind our back -- as
-    # long as we remember the order in which
-    # they've been created:
-    # $Log::Log4perl::TestBuffer::POPULATION[0] is
-    # the first one etc.
-    # The DESTROY method below cleans up afterwards.
-
-our @POPULATION = ();
+our %POPULATION = ();
 
 ##################################################
 sub new {
@@ -35,7 +25,7 @@ sub new {
     $self->{stderr} = exists $params{stderr} ? $params{stderr} : 1;
     $self->{buffer} = "";
 
-    push @POPULATION, $self;
+    $POPULATION{$self->name} = $self;
 
     return $self;
 }
@@ -66,7 +56,7 @@ sub reset {
 ##################################################
     my($self) = @_;
 
-    @POPULATION = ();
+    %POPULATION_MAP = ();
     $self->{buffer} = "";
 }
 
@@ -77,7 +67,7 @@ sub DESTROY {
 
     return unless defined $self;
 
-    @POPULATION = grep { defined $_ && $_ != $self } @POPULATION;
+    delete $POPULATION{$self->name};
 }
 
 ##################################################
@@ -92,12 +82,8 @@ sub by_name {
 
     die "No name given"  unless defined $name;
 
-    for my $appender (@POPULATION) {
-        if($appender->name() eq $name) {
-            return $appender;
-        }
-    }
-    return undef;
+    return $POPULATION{$name};
+
 }
 
 1;
