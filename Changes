@@ -3,7 +3,12 @@ Revision history for Log::Log4perl
 ##################################################
 
 0.40 (not yet released)
-    * perl 5.005_03 fix for l4p::Appender::Synchronized
+    * (ms) perl 5.005_03 fix for l4p::Appender::Synchronized
+    * (ms) Fixed a bug in 0.39 (thanks to James King for finding) which
+      caused composite appenders like Synchronized to just use 
+      SimpleLayout. With the fix, composite appenders are now relaying
+      messages unmodified to their delegates, which can then apply 
+      any layout they desire.
 
 0.39 (10/23/2003)
     * (kg) fixed bug in interaction between Logger::Level and Level::is_valid
