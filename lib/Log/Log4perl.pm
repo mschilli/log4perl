@@ -610,6 +610,7 @@ C<Log::Log4perl> already comes with a standard set of appenders:
     Log::Log4perl::Appender::Socket
     Log::Log4perl::Appender::DBI
     Log::Log4perl::Appender::Synchronized
+    Log::Log4perl::Appender::RRDs
 
 to log to the screen, to files and to databases. 
 

@@ -13,6 +13,7 @@ lib/Log/Log4perl/Appender.pm
 lib/Log/Log4perl/Appender/DBI.pm
 lib/Log/Log4perl/Appender/File.pm
 lib/Log/Log4perl/Appender/Limit.pm
+lib/Log/Log4perl/Appender/RRDs.pm
 lib/Log/Log4perl/Appender/Screen.pm
 lib/Log/Log4perl/Appender/Socket.pm
 lib/Log/Log4perl/Appender/Synchronized.pm
@@ -99,6 +100,7 @@ t/042SyncApp.t
 t/043VarSubst.t
 t/044XML-Filter.t
 t/045Composite.t
+t/046RRDs.t
 t/compare.pl
 t/deeper1.expected
 t/deeper6.expected
