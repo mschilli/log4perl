@@ -2,7 +2,9 @@
 Revision history for Log::Log4perl
 ##################################################
 
-0.26 10/28/2002
+0.27 11/12/2002
+
+0.26 11/11/2002
     * (kg) enabled %l (was missing from PatternLayout::define)
     * (kg) got rid of "Use of uninitialized value in join or string" message
            when some of $logger->debug(@array) when some of @array are undef 
@@ -242,13 +244,10 @@ Revision history for Log::Log4perl
 
 TODO (not assigned to anybody yet):
 ##################################################
-    * Get rid of Test::Simple and Test::More and the dependencies in
-      Makefile.PL
     * BasicConfigurator() vs. :easy, PropertyConfigurator()
     * get_logger() thread safety (two try to create it at the same time)
     * Object rendering
     * NDC/MDC
-    * Internal DEBUG for log4perl (log4perl.debug = 1)
     * log4j.logger.blah = INHERITED, app
     * variable subst: a=b log4j.blah = ${a}
     * log4j.renderer.blah = blah
@@ -257,7 +256,6 @@ TODO (not assigned to anybody yet):
       false-but-is-defined errors I think that's what log4j uses
     * permission problems, init() creates the files, maybe read later by
       different uid, no way to set umask?
-    * I really want a format specifier to print the pid, helps with web apps
     * Custom filters
     * XML config files
 
@@ -283,26 +281,10 @@ TODO Kevin:
 
 TODO Mike:
 ##################################################
-    * Add test case for Kevin's fix
-    * Separate INSTALL.TXT document
-    * Perl-way (-file => blah) creates conf-style or xml-style conf files 
-      (for transition).
     * index.html on sourceforge should be part of CVS
     * Release script should maintain old CPAN message on index.html
     * Turning on DEBUG in Logger.pm results in broken test cases and
       warnings
-    * %20.30d
-    * Kevin says:
-      >WARN in the config file
-      >   init_and_watch(...);
-      >   while (1){
-      >      ...blah...
-      >      $logger->level($INFO);
-      >      $logger->info(...);
-      >      sleep 5;
-      >   }
-      What's happening if the reload happens right after the level() call 
-      and the config file sets the level to WARN?
     * Layout.pm: 't', 'x', 'X'
     * README tests (Pod::Tests or something)
     * Thread safety
