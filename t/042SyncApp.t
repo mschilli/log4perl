@@ -14,7 +14,7 @@ $| = 1;
 
 BEGIN {
     if(exists $ENV{"L4P_ALL_TESTS"}) {
-        plan tests => 2;
+        plan tests => 5;
     } else {
         plan skip_all => "- only with L4P_ALL_TESTS";
     }
@@ -225,3 +225,100 @@ close FILE;
 unlink $logfile;
 
 like($data, qr/Greetings/, "Check logfile of Socket appender");
+
+###################################################################
+# Test the "silent_recover" options of the Socket appender
+###################################################################
+
+use IO::Socket::INET;
+
+our $TMP_FILE = "warnings.txt";
+END { unlink $TMP_FILE if defined $TMP_FILE; }
+
+# Capture STDERR to a temporary file and a filehandle to read from it
+open STDERR, ">$TMP_FILE";
+open IN, "<$TMP_FILE" or die "Cannot open $TMP_FILE";
+sub readwarn { return scalar <IN>; }
+
+$conf = q{
+    log4perl.category                        = WARN, Socket
+    log4perl.appender.Socket                 = Log::Log4perl::Appender::Socket
+    log4perl.appender.Socket.PeerAddr        = localhost
+    log4perl.appender.Socket.PeerPort        = 12345
+    log4perl.appender.Socket.layout          = SimpleLayout
+    log4perl.appender.Socket.silent_recovery = 1
+};
+
+    # issues a warning
+Log::Log4perl->init(\$conf);
+
+like(readwarn(), qr/Connection refused/, 
+     "Check if warning occurs on dead socket");
+
+$logger = get_logger("foobar");
+
+    # silently ignored
+$logger->warn("message lost");
+
+$locker->shunlock();
+$locker->shlock();
+
+    # Now start a server
+$pid = fork();
+
+if($pid) {
+   #parent
+
+       # wait for child
+   #print "Waiting for server to start\n";
+   $locker->shlock();
+   
+       # Send another message (should be sent)
+   #print "Sending message\n";
+   $logger->warn("message sent");
+} else { 
+   #child
+
+       # Start a server
+   my $sock = IO::Socket::INET->new(
+       Listen    => 5,
+       LocalAddr => 'localhost',
+       LocalPort => 12345,
+       ReuseAddr => 1,
+       Proto     => 'tcp');
+
+   die "Cannot start server: $!" unless defined $sock;
+       # Ready to receive
+   #print "Server started\n";
+   $locker->shunlock();
+
+   my $nof_messages = 1;
+
+   open FILE, ">$logfile" or die "Cannot open $logfile";
+   while(my $client = $sock->accept()) {
+       #print "Client connected\n";
+       while(<$client>) {
+           #print "Got message: $_\n";
+           print FILE "$_\n";
+           last;
+       }
+       last unless --$nof_messages;
+   }
+
+   close FILE;
+   exit 0;
+}
+
+   # Wait for child to finish
+waitpid($pid, 0);
+
+open FILE, "<$logfile" or die "Cannot open $logfile";
+$data = join '', <FILE>;
+close FILE;
+
+#print "data=$data\n";
+
+unlink $logfile;
+
+unlike($data, qr/message lost/, "Check logfile for lost message");
+like($data, qr/message sent/, "Check logfile for sent message");

@@ -2203,6 +2203,7 @@ our
     Kevin Goess <cpan@goess.org>
 
     Contributors:
+    Hutton Davidson <Davidson.Hutton@ftid.com>
     Chris R. Donnelly <cdonnelly@digitalmotorworks.com>
     James FitzGibbon <james.fitzgibbon@target.com>
     Dennis Gregorovic <dgregor@redhat.com>

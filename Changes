@@ -2,7 +2,11 @@
  Revision history for Log::Log4perl
 ##################################################
 
-0.47 (not yet released)
+0.47 (07/11/2004)
+    * (ms) Added suggestion by Hutton Davidson <Davidson.Hutton@ftid.com>
+           to make the socket appender more forgiving. New option
+           "silent_recovery" will silently ignore errors and recover
+           if possible on initiallly dead socket connections.
     * (ms) Fixed bug with initialized() -- checking once caused
            subsequent calls to return true.
     * (ms) run t/045Composite.t only if Storable is installed -- earlier
