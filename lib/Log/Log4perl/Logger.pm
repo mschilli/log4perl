@@ -11,6 +11,7 @@ use Log::Log4perl::Layout;
 use Log::Log4perl::Appender;
 use Log::Dispatch;
 use Carp;
+use Carp::Heavy;
 
 use constant DEBUG => 0;
 
@@ -526,6 +527,138 @@ sub init_warn {
     # Only tell this once;
     $INITIALIZED = 1;
               }
+
+##################################################
+# call me from a sub-func to spew the sub-func's caller
+sub callerline {
+  # the below could all be just:
+  # my ($pack, $file, $line) = caller(2);
+  # but if we every bury this further, it'll break. So we do this
+  # little trick stolen and paraphrased from Carp/Heavy.pm
+
+  my $i = 0;
+  my (undef, $localfile, undef) = caller($i++);
+  my ($pack, $file, $line);
+  do {
+    ($pack, $file, $line) = caller($i++);
+  } while ($file && $file eq $localfile);
+
+  # now, create the return message
+  my $mess = " at $file line $line";
+  # Someday, we'll use Threads. Really.
+  if (defined &Thread::tid) {
+    my $tid = Thread->self->tid;
+    $mess .= " thread $tid" if $tid;
+  }
+  return (@_, $mess, "\n");
+}
+
+sub and_warn {
+  my $self = shift;
+  my $msg = join("", @_[0 .. $#_]);
+  chomp $msg;
+  CORE::warn(callerline($msg));
+}
+
+sub and_die {
+  my $self = shift;
+  my $msg = join("", @_[0 .. $#_]);
+  chomp $msg;
+  die(callerline($msg));
+}
+
+##################################################
+
+sub logwarn {
+  my $self = shift;
+  if ($self->is_warn()) {
+    $self->warn(@_);
+    $self->and_warn(@_);
+  }
+}
+
+sub logdie {
+  my $self = shift;
+  if ($self->is_fatal()) {
+    $self->fatal(@_);
+    $self->and_die(@_);
+  }
+}
+
+##################################################
+
+# for die and warn, carp long/shortmess return line #s and the like
+sub noop {
+  return @_;
+}
+
+##################################################
+
+# clucks and carps are WARN level
+sub logcluck {
+  my $self = shift;
+  if ($self->is_warn()) {
+    my $message = Carp::longmess(@_);
+    foreach (split(/\n/, $message)) {
+      $self->warn("$_\n");
+    }
+    CORE::warn(noop($message));
+  }
+}
+
+sub logcarp {
+  my $self = shift;
+  if ($self->is_warn()) {
+    my $message = Carp::shortmess(@_);
+    foreach (split(/\n/, $message)) {
+      $self->warn("$_\n");
+    }
+    CORE::warn(noop($message));
+  }
+} 
+
+# croaks and confess are FATAL level
+sub logcroak {
+  my $self = shift;
+  if ($self->is_fatal()) {
+    my $message = Carp::shortmess(@_);
+    foreach (split(/\n/, $message)) {
+      $self->fatal("$_\n");
+    }
+    die(noop($message));
+  }
+}
+
+sub logconfess {
+  my $self = shift;
+  if ($self->is_fatal()) {
+    my $message = Carp::longmess(@_);
+    foreach (split(/\n/, $message)) {
+      $self->fatal("$_\n");
+    }
+    die(noop($message));
+  }
+}
+
+##################################################
+# 
+# in case people prefer to use error for warning
+
+sub error_warn {
+  my $self = shift;
+  if ($self->is_error()) {
+    $self->error(@_);
+    $self->and_warn(@_);
+  }
+}
+
+sub error_die {
+  my $self = shift;
+  if ($self->is_error()) {
+    $self->error(@_);
+    $self->and_die(@_);
+  }
+}
 
 ##################################################
 

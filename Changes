@@ -9,6 +9,9 @@ Revision history for Log::Log4perl
       just use full seconds as %r.
     * SimpleDateFormat "%d{HH:SS}" added
     * Added another cut-and-paste example to the docs (EXAMPLE)
+    * Added new logdie/logwarn/error_warn/error_die/logcarp/
+      logcluck/logcroak/logconfess functions written by 
+      Erik Selberg <erik@selberg.com>
 
 0.22 8/17/2002
     * Threshold settings of appenders: 

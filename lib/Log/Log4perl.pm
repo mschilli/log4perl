@@ -462,6 +462,34 @@ just chain together to a single string. Therefore
 
 are identical.
 
+=head2 Log and die or warn
+
+Often, when you croak / carp / warn / die, you want to log those messages.
+Rather than doing the following:
+
+    $logger->fatal($err) && die($err);
+
+you can use the following:
+
+    $logger->logwarn();
+    $logger->logdie();
+
+These print out log messages in the WARN and FATAL level, respectively,
+and then call the built-in warn() and die() functions. Since there is
+an ERROR level between WARN and FATAL, there are two additional helper
+functions in case you'd like to use ERROR for either warn() or die():
+
+    $logger->error_warn();
+    $logger->error_die();
+
+Finally, there's the Carp functions that do just what the Carp functions
+do, but with logging:
+
+    $logger->logcarp();        # warn w/ 1-level stack trace
+    $logger->logcluck();       # warn w/ full stack trace
+    $logger->logcroak();       # die w/ 1-level stack trace
+    $logger->logconfess();     # die w/ full stack trace
+
 =head2 Appenders
 
 If you don't define any appenders, nothing will happen. Appenders will
@@ -1089,6 +1117,7 @@ log4perl-devel@lists.sourceforge.net
     Contributors:
 
     Chris R. Donnelly <cdonnelly@digitalmotorworks.com>
+    Erik Selberg <erik@selberg.com>
 
 =head1 COPYRIGHT AND LICENSE
 
