@@ -73,8 +73,7 @@ close CONF;
 #now the logger is ruled by root's WARN level
 $logger->debug('debug message, should NOT appear');
 
-my $app1 = $   #cvs fodder
-        Log::Log4perl::TestBuffer::POPULATION[$#Log::Log4perl::TestBuffer::POPULATION];
+my $app1 = Log::Log4perl::TestBuffer->by_name("myAppender");
 
 ok($app1->buffer(), "");
 
