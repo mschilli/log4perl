@@ -220,7 +220,7 @@ filter C<M1> has been defined.
 Attaching a filter to an appender is as easy as assigning its name to
 the appender's C<Filter> attribute:
 
-    log4perl.appender.MyAppender = MyFilter
+    log4perl.appender.MyAppender.Filter = MyFilter
 
 This will cause C<Log::Log4perl> to call the filter subroutine/method
 every time a message is supposed to be passed to the appender. Depending
