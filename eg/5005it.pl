@@ -31,12 +31,12 @@ sub process_file {
     my $data = join '', <FILE>;
     close FILE;
 
-    while($data =~ /^our\s+([\$%@][\w_]+).*[;=]/mg) {
+    while($data =~ /^our[\s(]+([\$%@][\w_]+).*[;=]/mg) {
         push @OUR_VARS, $1;
     }
 
         # Replace 'our' variables
-    $data =~ s/^our\s+[\$%@][\w_]+.*/rep_our($&)/meg;
+    $data =~ s/^our[\s(]+[\$%@][\w_]+.*/rep_our($&)/meg;
 
         # Replace 'use 5.006' lines
     $data =~ s/^use\s+5\.006/\nuse 5.00503/mg;
