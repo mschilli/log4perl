@@ -9,6 +9,8 @@ Revision history for Log::Log4perl
     * (ms) Log::Log4perl->easy_init() now calls ->reset() first to make sure
       it's not duplicating the existing logging environment. Thanks
       to William McKee <william@knowmad.com> for bringing this up.
+    * (ms) fixed bug with error_die() - printed the wrong function/line/file.
+      Reported by Brett Rann <brettrann@mail.com>.
 
 0.37 (09/14/2003)
     * (kg) adjusting tests for XML::Parser 2.32 having broken
