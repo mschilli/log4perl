@@ -26,7 +26,7 @@ sub get {
     #    },
 
     my $perl_class = $translate{$appender_data->{value}} || 
-            die "ERROR:  I don't know how to make a '$appender_data->{value}' for your appender '$appender_name', that's not a supported class\n";
+            die "ERROR:  I don't know how to make a '$appender_data->{value}' to implement your appender '$appender_name', that's not a supported class\n";
 
     eval {
         eval "require $perl_class";  #see 'perldoc -f require' for why two evals
