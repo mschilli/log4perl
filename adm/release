@@ -10,7 +10,7 @@ use strict;
 use lib "$ENV{HOME}/perl-modules";
 use ModDevUtils;
 
-ModDevUtils::release() or exit 0;
+ModDevUtils::release(1) or exit 0;
 
 my $ball = ModDevUtils::tarball_name();
 print "Copying $ball to log4perl.sourceforge.net ...\n";

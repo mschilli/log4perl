@@ -130,6 +130,11 @@ sub ppm_make {
                             );
     $ppm->make_ppm();
 
+        # For some reason, ActiveState 5.8.0 has problems with the tarfile,
+        # make our own.
+    system("$TAR czf $mod_dir.tar.gz blib") and 
+        LOGDIE("Can't tar $mod_dir.tar.gz ($!)");
+
     my $ppd_file = "$mod_dir.ppd";
 
     open FILE, "<$ppd_file" or die "Cannot open $ppd_file";
