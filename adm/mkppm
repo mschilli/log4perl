@@ -14,7 +14,10 @@ use File::Copy;
 use Log::Log4perl qw(:easy);
 use PPM::Make;
 
-Log::Log4perl->easy_init($DEBUG);
+Log::Log4perl->easy_init({level   => $DEBUG,
+                          file    => 'stdout',
+                          layout  => '%m%n',
+                         });
 
 my $PPM_DIR  = "ppm";
 my $CPAN_DIR = "http://www.cpan.org/authors/id";
@@ -92,6 +95,21 @@ sub fetch_tarball {
 }
 
 ###########################################
+sub repackage_tarball {
+###########################################
+    my($tarball) = @_;
+ 
+    DEBUG("Repackaging $tarball");
+
+    if(-d "blib") {
+        rmtree "blib" or die "Cannot rmtree blib";
+    }
+
+    system("$TAR zxf $tarball; $TAR zcf $tarball blib");
+    rmtree "blib" or die "Cannot rmtree blib";
+}
+
+###########################################
 sub ppm_make {
 ###########################################
     my($module, $file) = @_;
@@ -135,6 +153,7 @@ sub ppm_make {
     my $ppd_file = "$mod_dir.ppd";
 
     fix_ppd($ppd_file);
+    repackage_tarball("$mod_dir.tar.gz");
 
     copy($ppd_file, "../$PPM_DIR") or die "Cannot copy $ppd_file";
     copy("$mod_dir.tar.gz", "../$PPM_DIR") or 
