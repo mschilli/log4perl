@@ -2,6 +2,9 @@
 Revision history for Log::Log4perl
 ##################################################
 
+0.40 (not yet released)
+    * perl 5.005_03 fix for l4p::Appender::Synchronized
+
 0.39 (10/23/2003)
     * (kg) fixed bug in interaction between Logger::Level and Level::is_valid
       so that now you can do $logger->level('INFO') instead of just $INFO.
