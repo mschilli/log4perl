@@ -72,7 +72,17 @@ $agent->click();
  
 INFO("Selecting file ", basename($TARBALL));
 $agent->form_number(5);
-$agent->field('file_list[]' => basename($TARBALL));
+
+# Find out which field named 'file_list[]' contains Log-Log4perl
+my $index = 1;
+for($agent->{form}->inputs()) {
+    next if $_->name() ne 'file_list[]';
+    no warnings;
+    last if grep { $_ eq basename($TARBALL) } @{$_->{menu}};
+    $index++;
+}
+INFO("$TARBALL selection is at index $index");
+$agent->field('file_list[]' => basename($TARBALL), $index);
 $agent->click();
  
 INFO("Finish up release");
