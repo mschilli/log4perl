@@ -79,6 +79,10 @@ sub change_detected {
     }
        
     my $new_timestamp = (stat($self->{file}))[9];
+       # Sometimes, when the file is being updated, obtaining its
+       # timestamp fails. Ignore it, try again later.
+    return "" unless defined $new_timestamp;
+
     $self->{_last_checked_at} = $time;
 
     # Set global var for optimizations in case we just have one watcher

@@ -12,6 +12,8 @@
            the is_<level> method gets called, resulting in a runtime
            exception. Added proposed remedy checking if the called
            method is defined by ref.
+    * (ms) Added check to init_and_watch if obtaining the mod timestamp 
+           failed.
 
 0.48 (08/20/2004)
     * (ms) fixed bug reported by Chip Salzenberg <chip@pobox.com>: logdie()
