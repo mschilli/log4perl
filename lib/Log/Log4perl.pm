@@ -898,6 +898,10 @@ If those placeholders aren't enough, then you can define your own right in
 the config file like this:
 
     log4perl.PatternLayout.cspec.U = sub { return "UID $<" }
+
+Please note that the subroutines you're defining in this way are going
+to be run in the C<main> namespace, so be sure to fully qualify functions
+and variables if they're located in different packages.
     
 SECURITY NOTE: this feature means arbitrary perl code can be embedded in the 
 config file.  In the rare case where the people who have access to your config 
