@@ -14,6 +14,10 @@ use Log::Log4perl::Appender;
 
 our $VERSION = '0.22';
 
+   # set this to '1' if you're using a wrapper
+   # around Log::Log4perl
+our $caller_depth = 0;
+
 ##################################################
 sub import {
 ##################################################
@@ -922,6 +926,22 @@ Yeah, I've seen it. I like it, but I think it is too dependent
 on defining everything in a configuration file.
 I've designed C<Log::Log4perl> to be more flexible.
 
+=head1 Using Log::Log4perl from wrapper classes
+
+If you don't use C<Log::Log4perl> as described above, 
+but from a wrapper class (like your own Logging class which in turn uses
+C<Log::Log4perl>),
+the pattern layout will generate wrong data for %F, %C, %L and the like.
+Reason for this is that C<Log::Log4perl>'s loggers assume a static
+caller depth to the application that's using them. If you're using
+one (or more) wrapper classes, C<Log::Log4perl> will indicate where
+your logger classes called the loggers, not where your application
+called your wrapper, which is probably what you want in this case.
+But don't dispair, there's a solution: Just increase the value
+of C<$Log::Log4perl::caller_depth> (defaults to 0) by one for every
+wrapper that's in between your application and C<Log::Log4perl>,
+then C<Log::Log4perl> will compensate for the difference.
+
 =head1 INSTALLATION
 
 C<Log::Log4perl> needs C<Log::Dispatch> (2.00 or better) and
@@ -972,17 +992,12 @@ log4perl-devel@lists.sourceforge.net
 
 =head1 AUTHORS
 
-=over 4
+    Mike Schilli <m@perlmeister.com>
+    Kevin Goess <cpan@goess.org>
 
-=item *
+    Contributors:
 
-Mike Schilli, m@perlmeister.com
-
-=item *
-
-Kevin Goess, cpan@goess.org
-
-=back
+    Chris R. Donnelly <cdonnelly@digitalmotorworks.com>
 
 =head1 COPYRIGHT AND LICENSE
 
