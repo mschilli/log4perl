@@ -1361,7 +1361,7 @@ and a false value if not.
 
 =head2 How can I synchronize access to an appender?
 
-If you the same instance of an appender in multiple processes, 
+If you're using the same instance of an appender in multiple processes, 
 each passing on messages to it in parallel, you might end up with 
 overlapping log entries.
 
