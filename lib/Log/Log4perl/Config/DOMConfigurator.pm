@@ -249,7 +249,8 @@ sub parse_appender {
             $l4p_branch->{layout} = parse_layout($child);
 
         }elsif ($tag_name eq 'filter'){
-            die "filters not supported yet";
+            $l4p_branch->{Filter} = parse_filter($child);
+            #die "filters not supported yet";
 
         }elsif ($tag_name eq 'errorHandler'){
             die "errorHandlers not supported yet";
@@ -266,7 +267,6 @@ sub parse_appender {
     }
     $l4p_tree->{appender}{$name} = $l4p_branch;
 }
-
 
 sub parse_any_param {
     my ($l4p_branch, $child) = @_;
@@ -351,6 +351,32 @@ sub parse_param_nested {
 
     return $l4p_branch;
 }
+
+sub parse_filter {
+    my $node = shift;
+
+    my $filter_tree = {};
+
+    my $class_name = subst($node->getAttribute('class'));
+
+    $filter_tree->{value} = $class_name;
+
+    print "\tparsing layout $class_name\n"  if _INTERNAL_DEBUG;  
+
+    for my $child ($node->getChildNodes) {
+        next unless $child->getNodeType == ELEMENT_NODE;
+        if ($child->getTagName() =~ 'param|param-nested|param-text') {
+            &parse_any_param($filter_tree, $child);
+        }else{
+            die "don't know what to do with a ".$child->getTagName()
+                ."inside a filter element";
+        }
+    }
+
+
+    return $filter_tree;
+}
+
 
 
 sub parse_layout {
