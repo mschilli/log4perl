@@ -133,7 +133,31 @@ ok($@,"/Layout not specified for appender myAppender/");
 
 
 
-BEGIN { plan tests => 7, }
+
+# ************************************
+# check continuation chars, this should parse fine
+$conf = <<'EOL';
+log4j.category.simplelayout.test=\
+                        INFO, \
+                        myAppender
+
+log4j.appender.myAppender        \
+                    = Log::Log4perl::TestBuffer
+log4j.appender.myAppender.layout = Log::Log4perl::Lay\
+                        out::SimpleL\
+                            ayout     #this is stupid, I know
+log4j.appender.myAppender.File   = $testfile
+EOL
+
+eval{
+    Log::Log4perl->init(\$conf, $debug);
+
+};
+ok($@,"");
+
+
+
+BEGIN { plan tests => 8, }
 
 END{   
      unlink $testfile if (-e $testfile);
