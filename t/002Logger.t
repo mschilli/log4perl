@@ -10,7 +10,7 @@ use strict;
 
 #########################
 # used Test::Simple to help debug the test script
-use Test::Simple tests => 53;
+use Test::More tests => 53;
 
 use Log::Log4perl;
 use Log::Log4perl::Level;
@@ -274,7 +274,7 @@ $log1->info(
       value  => "  5   6 " },
     " 7" );
 
-ok($app->buffer() eq <<EOT, "app buffer contains 2 lines");
+is($app->buffer(), <<EOT, "app buffer contains 2 lines");
 DEBUG - 1 2
 INFO - 3 4 56 7
 EOT
