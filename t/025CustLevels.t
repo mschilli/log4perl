@@ -161,7 +161,26 @@ ok($logger->is_info);
 
 ok(! $logger->is_debug) ;
 
+$logger->level($FATAL);
 
-BEGIN { plan tests => 46 };
+ok($logger->is_fatal() && !($logger->is_error() || $logger->is_warn() ||
+	$logger->is_info() || $logger->is_debug()));
+
+$logger->more_logging(); # should inc one level
+
+ok($logger->is_fatal() && $logger->is_error() && !( $logger->is_warn() ||
+	$logger->is_info() || $logger->is_debug()));
+
+$logger->more_logging(100); # should be debug now
+
+ok($logger->is_fatal() && $logger->is_error() && $logger->is_warn() &&
+	$logger->is_info() && $logger->is_debug());
+
+$logger->less_logging(150); # should be OFF now
+
+ok(!($logger->is_fatal() || $logger->is_error() || $logger->is_warn() ||
+	$logger->is_info() || $logger->is_debug()));
+
+BEGIN { plan tests => 50 };
 
 unlink $LOGFILE;

@@ -584,7 +584,8 @@ sub create_log_level_methods {
 
   *{__PACKAGE__ . "::is_$lclevel"} = sub { 
     return Log::Log4perl::Level::isGreaterOrEqual($_[0]->level(),
-						  $$level); 
+						  $$level
+						  ); 
   };
   
   use strict qw(refs);
@@ -778,7 +779,8 @@ sub error_die {
 }
 
 sub more_logging {
-  return inc_level(@_);
+  my ($self) = shift;
+  return $self->dec_level(@_);
 }
 
 sub inc_level {
@@ -793,7 +795,8 @@ sub inc_level {
 }
 
 sub less_logging {
-  return dec_level(@_);
+  my ($self) = shift;
+  return $self->inc_level(@_);
 }
 
 sub dec_level {
