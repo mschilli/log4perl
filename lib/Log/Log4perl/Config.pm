@@ -13,7 +13,7 @@ use Log::Dispatch;
 use Log::Dispatch::File;
 use Log::Log4perl::JavaMap;
 use Log::Log4perl::Filter;
-use Log::Log4perl::Filter::Bool;
+use Log::Log4perl::Filter::Boolean;
 
 use constant DEBUG => 0;
 
@@ -117,7 +117,7 @@ sub _init {
                         $data->{oneMessagePerAppender}->{value};
     }
 
-        # Bool filters 
+        # Boolean filters 
     my %bool_filters = ();
 
         # Continue with lower level loggers. Both 'logger' and 'category'
@@ -163,8 +163,8 @@ sub _init {
             # The bool filter needs all other filters already
             # initialized, defer its initialization
         if($data->{filter}->{$filter_name}->{value} eq
-           "Log::Log4perl::Filter::Bool") {
-            print "Bool filter ($filter_name)\n" if DEBUG;
+           "Log::Log4perl::Filter::Boolean") {
+            print "Boolean filter ($filter_name)\n" if DEBUG;
             $bool_filters{$filter_name}++;
             next;
         }
@@ -205,7 +205,7 @@ sub _init {
     for my $name (keys %bool_filters) {
         my $logic = $data->{filter}->{$name}->{logic}->{value};
         die "No logic defined for bool filter $name" unless defined $logic;
-        my $filter = Log::Log4perl::Filter::Bool->new(
+        my $filter = Log::Log4perl::Filter::Boolean->new(
                          name  => $name, 
                          logic => $logic);
         $filter->register();
