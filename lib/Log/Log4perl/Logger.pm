@@ -9,6 +9,7 @@ use warnings;
 use Log::Log4perl::Level;
 use Log::Log4perl::Layout;
 use Log::Dispatch;
+use Carp;
 use Data::Dump qw(dump);
 
     # Initialization
@@ -40,20 +41,20 @@ sub reset {
 ##################################################
 sub _new {
 ##################################################
-    my($class, $logger_class, $level) = @_;
+    my($class, $category, $level) = @_;
 
-    die "usage: __PACKAGE__->new(logger_class)" unless
-        defined $logger_class;
+    die "usage: __PACKAGE__->new(category)" unless
+        defined $category;
     
-    $logger_class  =~ s/::/./g;
+    $category  =~ s/::/./g;
 
        # Have we created it previously?
-    if(exists $LOGGERS_BY_STRING->{$logger_class}) {
-        return $LOGGERS_BY_STRING->{$logger_class};
+    if(exists $LOGGERS_BY_STRING->{$category}) {
+        return $LOGGERS_BY_STRING->{$category};
     }
 
     my $self  = {
-        logger_class  => $logger_class,
+        logger_class  => $category,
         num_appenders => 0,
         additivity    => 1,
         level         => $level,
@@ -62,7 +63,7 @@ sub _new {
                 };
 
         # Save it in global structure
-    $LOGGERS_BY_STRING->{$logger_class} = $self;
+    $LOGGERS_BY_STRING->{$category} = $self;
 
     bless $self, $class;
 
@@ -73,12 +74,14 @@ sub _new {
 ##################################################
 sub layout {
 ##################################################
-    my($self, $appender_name, $format_string ) = @_;
-    
-    $LAYOUT_BY_APPENDER{$appender_name} =
-    #don't need object attribute any more? !!!
-        $self->{layout} = Log::Log4perl::Layout->new();
-    $self->{layout}->define($format_string);  
+    my($self, $layout ) = @_;
+
+    my $appender_name = $layout->appender_name();
+
+    $LAYOUT_BY_APPENDER{$appender_name} = $layout;
+                            
+
+    #$LAYOUT_BY_APPENDER{$appender_name}->define($format_string);  
 
 }
 
@@ -109,7 +112,10 @@ sub level {
 
         # 'Set' function
     if(defined $level) {
-        $self->{level} = $level;   #need to do validation here !!!
+        croak "invalid level '$level'" 
+                unless $Log::Log4perl::Level::LEVELS{$level};
+                #maybe that's encroachment, but it's fast
+        $self->{level} = $level;   
         return $level;
     }
 
@@ -255,7 +261,7 @@ sub log {
 
                 my $rendered_msg;
 
-                #is this proper behavior if no layout defined?
+                #is this proper behavior if no layout defined?  !!!
                 if ($LAYOUT_BY_APPENDER{$appender_name}) {
                     $rendered_msg = 
                         $LAYOUT_BY_APPENDER{$appender_name}->render($logger, 
