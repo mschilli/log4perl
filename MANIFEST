@@ -16,6 +16,8 @@ lib/Log/Log4perl.pm
 lib/Log/Log4perl/Appender.pm
 lib/Log/Log4perl/Appender/DBI.pm
 lib/Log/Log4perl/Config.pm
+lib/Log/Log4perl/Config/DOMConfigurator.pm
+lib/Log/Log4perl/Config/PropertyConfigurator.pm
 lib/Log/Log4perl/DateFormat.pm
 lib/Log/Log4perl/FAQ.pm
 lib/Log/Log4perl/JavaMap.pm
@@ -70,6 +72,7 @@ t/034DBI.t
 t/035JDBCAppender.t
 t/036JSyslog.t
 t/037JWin32Event.t
+t/038XML-DOM1.t
 t/deeper1.expected
 t/deeper6.expected
 t/deeper7.expected
