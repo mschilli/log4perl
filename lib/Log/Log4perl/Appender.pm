@@ -129,11 +129,12 @@ sub log { # Relay this call to Log::Dispatch::Whatever
                  );
         
         #defined but false, e.g. Appender::DBI
-    }elsif (! $self->{filter_message}) {
+    } elsif (! $self->{filter_message}) {
         ;  #leave the message alone
 
-        #defined and true
-    }else{
+    } else {
+        #defined and a function name
+        no strict qw(refs);
         $p->{message} = 
             $self->{filter_message}->($p->{message}); #syntax ok for perl5?
     }
@@ -340,28 +341,31 @@ it will overwrite an existing log file C<test.log> and start from scratch.
 
 =head1 Appenders Expecting Message Chunks
 
-Instead of simple strings, some appenders are expecting multiple fields
+Instead of simple strings, certain appenders are expecting multiple fields
 as log messages. If a statement like 
 
     $logger->debug("%d", $user, "signed in");
 
 causes an off-the-shelf C<Log::Log4perl::Screen> 
 appender to fire, the appender will 
-just concatenate the message chunks to form a single string,
-separating the chunks by a character defined in 
-C<$Log::Log4perl::JOIN_MSG_ARRAY_CHAR> (defaults to ""). 
+just concatenate the three message chunks passed to it
+in order to form a single string.
+The chunks will be separated by a string defined in 
+C<$Log::Log4perl::JOIN_MSG_ARRAY_CHAR> (defaults to the empty string
+""). 
 
 However, different appenders might choose to 
 interpret the message above differently: An
-appender of type C<Log::Log4perl::Appender::DBI> might take the
+appender like C<Log::Log4perl::Appender::DBI> might take the
 three arguments passed to the logger and put them in three separate
 rows into the DB.
 
-The  C<filter_message> appender option is ued to specify the desired 
+The  C<filter_message> appender option is used to specify the desired 
 behaviour.
 If no setting for the appender property
 
-    log4perl.appender.SomeApp.filter_message
+    # *** Not defined ***
+    # log4perl.appender.SomeApp.filter_message
 
 is defined in the Log4perl configuration file, the
 appender referenced by C<SomeApp> will fall back to the standard behaviour
@@ -370,25 +374,44 @@ C<$Log::Log4perl::JOIN_MSG_ARRAY_CHAR>.
 
 If, on the other hand, it is set to a false value, like in
 
+    log4perl.appender.A1.layout=NoopLayout
     log4perl.appender.SomeApp.filter_message = 0
 
 then the message chunks are passed unmodified to the appender as an
-array reference.
+array reference. Please note that you need to set the appender's
+layout to C<Log::Log4perl::Layout::NoopLayout> which just leaves 
+the messages chunks alone instead of formatting them or replacing
+conversion specifiers.
+
+B<Please note that the standard appenders in the Log::Dispatch hierarchy
+will choke on a bunch of messages passed to them as an array reference. 
+You can't use C<filter_message = 0> (or the function name syntax
+defined below) on them.
+Only special appenders like Log::Log4perl::Appender::DBI can deal with
+this.>
 
 If (and now we're getting fancy)
 an appender expects message chunks, but we would 
-like to pre-inspect and probably modify all of them before they're 
+like to pre-inspect and probably modify them before they're 
 actually passed to the appender's C<log>
-function, an inspection subroutine can be defined with the
+method, an inspection subroutine can be defined with the
 appender's C<filter_message> property:
 
-    log4perl.appender.SomeApp.filter_message = sub { \
-                    my @chunks = @$[0]; \
-                    unshift @chunks, "%d"; \
-                    return \@chunks;    \
-                }
+    log4perl.appender.A1.layout=NoopLayout
+    log4perl.appender.SomeApp.filter_message = main::filter_my_message
 
-The subroutine above will add a time stamp as an additional first field to 
+And, if somewhere in the C<main> package, we've got a function like
+
+    my $COUNTER = 0;
+
+    sub filter_my_message {
+        my @chunks = @{$_[0]};
+        unshift @chunks, ++$COUNTER;
+        return \@chunks;
+    }
+
+then the subroutine above will add an ever increasing counter
+as an additional first field to 
 every message passed to the C<SomeApp> appender -- but not to
 any other appender in the system.
 

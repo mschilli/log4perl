@@ -15,6 +15,7 @@ eg/syslog.pl
 lib/Log/Log4perl.pm
 lib/Log/Log4perl/Appender.pm
 lib/Log/Log4perl/Appender/DBI.pm
+lib/Log/Log4perl/Appender/TestArrayBuffer.pm
 lib/Log/Log4perl/Appender/TestBuffer.pm
 lib/Log/Log4perl/Config.pm
 lib/Log/Log4perl/Config/DOMConfigurator.pm
@@ -30,9 +31,9 @@ lib/Log/Log4perl/JavaMap/RollingFileAppender.pm
 lib/Log/Log4perl/JavaMap/SyslogAppender.pm
 lib/Log/Log4perl/JavaMap/TestBuffer.pm
 lib/Log/Log4perl/Layout.pm
+lib/Log/Log4perl/Layout/NoopLayout.pm
 lib/Log/Log4perl/Layout/PatternLayout.pm
 lib/Log/Log4perl/Layout/SimpleLayout.pm
-lib/Log/Log4perl/Layout/NoopLayout.pm
 lib/Log/Log4perl/Level.pm
 lib/Log/Log4perl/Logger.pm
 lib/Log/Log4perl/MDC.pm
@@ -51,6 +52,7 @@ t/011JFile.t
 t/012Deeper.t
 t/013Bench.t
 t/014ConfErrs.t
+t/015fltmsg.t
 t/016Export.t
 t/017Watch.t
 t/018Init.t
