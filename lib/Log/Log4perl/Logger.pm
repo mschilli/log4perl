@@ -11,7 +11,6 @@ use Log::Log4perl::Layout;
 use Log::Log4perl::Appender;
 use Log::Dispatch;
 use Carp;
-use Data::Dump qw(dump);
 
     # Initialization
 our $ROOT_LOGGER;
