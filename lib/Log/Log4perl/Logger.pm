@@ -158,11 +158,13 @@ sub set_output_methods {
             print "  ($priority{$levelname} <= $level)\n"
                   if DEBUG;
             $self->{$levelname}      = $coderef;
-            $self->{"is_$levelname"} = sub { 1 };
+            $self->{"is_$levelname"} = generate_is_xxx_coderef("1");
+            #$self->{"is_$levelname"} = sub { 1 };
         }else{
             print "  ($priority{$levelname} > $level)\n" if DEBUG;
             $self->{$levelname}      = $noop;
-            $self->{"is_$levelname"} = sub { 0 };
+            $self->{"is_$levelname"} = generate_is_xxx_coderef("0");
+            #$self->{"is_$levelname"} = sub { 0 };
         }
 
         print("  Setting [$self] $self->{category}.$levelname to ",
@@ -280,6 +282,34 @@ EOL
     return $coderef;
 }
 
+##################################################
+sub generate_is_xxx_coderef {
+##################################################
+    my($return_token) = @_;
+
+    my $coderef    = '';
+    my $watch_code = '';
+
+    if (defined $Log::Log4perl::Config::WATCHER) {
+
+        $watch_code = <<'EOL';
+        my($logger, $subname) = @_;
+        if(time() > $Log::Log4perl::Config::Watch::NEXT_CHECK_TIME) {
+            Log::Log4perl->init_and_watch();
+            # Forward call to new configuration
+            return $logger->$subname();
+        }
+EOL
+    }
+
+    my $code = <<EOL;
+    \$coderef = sub { $watch_code return $return_token; };
+EOL
+
+    eval $code or die "$@";
+
+    return $coderef;
+}
 
 ##################################################
 sub generate_watch_code {
@@ -577,7 +607,7 @@ sub create_log_level_methods {
      };
 
   *{__PACKAGE__ . "::is_$lclevel"} = sub {
-      $_[0]->{"is_" . $level}->();
+      $_[0]->{"is_" . $level}->($_[0], "is_" . $lclevel);
 #    return Log::Log4perl::Level::isGreaterOrEqual($_[0]->level(),
 #						  $$level
 #						  ); 
