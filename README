@@ -286,6 +286,14 @@ How to use it
 
     to log to the screen, to files and to databases.
 
+    On CPAN, you can find additional appenders like
+
+        Log::Log4perl::Layout::XMLLayout
+
+    by Guido Carls <gcarls@cpan.org>. It allows for hooking up Log::Log4perl
+    with the graphical Log Analyzer Chainsaw (see "Can I use Log::Log4perl
+    with log4j's Chainsaw?" in Log::Log4perl::FAQ).
+
   Additional Appenders via Log::Dispatch
     "Log::Log4perl" also supports *Dave Rolskys* excellent "Log::Dispatch"
     framework which implements a wide variety of different appenders.
@@ -871,7 +879,7 @@ Cool Tricks
     there's a way to have Log::Log4perl periodically check for changes in
     the configuration and reload it if necessary:
 
-        Log::Log4perl->init($conf_file, $delay);
+        Log::Log4perl->init_and_watch($conf_file, $delay);
 
     In this mode, Log::Log4perl will examine the configuration file
     $conf_file every $delay seconds for changes via the file's last
@@ -892,7 +900,7 @@ Cool Tricks
     configured to listen for a Unix signal to reload the configuration
     instead:
 
-        Log::Log4perl->init($conf_file, 'HUP');
+        Log::Log4perl->init_and_watch($conf_file, 'HUP');
 
     This will set up a signal handler for SIGHUP and reload the
     configuration if the application receives this signal, e.g. via the
