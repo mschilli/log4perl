@@ -22,6 +22,13 @@ DONE (Dispatch singleton) question - are appenders created just once if they're 
 
 
 Mike:
+* Log::Dispatch wrapper for perl modules just like JavaMap?
+* Throw Data::Dump out
+* Log::Dispatch::Buffer: Delete from MANIFEST
+* Log::Log4perl->init()
+* Thread safety
+* Multiple appenders
+
 * Define default if there's no layout:
   http://jakarta.apache.org/log4j/docs/api/org/apache/log4j/SimpleLayout.html
 * Tune performance of level() lookups
