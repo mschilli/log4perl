@@ -37,9 +37,15 @@ sub new {
         # see 'perldoc -f require' for why two evals
         eval "require $appenderclass";  
         die $@ if $@;
+
+           # Eval erroneously succeeds on unknown appender classes if
+           # the eval string just consists of valid perl code (e.g. an
+           # appended ';' in $appenderclass variable). Fail if we see
+           # anything in there that can't be class name.
+        die "" if $appenderclass =~ /[^:\w]/;
     };
 
-    $@ and die "ERROR: appenderclass $appenderclass doesn't exist\n";
+    $@ and die "ERROR: appenderclass '$appenderclass' doesn't exist\n";
 
     $params{name} = unique_name() unless exists $params{name};
 
@@ -135,7 +141,7 @@ sub layout { # Set/Get the layout object
         # somebody wants a layout, but not set yet, so give 'em default
     }elsif (! $self->{layout}) {
         $self->{layout} = Log::Log4perl::Layout::SimpleLayout
-                                                ->new($self->{name})
+                                                ->new($self->{name});
 
     }
 
