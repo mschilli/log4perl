@@ -166,6 +166,25 @@ on to C<change_detected()> as an optional parameter, like in
 which then won't trigger a call to C<time()>, but use the value
 provided.
 
+=head2 SIGNAL MODE
+
+Instead of polling time and file changes, C<new()> can be instructed 
+to set up a signal handler. If you call the constructor like
+
+    my $watcher = Log::Log4perl::Config::Watch->new(
+                          file    => "/data/my.conf",
+                          signal  => 'HUP'
+                  );
+
+then a signal handler like
+
+    $SIG{HUP} = sub { $SIGNAL_CAUGHT = 1; };
+
+will be installed, setting a globally accessible variable 
+C<Log::Log4perl::Config::Watch::SIGNAL_CAUGHT> to a true value when
+the signal arrives. Comes with all the problems that signal handlers
+go along with.
+
 =back
 
 =head1 SEE ALSO
