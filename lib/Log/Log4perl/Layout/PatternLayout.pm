@@ -52,7 +52,10 @@ sub new {
 
     my ($layout_string);
      
-    if (ref $data) {
+    if (ref $data && !exists $data->{ConversionPattern}{value} or
+        !defined $data) {
+        die "No ConversionPattern given for PatternLayout\n";
+    } elsif (ref $data) {
         $layout_string = $data->{ConversionPattern}{value};
     } else {
         $layout_string = $data;

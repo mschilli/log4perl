@@ -10,6 +10,8 @@ Revision history for Log::Log4perl
            levels (as submitted by Aaron Straup Cope <asc@vineyard.net>)
     * (ms) Fixed logdie/logwarn caller(x) offset bug reported by 
            Brian Duffy <Brian.Duffy@DFA.STATE.NY.US>
+    * (ms) dies now on PatternLayout without ConversionPattern (helps detecting
+           typos in conf files)
 
 0.24 09/26/2002
     * (kg) Fix for init_and_watch and test cases

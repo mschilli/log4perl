@@ -7,7 +7,7 @@
 # change 'tests => 1' to 'tests => last_test_to_print';
 #########################
 use Test;
-BEGIN { plan tests => 9 };
+BEGIN { plan tests => 10 };
 
 use Log::Log4perl;
 use Log::Log4perl::TestBuffer;
@@ -142,5 +142,18 @@ ok($stub_hook->{P}{login}{password}, 'bunny');
 ok($stub_hook->{P}{to}[0], 'elmer@a.jabber.server');
 ok($stub_hook->{P}{to}[1], 'sam@another.jabber.server');
 
+##########################################################################
+# Test what happens if we define a PatternLayout without ConversionPattern
+##########################################################################
+Log::Log4perl::TestBuffer->reset();
 
+$conf = <<EOT;
+    log4perl.logger.Twix.Bar = DEBUG, A1
+    log4perl.appender.A1=Log::Log4perl::TestBuffer
+    log4perl.appender.A1.layout=PatternLayout
+    #log4perl.appender.A1.layout.ConversionPattern=%d-%c %m%n
+EOT
 
+eval { Log::Log4perl->init(\$conf); };
+
+ok($@, '/No ConversionPattern given for PatternLayout/'); 
