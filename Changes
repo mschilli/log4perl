@@ -1,5 +1,5 @@
 ##################################################
-Revision history for Log::Log4perl
+ Revision history for Log::Log4perl
 ##################################################
 
 0.43 (not yet released)
@@ -9,6 +9,8 @@ Revision history for Log::Log4perl
            limit message delivery to adjustable time windows.
     * (ms) Fixed last 033UsrCspec.t test case to run on Win32 as well
            (path fixed).
+    * (ms) Lars Thegler <lars@thegler.dk> provided a patch to keep 
+           compatibility with 5.005_03.
 
 0.42 (02/14/2004)
     * (kg) added filters to XML DOMConfig and DTD

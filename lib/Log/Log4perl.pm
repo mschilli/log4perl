@@ -2153,6 +2153,7 @@ our
     Brett Rann <brettrann@mail.com>
     Erik Selberg <erik@selberg.com>
     Aaron Straup Cope <asc@vineyard.net>
+    Lars Thegler <lars@thegler.dk>
     Mac Yang <mac@proofpoint.com>
 
 =head1 COPYRIGHT AND LICENSE

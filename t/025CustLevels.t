@@ -31,8 +31,7 @@ foreach (1 .. 14) {
 # 15th should fail.. this assumes that each level is 10000 apart from
 # the other.
 
-ok(eval { Log::Log4perl::Logger::create_custom_level("TEST15", "INFO") }, 
-   undef);
+ok(!defined eval { Log::Log4perl::Logger::create_custom_level("TEST15", "INFO") });
 
 # now, by re-arranging (as we whine about in create_custom_levels), we
 # should be able to get 15.
@@ -87,8 +86,7 @@ Log::Log4perl::init(\$config);
 # can't create a custom level after init... let's test that. Just look
 # for an undef (i.e. failure) from the eval
 
-ok(eval { Log::Log4perl::Logger::create_custom_level("NOTIFY", "WARN"); },
-   undef);
+ok(!defined eval { Log::Log4perl::Logger::create_custom_level("NOTIFY", "WARN"); });
 
 
 # *********************
