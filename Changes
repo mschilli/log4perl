@@ -2,7 +2,7 @@
 Revision history for Log::Log4perl
 ##################################################
 
-0.31 (not released yet)
+0.31 05/08/2003
     * (kg) fixed bug Appender::DBI where it was consuming the message
            array before other appenders could get to it
     * (ms) changed config_and_watch to ignore clock differences between
