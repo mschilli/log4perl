@@ -34,15 +34,12 @@ sub parse {
 
             $val =~ s/\s+$//;
 
-            if($key !~ /\./) {
-               print "Variable defined: '$key' => '$val'\n" if _INTERNAL_DEBUG;
-               $val = eval_if_perl($val);
-               $var_subst{$key} = $val;
-               next;
-            }
+                # Everything could potentially be a variable assignment
+            $var_subst{$key} = $val;
 
+                # Substitute any variables
             $val =~ s/\${(.*?)}/
-                      Log::Log4perl::Config::basic_subst($1, \%var_subst)/gex;
+                      Log::Log4perl::Config::var_subst($1, \%var_subst)/gex;
 
             $val = eval_if_perl($val) if 
                 $key !~ /\.(cspec\.)|warp_message|filter/;
@@ -98,7 +95,7 @@ Initializes log4perl from a properties file, stuff like
     log4j.category.a.b.c.d = WARN, A1
     log4j.category.a.b = INFO, A1
 
-It also understands basic variable substitution, the following
+It also understands variable substitution, the following
 configuration is equivalent to the previous one:
 
     settings = WARN, A1
