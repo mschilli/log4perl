@@ -29,7 +29,7 @@ my $admdir = ".";
 $admdir = "adm" if -d "lib";
 runtests("$admdir/podok");
 
-ModDevUtils::release(1) or exit 0;
+ModDevUtils::release(0) or exit 0;
 
 my $ball = ModDevUtils::tarball_name();
 print "Copying $ball to log4perl.sourceforge.net ...\n";
