@@ -45,10 +45,16 @@ sub init {
 sub init_and_watch {
 ###########################################
     my ($class, $config, $delay) = @_;
+        # delay can be a signal name - in this case we're gonna
+        # set up a signal handler.
 
     if(defined $WATCHER) {
         $config = $WATCHER->file();
-        $delay  = $WATCHER->check_interval();
+        if(defined $Log::Log4perl::Config::Watch::SIGNAL_CAUGHT) {
+            $delay  = $WATCHER->signal();
+        } else {
+            $delay  = $WATCHER->check_interval();
+        }
     }
 
     print "init_and_watch ($config-$delay). Resetting.\n" if DEBUG;
@@ -57,8 +63,6 @@ sub init_and_watch {
 
     defined ($delay) or $delay = $DEFAULT_WATCH_DELAY;  
 
-    $delay =~ /\D/ && die "illegal non-numerical value for delay: $delay";
-
     if (ref $config) {
         die "Log4perl can only watch a file, not a string of " .
             "configuration information";
@@ -66,10 +70,17 @@ sub init_and_watch {
         die "Log4perl can only watch a file, not a url like $config";
     }
 
-    $WATCHER = Log::Log4perl::Config::Watch->new(
-                      file           => $config,
-                      check_interval => $delay,
-               );
+    if($delay =~ /\D/) {
+        $WATCHER = Log::Log4perl::Config::Watch->new(
+                          file   => $config,
+                          signal => $delay,
+                   );
+    } else {
+        $WATCHER = Log::Log4perl::Config::Watch->new(
+                          file           => $config,
+                          check_interval => $delay,
+                   );
+    }
 
     _init($class, $config);
 }

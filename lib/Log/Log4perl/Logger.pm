@@ -292,13 +292,14 @@ sub generate_is_xxx_coderef {
 
     if (defined $Log::Log4perl::Config::WATCHER) {
 
-        $watch_code = <<'EOL';
-        my($logger, $subname) = @_;
-        if(time() > $Log::Log4perl::Config::Watch::NEXT_CHECK_TIME and
-           $Log::Log4perl::Config::WATCHER->change_detected()) {
+        my $cond = generate_watch_conditional();
+
+        $watch_code = <<EOL;
+        my(\$logger, \$subname) = \@_;
+        if($cond) {
             Log::Log4perl->init_and_watch();
             # Forward call to new configuration
-            return $logger->$subname();
+            return \$logger->\$subname();
         }
 EOL
     }
@@ -317,20 +318,37 @@ sub generate_watch_code {
 ##################################################
     print "generate_watch_code:\n" if DEBUG;
 
-    return <<'EOL';
+    my $cond = generate_watch_conditional();
+
+    return <<EOL;
         print "exe_watch_code:\n" if DEBUG;
                        
         # more closures here
-        if(time() > $Log::Log4perl::Config::Watch::NEXT_CHECK_TIME and
-           $Log::Log4perl::Config::WATCHER->change_detected()) {
+        if($cond) {
             Log::Log4perl->init_and_watch();
                        
-            my $methodname = lc($level);
-            $logger->$methodname(@_); # send the message
-                                      # to the new configuration
+            my \$methodname = lc(\$level);
+            \$logger->\$methodname(\@_); # send the message
+                                         # to the new configuration
             return;        #and return, we're done with this incarnation
         }
 EOL
+}
+
+##################################################
+sub generate_watch_conditional {
+##################################################
+
+    if(defined $Log::Log4perl::Config::Watch::SIGNAL_CAUGHT) {
+        # In this mode, we just check for the variable indicating
+        # that the signal has been caught
+        return q{$Log::Log4perl::Config::Watch::SIGNAL_CAUGHT};
+    }
+
+    # In this mode, we check if the config file has been modified
+    return q{time() > $Log::Log4perl::Config::Watch::NEXT_CHECK_TIME 
+              and $Log::Log4perl::Config::WATCHER->change_detected()};
+  
 }
 
 ##################################################
