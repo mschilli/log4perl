@@ -11,7 +11,7 @@ $TMP_FILE = "tmp/warnings" if ! -d "t";
 
 BEGIN { plan tests => 2 }
 END   { close IN;
-        #unlink $TMP_FILE;
+        unlink $TMP_FILE;
       }
 
 ok(1); # Initialized ok

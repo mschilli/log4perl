@@ -29,6 +29,9 @@ Revision history for Log::Log4perl
       have perl optimize away the debug statements in case it's set to 0.
     * A warning is issued now (once) if init() hasn't been called or
       no appenders have been defined.
+    * Added ':levels' target to Log::Log4perl to import $DEBUG, $ERROR,
+      etc. levels (just like 'use Log::Log4perl::Level' works).
+    * Added ':easy' target to allow for simple setup
 
 0.20 7/23/2002
     * Strip trailing spaces in config file

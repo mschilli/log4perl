@@ -7,6 +7,7 @@ use strict;
 use warnings;
 
 use Log::Log4perl::Logger;
+use Log::Log4perl::Level;
 use Log::Log4perl::Config;
 use Log::Dispatch::Screen;
 use Log::Log4perl::Appender;
@@ -22,6 +23,12 @@ sub import {
 
     my(%tags) = map { $_ => 1 } @_;
 
+        # Lazy man's logger
+    if(exists $tags{':easy'}) {
+        $tags{':levels'} = 1;
+        $tags{'get_logger'} = 1;
+    }
+
     if(exists $tags{get_logger}) {
         # Export get_logger into the calling module's 
         my $caller_pkg = caller();
@@ -29,6 +36,24 @@ sub import {
         *{"$caller_pkg\::get_logger"} = *get_logger;
 
         delete $tags{get_logger};
+    }
+
+    if(exists $tags{':levels'}) {
+        # Export log levels ($DEBUG, $INFO etc.) from Log4perl::Level
+        my $caller_pkg = caller();
+
+        for my $key (keys %Log::Log4perl::Level::PRIORITY) {
+            my $name  = "$caller_pkg\::$key";
+            my $value = $Log::Log4perl::Level::PRIORITY{$key};
+            *{"$name"} = \$value;
+        }
+
+        delete $tags{':levels'};
+    }
+
+        # Lazy man's logger
+    if(exists $tags{':easy'}) {
+        delete $tags{':easy'};
     }
 
     if(keys %tags) {
@@ -81,15 +106,24 @@ sub init_and_watch {
 
 
 ##################################################
-sub default_init { # Initialize the root logger with a screen appender
+sub easy_init { # Initialize the root logger with a screen appender
 ##################################################
-    my($class, @args) = @_;
+    my($class, $level) = @_;
+
+    # Did somebody call us with Log::Log4perl::easy_init()?
+    if(!defined $level and $class =~ /^\d+$/) {
+        $level = $class;
+    }
+
+    $level = $DEBUG unless defined $level;
 
     my $app = Log::Log4perl::Appender->new("Log::Dispatch::Screen");
-    my $layout = Log::Log4perl::Layout::PatternLayout->new("%d> %F %L %m %n");
+    my $layout = Log::Log4perl::Layout::PatternLayout->new(
+                     "%d %p> %F{1}:%L %M - %m%n");
     $app->layout($layout);
 
     my $logger = Log::Log4perl->get_logger("");
+    $logger->level($level);
     $logger->add_appender($app);
 }
 

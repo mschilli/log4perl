@@ -12,12 +12,16 @@ use strict;
 # change 'tests => 1' to 'tests => last_test_to_print';
 #########################
 use Test;
-BEGIN { plan tests => 9 };
+BEGIN { plan tests => 13 };
 
-use Log::Log4perl qw(get_logger);
-use Log::Log4perl::Level;
+use Log::Log4perl qw(get_logger :levels);
 
 ok(1);
+
+ok($DEBUG > $ERROR);
+ok($INFO > $WARN);
+ok($WARN > $ERROR);
+ok($ERROR > $FATAL);
 
 ##################################################
 # Init logger
@@ -98,3 +102,4 @@ $log8->debug("Is this it?");
 
 ok($app->buffer(), "DEBUG - Is this it?\n");
 $app->buffer("");
+
