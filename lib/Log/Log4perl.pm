@@ -12,7 +12,7 @@ use Log::Log4perl::Config;
 use Log::Dispatch::Screen;
 use Log::Log4perl::Appender;
 
-our $VERSION = '0.24alpha';
+our $VERSION = '0.24beta';
 
    # set this to '1' if you're using a wrapper
    # around Log::Log4perl
@@ -205,10 +205,11 @@ of your system from the outside. It implements the widely popular
 
 B<For a detailed tutorial on Log::Log4perl usage, please read [1]>.
 
-A WORD OF CAUTION: THIS PROJECT IS VERY ACTIVELY BEING DEVELOPED ON.
-THE API HAS REACHED A MATURE STATE, WE WILL NOT CHANGE IT UNLESS 
-FOR A GOOD REASON. ON http://log4perl.sourceforge.net YOU'LL ALWAYS 
-GET THE LATEST SCOOP.
+A WORD OF CAUTION: Log::Log4perl IS STILL UNDER DEVELOPMENT. WE WILL
+ALWAYS MAKE SURE THE TEST SUITE (approx. 300 CASES) WILL PASS, BUT THERE 
+MIGHT STILL BE BUGS. PLEASE CHECK http://log4perl.sourceforge.net REGULARILY
+FOR THE LATEST RELEASE. THE API HAS REACHED A MATURE STATE, WE WILL 
+NOT CHANGE IT UNLESS FOR A GOOD REASON. 
 
 Logging beats a debugger when you want to know what's going on 
 in your code during runtime. However, traditional logging packages

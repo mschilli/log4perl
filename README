@@ -1,5 +1,5 @@
 ######################################################################
-    Log::Log4perl 0.24alpha
+    Log::Log4perl 0.24beta
 ######################################################################
 
 NAME
@@ -42,10 +42,11 @@ DESCRIPTION
 
     For a detailed tutorial on Log::Log4perl usage, please read [1].
 
-    A WORD OF CAUTION: THIS PROJECT IS VERY ACTIVELY BEING DEVELOPED ON. THE
-    API HAS REACHED A MATURE STATE, WE WILL NOT CHANGE IT UNLESS FOR A GOOD
-    REASON. ON http://log4perl.sourceforge.net YOU'LL ALWAYS GET THE LATEST
-    SCOOP.
+    A WORD OF CAUTION: Log::Log4perl IS STILL UNDER DEVELOPMENT. WE WILL
+    ALWAYS MAKE SURE THE TEST SUITE (approx. 300 CASES) WILL PASS, BUT THERE
+    MIGHT STILL BE BUGS. PLEASE CHECK http://log4perl.sourceforge.net
+    REGULARILY FOR THE LATEST RELEASE. THE API HAS REACHED A MATURE STATE,
+    WE WILL NOT CHANGE IT UNLESS FOR A GOOD REASON.
 
     Logging beats a debugger when you want to know what's going on in your
     code during runtime. However, traditional logging packages are too
