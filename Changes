@@ -3,6 +3,8 @@ Revision history for Log::Log4perl
 ##################################################
 
 0.28 (not yet released)
+    * (kg) t/024WarnDieCarp was assuming / as directory separator, failed
+           on Win32
     * (kg) implemented JavaMaps for NTEventLogAppender, SyslogAppender
     * (kg) found and addressed circular ref problem in Logger->reset
     * (kg) moved TestBuffer under Appender/ directory along with DBI
