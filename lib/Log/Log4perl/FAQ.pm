@@ -791,6 +791,28 @@ with message duplication, there's a non-standard solution for you:
 The C<oneMessagePerAppender> flag will suppress duplicate messages
 to the same appender. Again, that's non-standard. But way cool :).
 
+=head2 How can I configure Log::Log4perl to send me email if something happens?
+
+Some incidents require immediate action. You can't wait until someone
+checks the log files, you need to get notified on your pager right away.
+
+The easiest way to do that is by using the C<Log::Dispatch::Email::MailSend>
+module as an appender. It comes with the C<Log::Dispatch> bundle and
+allows you to specify recipient and subject of outgoing emails in the Log4perl
+configuration file:
+
+    log4perl.category = FATAL, Mailer
+    log4perl.appender.Mailer         = Log::Dispatch::Email::MailSend
+    log4perl.appender.Mailer.to      = drone@pageme.net
+    log4perl.appender.Mailer.subject = Something's broken!
+    log4perl.appender.Mailer.layout  = SimpleLayout
+
+The message of every log incident this appender gets
+will then be forwarded to the given
+email address. Check the C<Log::Dispatch::Email::MailSend> documentation
+for details. And please make sure there's not a flood of email messages 
+sent out by your application, filling up the receipient's inbox.
+
 =cut
 
 =head1 SEE ALSO
