@@ -10,10 +10,13 @@ TODO:
 * Should we canonicalize on a level is a string and a priority is an int?  
   might make maintenance easier
 
-* test cases should use platform independend directory separator 
-  (Mac's pre-OSX ':'?)
 
 Kevin:
+* I think we should not install Log::Dispatch::Buffer, we only use it for our
+test cases, we shouldn't infringe on the Log::Dispatch namespace, should
+we?
+* test cases should use platform independend directory separator 
+  (Mac's pre-OSX ':'?)
 DONE need level validation on Logger::level() 
 DONE Create new module negotiating between Java-style config files
   and perl-style appenders
