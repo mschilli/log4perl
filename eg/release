@@ -20,11 +20,12 @@ system("ssh log4perl.sourceforge.net bin/rel $ball\n");
 
 # Win32 package
 print "Building Win32 ppm distribution ...\n";
-system("make clean; perl Makefile.PL BINARY_LOCATION=\"http://log4perl.sourceforge.net/ppm/Log-Log4perl.tar.gz\"; make; make ppd; perl -n -i -e 'print unless /Test-More|Test-Simple/' Log-Log4perl.ppd; tar zcf Log-Log4perl.tar.gz blib");
+system("make clean; perl Makefile.PL BINARY_LOCATION=\"http://log4perl.sourceforge.net/ppm/Log-Log4perl.tar.gz\"; make; make ppd; tar zcf Log-Log4perl.tar.gz blib");
 print "Patching Log-Log4perl.ppd ...\n";
 open FILE, "<Log-Log4perl.ppd" or die "Cannot open Log-Log4perl.ppd";
 my $data = join '', <FILE>;
 close FILE;
+$data =~ s#^.*?Test-(More|Simple).*?\n##mg;
 $data =~ s#<OS NAME=".*?" />#<OS NAME="MSWin32" />#;
 $data =~ s#<ARCHITECTURE NAME=".*?" />#<ARCHITECTURE NAME="MSWin32-x86-multi-thread" />#;
 
