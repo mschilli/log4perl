@@ -96,10 +96,39 @@ splits at its newlines and transforms it into an array:
 C<$data> needs to point to the config data structure, which
 is a a hash of hashes:
 
-    $data->{log4perl}->{category}->{Bar}->{Twix}->{value} = "WARN, Logfile"
-    $data->{log4perl}->{appender}->{Logfile}->{value} = 
+    $data->{category}->{Bar}->{Twix}->{value} = "WARN, Logfile"
+    $data->{appender}->{Logfile}->{value} = 
         "Log::Log4perl::Appender::File";
     ...
+
+=back
+
+=head2 Parser requirements
+
+=over 4
+
+=item *
+
+If the parser provides variable substitution functionality, it has
+to implement it.
+
+=item *
+
+The parser's C<parse()> method returns a reference to a hash of hashes (HoH). 
+The top-most hash contains the
+top-level keywords (C<category>, C<appender>) as keys, associated
+with values which are references to more deeply nested hashes.
+
+=item *
+
+The C<log4perl.> prefix (e.g. as used in the PropertyConfigurator class)
+is stripped, it's not part in the HoH structure.
+
+=item *
+
+Each Log4perl config value is indicated by the C<value> key, as in
+
+    $data->{category}->{Bar}->{Twix}->{value} = "WARN, Logfile"
 
 =back
 
@@ -113,6 +142,7 @@ Log::Log4perl::Config::LDAPConfigurator (tbd!)
 
 =head1 AUTHOR
 
+Mike Schilli, <m@perlmeister.com>, 2004
 Kevin Goess, <cpan@goess.org> Jan-2003
 
 =cut
