@@ -249,11 +249,12 @@ sub log {
 
                 my $rendered_msg;
 
-                #is this proper behavior if no layout defined?  !!!
                 if ($appender->layout()) {
                     $rendered_msg = $appender->layout()->render(
                             $logger, $message, $category,
-                            $level, 2);
+                            $level, 2);  # 2 levels up from the renderer
+                                         # is the function 
+                                         # calling into the Logger
                 }else{
                     # Accoding to 
                     # http://jakarta.apache.org/log4j/docs/api/org/...

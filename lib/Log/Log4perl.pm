@@ -8,6 +8,8 @@ use warnings;
 
 use Log::Log4perl::Logger;
 use Log::Log4perl::Config;
+use Log::Dispatch::Screen;
+use Log::Log4perl::Appender;
 
 our $VERSION = '0.17';
 
@@ -19,20 +21,6 @@ sub import {
     no strict qw(refs);
 
     my(%tags) = map { $_ => 1 } @_;
-
-    if(exists $tags{':shortcuts'}) {
-        # Export all symbols for lazy man's logger    
-
-        my $caller_pkg = caller();
-
-        *{"$caller_pkg\::debug"} = sub { get_logger($caller_pkg)->debug(@_) };
-        *{"$caller_pkg\::info"} = sub { get_logger($caller_pkg)->info(@_) };
-        *{"$caller_pkg\::warn"} = sub { get_logger($caller_pkg)->warn(@_) };
-        *{"$caller_pkg\::error"} = sub { get_logger($caller_pkg)->error(@_) };
-        *{"$caller_pkg\::fatal"} = sub { get_logger($caller_pkg)->fatal(@_) };
-
-        delete $tags{':shortcuts'};
-    }
 
     if(exists $tags{get_logger}) {
         # Export get_logger into the calling module's 
@@ -64,7 +52,7 @@ sub reset { # Mainly for debugging/testing
 }
 
 ##################################################
-sub init { # Initialize the whole thing
+sub init { # Read the config file
 ##################################################
     my($class, @args) = @_;
 
@@ -75,6 +63,19 @@ sub init { # Initialize the whole thing
 
     # Delegate this to the config module
     return Log::Log4perl::Config->init(@args);
+}
+
+##################################################
+sub default_init { # Initialize the root logger with a screen appender
+##################################################
+    my($class, @args) = @_;
+
+    my $app = Log::Log4perl::Appender->new("Log::Dispatch::Screen");
+    my $layout = Log::Log4perl::Layout::PatternLayout->new("%d> %F %L %m %n");
+    $app->layout($layout);
+
+    my $logger = Log::Log4perl->get_logger("");
+    $logger->add_appender($app);
 }
 
 ##################################################
@@ -277,11 +278,11 @@ higher prioritized messages to the C</tmp/my.log> logfile:
   # Initialize the logger
 
   use Log::Log4perl;
-  use Log::Dispatch::File;
+  use Log::Dispatch::Screen;
   use Log::Log4perl::Appender;
 
   my $app = Log::Log4perl::Appender->new("Log::Dispatch::Screen");
-  my $layout = Log::Log4perl::Layout::PatternLayout->new("%d> %F %L %n");
+  my $layout = Log::Log4perl::Layout::PatternLayout->new("%d> %F %L %m %n");
   $app->layout($layout);
 
   my $logger = Log::Log4perl->get_logger("My.Component");
@@ -459,25 +460,25 @@ The names and values of additional parameters are dependent on the requirements
 of the particular C<Log::Dispatch::*> class and can be looked up in their
 manual pages.
 
-On a side note:
-In case you're wondering if C<Log::Log4perl::Appender-E<gt>new()> will also take care
-of the C<min_level> argument to the C<Log::Dispatch::*> constructors called behind the 
-scenes -- yes, it does. This is because we want the
+On a side note: In case you're wondering if
+C<Log::Log4perl::Appender-E<gt>new()> will also take care of the
+C<min_level> argument to the C<Log::Dispatch::*> constructors called
+behind the scenes -- yes, it does. This is because we want the
 C<Log::Dispatch> objects to blindly log everything we send them
 (C<debug> is their lowest setting) because I<we> in C<Log::Log4perl>
 want to call the shots and decide on when and what to log.
 
-The call to the appender's I<layout()> method specifies the format (as a 
+The call to the appender's I<layout()> method specifies the format (as a
 previously created C<Log::Log4perl::PatternLayout> object) in which the
-message is being logged in the specified appender. The format shown above 
-is logging not only the message but also the number of milliseconds since
-the program has started (%r), the name of the file the call to the logger
-has happened and the line number there (%F and %L), the message itself
-(%m) and a OS-specific newline character (%n).
-For more detailed info on layout formats, see L<Log Layouts>.
-If you don't specify a layout, the logger will fall back to 
-C<Log::Log4perl::SimpleLayout>, which logs the debug level, a hyphen (-) and the 
-log message.
+message is being logged in the specified appender. The format shown
+above is logging not only the message but also the number of
+milliseconds since the program has started (%r), the name of the file
+the call to the logger has happened and the line number there (%F and
+%L), the message itself (%m) and a OS-specific newline character (%n).
+For more detailed info on layout formats, see L<Log Layouts>. If you
+don't specify a layout, the logger will fall back to
+C<Log::Log4perl::SimpleLayout>, which logs the debug level, a hyphen (-)
+and the log message.
 
 Once the initialisation shown above has happened once, typically in
 the startup code of your system, just use this logger anywhere in 
@@ -505,13 +506,13 @@ shown above. Now
   my $log = Log::Log4perl->get_logger("My::Category");
   $log->info("This is an informational message");
 
-will trigger a logger with no layout or appenders or even a level defined.
-This logger, however, will inherit the level from categories up the
-hierarchy -- ultimately the root logger, since there's no C<My> logger. 
-Once it detects that it needs
-to log a message, it will first try to find its own appenders
-(which it doesn't have any of) and then walk up the hierarchy (first C<My>, 
-then C<root>) to call any appenders defined there.
+will trigger a logger with no layout or appenders or even a level
+defined. This logger, however, will inherit the level from categories up
+the hierarchy -- ultimately the root logger, since there's no C<My>
+logger. Once it detects that it needs to log a message, it will first
+try to find its own appenders (which it doesn't have any of) and then
+walk up the hierarchy (first C<My>, then C<root>) to call any appenders
+defined there.
 
 This will result in exactly the same behaviour as shown above -- with the 
 exception that other category loggers could also use the root logger's 
@@ -806,6 +807,19 @@ in object-oriented style, using the class hierarchy is usually your best
 choice. Think about the people taking over your code one day: The
 class hierarchy is probably what they know right up front, so it's easy
 for them to tune the logging to their needs.
+
+=head1 Cool Tricks
+
+When getting an instance of a logger, instead of saying
+
+    use Log::Log4perl;
+    my $logger = Log::Log4perl->get_logger();
+
+it's often more convenient to import the C<get_logger> method from 
+C<Log::Log4perl> into the current namespace:
+
+    use Log::Log4perl qw(get_logger);
+    my $logger = get_logger();
 
 =head1 How about Log::Dispatch::Config?
 

@@ -4,7 +4,10 @@ Revision history for Log::Log4perl
 
 0.17 07/11/2002
     * Updated documentation according to Dave Rolsky's suggestions
-    * Introduced experimental ':shortcuts' feature
+    * Lots of other documentation fixes
+    * Fixed bug in renderer, %M was displayed as the logger function
+      bumped up the level by 1
+    * Fixed %% bug
 
 0.16 07/10/2002
     * Updated documentation for CPAN release

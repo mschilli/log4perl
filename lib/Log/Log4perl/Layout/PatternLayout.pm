@@ -59,17 +59,12 @@ sub define {
 ##################################################
     my($self, $format) = @_;
 
-    #print "format: '$format'\n";
-
     # Parse the format
-    while($format =~ s/%(-*\d*)
+    $format =~ s/%(-*\d*)
                        ([cCdfFILmMnprtxX%])
                        (?:{(.*?)})*/
                        rep($self, $1, $2, $3);
-                      /gex) {
-    }
-
-    #print "printformat: '$format'\n";
+                      /gex;
 
     $self->{printformat} = $format;
 }
@@ -79,7 +74,10 @@ sub rep {
 ##################################################
     my($self, $num, $op, $curlies) = @_;
 
-    return " percent" if $op eq "%";
+        # There seems to be a bug in the regex engine
+        # causing an infinite loop if we return "%%" here.
+        # Just return " percent" for now to work around this.
+    return "%%" if $op eq "%";
 
     push @{$self->{stack}}, [$op, $curlies];
 
@@ -107,16 +105,25 @@ sub render {
        $self->{info_needed}->{M} or
        0
       ) {
-        my ($p, $f, $l) = caller($caller_level);
         my ($package, $filename, $line, 
             $subroutine, $hasargs,
             $wantarray, $evaltext, $is_require, 
             $hints, $bitmask) = caller($caller_level);
+
         $info{L} = $line;
         $info{F} = $filename;
         $info{C} = $package;
-        $info{M} = $subroutine;
-        $info{l} = "$subroutine $filename ($line)";
+
+        if($self->{info_needed}->{M} or
+           $self->{info_needed}->{l} or
+           0) {
+            # For the name of the subroutine the logger was triggered,
+            # we need to go one more level up
+            $subroutine = (caller($caller_level+1))[3];
+            $subroutine = "main::" unless $subroutine;
+            $info{M} = $subroutine;
+            $info{l} = "$subroutine $filename ($line)";
+        }
     }
 
     $info{c} = $category;
