@@ -304,6 +304,72 @@ appender inheritance. Check
 
 for details. Have fun!
 
+=head2 How can I make sure my application logs a message when it dies unexpectedly?
+
+Whenever you encounter a fatal error in your application, instead of saying
+something like
+
+    open FILE, "<blah" or die "Can't open blah -- bailing out!";
+    
+just use Log::Log4perl's fatal functions instead:
+
+    my $log = get_logger("Some::Package");
+    open FILE, "<blah" or $log->logdie("Can't open blah -- bailing out!");
+
+This will both log the message with priority FATAL according to your current
+Log::Log4perl configuration and then call Perl's C<die()> 
+afterwards to terminate the program. It works the same with 
+stealth loggers (see L<Log::Log4perl/"Stealth Loggers">), 
+all you need to do is call
+
+    use Log::Log4perl qw(:easy);
+    open FILE, "<blah" or LOGDIE "Can't open blah -- bailing out!";
+
+What can you do if you're using some library which doesn't use Log::Log4perl
+and calls C<die()> internally if something goes wrong? Use a
+C<$SIG{__DIE__}> pseudo signal handler
+
+    use Log::Log4perl qw(get_logger);
+
+    $SIG{__DIE__} = sub {
+        $Log::Log4perl::caller_depth++;
+        my $logger = get_logger("");
+        $logger->fatal(@_);
+        exit 1;
+    };
+
+This will catch every C<die()>-Exception of your
+application or the modules it uses. It
+will fetch a root logger and pass on the C<die()>-Message to it.
+If you make sure you've configured with a root logger like this:
+
+    Log::Log4perl->init(\q{
+        log4perl.category         = FATAL, Logfile
+        log4perl.appender.Logfile = Log::Dispatch::File
+        log4perl.appender.Logfile.filename = fatal_errors.log
+        log4perl.appender.Logfile.layout = \
+                   Log::Log4perl::Layout::PatternLayout
+        log4perl.appender.Logfile.layout.ConversionPattern = %F{1}-%L (%M)> %m%n
+    });
+
+then all C<die()> messages will be routed to a file properly. The line
+
+     $Log::Log4perl::caller_depth++;
+
+in the pseudo signal handler above merits a more detailed explanation. With
+the setup above, if a module calls C<die()> in one of its functions, 
+the fatal message will be logged in the signal handler and not in the
+original function -- which will cause the %F, %L and %M placeholders
+in the pattern layout to be replaced by the filename, the line number
+and the function/method name of the signal handler, not the error-throwing
+module. To adjust this, Log::Log4perl has the C<$caller_depth> variable, 
+which defaults to 0, but can be set to positive integer values
+to offset the caller level. Increasing
+it by one will cause it to log the calling function's parameters, not
+the ones of the signal handler. 
+See L<Log::Log4perl/"Using Log::Log4perl from wrapper classes"> for more
+details.
+
 =cut
 
 =head1 SEE ALSO
