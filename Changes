@@ -9,6 +9,9 @@ Revision history for Log::Log4perl
     * (ms) Stealth loggers and documentation
     * (kg) Better error message for case reported by Hai Wu
     * (ms) Added Log/Log4perl/FAQ.pm
+    * (ms) Took dependency on Test::More and Test::Simple out of the PPD file 
+           because of a problem with Activestate 5.6.1 reported 
+           by James Hahn <jrh3@att.com> 
 
 0.25 10/06/2002
     * (ms) backwards-compatibility with perl 5.00503
