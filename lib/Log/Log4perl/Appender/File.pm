@@ -55,6 +55,12 @@ sub file_open {
         die "Can't open $self->{filename} ($@)";
 
     $self->{fh} = $fh;
+
+    if ($self->{autoflush}) {
+        my $oldfh = select $self->{fh}; 
+        $| = 1; 
+        select $oldfh;
+    }
 }
 
 ##################################################
@@ -83,12 +89,6 @@ sub log {
     my $fh = $self->{fh};
 
     print $fh $params{message};
-
-    if ($self->{autoflush}) {
-        my $oldfh = select $self->{fh}; 
-        $| = 1; 
-        select $oldfh;
-    }
 }
 
 ##################################################

@@ -18,6 +18,8 @@
     * (ms) Added convenience function appender_thresholds_adjust() to adjust 
            thresholds of chosen (or all) appenders
     * (ms) Got rid of Test::Simple dependency
+    * (ms) Moved autoflush setting in L4p::Appender::File from log()
+           to file_open(), running only once, not with every message.
 
 0.49 (11/07/2004)
     * (ms) init_and_watch() no longer die()s on reloading syntactically 
