@@ -2,6 +2,9 @@
 Revision history for Log::Log4perl
 ##################################################
 
+0.21 7/30/2002
+    * Synopsis shows code samples in Log4perl.pm/README
+    
 0.20 7/23/2002
     * Strip trailing spaces in config file
     * Accept line continuations in properties file
