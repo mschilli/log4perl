@@ -75,10 +75,11 @@ sub new {
     );
 
     my $self = {
-                 appender => $appender,
-                 name     => $params{name},
-                 layout   => undef,
-                 level    => $ALL,
+                 appender  => $appender,
+                 name      => $params{name},
+                 layout    => undef,
+                 level     => $ALL,
+                 composite => 0,
                };
 
         #whether to collapse arrays, etc.
@@ -92,6 +93,15 @@ sub new {
     bless $self, $class;
 
     return $self;
+}
+
+##################################################
+sub composite { # Set/Get the composite flag
+##################################################
+    my ($self, $flag) = @_;
+
+    $self->{composite} = $flag if defined $flag;
+    return $self->{composite};
 }
 
 ##################################################

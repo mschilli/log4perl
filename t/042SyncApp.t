@@ -55,7 +55,6 @@ log4perl.appender.Logfile.layout    = SimpleLayout
 log4perl.appender.Syncer           = Log::Log4perl::Appender::Synchronized
 log4perl.appender.Syncer.appender  = Logfile
 log4perl.appender.Syncer.key       = blah
-log4perl.appender.Syncer.layout    = SimpleLayout
 );
 
 $locker->shunlock();

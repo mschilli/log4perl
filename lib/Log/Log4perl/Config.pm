@@ -256,7 +256,8 @@ sub _init {
             my $appender = create_appender_instance(
                 $data, $appname, \%appenders_created, \@post_config_subs);
 
-            add_layout_by_name($data, $appender, $appname);
+            add_layout_by_name($data, $appender, $appname) unless
+                $appender->composite();
 
                 # Check for appender thresholds
             my $threshold = 
@@ -378,6 +379,7 @@ sub create_appender_instance {
                 # therefore missed by the config parser which goes through
                 # the defined loggers and just creates *their* attached
                 # appenders.
+                $appender->composite(1);
                 next if exists $appenders_created->{$appname};
                 my $app = create_appender_instance($data, $_, 
                              $appenders_created,
