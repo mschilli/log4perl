@@ -91,6 +91,9 @@ sub init {
 
             }else{
 
+                die "ERROR: you didn't tell me how to implement your appender '$appname'"
+                        unless $appenderclass;
+
                 if($appenderclass =~ /::/) {
                     # It's Perl
                     my @params = grep { $_ ne "layout" and
