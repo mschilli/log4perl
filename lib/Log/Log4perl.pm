@@ -282,7 +282,8 @@ higher prioritized messages to the C</tmp/my.log> logfile:
   use Log::Log4perl::Appender;
 
   my $app = Log::Log4perl::Appender->new("Log::Dispatch::Screen");
-  my $layout = Log::Log4perl::Layout::PatternLayout->new("%d> %F %L %m %n");
+  my $layout = Log::Log4perl::Layout::PatternLayout
+                                        ->new("%d> %F %L %m %n");
   $app->layout($layout);
 
   my $logger = Log::Log4perl->get_logger("My.Component");
@@ -520,7 +521,7 @@ appenders and layouts, but could certainly define their own categories
 and levels.
 
 =head2 Turn off a component
- 
+
 C<Log4perl> doesn't only allow you to selectively switch I<on> a category
 of log messages, you can also use the mechanism to selectively I<disable>
 logging in certain components whereas logging is kept turned on in higher-level
@@ -641,13 +642,15 @@ replaced by the logging engine when it's time to log the message:
     %d Current date in yyyy/mm/dd hh:mm:ss format
     %F File where the logging event occurred
     %l Fully qualified name of the calling method followed by the
-       callers source the file name and line number between parentheses.
+       callers source the file name and line number between 
+       parentheses.
     %L Line number within the file where the log statement was issued
     %m The message to be logged
     %M Method or function where the logging request was issued
     %n Newline (OS-independent)
     %p Priority of the logging event
-    %r Number of milliseconds elapsed from program start to logging event
+    %r Number of milliseconds elapsed from program start to logging 
+       event
     %% A literal percent (%) sign
 
 =back
