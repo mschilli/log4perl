@@ -1,5 +1,6 @@
 Changes
 eg/5005it.pl
+eg/color
 eg/jabber.conf
 eg/log4j-file-append-java.conf
 eg/log4j-file-append-perl.conf
@@ -19,6 +20,7 @@ lib/Log/Log4perl/Appender/File.pm
 lib/Log/Log4perl/Appender/Limit.pm
 lib/Log/Log4perl/Appender/RRDs.pm
 lib/Log/Log4perl/Appender/Screen.pm
+lib/Log/Log4perl/Appender/ScreenColoredLevels.pm
 lib/Log/Log4perl/Appender/Socket.pm
 lib/Log/Log4perl/Appender/Synchronized.pm
 lib/Log/Log4perl/Appender/TestArrayBuffer.pm
@@ -108,6 +110,7 @@ t/044XML-Filter.t
 t/045Composite.t
 t/046RRDs.t
 t/048lwp.t
+t/049Unhide.t
 t/compare.pl
 t/deeper1.expected
 t/deeper6.expected
