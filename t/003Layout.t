@@ -10,7 +10,7 @@ use strict;
 # change 'tests => 1' to 'tests => last_test_to_print';
 #########################
 use Test;
-BEGIN { plan tests => 17 };
+BEGIN { plan tests => 20 };
 
 use Log::Log4perl;
 use Log::Log4perl::Layout;
@@ -22,7 +22,7 @@ use File::Spec;
 my $app = Log::Log4perl::Appender->new(
     "Log::Log4perl::Appender::TestBuffer");
 
-ok(1); # If we made it this far, we're ok.
+ok(1); # If we made it this far, we/re ok.
 
 my $logger = Log::Log4perl->get_logger("abc.def.ghi");
 $logger->add_appender($app);
@@ -189,3 +189,47 @@ $layout = Log::Log4perl::Layout::PatternLayout->new("%-5.5m");
 $app->layout($layout);
 $logger->debug("123");
 ok($app->buffer(), '123  ');
+
+############################################################
+# Check depth level of %M - with eval {...}
+############################################################
+
+$app->buffer("");
+$layout = Log::Log4perl::Layout::PatternLayout->new("%M: %m");
+$app->layout($layout);
+sub foo {
+    eval {
+        $logger->debug("Thats the message");
+    };
+}
+foo();
+ok($app->buffer(), 'main::foo: Thats the message'); 
+
+############################################################
+# Check two levels of %M - with eval {...}
+############################################################
+
+$app->buffer("");
+$layout = Log::Log4perl::Layout::PatternLayout->new("%M: %m");
+$app->layout($layout);
+sub foo2 {
+    eval {
+        eval {
+            $logger->debug("Thats the message");
+        };
+    };
+}
+foo2();
+ok($app->buffer(), 'main::foo2: Thats the message'); 
+
+############################################################
+# Check depth level of %M - with eval {...}
+############################################################
+
+$app->buffer("");
+$layout = Log::Log4perl::Layout::PatternLayout->new("%M: %m");
+$app->layout($layout);
+eval {
+    $logger->debug("Thats the message");
+};
+ok($app->buffer(), 'main::: Thats the message'); 
