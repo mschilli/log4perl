@@ -20,6 +20,7 @@ use strict;
 use Test::Simple tests => 50;
 use Log::Log4perl qw(get_logger);
 use Log::Log4perl::Level;
+use File::Spec;
 
 my $warnstr;
 
@@ -131,5 +132,10 @@ eval { $logger->logdie("Log and die!"); };
 
 my $app0 = Log::Log4perl::Appender::TestBuffer->by_name("A1");
 # print "Buffer: ", $app0->buffer(), "\n";
-ok($app0->buffer() eq "t/024WarnDieCarp.t-130: Log and die!", "%F-%L adjustment");
+
+my $expected = File::Spec->catfile('t','024WarnDieCarp.t-131').": Log and die!";
+
+ok($app0->buffer() eq $expected, "%F-%L adjustment, got ".$app0->buffer().", expected $expected");
+
+
 
