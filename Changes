@@ -3,6 +3,8 @@
 ##################################################
 
 0.51 (not yet released)
+    * (ms) Fix to L4p::Util::module::available() for Win32
+           compliance by Roger Yager <roger.yager@eyestreet.com>
     * (ms) Added check to L4p::Util::module_available() returning true
            if the pm file is available in %INC, indicating that it has
            already been loaded. This fixes a problem when running L4p

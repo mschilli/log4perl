@@ -12,7 +12,13 @@ sub module_available {  # Check if a module is available
 
     my $relpath = File::Spec->catfile(split /::/, $full_name) . '.pm';
 
-    return 1 if exists $INC{$relpath};
+        # Work around a bug in Activestate's "perlapp", which uses
+        # forward slashes instead of Win32 ones.
+    my $relpath_with_forward_slashes = 
+        join('/', (split /::/, $full_name)) . '.pm';
+
+    return 1 if exists $INC{$relpath} or
+                exists $INC{$relpath_with_forward_slashes};
     
     foreach my $dir (@INC) {
         if(ref $dir) {
