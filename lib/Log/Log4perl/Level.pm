@@ -1,14 +1,15 @@
-##################################################
+###############r###################################
 package Log::Log4perl::Level;
 ##################################################
 
 use 5.006;
 use strict;
 use warnings;
+use Carp;
 
 no strict qw(refs);
 
-our %LEVELS = (
+our %PRIORITY = (
     "FATAL" => 0,
     "ERROR" => 3,
     "WARN"  => 4,
@@ -17,11 +18,11 @@ our %LEVELS = (
 );
 
     # Reverse mapping
-our %STRINGS = map { $LEVELS{$_} => $_ } keys %LEVELS;
+our %LEVELS = map { $PRIORITY{$_} => $_ } keys %PRIORITY;
 
     # Min and max
-$LEVELS{'OFF'} = $LEVELS{'FATAL'};
-$LEVELS{'ALL'} = $LEVELS{'DEBUG'};
+$PRIORITY{'OFF'} = $PRIORITY{'FATAL'};
+$PRIORITY{'ALL'} = $PRIORITY{'DEBUG'};
 
 ###########################################
 sub import {
@@ -38,9 +39,9 @@ sub import {
         $namespace = caller(0) . "::";
     }
 
-    for my $key (keys %LEVELS) {
+    for my $key (keys %PRIORITY) {
         my $name  = "$namespace$key";
-        my $value = $LEVELS{$key};
+        my $value = $PRIORITY{$key};
         *{"$name"} = \$value;
     }
 }
@@ -58,32 +59,34 @@ sub to_level {
 ##################################################
     my($string) = @_;
 
-    my $level;
+    my $priority;
 
-    if(exists $LEVELS{$string}) {
-        $level = $LEVELS{$string};
+    if(exists $PRIORITY{$string}) {
+        $priority = $PRIORITY{$string};
     }
          
-    return $level;
+    return $priority;
 }
 
 ##################################################
 sub to_string {
 ##################################################
-    my($level) = @_;
+    my($priority) = @_;
+
+    confess "do what? no priority?" unless defined $priority;
 
     my $string;
 
-    if(exists $STRINGS{$level}) {
-        $string = $STRINGS{$level};
+    if(exists $LEVELS{$priority}) {
+        $string = $LEVELS{$priority};
     }
 
         # Log::Dispatch idiosyncrasies
-    if($level == $LEVELS{WARN}) {
+    if($priority == $PRIORITY{WARN}) {
         $string = "WARNING";
     }
          
-    if($level == $LEVELS{FATAL}) {
+    if($priority == $PRIORITY{FATAL}) {
         $string = "EMERGENCY";
     }
          
