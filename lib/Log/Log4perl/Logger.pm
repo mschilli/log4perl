@@ -667,6 +667,7 @@ sub create_log_level_methods {
                            "forgot to pass in a level string!");
   my $lclevel = lc($level);
   my $levelint = uc($level) . "_INT";
+  my $initial_cap = ucfirst($lclevel);
 
   no strict qw(refs);
 
@@ -686,6 +687,11 @@ sub create_log_level_methods {
   *{__PACKAGE__ . "::is_$lclevel"} = sub {
       $_[0]->{"is_" . $level}->($_[0], "is_" . $lclevel);
   };
+  
+  # Add the isXxxEnabled() methods as identical to the is_xxx
+  # functions. - dviner
+  
+  *{__PACKAGE__ . "::is".$initial_cap."Enabled"} = \&{__PACKAGE__ . "::is_$lclevel"};
   
   use strict qw(refs);
 

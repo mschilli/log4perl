@@ -542,6 +542,11 @@ level, as derived from either the logger's category (or, in absence of
 that, one of the logger's parent's level setting) is 
 C<$WARN>, C<$ERROR> or C<$FATAL>.
 
+Also available are a series of more Java-esque functions which return
+the same values. These are of the format C<isI<Level>Enabled()>,
+so C<$logger-E<gt>isDebugEnabled()> is synonymous to 
+C<$logger-E<gt>is_debug()>.
+
 These level checking functions
 will come in handy later, when we want to block unnecessary
 expensive parameter construction in case the logging level is too
@@ -2164,6 +2169,7 @@ our
     Erik Selberg <erik@selberg.com>
     Aaron Straup Cope <asc@vineyard.net>
     Lars Thegler <lars@thegler.dk>
+    David Viner <dviner@yahoo-inc.com>
     Mac Yang <mac@proofpoint.com>
 
 =head1 COPYRIGHT AND LICENSE
