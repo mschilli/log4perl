@@ -174,11 +174,11 @@ you'll have the following functions available in the current package:
     ERROR("message");
     FATAL("message");
 
-Just make sure that every package of your code you're using them in
+Just make sure that every package of your code where you're using them in
 pulls in C<use Log::Log4perl qw(:easy)> first, then you're set.
 
 These stealth loggers
-will absolutely silent until you initialize Log::Log4perl in 
+will be absolutely silent until you initialize Log::Log4perl in 
 your main program with either 
 
         # Define any Log4perl behaviour
