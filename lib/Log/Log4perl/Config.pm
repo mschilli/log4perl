@@ -130,10 +130,29 @@ sub add_layout_by_name {
 ###########################################
     my($data, $logger, $appender_name) = @_;
 
-    $logger->layout($appender_name,
-                   $data->{appender}->{$appender_name}->
-                   {layout}->{ConversionPattern}->{value},
-                   );
+
+    my $layout_class = $data->{appender}->{$appender_name}->{layout}->{value};
+
+    die "Layout not specified for appender $appender_name" unless $layout_class;
+
+    $layout_class =~ s/org.apache.log4j./Log::Log4perl::Layout::/;
+
+    eval {
+        eval "require $layout_class";
+        die $@ if $@;
+    };
+    if ($@) {
+        die "ERROR: trying to set layout for $appender_name to $layout_class failed\n$@";
+    }
+
+    $logger->layout(new 
+                   $layout_class
+                        (
+                        $appender_name,
+                        $data->{appender}->{$appender_name}->{layout}, #e.g. bugo %% %c{2} %-17F{ba} %L hugo
+
+                        )
+                    );
 
 }
 
@@ -175,7 +194,7 @@ sub config_read {
     if (ref $config) {
         @text = split(/\n/,$$config);
     }else{
-        open FILE, "<$config" or die "Cannot open $config";
+        open FILE, "<$config" or die "Cannot open config file '$config'";
         @text = <FILE>;
         close FILE;
     }
