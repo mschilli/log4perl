@@ -513,8 +513,11 @@ sub config_read {
         @text = split(/\n/,$$config);
 
     #TBD
-    #}elsif ($config =~ m|^ldap://|){
-    #   return Log::Log4perl::Config::LDAPConfigurator($config);
+    }elsif ($config =~ m|^ldap://|){
+       eval { require Net::LDAP; require Log::Log4perl::Config::LDAPConfigurator; };
+       if ($@){die "Log4perl: missing Net::LDAP needed to parse LDAP urls\n$@\n"}
+
+       return Log::Log4perl::Config::LDAPConfigurator::parse($config);
 
     }else{
 
