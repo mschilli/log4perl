@@ -462,7 +462,7 @@ sub eval_if_perl {
                 "prohibits Perl code in config file";
         }
         my $cref = eval "package main; $value" or 
-            die "Can't evaluate '$value'";
+            die "Can't evaluate '$value' ($@)";
         $value = $cref->();
     }
 
