@@ -1196,6 +1196,56 @@ for rolling out applications whichs Log::Log4perl configuration files
 show small host-specific differences, because you can deploy the unmodified
 application distribution on all instances of the server farm.
 
+=head2 Log4perl doesn't interpret my backslashes correctly!
+
+If you're using Log4perl's feature to specify the configuration as a
+string in your program (as opposed to a separate configuration file),
+chances are that you've written it like this:
+
+    # *** WRONG! ***
+
+   Log::Log4perl->init( \ <<END_HERE);
+        log4perl.logger = WARN, A1
+        log4perl.appender.A1 = Log::Dispatch::Screen
+        log4perl.appender.A1.layout = \
+            Log::Log4perl::Layout::PatternLayout
+        log4perl.appender.A1.layout.ConversionPattern = %m%n
+    END_HERE
+
+    # *** WRONG! ***
+
+and you're getting the following error message:
+
+    Layout not specified for appender A1 at .../Config.pm line 342.
+
+What's wrong? The problem is that you're using a here-document with
+substitution enabled (C<E<lt>E<lt>END_HERE>) and that Perl won't 
+interpret backslashes at line-ends as continuation characters but 
+will essentially throw them out. So, in the code above, the layout line
+will look like
+
+        log4perl.appender.A1.layout =
+
+to Log::Log4perl which causes it to report an error. To interpret the backslash
+at the end of the line correctly as a line-continuation character, use
+the non-interpreting mode of the here-document like in 
+
+    # *** RIGHT! ***
+
+   Log::Log4perl->init( \ <<'END_HERE');
+        log4perl.logger = WARN, A1
+        log4perl.appender.A1 = Log::Dispatch::Screen
+        log4perl.appender.A1.layout = \
+            Log::Log4perl::Layout::PatternLayout
+        log4perl.appender.A1.layout.ConversionPattern = %m%n
+    END_HERE
+
+    # *** RIGHT! ***
+
+(note the single quotes around C<'END_HERE'>) or use C<q{...}> 
+instead of a here-document and Perl will treat the backslashes at 
+line-end as intended.
+
 =cut
 
 =head1 SEE ALSO
