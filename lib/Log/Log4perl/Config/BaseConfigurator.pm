@@ -13,6 +13,7 @@ sub new {
                };
 
     $self->file($self->{file}) if exists $self->{file};
+    $self->text($self->{text}) if exists $self->{text};
 
     bless $self, $class;
 }
@@ -44,6 +45,14 @@ sub file {
     close FILE;
 }
 
+################################################
+sub parse {
+################################################
+    die __PACKAGE__ . "::parse() is a virtual method. " .
+        "It must be implemented " .
+        "in a derived class (currently: ", ref(shift), ")";
+}
+
 1;
 
 __END__
@@ -64,7 +73,7 @@ This is a virtual base class, all configurators should be derived from it.
 
 =item C<< new >>
 
-Constructor, typically called like 
+Constructor, typically called like
 
     my $config_parser = SomeConfigParser->new(
         file => $file,
@@ -72,7 +81,13 @@ Constructor, typically called like
 
     my $data = $config_parser->parse();
 
-Accepts the following parameters:
+Instead of C<file>, the derived class C<SomeConfigParser> may define any 
+type of configuration input medium (e.g. C<url =E<gt> 'http://foobar'>).
+It just has to make sure its C<parse()> method will later pull the input
+data from the medium specified.
+
+The base class accepts a filename or a reference to an array
+of text lines:
 
 =over 4
 
@@ -91,17 +106,16 @@ splits at its newlines and transforms it into an array:
                  'baz: bam',
                 ],
     );
+
     my $data = $config_parser->parse();
 
-C<$data> needs to point to the config data structure, which
-is a a hash of hashes:
-
-    $data->{category}->{Bar}->{Twix}->{value} = "WARN, Logfile"
-    $data->{appender}->{Logfile}->{value} = 
-        "Log::Log4perl::Appender::File";
-    ...
-
 =back
+
+If either C<file> or C<text> parameters have been specified in the 
+constructor call, a later call to the configurator's C<text()> method
+will return a reference to an array of configuration text lines.
+This will typically be used by the C<parse()> method to process the 
+input.
 
 =head2 Parser requirements
 
@@ -131,6 +145,36 @@ Each Log4perl config value is indicated by the C<value> key, as in
     $data->{category}->{Bar}->{Twix}->{value} = "WARN, Logfile"
 
 =back
+
+=head2 EXAMPLES
+
+The following Log::Log4perl configuration:
+
+    log4perl.category.Bar.Twix        = WARN, Screen
+    log4perl.appender.Screen          = Log::Log4perl::Appender::File
+    log4perl.appender.Screen.filename = test.log
+    log4perl.appender.Screen.layout   = Log::Log4perl::Layout::SimpleLayout
+
+needs to be transformed by the parser's C<parse()> method 
+into this data structure:
+
+    { appender => {
+        Screen  => {
+          layout => { 
+            value  => "Log::Log4perl::Layout::SimpleLayout" },
+            value  => "Log::Log4perl::Appender::Screen",
+        },
+      },
+      category => { 
+        Bar => { 
+          Twix => { 
+            value => "WARN, Screen" } 
+        } }
+    }
+
+For a full-fledged example, check out the sample YAML parser implementation 
+in C<eg/yamlparser>. It uses a simple YAML syntax to specify the Log4perl 
+configuration to illustrate the concept.
 
 =head1 SEE ALSO
 
