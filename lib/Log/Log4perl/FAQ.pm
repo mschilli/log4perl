@@ -1166,6 +1166,36 @@ attached.
 This setup will direct all WARN messages, issued anywhere in the system, to /tmp/app.warn (and 
 ERROR messages to /tmp/app.error) -- without any overlaps.
 
+=head2 On our server farm, Log::Log4perl configuration files differ slightly from host to host. Can I roll them all into one?
+
+You sure can, because Log::Log4perl allows you to specify attribute values 
+dynamically. Let's say that one of your appenders expects the host's IP address
+as one of its attributes. Now, you could certainly roll out different 
+configuration files for every host and specify the value like
+
+    log4perl.appender.MyAppender    = Log::Dispatch::SomeAppender
+    log4perl.appender.MyAppender.ip = 10.0.0.127
+
+but that's a maintenance nightmare. Instead, you can have Log::Log4perl 
+figure out the IP address at configuration time and set the appender's
+value correctly:
+
+        # Set the IP address dynamically
+    log4perl.appender.MyAppender    = Log::Dispatch::SomeAppender
+    log4perl.appender.MyAppender.ip = sub { \
+       use Sys::Hostname; \
+       use Socket; \
+       return inet_ntoa(scalar gethostbyname hostname); \
+    }
+
+If Log::Log4perl detects that an attribute value starts with something like
+C<"sub {...">, it will interpret it as a perl subroutine which is to be executed
+once at configuration time (not runtime!) and its return value is
+to be used as the attribute value. This comes in handy
+for rolling out applications whichs Log::Log4perl configuration files
+show small host-specific differences, because you can deploy the unmodified
+application distribution on all instances of the server farm.
+
 =cut
 
 =head1 SEE ALSO
