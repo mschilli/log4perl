@@ -169,11 +169,38 @@ sub _init {
                                         $_ ne "value"
                                       } keys %{$data->{appender}->{$appname}};
 
+                    my %param = ();
+                    foreach my $pname (@params){
+                        #this could be simple value like 
+                        #{appender}{myAppender}{file}{value} => 'log.txt'
+                        #or a structure like
+                        #{appender}{myAppender}{login} => 
+                        #                         { name => {value => 'bob'},
+                        #                           pwd  => {value => 'xxx'},
+                        #                         }
+                        #in the latter case we send a hashref to the appender
+                        if (exists $data->{appender}{$appname}
+                                          {$pname}{value}      ) {
+                            $param{$pname} = $data->{appender}{$appname}
+                                                    {$pname}{value};
+                        }else{
+                            $param{$pname} = {map {$_ => $data->{appender}
+                                                                {$appname}
+                                                                {$pname}
+                                                                {$_}
+                                                                {value}} 
+                                             keys %{$data->{appender}
+                                                           {$appname}
+                                                           {$pname}}
+                                             };
+                        }
+
+                    }
+
                     $appender = Log::Log4perl::Appender->new(
                         $appenderclass, 
                         name => $appname,
-                        map { $_ => $data->{appender}->{$appname}->{$_}->{value} 
-                            } @params,
+                        %param,
                     ); 
                     add_layout_by_name($data, $appender, $appname);
 
@@ -322,12 +349,31 @@ sub config_read {
         if(my($key, $val) = /(\S+?)\s*=\s*(.*)/) {
             $val =~ s/\s+$//;
             $key = unlog4j($key);
+            my $how_deep = 0;
             my $ptr = $data;
             for my $part (split /\.|::/, $key) {
                 $ptr->{$part} = {} unless exists $ptr->{$part};
                 $ptr = $ptr->{$part};
+                ++$how_deep;
             }
-            $ptr->{value} = $val;
+
+            #here's where we deal with turning multiple values like this:
+            # log4j.appender.jabbender.to = him@a.jabber.server
+            # log4j.appender.jabbender.to = her@a.jabber.server
+            #into an arrayref like this:
+            #to => { value => 
+            #       ["him\@a.jabber.server", "her\@a.jabber.server"] },
+            if (exists $ptr->{value} && $how_deep > 2) {
+                if (ref ($ptr->{value}) ne 'ARRAY') {
+                    my $temp = $ptr->{value};
+                    $ptr->{value} = [];
+                    push (@{$ptr->{value}}, $temp);
+                }
+                print ref $ptr->{value},"\n";
+                push (@{$ptr->{value}}, $val);
+            }else{
+                $ptr->{value} = $val;
+            }
         }
     }
 
