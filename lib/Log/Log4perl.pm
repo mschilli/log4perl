@@ -195,8 +195,8 @@ errors to C</var/log/myerrs.log>, using the format
 
     [millisecs] source-filename line-number class - message newline
 
-Check [1] for more details on how to define loggers with
-C<Log4j>, the equivalent Java implementation of this package.
+Check L<Configuration files> for more details on how to control
+your loggers using a configuration file.
 
 Assuming that this file is saved as C<log.conf>, you need to 
 read it in in the startup section of your code, using the following
@@ -474,7 +474,7 @@ is logging not only the message but also the number of milliseconds since
 the program has started (%r), the name of the file the call to the logger
 has happened and the line number there (%F and %L), the message itself
 (%m) and a OS-specific newline character (%n).
-For more detailed info on layout formats, see L<Layouts>.
+For more detailed info on layout formats, see L<Log Layouts>.
 If you don't specify a layout, the logger will fall back to 
 C<Log::Log4perl::SimpleLayout>, which logs the debug level, a hyphen (-) and the 
 log message.
@@ -607,7 +607,7 @@ C<R>, a C<org.apache.log4j.RollingFileAppender>
 C<Log::Dispatch::File> with the C<File> attribute specifying the
 log file.
 
-=head2 Layouts
+=head2 Log Layouts
 
 If the logging engine passes a message to an appender, because it thinks
 it should be logged, the appender doesn't just
