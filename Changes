@@ -189,7 +189,7 @@ Revision history for Log::Log4perl
 0.01  06/22/2002
     * Where it all began
 
-TODO:
+TODO (not assigned to anybody yet):
 ##################################################
     * Make Log::Log4perl::Layout:: optional and accept just "PatternLayout"
     * BasicConfigurator() vs. :easy, PropertyConfigurator()
@@ -202,27 +202,17 @@ TODO:
     * custom levels (addtl. levels)
     * log4j.logger.blah = INHERITED, app
     * variable subst: a=b log4j.blah = ${a}
-    * if appenders are attached in a conf file, previous ones are detached
-    * log4j.additivity.loggername = true|false
     * log4j.renderer.blah = blah
     * I wonder if it might not be a mistake to have the base level be
       '0', might be safer to make it '1', less chance of those
       false-but-is-defined errors I think that's what log4j uses
-    * Should we canonicalize on a level is a string and a priority is an
-      int? might make maintenance easier
     * permission problems, init() creates the files, maybe read later by
       different uid, no way to set umask?
-    * what happens when init() is called twice?
-    * if $log->debug is called before init(), should it die saying
-      "please initialize log engine"?
     * I really want a format specifier to print the pid, helps with web apps
-    * possible bug: was logging to a category, then took my appender off
-      that category, am still seeing stuff in my log, something didn't
-      take about the reload
     * Custom filters
     * XML config files
 
-Kevin:
+TODO Kevin:
 ##################################################
     * Bug: If the *same* appender is being attached to several loggers,
       appender inheritance doesn't work as expected: Even if the 
@@ -231,9 +221,6 @@ Kevin:
     * Dave Rolsky says: A couple other things: The JavaMap docs mention
       that SocketAppender has no Log::Dispatch equivalent. You could
       create an IO::Socket object and pass it to Log::Dispatch::Handle.
-    * I think we should not install Log::Log4perl::TestBuffer, we only use
-      it for our test cases, we shouldn't infringe on the Log::Dispatch
-      namespace, should we?
     * test cases should use platform independend directory separator
       (Mac's pre-OSX ':'?) DONE need level validation on Logger::level()
       DONE Create new module negotiating between Java-style config files
@@ -241,14 +228,12 @@ Kevin:
     * Module for reading XML-style config files
     * revisit  CategoryFactory idea, give the user opportunity to override
       log levels with their own?
-OK Please use 80 chars max line width
-DONE (is gone) redo level_str() hack
-DONE (Dispatch singleton) question - are appenders created just once if
-they're reused in the config file?
+    * possible bug: was logging to a category, then took my appender off
+      that category, am still seeing stuff in my log, something didn't
+      take about the reload
 
-Mike:
+TODO Mike:
 ##################################################
-    * localtime() called twice on %d{HH}
     * Kevin says:
       >WARN in the config file
       >   init_and_watch(...);
@@ -260,23 +245,14 @@ Mike:
       >   }
       What's happening if the reload happens right after the level() call 
       and the config file sets the level to WARN?
-    * Documentation on Layout class changes
-    * Document %d{} in layout
     * Documentation of Log::Log4perl::Logger and Log::Log4perl::Config
-    * Layout.pm: 'd' (partially implemented), 't', 'x', 'X'
+    * Layout.pm: 't', 'x', 'X'
     * Additivity flag -- set/get as API and in cfg file
+      (log4j.additivity.loggername = true|false)
     * README tests (Pod::Tests or something)
     * Thread safety
     * Just had a wild idea: Could we possibly utilize the compiler
       frontend to eliminate log statements that are not going to be
       triggered? This would be a HUGE performance increase!
-DONE Log::Dispatch wrapper for perl modules just like JavaMap?
-DONE Warning in testcase 002
-DONE Added Log::Log4perl::Appender class to wrap Log::Dispatch::*
-DONE Log::Log4perl::TestBuffer: Delete from MANIFEST
-DONE Log::Log4perl->init()
-DONE Several appenders in one config line: log4j.rootLogger=debug, stdout, R
-DONE Define default if there's no layout:
-  http://jakarta.apache.org/log4j/docs/api/org/apache/log4j/SimpleLayout.html
 
 ##################################################
