@@ -2,11 +2,26 @@
 Revision history for Log::Log4perl
 ##################################################
 
-0.21 7/30/2002
+0.21 8/03/2002
     * Synopsis shows code samples in Log4perl.pm/README
     * Slight Log4j incompatibility but useful: %F{n} lets you
       limit the number of entries the source file path is logged
-      as.
+    * Fixed double-init problem and added a test case. Now the entire
+      configuration is cleared before the second init(). However, this
+      surfaced a problem with init_and_watch: If a program obtains
+      references to one or more loggers, rewriting the configuration
+      file during program execution and re-initing makes these reference
+      point to loggers which hold obsolete configurations. Fixed that by
+      code in debug(), info(), etc. which *replaces* (shudder) the
+      logger reference the program hands in to them with a new one of
+      the same category. This happens every time if 'init_and_watch' has
+      been enabled. However, this introduces a small runtime penalty.
+      And it won't work if the updated configuration doesn't define this
+      particular logger.
+    * Added DEBUG statements to Logger.pm and Config.pm to trace execution
+      (debugging won't work because of "eval"s). Both files define a 
+      constant named DEBUG towards the top of the file, which will
+      have perl optimize away the debug statements in case it's set to 0.
     
 0.20 7/23/2002
     * Strip trailing spaces in config file
@@ -14,8 +29,8 @@ Revision history for Log::Log4perl
     * Refactored Logger.pm for speed, defined the logging behavior when 
       the logger is created, not when a message is logged
     * Fixing test suites so that SimpleFormat newline is accounted for
-    * Fixed a bug with root inheritance where the category name wasn't coming 
-      through
+    * Fixed a bug with root inheritance where the category name wasn't
+      coming through
     * added init_and_watch
 
 0.19 07/16/2002
@@ -145,15 +160,18 @@ TODO:
     * permission problems, init() creates the files, maybe read later by
       different uid, no way to set umask?
     * what happens when init() is called twice?
-    * if $log->debug is called before init(), should it die saying "please initialize log engine"?
+    * if $log->debug is called before init(), should it die saying
+      "please initialize log engine"?
     * I really want a format specifier to print the pid, helps with web apps
-    * possible bug: was logging to a category, then took my appender off that category, am still seeing stuff in my log, something didn't take about the reload
+    * possible bug: was logging to a category, then took my appender off
+      that category, am still seeing stuff in my log, something didn't
+      take about the reload
 
 Kevin:
 ##################################################
-    * Dave Rolsky says: A couple other things: The JavaMap docs mention that SocketAppender 
-      has no Log::Dispatch equivalent.  You could create an IO::Socket object and pass 
-      it to Log::Dispatch::Handle.
+    * Dave Rolsky says: A couple other things: The JavaMap docs mention
+      that SocketAppender has no Log::Dispatch equivalent. You could
+      create an IO::Socket object and pass it to Log::Dispatch::Handle.
     * I think we should not install Log::Log4perl::TestBuffer, we only use
       it for our test cases, we shouldn't infringe on the Log::Dispatch
       namespace, should we?
@@ -172,21 +190,12 @@ they're reused in the config file?
 Mike:
 ##################################################
     * Documentation on Layout class changes
-    * %% bug in Layout.pm -- write test case
+    * Document %d{} in layout
     * Documentation of Log::Log4perl::Logger and Log::Log4perl::Config
-    * Tune performance of level() lookups (Mike, check out the log4j
-      statement: "As a side note, let me mention that in log4j child
-      loggers link only to their existing ancestors. In particular, the
-      logger named com.foo.Bar is linked directly to the root logger,
-      thereby circumventing the unused com or com.foo loggers. This
-      significantly increases performance and reduces log4j's memory
-      footprint. "
     * Layout.pm: 'd' (partially implemented), 't', 'x', 'X'
-    * Signal to re-read the conf file.
     * Additivity flag -- set/get as API and in cfg file
     * README tests (Pod::Tests or something)
     * Thread safety
-    * Pass the config file in as a string or a file handle
     * Just had a wild idea: Could we possibly utilize the compiler
       frontend to eliminate log statements that are not going to be
       triggered? This would be a HUGE performance increase!
