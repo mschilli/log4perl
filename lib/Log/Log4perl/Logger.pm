@@ -157,10 +157,12 @@ sub set_output_methods {
 						   )) {
             print "  ($priority{$levelname} <= $level)\n"
                   if DEBUG;
-            $self->{$levelname} = $coderef;
+            $self->{$levelname}      = $coderef;
+            $self->{"is_$levelname"} = sub { 1 };
         }else{
             print "  ($priority{$levelname} > $level)\n" if DEBUG;
-            $self->{$levelname} = $noop;
+            $self->{$levelname}      = $noop;
+            $self->{"is_$levelname"} = sub { 0 };
         }
 
         print("  Setting [$self] $self->{category}.$levelname to ",
@@ -574,10 +576,11 @@ sub create_log_level_methods {
         $_[0]->{$level}->(@_, $level);
      };
 
-  *{__PACKAGE__ . "::is_$lclevel"} = sub { 
-    return Log::Log4perl::Level::isGreaterOrEqual($_[0]->level(),
-						  $$level
-						  ); 
+  *{__PACKAGE__ . "::is_$lclevel"} = sub {
+      $_[0]->{"is_" . $level}->();
+#    return Log::Log4perl::Level::isGreaterOrEqual($_[0]->level(),
+#						  $$level
+#						  ); 
   };
   
   use strict qw(refs);
