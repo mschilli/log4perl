@@ -31,9 +31,9 @@ my $layout = Log::Log4perl::Layout::PatternLayout->new(
 $app->layout($layout);
 $logger->debug("That's the message");
 
-ok($app->buffer(), "/bugo % def.ghi " . 
+ok($app->buffer(), "bugo % def.ghi " . 
                    File::Spec->catfile(qw(t 003Layout.t)) .
-                   "     32 hugo/"); 
+                   "     32 hugo"); 
 
 ############################################################
 # Log the message
@@ -110,8 +110,8 @@ $layout = Log::Log4perl::Layout::PatternLayout->new("%F-%L %m");
 $app->layout($layout);
 $logger->debug("That's the message");
 
-ok($app->buffer(), "/" . File::Spec->catfile(qw(t 003Layout.t)) .
-                   "-111 That's the message/"); 
+ok($app->buffer(), File::Spec->catfile(qw(t 003Layout.t)) .
+                   "-111 That's the message"); 
 
 ############################################################
 # Don't append a newline if the message already contains one

@@ -46,4 +46,4 @@ $file 32 FATAL N/A  - Gurgel
 EOT
 
 unlink $LOGFILE;
-ok($data, "/$exp/");
+ok($data, "$exp");
