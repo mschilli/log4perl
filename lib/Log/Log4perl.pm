@@ -969,10 +969,14 @@ then C<Log::Log4perl> will compensate for the difference.
 
 =head1 INSTALLATION
 
-C<Log::Log4perl> needs C<Log::Dispatch> (2.00 or better) and
-C<Time::HiRes> (1.20 or better) from CPAN. They're automatically fetched
-if you're using the CPAN shell (CPAN.pm), because they're listed as 
-requirements in Makefile.PL.
+C<Log::Log4perl> needs C<Log::Dispatch> (2.00 or better) from CPAN.
+C<Time::HiRes> (1.20 or better) is required only if you need the
+fine-grained time stamps of the C<%r> parameter in
+C<Log::Log4perl::Layout::PatternLayout>.
+
+C<Log::Dispatch> is automatically fetched from CPAN
+if you're using the CPAN shell (CPAN.pm), because it's listed as 
+requirement in Makefile.PL.
 
 Manual installation works as usual with
 

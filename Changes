@@ -2,9 +2,11 @@
 Revision history for Log::Log4perl
 ##################################################
 
-0.23 8/20/2002
+0.23 8/24/2002
     * Both Log4perl/log4perl is now accepted in conf file
     * Added documentation to Log::Log4perl::Appender
+    * Made Time::HiRes optional. If it's missing, PatternLayout will
+      just use full seconds as %r.
 
 0.22 8/17/2002
     * Threshold settings of appenders: 

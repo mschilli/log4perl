@@ -1,5 +1,5 @@
 ######################################################################
-    Log::Log4perl 0.22
+    Log::Log4perl 0.23
 ######################################################################
 
 NAME
@@ -303,6 +303,9 @@ How to use it
            Log::Dispatch::Screen
            Log::Dispatch::Syslog
            Log::Dispatch::Tk (by Dominique Dumont)
+
+    For additional information on appenders, please check the
+    Log::Log4perl::Appender manual page.
 
     Now let's assume that we want to go overboard and log "info()" or higher
     prioritized messages in the "My::Category" class to both STDOUT and to a
@@ -751,10 +754,13 @@ Using Log::Log4perl from wrapper classes
     "Log::Log4perl" will compensate for the difference.
 
 INSTALLATION
-    "Log::Log4perl" needs "Log::Dispatch" (2.00 or better) and "Time::HiRes"
-    (1.20 or better) from CPAN. They're automatically fetched if you're
-    using the CPAN shell (CPAN.pm), because they're listed as requirements
-    in Makefile.PL.
+    "Log::Log4perl" needs "Log::Dispatch" (2.00 or better) from CPAN.
+    "Time::HiRes" (1.20 or better) is required only if you need the
+    fine-grained time stamps of the %r parameter in
+    "Log::Log4perl::Layout::PatternLayout".
+
+    "Log::Dispatch" is automatically fetched from CPAN if you're using the
+    CPAN shell (CPAN.pm), because it's listed as requirement in Makefile.PL.
 
     Manual installation works as usual with
 

@@ -1,11 +1,18 @@
 use ExtUtils::MakeMaker;
 # See lib/ExtUtils/MakeMaker.pm for details of how to influence
 # the contents of the Makefile that is written.
+
+# Check for Time::HiRes;
+eval { require Time::HiRes; };
+if($@) {
+    print "Warning: Time::HiRes not installed, but that's ok, " .
+          "%r will use full seconds\n";
+}
+
 WriteMakefile(
     'NAME'		=> 'Log::Log4perl',
     'VERSION_FROM'	=> 'lib/Log/Log4perl.pm', # finds $VERSION
     'PREREQ_PM'		=> { Log::Dispatch => 2.00,
-                             Time::HiRes   => 1.20,
                            }, # e.g., Module::Name => 1.1
     ($] >= 5.005 ?    ## Add these new keywords supported since 5.005
       (ABSTRACT_FROM => 'lib/Log/Log4perl.pm', # retrieve abstract from module

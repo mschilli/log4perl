@@ -9,14 +9,30 @@ package Log::Log4perl::Layout::PatternLayout;
 use 5.006;
 use strict;
 use warnings;
-use Time::HiRes qw(gettimeofday tv_interval);
 use Log::Log4perl::Level;
+
+our $TIME_HIRES_AVAILABLE;
+our $TIME_HIRES_AVAILABLE_WARNED = 0;
+our $PROGRAM_START_TIME;
+
+BEGIN {
+    # Check if we've got Time::HiRes. If not, don't make a big fuss,
+    # just set a flag so we know later on that we can't have fine-grained
+    # time stamps
+    $TIME_HIRES_AVAILABLE = 0;
+    eval { require Time::HiRes; };
+    if($@) {
+        $PROGRAM_START_TIME = time();
+    } else {
+        $TIME_HIRES_AVAILABLE = 1;
+        $PROGRAM_START_TIME = [Time::HiRes::gettimeofday()];
+    }
+}
 
 use base qw(Log::Log4perl::Layout);
 
 no strict qw(refs);
 
-our $PROGRAM_START_TIME = [gettimeofday()];
 
 ##################################################
 sub new {
@@ -133,7 +149,19 @@ sub render {
         $info{n} = "\n";
     }
     $info{p} = $priority;
-    $info{r} = int((tv_interval ( $PROGRAM_START_TIME ))*1000);
+
+    if($self->{info_needed}->{r}) {
+        if($TIME_HIRES_AVAILABLE) {
+            $info{r} = 
+                int((Time::HiRes::tv_interval ( $PROGRAM_START_TIME ))*1000);
+        } else {
+            if(! $TIME_HIRES_AVAILABLE_WARNED) {
+                $TIME_HIRES_AVAILABLE_WARNED++;
+                # warn "Requested %r pattern without installed Time::HiRes\n";
+            }
+            $info{r} = time() - $PROGRAM_START_TIME;
+        }
+    }
 
     if($self->{info_needed}->{d}) {
         my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = 
