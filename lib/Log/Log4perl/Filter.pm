@@ -11,6 +11,70 @@ use Log::Log4perl::Config;
 
 use constant DEBUG => 0;
 
+our %FILTERS_DEFINED = ();
+
+##################################################
+sub new {
+##################################################
+    my($class, $name, $action) = @_;
+  
+    print "Creating filter $name\n" if DEBUG;
+
+    my $self = { name => $name };
+    bless $self, $class;
+
+    if(ref($action) eq "CODE") {
+        # it's a code ref
+        $self->{decider} = $action;
+    } else {
+        # it's a class
+        die "Class " . ref($action) . " ($action) not yet implemented";
+    }
+
+    $FILTERS_DEFINED{$name} = $self;
+
+    return $self;
+}
+
+##################################################
+sub by_name {        # Get a filter object by name
+##################################################
+    my($name) = @_;
+
+    if(exists $FILTERS_DEFINED{$name}) {
+        return $FILTERS_DEFINED{$name};
+    } else {
+        return undef;
+    }
+}
+
+##################################################
+sub reset {
+##################################################
+    %FILTERS_DEFINED = ();
+}
+
+##################################################
+sub decide {
+##################################################
+    my($self, %p) = @_;
+
+    die "This is to be overridden by the filter" unless
+         defined $self->{decider};
+
+    # What should we set the message in $_ to? The most logical
+    # approach seems to be to concat all parts together. If some
+    # filter wants to dissect the parts, it still can examine %p,
+    # which gets passed to the subroutine and contains the chunks
+    # in $p{message}.
+        # Split because of CVS
+    local($_) = join $
+                     Log::Log4perl::JOIN_MSG_ARRAY_CHAR, @{$p{message}};
+    print "\$_ is '$_'\n" if DEBUG;
+
+    return $self->{decider}->(%p);
+}
+
 1;
 
 __END__
@@ -49,24 +113,26 @@ matches or exceeds a certain level or that this is the 10th
 time the same message has been submitted -- and come to a log/no log 
 decision based upon these circumstantial facts.
 
-Filters carry names and can be specified in two different ways in the Log4perl
-configuration file: As subroutines or as filter classes. Here's a 
+Filters have names and can be specified in two different ways in the Log4perl
+configuration file: As decider subroutines or as filter classes. Here's a 
 simple filter named C<MyFilter> which just verifies that the 
 oncoming message matches the regular expression C</let this through/i>:
 
     log4perl.filter.MyFilter        = sub { /let this through/i }
 
-It exploits the fact that when the filter is called on a message,
-Perl's special C<$_> variable will be set to the (rendered) message
-to be logged. The filter subroutine is expected to return a true value 
+It exploits the fact that when the decider is called on a message,
+Perl's special C<$_> variable will be set to the message text (prerendered,
+i.e. concatenated but not layouted) to be logged. 
+The decider subroutine is expected to return a true value 
 if it wants the message to be logged or a false value if doesn't.
-Also, Log::Log4perl will pass the same arguments to the filter
-function as it would to the corresponding appender. Here's an
+Also, Log::Log4perl will pass a hash to the decider
+containing all key/value pairs that it would pass to the corresponding 
+appender, as the Log::Dispatch specification requires. Here's an
 example of a filter checking the priority of the oncoming message:
 
-    log4perl.filter.MyFilter        = sub {  \
-         my %p = @_;                         \
-         (%p{log4p_level} == WARN) ? 1 : 0;  \
+  log4perl.filter.MyFilter        = sub {    \
+       my %p = @_;                           \
+       ($p{log4p_level} eq "WARN") ? 1 : 0;  \
                                           }
 
 If the message priority equals C<WARN>, it returns a true value, causing
@@ -77,7 +143,8 @@ much cleaner to use Log4perl's C<LevelMatch> filter instead:
     log4perl.filter.MyFilter = Log::Log4perl::Filter::LevelMatch
     log4perl.filter.MyFilter.LevelToMatch = WARN
 
-Once a filter has been defined by name and class, its values can be
+Once a filter has been defined by name and class (or, alternatively
+by just giving a decider function), its values can be
 assigned to its attributes, just as the C<WARN> value to the 
 C<LevelToMatch> attribute above.
 
