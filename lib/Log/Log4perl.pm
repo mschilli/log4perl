@@ -193,7 +193,6 @@ Log::Log4perl - Log4j implementation for Perl
                             Log::Log4perl::Layout::SimpleLayout
     ###########################################
        
-
 =head1 DESCRIPTION
 
 C<Log::Log4perl> implements the widely popular C<Log4j> logging
@@ -994,6 +993,24 @@ But don't dispair, there's a solution: Just increase the value
 of C<$Log::Log4perl::caller_depth> (defaults to 0) by one for every
 wrapper that's in between your application and C<Log::Log4perl>,
 then C<Log::Log4perl> will compensate for the difference.
+
+=head1 EXAMPLE
+
+A simple example to cut-and-paste and get started:
+
+    use Log::Log4perl qw(get_logger);
+
+    my $conf = q(
+    log4perl.category.Bar.Twix      = WARN, Screen
+    log4perl.appender.Screen        = Log::Dispatch::Screen
+    log4perl.appender.Screen.layout = \
+        Log::Log4perl::Layout::SimpleLayout
+    );
+    
+    Log::Log4perl::init(\$conf);
+    
+    my $logger = get_logger("Bar::Twix");
+    $logger->error("Blah");
 
 =head1 INSTALLATION
 
