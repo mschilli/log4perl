@@ -18,6 +18,8 @@ Revision history for Log::Log4perl
     * (kg) User-defined conversion specifiers for PatternLayout in
            configuration file and as C API
     * (kg) implementing map to log4j.RollingFileAppender
+    * (kg) trying out oneMessagePerAppender parameter
+    * (kg) changed unit tests to use File::Spec 
 
 0.26 11/11/2002
     * (kg) enabled %l (was missing from PatternLayout::define)
@@ -275,18 +277,19 @@ TODO (not assigned to anybody yet):
 
 TODO Kevin:
 ##################################################
-    * Bug: If the *same* appender is being attached to several loggers,
-      appender inheritance doesn't work as expected: Even if the 
-      appender appears twice in the inheritance tree, it's only executed once.
-      But it actually needs to be run twice.
+    * Module for reading XML-style config files
     * Dave Rolsky says: A couple other things: The JavaMap docs mention
       that SocketAppender has no Log::Dispatch equivalent. You could
       create an IO::Socket object and pass it to Log::Dispatch::Handle.
-    * test cases should use platform independend directory separator
+    * DONE, added oneMessagePerAppender
+      Bug: If the *same* appender is being attached to several loggers,
+      appender inheritance doesn't work as expected: Even if the 
+      appender appears twice in the inheritance tree, it's only executed once.
+      But it actually needs to be run twice.
+    * DONE test cases should use platform independend directory separator
       (Mac's pre-OSX ':'?) DONE need level validation on Logger::level()
       DONE Create new module negotiating between Java-style config files
       and perl-style appenders
-    * Module for reading XML-style config files
 
 TODO Mike:
 ##################################################
