@@ -22,11 +22,6 @@ our $INITIALIZED;
 
 our $DISPATCHER = Log::Dispatch->new();
 
-our $WATCH_DELAY;
-our $FILE_TO_WATCH;
-our $LAST_CHECKED_AT;
-our $LAST_CHANGED_AT;
-
 __PACKAGE__->reset();
 
 ##################################################
@@ -193,7 +188,7 @@ sub generate_coderef {
     # for runtime efficiency, so the conditional won't be included
     # if it's not needed
 
-    if (defined $WATCH_DELAY) {
+    if (defined $Log::Log4perl::Config::WATCHER) {
         $watch_delay_code = generate_watch_code();
     }
 
@@ -264,7 +259,7 @@ sub generate_noop_coderef {
     my $coderef = '';
     my $watch_delay_code = '';
 
-    if (defined $WATCH_DELAY) {
+    if (defined $Log::Log4perl::Config::WATCHER) {
         $watch_delay_code = generate_watch_code();
         $watch_delay_code = <<EOL;
         my (\$logger)  = shift;
@@ -296,25 +291,13 @@ sub generate_watch_code {
         print "exe_watch_code:\n" if DEBUG;
                        
         # more closures here
-        if ( ($LAST_CHECKED_AT + $WATCH_DELAY) < time()){
-        
-             $LAST_CHECKED_AT = time();
-
-             print "  Checking $FILE_TO_WATCH for changes ...\n" if DEBUG;
-        
-             if ($LAST_CHANGED_AT < (stat($FILE_TO_WATCH))[9] ){
+        if(time() > $Log::Log4perl::Config::Watch::NEXT_CHECK_TIME) {
+            Log::Log4perl->init_and_watch();
                        
-                 $LAST_CHANGED_AT = (stat(_))[9];
-                       
-                 print "  Config file has been modified\n" if DEBUG;
-                       
-                 Log::Log4perl->init_and_watch($FILE_TO_WATCH, $WATCH_DELAY);
-                       
-                 my $methodname = lc($level);
-                 $logger->$methodname(@_); # send the message
-                                                 # to the new configuration
-                 return;        #and return, we're done with this incarnation
-             }
+            my $methodname = lc($level);
+            $logger->$methodname(@_); # send the message
+                                      # to the new configuration
+            return;        #and return, we're done with this incarnation
         }
 EOL
 }
@@ -491,20 +474,6 @@ sub has_appenders {
 }
 
 ##################################################
-sub init_watch {
-##################################################
-    $WATCH_DELAY = shift;
-
-    $LAST_CHECKED_AT = $LAST_CHANGED_AT = time();
-}
-
-##################################################
-sub set_file_to_watch {
-##################################################
-    $FILE_TO_WATCH = shift;
-}
-
-##################################################
 sub log {
 # external api
 ##################################################
@@ -513,7 +482,8 @@ sub log {
     confess("log: No priority given!") unless defined($priority);
 
        # Just in case of 'init_and_watch' -- see Changes 0.21
-    $_[0] = $LOGGERS_BY_NAME->{$_[0]->{category}} if defined $LAST_CHECKED_AT;
+    $_[0] = $LOGGERS_BY_NAME->{$_[0]->{category}} if 
+        defined $Log::Log4perl::Config::WATCHER;
 
     init_warn() unless $INITIALIZED;
 

@@ -14,6 +14,7 @@ use Log::Dispatch::File;
 use Log::Log4perl::JavaMap;
 use Log::Log4perl::Filter;
 use Log::Log4perl::Filter::Boolean;
+use Log::Log4perl::Config::Watch;
 
 use constant DEBUG => 0;
 
@@ -29,7 +30,8 @@ my @LEVEL_MAP_A = qw(
  FATAL  emergency
 );
 
-our $DEFAULT_WATCH_DELAY = 60; #seconds
+our $WATCHER;
+our $DEFAULT_WATCH_DELAY = 60; # seconds
 
 ###########################################
 sub init {
@@ -44,6 +46,11 @@ sub init_and_watch {
 ###########################################
     my ($class, $config, $delay) = @_;
 
+    if(defined $WATCHER) {
+        $config = $WATCHER->file();
+        $delay  = $WATCHER->check_interval();
+    }
+
     print "init_and_watch ($config-$delay). Resetting.\n" if DEBUG;
 
     Log::Log4perl::Logger->reset();
@@ -53,12 +60,16 @@ sub init_and_watch {
     $delay =~ /\D/ && die "illegal non-numerical value for delay: $delay";
 
     if (ref $config) {
-        die "Log4perl can only watch a file, not a string of configuration information";
+        die "Log4perl can only watch a file, not a string of " .
+            "configuration information";
     }elsif ($config =~ m!^(https?|ftp|wais|gopher|file):!){
         die "Log4perl can only watch a file, not a url like $config";
     }
 
-    Log::Log4perl::Logger::init_watch($delay);
+    $WATCHER = Log::Log4perl::Config::Watch->new(
+                      file           => $config,
+                      check_interval => $delay,
+               );
 
     _init($class, $config);
 }
@@ -473,7 +484,6 @@ sub config_read {
                      $res->message." ";
             }
         }else{
-            Log::Log4perl::Logger::set_file_to_watch($config);
             open FILE, "<$config" or die "Cannot open config file '$config'";
             @text = <FILE>;
             close FILE;
