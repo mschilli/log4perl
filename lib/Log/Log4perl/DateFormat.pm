@@ -46,7 +46,7 @@ sub prepare {
 ###########################################
     my($self, $format) = @_;
 
-    $format =~ s/(([GyMdhHmsSEDFwWakKz])\2*)/rep($self, $1)/ge;
+    $format =~ s/(([GyMdhHmsSEDFwWakKzZ])\2*)/rep($self, $1)/ge;
 
     $self->{fmt} = $format; 
 }
@@ -58,6 +58,13 @@ sub rep {
 
     my $first = substr $string, 0, 1;
     my $len   = length $string;
+
+    my $time=time();
+    my @g = gmtime($time);
+    my @t = localtime($time);
+    my $z = $t[1]-$g[1]+($t[2]-$g[2])*60+($t[7]-$g[7])*1440+
+            ($t[5]-$g[5])*(525600+(abs($t[7]-$g[7])>364)*1440);
+    my $offset = sprintf("%+.2d%.2d", $z/60, "00");
 
     #my ($s,$mi,$h,$d,$mo,$y,$wd,$yd,$dst) = localtime($time);
 
@@ -191,6 +198,13 @@ sub rep {
         push @{$self->{stack}}, 
              [9, sub { substr sprintf("%06d", $_[0]), 0, $len }];
         return "%s";
+
+###############################
+#Z - RFC 822 time zone  -0800 #
+###############################
+    } elsif($first eq "Z") {
+        push @{$self->{stack}}, [10, sub { $offset }];
+        return "$offset";
 
 #############################
 #Something that's not defined
