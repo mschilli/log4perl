@@ -16,11 +16,11 @@ use Log::Log4perl;
 use Log::Log4perl::Layout;
 use Log::Log4perl::Level;
 use Log::Dispatch;
-use Log::Log4perl::TestBuffer;
+use Log::Log4perl::Appender::TestBuffer;
 use File::Spec;
 
 my $app = Log::Log4perl::Appender->new(
-    "Log::Log4perl::TestBuffer");
+    "Log::Log4perl::Appender::TestBuffer");
 
 ok(1); # If we made it this far, we're ok.
 

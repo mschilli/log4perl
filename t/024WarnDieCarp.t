@@ -64,7 +64,7 @@ ok(1, "Initialized OK");
 ############################################################
 my $log = Log::Log4perl::get_logger("abc.def");
 my $app = Log::Log4perl::Appender->new(
-    "Log::Log4perl::TestBuffer");
+    "Log::Log4perl::Appender::TestBuffer");
 $log->add_appender($app);
 
 ######################################################################
@@ -120,7 +120,7 @@ foreach my $f ("error_die", "logdie", "logcroak", "logconfess") {
 ######################################################################
 Log::Log4perl->init(\<<'EOT');
     log4perl.rootLogger=DEBUG, A1
-    log4perl.appender.A1=Log::Log4perl::TestBuffer
+    log4perl.appender.A1=Log::Log4perl::Appender::TestBuffer
     log4perl.appender.A1.layout=org.apache.log4j.PatternLayout
     log4perl.appender.A1.layout.ConversionPattern=%F-%L: %m
 EOT
@@ -129,7 +129,7 @@ my $logger = get_logger("Twix::Bar");
 
 eval { $logger->logdie("Log and die!"); };
 
-my $app0 = Log::Log4perl::TestBuffer->by_name("A1");
+my $app0 = Log::Log4perl::Appender::TestBuffer->by_name("A1");
 # print "Buffer: ", $app0->buffer(), "\n";
 ok($app0->buffer() eq "t/024WarnDieCarp.t-130: Log and die!", "%F-%L adjustment");
 

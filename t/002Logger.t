@@ -46,7 +46,7 @@ ok($log7 != $log8, "Log7 not Log8");
 ok($log8 != $log9, "Log8 not Log9");
 
 my $app = Log::Log4perl::Appender->new(
-    "Log::Log4perl::TestBuffer");
+    "Log::Log4perl::Appender::TestBuffer");
 
 ##################################################
 # Suppress debug
@@ -84,9 +84,9 @@ ok($app->buffer() eq "ERROR - Error Message\nDEBUG - Debug Message\n",
 # Multiple Appenders
 ##################################################
 my $app2 = Log::Log4perl::Appender->new(
-    "Log::Log4perl::TestBuffer");
+    "Log::Log4perl::Appender::TestBuffer");
 my $app3 = Log::Log4perl::Appender->new(
-    "Log::Log4perl::TestBuffer");
+    "Log::Log4perl::Appender::TestBuffer");
 
 $app->buffer("");
 $app2->buffer("");

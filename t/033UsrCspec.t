@@ -2,9 +2,9 @@
 
 use Test;
 use Log::Log4perl;
-use Log::Log4perl::TestBuffer;
+use Log::Log4perl::Appender::TestBuffer;
 
-Log::Log4perl::TestBuffer->reset();
+Log::Log4perl::Appender::TestBuffer->reset();
 
 
 my $config = <<'EOL';
@@ -20,7 +20,7 @@ log4j.PatternLayout.cspec.U =       \
   
 # ********************
 # first appender
-log4j.appender.appndr1        = Log::Log4perl::TestBuffer
+log4j.appender.appndr1        = Log::Log4perl::Appender::TestBuffer
 #log4j.appender.appndr1        = Log::Dispatch::Screen
 log4j.appender.appndr1.layout = org.apache.log4j.PatternLayout
 log4j.appender.appndr1.layout.ConversionPattern = %K xx %G %U
@@ -35,7 +35,7 @@ log4j.appender.appndr1.layout.cspec.G = sub {return 'thisistheGcspec'}
 
 # ********************
 # second appender
-log4j.appender.appndr2        = Log::Log4perl::TestBuffer
+log4j.appender.appndr2        = Log::Log4perl::Appender::TestBuffer
 #log4j.appender.appndr2        = Log::Dispatch::Screen
 log4j.appender.appndr2.layout = org.apache.log4j.PatternLayout
 log4j.appender.appndr2.layout.ConversionPattern = %K %U
@@ -66,8 +66,8 @@ my $uid = $<;
 my $gid = $(;
 
 
-my $plantbuffer = Log::Log4perl::TestBuffer->by_name("appndr1");
-my $animalbuffer = Log::Log4perl::TestBuffer->by_name("appndr2");
+my $plantbuffer = Log::Log4perl::Appender::TestBuffer->by_name("appndr1");
+my $animalbuffer = Log::Log4perl::Appender::TestBuffer->by_name("appndr2");
 
 $plant->fatal('blah blah blah --- plant --- yadda yadda');
 ok($plantbuffer->buffer(), "$hexpid xx thisistheGcspec UID $uid GID $gid");
@@ -116,7 +116,7 @@ Log::Log4perl::Layout::PatternLayout::add_global_cspec('Z', sub {'zzzzzzzz'}); #
 
 
 my $app = Log::Log4perl::Appender->new(
-    "Log::Log4perl::TestBuffer");
+    "Log::Log4perl::Appender::TestBuffer");
 
 my $logger = Log::Log4perl->get_logger("abc.def.ghi");
 $logger->add_appender($app);
@@ -131,14 +131,14 @@ ok($app->buffer(), "That's the message zzzzzzzz");
 #testing perl code snippets in Log4perl configuration files
 ###########################################################
 
-Log::Log4perl::TestBuffer->reset();
+Log::Log4perl::Appender::TestBuffer->reset();
 
 $config = <<'EOL';
 log4perl.category.some = DEBUG, appndr
 
     # This should be evaluated at config parse time
 log4perl.appender.appndr = sub { \
-    return "Log::Log4perl::TestBuffer" }
+    return "Log::Log4perl::Appender::TestBuffer" }
 log4perl.appender.appndr.layout = Log::Log4perl::Layout::PatternLayout
     # This should be evaluated at config parse time ("%m %K%n")
 log4perl.appender.appndr.layout.ConversionPattern = sub{ "%" . \
@@ -158,7 +158,7 @@ $logger->debug("log_message");
 $ENV{TEST_VALUE} = "env_value2";
 $logger->info("log_message2");
 
-my $buffer = Log::Log4perl::TestBuffer->by_name("appndr");
+my $buffer = Log::Log4perl::Appender::TestBuffer->by_name("appndr");
 
 #print "Testbuffer: ", $buffer->buffer(), "\n";
 
@@ -169,13 +169,13 @@ ok($buffer->buffer(), "log_message env_value\nlog_message2 env_value2\n");
 #disabled
 ###########################################################
 
-Log::Log4perl::TestBuffer->reset();
+Log::Log4perl::Appender::TestBuffer->reset();
 
 $config = <<'EOL';
 log4perl.category.some = DEBUG, appndr
 
     # This should be evaluated at config parse time
-log4perl.appender.appndr = Log::Log4perl::TestBuffer
+log4perl.appender.appndr = Log::Log4perl::Appender::TestBuffer
 log4perl.appender.appndr.layout = Log::Log4perl::Layout::PatternLayout
     # This should be evaluated at config parse time ("%m %K%n")
 log4perl.appender.appndr.layout.ConversionPattern = sub{ "%m" . \
@@ -197,13 +197,13 @@ if($@ and $@ =~ /prohibits/) {
 }
 
 # Test if cspecs are denied
-Log::Log4perl::TestBuffer->reset();
+Log::Log4perl::Appender::TestBuffer->reset();
 
 $config = <<'EOL';
 log4perl.category.some = DEBUG, appndr
 
     # This should be evaluated at config parse time
-log4perl.appender.appndr = Log::Log4perl::TestBuffer
+log4perl.appender.appndr = Log::Log4perl::Appender::TestBuffer
 log4perl.appender.appndr.layout = Log::Log4perl::Layout::PatternLayout
 log4perl.appender.appndr.layout.ConversionPattern = %m %n
 log4perl.appender.appndr.layout.cspec.K = sub { $ENV{TEST_VALUE} }

@@ -10,25 +10,25 @@ use Test;
 
 use Log::Log4perl qw(get_logger);
 use Log::Log4perl::Level;
-use Log::Log4perl::TestBuffer;
+use Log::Log4perl::Appender::TestBuffer;
 use Log::Log4perl::NDC;
 use Log::Log4perl::MDC;
 
 BEGIN { plan tests => 2 }
 
 # Have TestBuffer log the Log::Dispatch priority
-Log::Log4perl::TestBuffer->reset();
+Log::Log4perl::Appender::TestBuffer->reset();
 
 my $conf = <<EOT;
 log4perl.logger   = ALL, BUF0
-log4perl.appender.BUF0           = Log::Log4perl::TestBuffer
+log4perl.appender.BUF0           = Log::Log4perl::Appender::TestBuffer
 log4perl.appender.BUF0.layout    = Log::Log4perl::Layout::PatternLayout
 log4perl.appender.BUF0.layout.ConversionPattern = %m <%x>
 EOT
 
 Log::Log4perl::init(\$conf);
 
-my $app0 = Log::Log4perl::TestBuffer->by_name("BUF0");
+my $app0 = Log::Log4perl::Appender::TestBuffer->by_name("BUF0");
 
 my $loga = get_logger("a");
 
@@ -53,21 +53,21 @@ $loga->error("error");
 ok($app0->buffer(), 
    "debug <first>info <first second third fourth sixth>warn <[undef]>error <seventh>");
 
-Log::Log4perl::TestBuffer->reset();
+Log::Log4perl::Appender::TestBuffer->reset();
 
 Log::Log4perl::MDC->put("remote_host", "blah-host");
 Log::Log4perl::MDC->put("ip", "blah-ip");
 
 $conf = <<EOT;
 log4perl.logger   = ALL, BUF1
-log4perl.appender.BUF1           = Log::Log4perl::TestBuffer
+log4perl.appender.BUF1           = Log::Log4perl::Appender::TestBuffer
 log4perl.appender.BUF1.layout    = Log::Log4perl::Layout::PatternLayout
 log4perl.appender.BUF1.layout.ConversionPattern = %X{remote_host}: %m %X{ip}%n
 EOT
 
 Log::Log4perl::init(\$conf);
 
-my $app1 = Log::Log4perl::TestBuffer->by_name("BUF1");
+my $app1 = Log::Log4perl::Appender::TestBuffer->by_name("BUF1");
 
 my $logb = get_logger("b");
 

@@ -8,23 +8,23 @@ use warnings;
 use strict;
 
 use Log::Log4perl;
-use Log::Log4perl::TestBuffer;
+use Log::Log4perl::Appender::TestBuffer;
 use File::Spec;
 
 my $testconf= File::Spec->catfile(qw(t tmp test27.conf));
 unlink $testconf if (-e $testconf);
 
-Log::Log4perl::TestBuffer->reset();
+Log::Log4perl::Appender::TestBuffer->reset();
 
 my $conf1 = <<EOL;
 log4j.category   = WARN, myAppender
 
-log4j.appender.myAppender          = Log::Log4perl::TestBuffer
+log4j.appender.myAppender          = Log::Log4perl::Appender::TestBuffer
 log4j.appender.myAppender.layout   = Log::Log4perl::Layout::SimpleLayout
 
 log4j.category.animal.dog = DEBUG, goneAppender
 
-log4j.appender.goneAppender          = Log::Log4perl::TestBuffer
+log4j.appender.goneAppender          = Log::Log4perl::Appender::TestBuffer
 log4j.appender.goneAppender.layout   = Log::Log4perl::Layout::SimpleLayout
 
 log4j.category.animal.cat = INFO, myAppender
@@ -39,7 +39,7 @@ Log::Log4perl->init_and_watch($testconf, 1);
 
 my $logger = Log::Log4perl::get_logger('animal.dog');
 
-my $app0 = Log::Log4perl::TestBuffer->by_name("myAppender");
+my $app0 = Log::Log4perl::Appender::TestBuffer->by_name("myAppender");
 
 $logger->debug('debug message, should appear');
 
@@ -55,12 +55,12 @@ sleep 3;
 $conf1 = <<EOL;
 log4j.category   = WARN, myAppender
 
-log4j.appender.myAppender          = Log::Log4perl::TestBuffer
+log4j.appender.myAppender          = Log::Log4perl::Appender::TestBuffer
 log4j.appender.myAppender.layout   = Log::Log4perl::Layout::SimpleLayout
 
 #*****log4j.category.animal.dog = DEBUG, goneAppender
 
-#*****log4j.appender.goneAppender          = Log::Log4perl::TestBuffer
+#*****log4j.appender.goneAppender          = Log::Log4perl::Appender::TestBuffer
 #*****log4j.appender.goneAppender.layout   = Log::Log4perl::Layout::SimpleLayout
 
 log4j.category.animal.cat = INFO, myAppender
@@ -74,7 +74,7 @@ close CONF;
 #now the logger is ruled by root's WARN level
 $logger->debug('debug message, should NOT appear');
 
-my $app1 = Log::Log4perl::TestBuffer->by_name("myAppender");
+my $app1 = Log::Log4perl::Appender::TestBuffer->by_name("myAppender");
 
 ok($app1->buffer(), "");
 

@@ -2,7 +2,7 @@ package Log::Log4perl::JavaMap::TestBuffer;
 
 use Carp;
 use strict;
-use Log::Log4perl::TestBuffer;
+use Log::Log4perl::Appender::TestBuffer;
 
 use constant DEBUG => 0;
 
@@ -10,7 +10,7 @@ sub new {
     my ($class, $appender_name, $data) = @_;
     my $stderr;
 
-    return Log::Log4perl::Appender->new("Log::Log4perl::TestBuffer",
+    return Log::Log4perl::Appender->new("Log::Log4perl::Appender::TestBuffer",
                                         name => $appender_name);
 }
 
@@ -18,7 +18,7 @@ sub new {
 
 =head1 NAME
 
-Log::Log4perl::JavaMap::TestBuffer - wraps Log::Log4perl::TestBuffer
+Log::Log4perl::JavaMap::TestBuffer - wraps Log::Log4perl::Appender::TestBuffer
 
 =head1 SYNOPSIS
 

@@ -11,7 +11,7 @@ BEGIN { plan tests => 2 };
 
 
 use Log::Log4perl;
-use Log::Log4perl::TestBuffer;
+use Log::Log4perl::Appender::TestBuffer;
 use File::Spec;
 
 my $EG_DIR = "eg";

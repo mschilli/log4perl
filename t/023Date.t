@@ -12,7 +12,7 @@ BEGIN { plan tests => 16 }
 
 use Log::Log4perl qw(get_logger);
 use Log::Log4perl::DateFormat;
-use Log::Log4perl::TestBuffer;
+use Log::Log4perl::Appender::TestBuffer;
 
 $Log::Log4perl::DateFormat::GMTIME = 1;
 
@@ -107,7 +107,7 @@ ok($formatter->format($GMTIME), "xx -- 'K' not (yet) implemented --");
 ###########################################
 my $conf = q(
 log4perl.category.Bar.Twix      = WARN, Buffer
-log4perl.appender.Buffer        = Log::Log4perl::TestBuffer
+log4perl.appender.Buffer        = Log::Log4perl::Appender::TestBuffer
 log4perl.appender.Buffer.layout = \
     Log::Log4perl::Layout::PatternLayout
 log4perl.appender.Buffer.layout.ConversionPattern = %d{HH:mm:ss} %p %m %n
@@ -118,5 +118,5 @@ Log::Log4perl::init(\$conf);
 my $logger = get_logger("Bar::Twix");
 $logger->error("Blah");
 
-ok(Log::Log4perl::TestBuffer->by_name("Buffer")->buffer(), 
+ok(Log::Log4perl::Appender::TestBuffer->by_name("Buffer")->buffer(), 
      qr/\d\d:\d\d:\d\d ERROR Blah/);

@@ -49,7 +49,7 @@ my $log0 = Wrapper::Log4perl->get_logger("");
 $log0->level($DEBUG);
 
 my $app0 = Log::Log4perl::Appender->new(
-    "Log::Log4perl::TestBuffer");
+    "Log::Log4perl::Appender::TestBuffer");
 my $layout = Log::Log4perl::Layout::PatternLayout->new(
     "File: %F{1} Line number: %L package: %C");
 $app0->layout($layout);

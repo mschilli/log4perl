@@ -10,7 +10,7 @@ use Test;
 BEGIN { plan tests => 10 };
 
 use Log::Log4perl;
-use Log::Log4perl::TestBuffer;
+use Log::Log4perl::Appender::TestBuffer;
 
 my $EG_DIR = "eg";
 $EG_DIR = "../eg" unless -d $EG_DIR;
@@ -26,30 +26,30 @@ my $logger = Log::Log4perl->get_logger("");
 $logger->debug("Gurgel");
 
 
-ok(Log::Log4perl::TestBuffer->by_name("A1")->buffer(), 
+ok(Log::Log4perl::Appender::TestBuffer->by_name("A1")->buffer(), 
    'm#^\d+\s+\[N/A\] DEBUG  N/A - Gurgel$#'); 
 
 ######################################################################
 # Test the root logger via inheritance (discovered by Kevin Goess)
 ######################################################################
-Log::Log4perl::TestBuffer->reset();
+Log::Log4perl::Appender::TestBuffer->reset();
 
 Log::Log4perl->init("$EG_DIR/log4j-manual-1.conf");
 
 $logger = Log::Log4perl->get_logger("foo");
 $logger->debug("Gurgel");
 
-ok(Log::Log4perl::TestBuffer->by_name("A1")->buffer(),
+ok(Log::Log4perl::Appender::TestBuffer->by_name("A1")->buffer(),
     'm#^\d+\s+\[N/A\] DEBUG foo N/A - Gurgel$#'); 
 
 ######################################################################
 # Test init with a string
 ######################################################################
-Log::Log4perl::TestBuffer->reset();
+Log::Log4perl::Appender::TestBuffer->reset();
 
 Log::Log4perl->init(\ <<EOT);
 log4j.rootLogger=DEBUG, A1
-log4j.appender.A1=Log::Log4perl::TestBuffer
+log4j.appender.A1=Log::Log4perl::Appender::TestBuffer
 log4j.appender.A1.layout=org.apache.log4j.PatternLayout
 log4j.appender.A1.layout.ConversionPattern=%-4r [%t] %-5p %c - %m%n
 EOT
@@ -57,17 +57,17 @@ EOT
 $logger = Log::Log4perl->get_logger("foo");
 $logger->debug("Gurgel");
 
-ok(Log::Log4perl::TestBuffer->by_name("A1")->buffer(),
+ok(Log::Log4perl::Appender::TestBuffer->by_name("A1")->buffer(),
     'm#^\d+\s+\[N/A\] DEBUG foo - Gurgel$#'); 
 
 ######################################################################
 # Test init with a hashref
 ######################################################################
-Log::Log4perl::TestBuffer->reset();
+Log::Log4perl::Appender::TestBuffer->reset();
 
 my %hash = (
     "log4j.rootLogger"         => "DEBUG, A1",
-    "log4j.appender.A1"        => "Log::Log4perl::TestBuffer",
+    "log4j.appender.A1"        => "Log::Log4perl::Appender::TestBuffer",
     "log4j.appender.A1.layout" => "org.apache.log4j.PatternLayout",
     "log4j.appender.A1.layout.ConversionPattern" => 
                                   "%-4r [%t] %-5p %c - %m%n"
@@ -78,7 +78,7 @@ Log::Log4perl->init(\%hash);
 $logger = Log::Log4perl->get_logger("foo");
 $logger->debug("Gurgel");
 
-ok(Log::Log4perl::TestBuffer->by_name("A1")->buffer(),
+ok(Log::Log4perl::Appender::TestBuffer->by_name("A1")->buffer(),
     'm#^\d+\s+\[N/A\] DEBUG foo - Gurgel$#'); 
 
 
@@ -145,11 +145,11 @@ ok($stub_hook->{P}{to}[1], 'sam@another.jabber.server');
 ##########################################################################
 # Test what happens if we define a PatternLayout without ConversionPattern
 ##########################################################################
-Log::Log4perl::TestBuffer->reset();
+Log::Log4perl::Appender::TestBuffer->reset();
 
 $conf = <<EOT;
     log4perl.logger.Twix.Bar = DEBUG, A1
-    log4perl.appender.A1=Log::Log4perl::TestBuffer
+    log4perl.appender.A1=Log::Log4perl::Appender::TestBuffer
     log4perl.appender.A1.layout=PatternLayout
     #log4perl.appender.A1.layout.ConversionPattern=%d-%c %m%n
 EOT

@@ -11,7 +11,7 @@ use Test;
 BEGIN { plan tests => 5 };
 
 use Log::Log4perl;
-use Log::Log4perl::TestBuffer;
+use Log::Log4perl::Appender::TestBuffer;
 
 my $EG_DIR = "eg";
 $EG_DIR = "../eg" unless -d $EG_DIR;
@@ -26,23 +26,23 @@ Log::Log4perl->init("$EG_DIR/log4j-manual-3.conf");
 my $logger = Log::Log4perl->get_logger("");
 $logger->debug("Gurgel");
 
-ok(Log::Log4perl::TestBuffer->by_name("stdout")->buffer(), 
+ok(Log::Log4perl::Appender::TestBuffer->by_name("stdout")->buffer(), 
    'm#^\S+\s+\[N/A\] \(\S+?:\d+\) - Gurgel$#'); 
-ok(Log::Log4perl::TestBuffer->by_name("R")->buffer(), 
+ok(Log::Log4perl::Appender::TestBuffer->by_name("R")->buffer(), 
    'm#^\S+\s+N/A\s+\'\' - Gurgel$#'); 
 
 ######################################################################
 # Test the root logger via inheritance (discovered by Kevin Goess)
 ######################################################################
 Log::Log4perl->reset();
-Log::Log4perl::TestBuffer->reset();
+Log::Log4perl::Appender::TestBuffer->reset();
 
 Log::Log4perl->init("$EG_DIR/log4j-manual-3.conf");
 
 $logger = Log::Log4perl->get_logger("foo");
 $logger->debug("Gurgel");
 
-ok(Log::Log4perl::TestBuffer->by_name("R")->buffer(), 
+ok(Log::Log4perl::Appender::TestBuffer->by_name("R")->buffer(), 
     'm#^\S+\s+N/A \'foo\' - Gurgel\n#'); 
-ok(Log::Log4perl::TestBuffer->by_name("R")->buffer(), 
+ok(Log::Log4perl::Appender::TestBuffer->by_name("R")->buffer(), 
     'm#^\S+\s+N/A \'foo\' - Gurgel\n$#'); 

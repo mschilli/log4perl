@@ -24,10 +24,10 @@ $log1->level($DEBUG);
 $log2->level($DEBUG);
 
 my $app0 = Log::Log4perl::Appender->new(
-    "Log::Log4perl::TestBuffer");
+    "Log::Log4perl::Appender::TestBuffer");
 
 my $app1 = Log::Log4perl::Appender->new(
-    "Log::Log4perl::TestBuffer");
+    "Log::Log4perl::Appender::TestBuffer");
 
 $app0->threshold($ERROR);  # As integer value
 $app1->threshold("WARN");  # As string
@@ -78,23 +78,23 @@ ok($app1->buffer(), "ERROR - Yeah, log2\n");
 # Appender threshold with config file
 ##################################################
 # Reset appender population
-Log::Log4perl::TestBuffer->reset();
+Log::Log4perl::Appender::TestBuffer->reset();
 
 my $conf = <<EOT;
 log4perl.logger   = ERROR, BUF0
 log4perl.logger.a = INFO, BUF1
-log4perl.appender.BUF0           = Log::Log4perl::TestBuffer
+log4perl.appender.BUF0           = Log::Log4perl::Appender::TestBuffer
 log4perl.appender.BUF0.layout    = Log::Log4perl::Layout::SimpleLayout
 log4perl.appender.BUF0.Threshold = ERROR
-log4perl.appender.BUF1           = Log::Log4perl::TestBuffer
+log4perl.appender.BUF1           = Log::Log4perl::Appender::TestBuffer
 log4perl.appender.BUF1.layout    = Log::Log4perl::Layout::SimpleLayout
 log4perl.appender.BUF1.Threshold = WARN
 EOT
 
 Log::Log4perl::init(\$conf);
 
-$app0 = Log::Log4perl::TestBuffer->by_name("BUF0");
-$app1 = Log::Log4perl::TestBuffer->by_name("BUF1");
+$app0 = Log::Log4perl::Appender::TestBuffer->by_name("BUF0");
+$app1 = Log::Log4perl::Appender::TestBuffer->by_name("BUF1");
 
 my $loga = get_logger("a");
 
@@ -109,7 +109,7 @@ ok($app1->buffer(), "ERROR - Yeah, loga\n");
 # Class
 ##################################################
 # Reset appender population
-Log::Log4perl::TestBuffer->reset();
+Log::Log4perl::Appender::TestBuffer->reset();
 
 $conf = <<EOT;
 log4j.logger   = ERROR, BUF0
@@ -124,8 +124,8 @@ EOT
 
 Log::Log4perl::init(\$conf);
 
-$app0 = Log::Log4perl::TestBuffer->by_name("BUF0");
-$app1 = Log::Log4perl::TestBuffer->by_name("BUF1");
+$app0 = Log::Log4perl::Appender::TestBuffer->by_name("BUF0");
+$app1 = Log::Log4perl::Appender::TestBuffer->by_name("BUF1");
 
 $loga = get_logger("a");
 

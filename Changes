@@ -3,6 +3,8 @@ Revision history for Log::Log4perl
 ##################################################
 
 0.28 (not yet released)
+    * (kg) found and addressed circular ref problem in Logger->reset
+    * (kg) moved TestBuffer under Appender/ directory along with DBI
     * (kg) fixed docs, Pattern layout, %f not supported, s/b %F
     * (kg) added Log::Log4perl::Appender::DBI to implement JDBCAppender
     * (ms) Every value in the config file can now be a perl function,
@@ -154,7 +156,7 @@ Revision history for Log::Log4perl
     * added init_and_watch
 
 0.19 07/16/2002
-    * Added Log::Log4perl::TestBuffer back in the distribution, otherwise
+    * Added Log::Log4perl::Appender::TestBuffer back in the distribution, otherwise
       regression test suite would fail.
 
 0.18 07/16/2002
@@ -243,7 +245,7 @@ Revision history for Log::Log4perl
     * Bug discovered by Kevin Goess <cpan@goess.org>, revealed
       in 004-Config.t: Wrong layout used if Appender is inherited.
       Fixed.
-    * Changed Log::Log4perl::TestBuffer to keep track of the
+    * Changed Log::Log4perl::Appender::TestBuffer to keep track of the
       object population -- so we can easily reference them
       in the Log::Log4perl test cases. Got rid of get_buffer().
     * Added a reset() method to Log::Log4perl and Log::Log4perl::Logger

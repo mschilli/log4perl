@@ -10,7 +10,7 @@ use Test;
 BEGIN { plan tests => 3 };
 
 use Log::Log4perl;
-use Log::Log4perl::TestBuffer;
+use Log::Log4perl::Appender::TestBuffer;
 
 my $EG_DIR = "eg";
 $EG_DIR = "../eg" unless -d $EG_DIR;
@@ -30,7 +30,7 @@ Log::Log4perl->init("$EG_DIR/log4j-manual-2.conf");
 my $logger = Log::Log4perl->get_logger("foo.bar.baz");
 $logger->debug("Gurgel");
 
-ok(Log::Log4perl::TestBuffer->by_name("A1")->buffer(),
+ok(Log::Log4perl::Appender::TestBuffer->by_name("A1")->buffer(),
    "m#$date_regex \\[N/A\\] DEBUG foo.bar.baz - Gurgel#");
 
 ######################################################################
@@ -38,12 +38,12 @@ ok(Log::Log4perl::TestBuffer->by_name("A1")->buffer(),
 ######################################################################
 Log::Log4perl->reset();
 
-Log::Log4perl::TestBuffer->reset();
+Log::Log4perl::Appender::TestBuffer->reset();
 
 Log::Log4perl->init("$EG_DIR/log4j-manual-2.conf");
 
 $logger = Log::Log4perl->get_logger("foo");
 $logger->debug("Gurgel");
 
-ok(Log::Log4perl::TestBuffer->by_name("A1")->buffer(),
+ok(Log::Log4perl::Appender::TestBuffer->by_name("A1")->buffer(),
    "m#$date_regex \\[N/A\\] DEBUG foo - Gurgel#");

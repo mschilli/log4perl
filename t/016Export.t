@@ -27,7 +27,7 @@ ok(Log::Log4perl::Level::isGreaterOrEqual($ERROR, $FATAL));
 # Init logger
 ##################################################
 my $app = Log::Log4perl::Appender->new(
-    "Log::Log4perl::TestBuffer");
+    "Log::Log4perl::Appender::TestBuffer");
 my $logger = get_logger("abc.def");
 $logger->add_appender($app);
 $logger->level($DEBUG);

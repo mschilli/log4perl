@@ -10,25 +10,25 @@ use Test;
 
 use Log::Log4perl qw(get_logger);
 use Log::Log4perl::Level;
-use Log::Log4perl::TestBuffer;
+use Log::Log4perl::Appender::TestBuffer;
 
 BEGIN { plan tests => 2 }
 
 ok(1); # If we made it this far, we're ok.
 
 # Have TestBuffer log the Log::Dispatch priority
-$Log::Log4perl::TestBuffer::LOG_PRIORITY = 1;
-Log::Log4perl::TestBuffer->reset();
+$Log::Log4perl::Appender::TestBuffer::LOG_PRIORITY = 1;
+Log::Log4perl::Appender::TestBuffer->reset();
 
 my $conf = <<EOT;
 log4perl.logger   = ALL, BUF0
-log4perl.appender.BUF0           = Log::Log4perl::TestBuffer
+log4perl.appender.BUF0           = Log::Log4perl::Appender::TestBuffer
 log4perl.appender.BUF0.layout    = Log::Log4perl::Layout::SimpleLayout
 EOT
 
 Log::Log4perl::init(\$conf);
 
-my $app0 = Log::Log4perl::TestBuffer->by_name("BUF0");
+my $app0 = Log::Log4perl::Appender::TestBuffer->by_name("BUF0");
 
 my $loga = get_logger("a");
 

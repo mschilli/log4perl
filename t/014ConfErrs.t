@@ -30,7 +30,7 @@ ok($@, '/ERROR: appenderclass \'Log::Log4perl::Appender::FileAppenderx\' doesn\'
 $conf = <<EOL;
 log4j.category.simplelayout.test=INFO, myAppender
 
-log4j.appender.myAppender        = Log::Log4perl::TestBuffer
+log4j.appender.myAppender        = Log::Log4perl::Appender::TestBuffer
 log4j.appender.myAppender.layout = Log::Log4perl::Layout::SimpleLayoutx
 log4j.appender.myAppender.File   = $testfile
 EOL
@@ -45,7 +45,7 @@ ok($@,'/ERROR: trying to set layout for myAppender to \'Log::Log4perl::Layout::S
 $conf = <<EOL;
 log4j.category.simplelayout.test=INFO, myAppender
 
-log4j.appender.myAppender        = Log::Log4perl::TestBuffer;
+log4j.appender.myAppender        = Log::Log4perl::Appender::TestBuffer;
 log4j.appender.myAppender.layout = Log::Log4perl::Layout::SimpleLayout
 log4j.appender.myAppender.File   = $testfile
 EOL
@@ -53,14 +53,14 @@ EOL
 eval{
     Log::Log4perl->init(\$conf);
 };
-ok($@, '/ERROR: appenderclass \'Log::Log4perl::TestBuffer;\' doesn\'t exist/');
+ok($@, '/ERROR: appenderclass \'Log::Log4perl::Appender::TestBuffer;\' doesn\'t exist/');
 
 # *****************************************************
 # nonexistent layout class containing a ';'
 $conf = <<EOL;
 log4j.category.simplelayout.test=INFO, myAppender
 
-log4j.appender.myAppender        = Log::Log4perl::TestBuffer
+log4j.appender.myAppender        = Log::Log4perl::Appender::TestBuffer
 log4j.appender.myAppender.layout = Log::Log4perl::Layout::SimpleLayout;
 log4j.appender.myAppender.File   = $testfile
 EOL
@@ -75,7 +75,7 @@ ok($@, '/Unknown layout \'Log::Log4perl::Layout::SimpleLayout;\'/');
 $conf = <<EOL;
 log4j.category.simplelayout.test=INFO, myAppender
 
-log4j.appender.myAppender        = Log::Log4perl::TestBuffer
+log4j.appender.myAppender        = Log::Log4perl::Appender::TestBuffer
 log4j.appender.myAppender.layout = SimpleLayout
 log4j.appender.myAppender.File   = $testfile
 EOL
@@ -148,7 +148,7 @@ ok($@,"/ERROR:  I don't know how to make a 't/tmp/test12.log' to implement your 
 $conf = <<EOL;
 log4j.category.simplelayout.test=INFO, XXmyAppender
 
-log4j.appender.myAppender        = Log::Log4perl::TestBuffer
+log4j.appender.myAppender        = Log::Log4perl::Appender::TestBuffer
 log4j.appender.myAppender.layout = Log::Log4perl::Layout::SimpleLayout
 log4j.appender.myAppender.File   = $testfile
 EOL
@@ -165,7 +165,7 @@ ok($@,"/ERROR: you didn't tell me how to implement your appender 'XXmyAppender'/
 $conf = <<EOL;
 log4j.category.simplelayout.test=INFO, myAppender
 
-log4j.appender.myAppender        = Log::Log4perl::TestBuffer
+log4j.appender.myAppender        = Log::Log4perl::Appender::TestBuffer
 
 EOL
 
@@ -186,7 +186,7 @@ log4j.category.simplelayout.test=\\
                         myAppender
 
 log4j.appender.myAppender        \\
-                    = Log::Log4perl::TestBuffer
+                    = Log::Log4perl::Appender::TestBuffer
 log4j.appender.myAppender.layout = Log::Log4perl::Lay\\
                         out::SimpleL\\
                             ayout     #this is stupid, I know

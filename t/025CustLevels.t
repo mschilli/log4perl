@@ -12,7 +12,7 @@ use Test;
 #create a custom level "LITEWARN"
 use Log::Log4perl;
 use Log::Log4perl::Level;
-use Log::Log4perl::TestBuffer;
+use Log::Log4perl::Appender::TestBuffer;
 # use strict;
 
 
