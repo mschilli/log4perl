@@ -199,6 +199,42 @@ or the parameter-style method with a complexity somewhat in between:
 
 For more info, please check out L<Log::Log4perl/"Stealth Loggers">.
 
+=head2 How can I include global (thread-specific) data in my log messages?
+
+Say, you're writing a web application and want all your
+log messages to include the current client's IP address. Most certainly,
+you don't want to include it in each and every log message like in
+
+    $logger->debug( $r->connection->remote_ip,
+                    " retrieving user data from DB" );
+
+do you? Instead, you want to set it in a global data structure and
+have Log::Log4perl include it automatically via a PatternLayout setting
+in the configuration file:
+
+    log4perl.appender.FileApp.layout.ConversionPattern = %X{ip} %m%n
+
+The conversion specifier C<%X{ip}> references an entry under the key
+C<ip> in the global C<MDC> (mapped diagnostic context) table, which 
+you've set once via
+
+    Log::Log4perl::MDC->put("ip", $r->connection->remote_ip);
+
+at the start of the request handler. Note that this is a
+I<static> (class) method, there's no logger object involved.
+You can use this method with as many key/value pairs as you like as long
+as you refer them under different names.
+
+The mappings are stored in a global hash table within Log::Log4perl.
+Luckily, because the thread
+model in 5.8.0 doesn't share global variables between threads unless
+they're explicitly marked as such, there's no problem with multi-threaded
+environments.
+
+For more details on the MDC, please refer to 
+L<Log::Log4perl/"Mapped Diagnostic Context (MDC)"> and
+L<Log::Log4perl::MDC>.
+
 =head1 SEE ALSO
 
 Log::Log4perl
