@@ -8,10 +8,10 @@ use strict;
 
 use Test;
 
-use Log::Log4perl;
+use Log::Log4perl qw(get_logger);
 use Log::Log4perl::Level;
 
-BEGIN { plan tests => 7 }
+BEGIN { plan tests => 9 }
 
 ok(1); # If we made it this far, we're ok.
 
@@ -67,3 +67,36 @@ $log2->error("Yeah, log2");
 
 ok($app0->buffer(), "ERROR - Yeah, log2\n");
 ok($app1->buffer(), "ERROR - Yeah, log2\n");
+
+##################################################
+# Appender threshold with config file
+##################################################
+# Reset appender population
+@Log::Log4perl::TestBuffer::POPULATION = ();
+
+my $conf = <<EOT;
+log4perl.logger   = ERROR, BUF0
+log4perl.logger.a = INFO, BUF1
+log4perl.appender.BUF0           = Log::Log4perl::TestBuffer
+log4perl.appender.BUF0.layout    = Log::Log4perl::Layout::SimpleLayout
+log4perl.appender.BUF0.Threshold = ERROR
+log4perl.appender.BUF1           = Log::Log4perl::TestBuffer
+log4perl.appender.BUF1.layout    = Log::Log4perl::Layout::SimpleLayout
+log4perl.appender.BUF1.Threshold = WARN
+EOT
+
+Log::Log4perl::init(\$conf);
+
+    # Sorry 'bout that, but CVS is too stupid to grok that that's not a macro
+$app0 = $
+        Log::Log4perl::TestBuffer::POPULATION[0];
+$app1 = $
+        Log::Log4perl::TestBuffer::POPULATION[1];
+
+my $loga = get_logger("a");
+
+$loga->info("Don't want to see this");
+$loga->error("Yeah, loga");
+
+ok($app0->buffer(), "ERROR - Yeah, loga\n");
+ok($app1->buffer(), "ERROR - Yeah, loga\n");
