@@ -245,7 +245,6 @@ sub _init {
             if (ref $appenderclass) {
 
                 $appender = $appenderclass;
-                add_layout_by_name($data, $appender, $appname);
 
             }else{
 
@@ -253,7 +252,13 @@ sub _init {
                     "implement your appender '$appname'"
                         unless $appenderclass;
 
-                if($appenderclass =~ /::/) {
+                if (Log::Log4perl::JavaMap::translate($appenderclass)){
+                    # It's Java. Try to map
+                    print "Trying to map Java $appname\n" if DEBUG;
+                    $appender = Log::Log4perl::JavaMap::get($appname, 
+                                                $data->{appender}->{$appname});
+
+                }else{
                     # It's Perl
                     my @params = grep { $_ ne "layout" and
                                         $_ ne "value"
@@ -292,16 +297,9 @@ sub _init {
                         name => $appname,
                         %param,
                     ); 
-                    add_layout_by_name($data, $appender, $appname);
-
-                } else {
-                    # It's Java. Try to map
-                    print "Trying to map Java $appname\n" if DEBUG;
-                    $appender = Log::Log4perl::JavaMap::get($appname, 
-                                                $data->{appender}->{$appname});
-                    add_layout_by_name($data, $appender, $appname);
                 }
             }
+            add_layout_by_name($data, $appender, $appname);
 
                 # Check for appender thresholds
             my $threshold = 

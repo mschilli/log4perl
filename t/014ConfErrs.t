@@ -22,7 +22,7 @@ EOL
 eval{
     Log::Log4perl->init(\$conf);
 };
-ok($@, '/ERROR: appenderclass \'Log::Log4perl::Appender::FileAppenderx\' doesn\'t exist/');
+ok($@, '/ERROR: can\'t load appenderclass \'Log::Log4perl::Appender::FileAppenderx\'/');
 
 
 # *****************************************************
@@ -53,7 +53,7 @@ EOL
 eval{
     Log::Log4perl->init(\$conf);
 };
-ok($@, '/ERROR: appenderclass \'Log::Log4perl::Appender::TestBuffer;\' doesn\'t exist/');
+ok($@, '/ERROR: can\'t load appenderclass \'Log::Log4perl::Appender::TestBuffer;\'/');
 
 # *****************************************************
 # nonexistent layout class containing a ';'
@@ -130,16 +130,11 @@ log4j.appender.myAppender        = $testfile
 EOL
 
 eval{
-    #this warns about errors like
-    #Warning: Use of "require" without parens is ambiguous at (eval 9) line 1.
-    #Bareword found where operator expected at (eval 9) line 1, near "/tmp/test12::log"
-    #    (Missing operator before test12::log?)
-    #how to suppress STDERR?
 
     Log::Log4perl->init(\$conf, $debug);
 
 };
-ok($@,"/ERROR:  I don't know how to make a 't/tmp/test12.log' to implement your appender/");
+ok($@,"/ERROR: can't load appenderclass 't/tmp/test12.log'/");
 
 
 

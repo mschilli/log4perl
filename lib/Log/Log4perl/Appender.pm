@@ -36,6 +36,13 @@ sub new {
 
         # Pull in the specified Log::Log4perl::Appender object
     eval {
+
+           # Eval erroneously succeeds on unknown appender classes if
+           # the eval string just consists of valid perl code (e.g. an
+           # appended ';' in $appenderclass variable). Fail if we see
+           # anything in there that can't be class name.
+        die "'$appenderclass' not a valid class name " if $appenderclass =~ /[^:\w]/;
+
         no strict 'refs';
         # see 'perldoc -f require' for why two evals
         eval "require $appenderclass"
@@ -44,14 +51,9 @@ sub new {
              ;
         die $@ if $@;
 
-           # Eval erroneously succeeds on unknown appender classes if
-           # the eval string just consists of valid perl code (e.g. an
-           # appended ';' in $appenderclass variable). Fail if we see
-           # anything in there that can't be class name.
-        die "" if $appenderclass =~ /[^:\w]/;
     };
 
-    $@ and die "ERROR: appenderclass '$appenderclass' doesn't exist\n$@";
+    $@ and die "ERROR: can't load appenderclass '$appenderclass'\n$@";
 
     $params{name} = unique_name() unless exists $params{name};
 

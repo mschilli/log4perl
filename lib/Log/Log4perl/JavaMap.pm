@@ -22,6 +22,8 @@ our %translate = (
         'Log::Log4perl::JavaMap::NTEventLogAppender',
 );
 
+our %user_defined;
+
 sub get {
     my ($appender_name, $appender_data) = @_;
 
@@ -32,6 +34,7 @@ sub get {
                 "'$appender_name'";
 
     my $perl_class = $translate{$appender_data->{value}} || 
+                     $user_defined{$appender_data->{value}} ||
             die "ERROR:  I don't know how to make a '$appender_data->{value}' " .
                 "to implement your appender '$appender_name', that's not a " .
                 "supported class\n";
@@ -44,6 +47,14 @@ sub get {
 
     my $app = $perl_class->new($appender_name, $appender_data);
     return $app;
+}
+
+#an external api to the two hashes
+sub translate {
+    my $java_class = shift;
+
+    return $translate{$java_class} || 
+            $user_defined{$java_class};
 }
 
 1;
@@ -113,6 +124,26 @@ These will probably not be implemented
     JMSAppender
     SocketAppender - (ships a serialized LoggingEvent to the server side)
     SocketHubAppender
+
+=head1 ROLL YOUR OWN
+
+Let's say you've in a mixed Java/Perl enviroment and you've
+come up with some custom Java appender with behavior you want to 
+use in both worlds, C<myorg.customAppender>.  You write a
+Perl appender with the same behavior C<Myorg::CustomAppender>. You
+want to use one config file accross both applications, so the
+config file will have to say 'myorg.customAppender'.  But
+the mapping from C<myorg.customAppender> to C<Myorg::CustomAppender>
+isn't in this JavaMap class, so what do you do?
+
+In  your Perl code, before you call Log::Log4perl::init(), do this:
+
+    $Log::Log4perl::JavaMap::user_defined{'myorg.customAppender'} = 
+        'Myorg::CustomAppender';
+
+and you can use 'myorg.customAppender' in your config file with
+impunity.
+
 
 
 =head1 AUTHORS
