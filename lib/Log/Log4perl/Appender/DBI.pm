@@ -167,7 +167,14 @@ sub calculate_bind_values {
                         6 + $Log::Log4perl::caller_depth,  
                     );
             }elsif (ref $p->{message} eq 'ARRAY' && @{$p->{message}}){
-                $msg = $p->{message}->[$user_ph_idx++];
+                #$msg = $p->{message}->[$user_ph_idx++];
+                $msg = shift @{$p->{message}};
+
+               #here handle cases where we didn't get an arrayref
+               #log the message in the first placeholder and nothing in the rest
+            }elsif (! ref $p->{message} ){
+                $msg = $p->{message};
+                $p->{message} = undef;
             }else{
                 croak "Log4perl: missing bind value for placeholder(?) number $pnum in ".
                 "sqlStatement, while trying to log \"$p->{message}\"\n".
@@ -178,8 +185,8 @@ sub calculate_bind_values {
     }
 
     #handle leftovers
-    if (ref $p->{message} eq 'ARRAY' && @{$p->{message}} > $user_ph_idx) {
-        push @qmarks, @{$p->{message}}[$user_ph_idx..@{$p->{message}}];
+    if (ref $p->{message} eq 'ARRAY' && @{$p->{message}} ) {
+        push @qmarks, @{$p->{message}};
     }
 
     return \@qmarks;
