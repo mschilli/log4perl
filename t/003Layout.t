@@ -62,7 +62,7 @@ $app->layout($layout);
 $logger->debug("That's the message");
 
 ok($app->buffer(), 
-   'm#^\d{4}/\d\d/\d\d \d\d:\d\d:\d\d> That\'s the message$#'); 
+   'm#^\d{4}/\d\d/\d\d \d\d:\d\d:\d\d,\d\d\d> That\'s the message$#'); 
 
 ############################################################
 # Check SimpleLayout

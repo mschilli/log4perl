@@ -7,7 +7,7 @@ use strict;
 
 use Test;
 
-BEGIN { plan tests => 12 }
+BEGIN { plan tests => 16 }
 
 use Log::Log4perl qw(get_logger);
 use Log::Log4perl::DateFormat;
@@ -72,6 +72,24 @@ ok($formatter->format(1030429942), "237 237 237  237");
 ###########################################
 $formatter = Log::Log4perl::DateFormat->new("a aa");
 ok($formatter->format(1030429942), "PM PM");
+
+###########################################
+# Milliseconds
+###########################################
+$formatter = Log::Log4perl::DateFormat->new("S SS SSS SSSS SSSSS SSSSSS");
+ok($formatter->format(1030429942, 123456), "1 12 123 1234 12345 123456");
+
+###########################################
+# Predefined formats
+###########################################
+$formatter = Log::Log4perl::DateFormat->new("DATE");
+ok($formatter->format(1030429942, 123456), "26 August 2002 23:32:22,123");
+
+$formatter = Log::Log4perl::DateFormat->new("ISO8601");
+ok($formatter->format(1030429942, 123456), "2002-32-26 23:32:22,123");
+
+$formatter = Log::Log4perl::DateFormat->new("ABSOLUTE");
+ok($formatter->format(1030429942, 123456), "23:32:22,123");
 
 ###########################################
 # Unknown
