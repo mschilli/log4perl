@@ -1,0 +1,9 @@
+#!/usr/bin/perl -p -i
+###########################################
+# fixhtml - compensate for pod2html bugs
+# Mike Schilli, 2004 (m@perlmeister.com)
+###########################################
+
+    # &quot">http://log4perl.sourceforge.net/ppm/Log-Log4perl.ppd&quot</a>;
+    s/&quot"/"/g;
+    s#&quot</a>;#</a>&quot;#;
