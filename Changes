@@ -8,10 +8,16 @@ Revision history for Log::Log4perl
           when some of $logger->debug(@array) when some of @array are undef 
     * (ms) Stealth loggers and documentation
     * (kg) Better error message for case reported by Hai Wu
-    * (ms) Added Log/Log4perl/FAQ.pm
+    * (ms) Added Log/Log4perl/FAQ.pm, which the homepage links to
     * (ms) Took dependency on Test::More and Test::Simple out of the PPD file 
            because of a problem with Activestate 5.6.1 reported 
            by James Hahn <jrh3@att.com> 
+    * (ms) Added Log::Dispatch equivalent levels to the Log4perl loggers,
+           which are passed on the Log::Dispatch appenders now according
+           to the priority of the message instead of the default "DEBUG" 
+           setting
+    * (ms) Added %P process ID to PatternLayout as suggested by
+           Paul Harrington <Paul-Harrington@deshaw.com>
 
 0.25 10/06/2002
     * (ms) backwards-compatibility with perl 5.00503

@@ -205,7 +205,7 @@ sub generate_coderef {
           \$appender->log(
               #these get passed through to Log::Dispatch
               { name    => \$appender_name,
-                level   => 0,   
+                level   => \$Log::Log4perl::Level::L4P_TO_LD{\$level},   
                 message => \$message,
               },
               #these we need

@@ -24,24 +24,44 @@ use vars qw(%PRIORITY %LEVELS);
 our %PRIORITY = (); # unless (%PRIORITY);
 our %LEVELS = () unless (%LEVELS);
 our %SYSLOG = () unless (%SYSLOG);
+our %L4P_TO_LD = () unless (%L4P_TO_LD);
 
 sub add_priority {
-  my ($prio, $intval, $syslog) = @_;
+  my ($prio, $intval, $syslog, $log_dispatch_level) = @_;
   $prio = uc($prio); # just in case;
 
-  $PRIORITY{$prio} = $intval;
-  $LEVELS{$intval} = $prio;
-  $SYSLOG{$prio} = $syslog if defined($syslog);
+  $PRIORITY{$prio}    = $intval;
+  $LEVELS{$intval}    = $prio;
+
+  # Set up the mapping between Log4perl integer levels and 
+  # Log::Dispatch levels
+  # Note: Log::Dispatch uses the following levels:
+  # 0 debug
+  # 1 info
+  # 2 notice
+  # 3 warning
+  # 4 error
+  # 5 critical
+  # 6 alert
+  # 7 emergency
+
+      # The equivalent Log::Dispatch level is optional, set it to 
+      # the highest value (7=emerg) if it's not provided.
+  $log_dispatch_level = 7 unless defined $log_dispatch_level;
+  
+  $L4P_TO_LD{$prio}  = $log_dispatch_level;
+
+  $SYSLOG{$prio}      = $syslog if defined($syslog);
 }
 
 # create the basic priorities
-add_priority("OFF",   OFF_INT,   -1);
-add_priority("FATAL", FATAL_INT, 0);
-add_priority("ERROR", ERROR_INT, 3);
-add_priority("WARN",  WARN_INT,  4);
-add_priority("INFO",  INFO_INT,  6);
-add_priority("DEBUG", DEBUG_INT, 7);
-add_priority("ALL",   ALL_INT,   7);
+add_priority("OFF",   OFF_INT,   -1, 7);
+add_priority("FATAL", FATAL_INT,  0, 7);
+add_priority("ERROR", ERROR_INT,  3, 4);
+add_priority("WARN",  WARN_INT,   4, 3);
+add_priority("INFO",  INFO_INT,   6, 1);
+add_priority("DEBUG", DEBUG_INT,  7, 0);
+add_priority("ALL",   ALL_INT,    7, 0);
 
 # we often sort numerically, so a helper func for readability
 sub numerically {$a <=> $b}

@@ -10,7 +10,8 @@ use Log::Dispatch::Output;
 use base qw( Log::Dispatch::Output );
 use fields qw( stderr );
 
-our %POPULATION = ();
+our %POPULATION   = ();
+our $LOG_PRIORITY = 0;
 
 ##################################################
 sub new {
@@ -36,6 +37,7 @@ sub log_message {
     my $self = shift;
     my %params = @_;
 
+    $self->{buffer} .= "[$params{level}]: " if $LOG_PRIORITY;
     $self->{buffer} .= $params{message};
 }
 
