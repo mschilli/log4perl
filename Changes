@@ -4,7 +4,8 @@ Revision history for Log::Log4perl
 
 0.27 11/12/2002
     * (ms) Updated FAQ with "Recipes of the Week"
-    * (ms) Added Log::Log4perl::NDC (Nested Diagnostic Contexts)
+    * (ms) Added Log::Log4perl::NDC (Nested Diagnostic Contexts) and
+           Added Log::Log4perl::MDC (Mapped Diagnostic Contexts)
 
 0.26 11/11/2002
     * (kg) enabled %l (was missing from PatternLayout::define)

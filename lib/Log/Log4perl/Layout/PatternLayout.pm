@@ -8,6 +8,7 @@ use warnings;
 use Log::Log4perl::Level;
 use Log::Log4perl::DateFormat;
 use Log::Log4perl::NDC;
+use Log::Log4perl::MDC;
 use File::Spec;
 
 our $TIME_HIRES_AVAILABLE;
@@ -174,6 +175,7 @@ sub render {
         }
     }
 
+    $info{X} = "[No curlies defined]";
     $info{x} = Log::Log4perl::NDC->get() if $self->{info_needed}->{x};
     $info{c} = $category;
     $info{d} = 1; # Dummy value, corrected later
@@ -197,7 +199,6 @@ sub render {
 
         # As long as they're not implemented yet ..
     $info{t} = "N/A";
-    $info{X} = "N/A";
 
         # Iterate over all info fields on the stack
     for my $e (@{$self->{stack}}) {
@@ -231,6 +232,8 @@ sub curly_action {
         $data = shrink_category($data, $curlies);
     } elsif($ops eq "C") {
         $data = shrink_category($data, $curlies);
+    } elsif($ops eq "X") {
+        $data = Log::Log4perl::MDC->get($curlies);
     } elsif($ops eq "d") {
         $data = $curlies->format(current_time());
     } elsif($ops eq "F") {

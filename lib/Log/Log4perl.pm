@@ -1369,6 +1369,49 @@ fires. What it does is just call
 internally. See details on how this standard log4j feature is implemented
 in L<Log::Log4perl::NDC>.
 
+=head2 Mapped Diagnostic Context (MDC)
+
+Just like the previously discussed NDC stores thread-specific
+information in a stack structure, the MDC implements a hash table
+to store key/value pairs in.
+
+The static method
+
+    Log::Log4perl::MDC->put($key, $value);
+
+stores C<$value> under a key C<$key>, with which it can be retrieved later
+(possibly in a totally different part of the system) by calling
+the C<get> method:
+
+    my $value = Log::Log4perl::MDC->get($key);
+
+If no value has been stored previously under C<$key>, the C<get> method
+will return the string C<"[undef]"> to allow for easy string interpolation
+later on.
+
+Typically, MDC values are retrieved later on via the C<"%X{...}"> placeholder
+in C<Log::Log4perl::Layout::PatternLayout>.
+For example, an application taking a web request might store the remote host
+like
+
+    Log::Log4perl::MDC->put("remote_host", $r->headers("HOST"));
+
+at its beginning and if the appender's layout looks something like
+
+    log4perl.appender.Logfile.layout.ConversionPattern = %X{remote_host}: %m%n
+
+then a log statement like
+
+   DEBUG("Content delivered");
+
+will log something like
+
+   adsl-63.dsl.snf.pacbell.net: Content delivered 
+
+later on in the program.
+
+For details, please check L<Log::Log4perl::MDC>.
+
 =head1 How about Log::Dispatch::Config?
 
 Tatsuhiko Miyagawa's C<Log::Dispatch::Config> is a very clever 

@@ -27,6 +27,7 @@ lib/Log/Log4perl/Layout/SimpleLayout.pm
 lib/Log/Log4perl/Level.pm
 lib/Log/Log4perl/Logger.pm
 lib/Log/Log4perl/NDC.pm
+lib/Log/Log4perl/MDC.pm
 lib/Log/Log4perl/TestBuffer.pm
 t/001Level.t
 t/002Logger.t

@@ -53,6 +53,8 @@ sub get_context {
     return \%MDC_HASH;
 }
 
+1;
+
 __END__
 
 =head1 NAME
@@ -79,8 +81,9 @@ Store a value C<$value> under key C<$key> in the map.
 =item my $value = Log::Log4perl::MDC->get($key);
 
 Retrieve the content of the map under the specified key.
-Typically done by C<%X{key}>.
-If no value exists to the given key, the value C<"[undef]"> is being returned.
+Typically done by C<%X{key}> in
+C<Log::Log4perl::Layout::PatternLayout>.
+If no value exists to the given key, the string C<"[undef]"> is being returned.
 
 =item my $text = Log::Log4perl::MDC->remove();
 
@@ -93,7 +96,9 @@ Returns a reference to the hash table.
 =back
 
 Please note that all of the methods above are class methods, there's no
-instances of this class.
+instances of this class. Since the thread model in perl 5.8.0 is
+"no shared data unless explicetly requested" the data structures
+used are just global (and therefore thread-specific).
 
 =head1 AUTHOR
 

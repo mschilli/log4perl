@@ -11,8 +11,10 @@ use Test;
 use Log::Log4perl qw(get_logger);
 use Log::Log4perl::Level;
 use Log::Log4perl::TestBuffer;
+use Log::Log4perl::NDC;
+use Log::Log4perl::MDC;
 
-BEGIN { plan tests => 1 }
+BEGIN { plan tests => 2 }
 
 # Have TestBuffer log the Log::Dispatch priority
 Log::Log4perl::TestBuffer->reset();
@@ -29,7 +31,6 @@ Log::Log4perl::init(\$conf);
 my $app0 = Log::Log4perl::TestBuffer->by_name("BUF0");
 
 my $loga = get_logger("a");
-
 
 Log::Log4perl::NDC->push("first");
 $loga->debug("debug");
@@ -51,3 +52,26 @@ $loga->error("error");
 
 ok($app0->buffer(), 
    "debug <first>info <sixth>warn <[undef]>error <seventh>");
+
+Log::Log4perl::TestBuffer->reset();
+
+Log::Log4perl::MDC->put("remote_host", "blah-host");
+Log::Log4perl::MDC->put("ip", "blah-ip");
+
+$conf = <<EOT;
+log4perl.logger   = ALL, BUF1
+log4perl.appender.BUF1           = Log::Log4perl::TestBuffer
+log4perl.appender.BUF1.layout    = Log::Log4perl::Layout::PatternLayout
+log4perl.appender.BUF1.layout.ConversionPattern = %X{remote_host}: %m %X{ip}%n
+EOT
+
+Log::Log4perl::init(\$conf);
+
+my $app1 = Log::Log4perl::TestBuffer->by_name("BUF1");
+
+my $logb = get_logger("b");
+
+$logb->debug("testmessage");
+
+ok($app1->buffer(), 
+   "blah-host: testmessage blah-ip\n");
