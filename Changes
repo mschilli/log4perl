@@ -4,6 +4,7 @@ Revision history for Log::Log4perl
 
 0.25 09/29/2002
     * (ms) backwards-compatibility with perl 5.00503
+    * (ms) added system-wide threshold, fixed java-app thresholds
 
 0.24 09/26/2002
     * (kg) Fix for init_and_watch and test cases
