@@ -199,8 +199,6 @@ Log::Log4perl - Log4j implementation for Perl
 C<Log::Log4perl> implements the widely popular C<Log4j> logging
 package ([1]) in pure Perl.
 
-*** WARNING: ALPHA SOFTWARE ***
-
 A WORD OF CAUTION: THIS LIBRARY IS STILL UNDER CONSTRUCTION -- ON
 http://log4perl.sourceforge.net YOU'LL GET THE LATEST SCOOP.
 THE API HAS REACHED A MATURE STATE, WE WILL NOT CHANGE IT UNLESS FOR
@@ -947,9 +945,39 @@ a reference to it:
 
 =head1 How about Log::Dispatch::Config?
 
-Yeah, I've seen it. I like it, but I think it is too dependent
-on defining everything in a configuration file.
-I've designed C<Log::Log4perl> to be more flexible.
+Tatsuhiko Miyagawa's C<Log::Dispatch::Config> is a very clever 
+simplified logger implementation, covering some of the I<log4j>
+functionality. Among the things that 
+C<Log::Log4perl> can but C<Log::Dispatch::Config> can't are:
+
+=over 4
+
+=item *
+
+You can't assing categories to loggers. For small systems that's fine,
+but if you can't turn off and on detailed logging in only a tiny
+subsystem of your environment, you're missing out on a majorly
+useful log4j feature.
+
+=item *
+
+Defining appender thresholds. Important if you want to solve problems like
+"log all messages of level FATAL to STDERR, plus log all DEBUG
+messages in C<Foo::Bar> to a log file". If you don't have appenders
+thresholds, there's no way to prevent cluttering STDERR with DEBUG messages.
+
+=item *
+
+PatternLayout specifications in accordance with the standard
+(e.g. "%d{HH:MM}").
+
+=back
+
+Bottom line: Log::Dispatch::Config is fine for small systems with
+simple logging requirements. However, if you're
+designing a system with lots of subsystems which you need to control
+independantly, you'll love the features of C<Log::Log4perl>,
+which is equally easy to use.
 
 =head1 Using Log::Log4perl from wrapper classes
 
