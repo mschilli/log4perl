@@ -2,8 +2,10 @@
 Revision history for Log::Log4perl
 ##################################################
 
-0.38
+0.38 (not yet released)
     * (kg) fixed bug where custom_levels beneath DEBUG didn't work
+    * (ms) fixed 5.00305 incompatibility reported by 
+      Brett Rann <brettrann@mail.com> (constants with leading _).
 
 0.37 (09/14/2003)
     * (kg) adjusting tests for XML::Parser 2.32 having broken
