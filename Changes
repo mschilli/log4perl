@@ -2,7 +2,7 @@
 Revision history for Log::Log4perl
 ##################################################
 
-0.41 (not yet released)
+0.41 (12/12/2003)
     * (ms) Applied documentation update for Synchronized appender, suggested
       by David Viner E<lt>dviner@yahoo-inc.comE<gt>
     * (ms) Added option to Log::Log4perl::Layout::PatternLayout to 
