@@ -1,10 +1,4 @@
 Changes
-LICENSE
-MANIFEST
-MANIFEST.SKIP
-META.yml			Module meta-data (added by MakeMaker)
-Makefile.PL
-README
 eg/5005it.pl
 eg/jabber.conf
 eg/log4j-file-append-java.conf
@@ -52,6 +46,12 @@ lib/Log/Log4perl/Logger.pm
 lib/Log/Log4perl/MDC.pm
 lib/Log/Log4perl/NDC.pm
 lib/Log/Log4perl/Util.pm
+LICENSE
+Makefile.PL
+MANIFEST
+MANIFEST.SKIP
+META.yml			Module meta-data (added by MakeMaker)
+README
 t/001Level.t
 t/002Logger.t
 t/003Layout.t

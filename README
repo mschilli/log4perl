@@ -151,9 +151,9 @@ How to use it
         }
 
     Instead, if a function/method wants a reference to the logger, it just
-    calls the Logger's static "get_logger()" method to obtain a reference to
-    the *one and only* possible logger object of a certain category. That's
-    called a *singleton* if you're a Gamma fan.
+    calls the Logger's static "get_logger($category)" method to obtain a
+    reference to the *one and only* possible logger object of a certain
+    category. That's called a *singleton* if you're a Gamma fan.
 
     How does the logger know which messages it is supposed to log and which
     ones to suppress? "Log::Log4perl" works with inheritence: The config
@@ -786,6 +786,39 @@ Categories
     "ref($self)"), so it shouldn't be a problem to get the right class every
     time.
 
+  Initialize once and only once
+    It's important to realize that Log::Log4perl gets initialized once and
+    only once, typically at the start of a program or system. Calling
+    "init()" more than once will cause it to clobber the existing
+    configuration and *replace* it by the new one.
+
+    If you're in a traditional CGI environment, where every request is
+    handeled by a new process, calling "init()" every time is fine. In
+    persistent environments like "mod_perl", however, Log::Log4perl should
+    be initialized either at system startup time (Apache offers startup
+    handlers for that) or via
+
+            # Init or skip if already done
+        Log::Log4perl->init_once($conf_file);
+
+    "init_once()" is identical to "init()", just with the exception that it
+    will leave a potentially existing configuration alone and will only call
+    "init()" if Log::Log4perl hasn't been initialized yet.
+
+    If you're just curious if Log::Log4perl has been initialized yet, the
+
+        if(Log::Log4perl->initialized()) {
+            # Not initialized yet ...
+        }
+
+    check can be used.
+
+    If you're afraid that the components of your system are stepping on each
+    other's toes or if you are thinking that different components should
+    initialize Log::Log4perl seperately, try to consolidate your system to
+    use a centralized Log4perl configuration file and use Log4perl's
+    *categories* to separate your components.
+
 Custom Filters
     Log4perl allows the use of customized filters in its appenders to
     control the output of messages. These filters might grep for certain
@@ -826,6 +859,11 @@ Cool Tricks
 
         use Log::Log4perl qw(get_logger);
         my $logger = get_logger();
+
+    Please note this difference: To obtain the root logger, please use
+    "get_logger("")", call it without parameters ("get_logger()"), you'll
+    get the logger of a category named after the current package.
+    "get_logger()" is equivalent to "get_logger(__PACKAGE__)".
 
   Alternative initialization
     Instead of having "init()" read in a configuration file, you can also
