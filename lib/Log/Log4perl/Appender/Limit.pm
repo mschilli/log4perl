@@ -15,7 +15,7 @@ use Storable;
 
 our @ISA = qw(Log::Log4perl::Appender);
 
-our $CVSVERSION   = '$Revision: 1.3 $';
+our $CVSVERSION   = '$Revision: 1.4 $';
 our ($VERSION)    = ($CVSVERSION =~ /(\d+\.\d+)/);
 
 ###########################################
@@ -24,11 +24,13 @@ sub new {
     my($class, %options) = @_;
 
     my $self = {
-        appender     => undef,
-        accumulate   => 1,
-        persistent   => undef,
-        block_period => 3600,
-        buffer       => [],
+        max_until_flushed   => undef,
+        max_until_discarded => undef,
+        appender            => undef,
+        accumulate          => 1,
+        persistent          => undef,
+        block_period        => 3600,
+        buffer              => [],
         %options,
     };
 
@@ -55,9 +57,27 @@ sub log {
 ###########################################
     my($self, %params) = @_;
     
-    if(exists $self->{sent_last} and
-       $self->{sent_last} + $self->{block_period} > time()) {
+        # Check if message needs to be discarded
+    my $discard = 0;
+    if(defined $self->{max_until_discarded} and
+       scalar @{$self->{buffer}} >= $self->{max_until_discarded} - 1) {
+        $discard = 1;
+    }
+
+        # Check if we need to flush
+    my $flush = 0;
+    if(defined $self->{max_until_flushed} and
+       scalar @{$self->{buffer}} >= $self->{max_until_flushed} - 1) {
+        $flush = 1;
+    }
+
+    if(!$flush and
+       (exists $self->{sent_last} and
+        $self->{sent_last} + $self->{block_period} > time()
+       )
+      ) {
             # Message needs to be blocked for now.
+        return if $discard;
 
             # Save event time for later
         $params{log4p_logtime} = $self->{app}->{layout}->{time_function}->();
@@ -219,6 +239,18 @@ discarded (if C<accumulate> isn't set).
 File name in which C<Log::Log4perl::Appender::Limit> persistently stores 
 delivery times. If omitted, the appender will have no recollection of what
 happened when the program restarts.
+
+=item C<max_until_flushed>
+
+Maximum number of accumulated messages. If exceeded, the appender flushes 
+all messages, regardless if the interval set in C<block_period> 
+has passed or not. Don't mix with C<max_until_discarded>.
+
+=item C<max_until_discarded>
+
+Maximum number of accumulated messages. If exceeded, the appender will
+simply discard additional messages, waiting for C<block_period> to expire
+to flush all accumulated messages. Don't mix with C<max_until_flushed>.
 
 =back
 
