@@ -129,7 +129,9 @@ Kevin:
       DONE Create new module negotiating between Java-style config files
       and perl-style appenders
     * Module for reading XML-style config files
-    * Please use 80 chars max line width
+    * revisit  CategoryFactory idea, give the user opportunity to override
+      log levels with their own?
+OK Please use 80 chars max line width
 DONE (is gone) redo level_str() hack
 DONE (Dispatch singleton) question - are appenders created just once if
 they're reused in the config file?
