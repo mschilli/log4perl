@@ -21,8 +21,9 @@ Revision history for Log::Log4perl
       logger reference the program hands in to them with a new one of
       the same category. This happens every time if 'init_and_watch' has
       been enabled. However, this introduces a small runtime penalty.
-      And it won't work if the updated configuration doesn't define this
-      particular logger.
+      This is different from the original log4j, which does some
+      half-assed re-initialization, because Java isn't expressive enough
+      to allow for it. Making this thread-safe might be tough, though. 
     * Added DEBUG statements to Logger.pm and Config.pm to trace execution
       (debugging won't work because of "eval"s). Both files define a 
       constant named DEBUG towards the top of the file, which will
@@ -164,6 +165,20 @@ Revision history for Log::Log4perl
 
 TODO:
 ##################################################
+    * (!!!) Threshold settings of appenders: log4j.appender.A.Threshold = ERROR
+    * BasicConfigurator() vs. :easy, PropertyConfigurator()
+    * Log/throw exception (either warn/die or real exceptions)
+    * get_logger() thread safety (two try to create it at the same time)
+    * hierarchy-wide threshold (p.14), log4j.threshold = ERROR
+    * Object rendering
+    * NDC/MDC
+    * Internal DEBUG for log4perl (log4perl.debug = 1)
+    * custom levels (addtl. levels)
+    * log4j.logger.blah = INHERITED, app
+    * variable subst: a=b log4j.blah = ${a}
+    * if appenders are attached in a conf file, previous ones are detached
+    * log4j.additivity.loggername = true|false
+    * log4j.renderer.blah = blah
     * I wonder if it might not be a mistake to have the base level be
       '0', might be safer to make it '1', less chance of those
       false-but-is-defined errors I think that's what log4j uses
@@ -178,6 +193,8 @@ TODO:
     * possible bug: was logging to a category, then took my appender off
       that category, am still seeing stuff in my log, something didn't
       take about the reload
+    * Custom filters
+    * XML config files
 
 Kevin:
 ##################################################
