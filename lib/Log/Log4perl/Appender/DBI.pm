@@ -372,18 +372,48 @@ means we don't have to worry about messages that look like
 
 fubaring our database!
 
-Normally a list of things in the logging statement get concatenated into 
+Normally a list of things in the logging statement gets concatenated into 
 a single string, but setting C<filter_message> to 0 and using the 
-NoopLayout means that 
+NoopLayout means that in
 
-    $logger->warn( 1234, 'warning message' );
+    $logger->warn( 1234, 'warning message', 'bgates' );
 
-keeps the list values available for the DBI appender later on.  You can mix up
-the order the placeholders with %x specifiers as you see fit, the logger 
-will populate the question marks with params you've defined in the config 
+the individual list values will still be available for the DBI appender later 
+on.  (If C<filter_message> is not set to 0, the default behavior is to
+join the list elements into a single string.   If PatternLayout or SimpleLayout
+are used, their attempt to C<render()> your layout will result in something 
+like "ARRAY(0x841d8dc)" in your logs.  More information on C<filter_message>
+is in Log::Log4perl::Appender.)
+
+
+In your insert SQL you can mix up
+'?' placeholders with conversion specifiers (%c, %p, etc) as you see 
+fit--the logger 
+will match the question marks to params you've defined in the config 
 file and populate the rest with values from your arrayref.  If there
-are more ? placeholders than there are values in your message, it will
-use undef for the rest. 
+are more '?' placeholders than there are values in your message, it will
+use undef for the rest.  For instance, 
+
+	log4j.appender.DBAppndr.sql =                 \
+	   insert into log4perltest                   \
+	   (loglevel, message, datestr, subpoena_id)\
+	   values (?,?,?,?)
+	log4j.appender.DBAppndr.params.1 = %p
+	log4j.appender.DBAppndr.params.3 = %d
+
+	log4j.appender.DBAppndr.filter_message=0
+
+
+	$logger->info('arrest him!', $subpoena_id);
+
+results in the first '?' placholder being bound to %p, the second to
+"arrest him!", the third to the date from "%d", and the fourth to your
+$subpoenaid.  If you forget the $subpoena_id and just log
+
+	$logger->info('arrest him!');
+
+then you just get undef in the fourth column.
+
 
 If the logger statement is also being handled by other non-DBI appenders,
 they will just join the arrayrefs into a string, joined with 
