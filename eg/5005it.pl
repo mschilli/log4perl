@@ -43,7 +43,7 @@ sub process_file {
 
         # Delete 'no/use warnings;': \s seems to eat newlines, so use []
     $data =~ s/^[ \t]*use warnings;//mg;
-    $data =~ s/^[ \t]*no warnings;//mg;
+    $data =~ s/^[ \t]*no warnings.*?;/\$\^W = undef;/mg;
 
         # 5.00503 can't handle constants that start with a _
     $data =~ s/_INTERNAL_DEBUG/INTERNAL_DEBUG/g;
