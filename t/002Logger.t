@@ -10,17 +10,7 @@ use strict;
 
 #########################
 # used Test::Simple to help debug the test script
-use Test::Simple tests => 46;
-
-# to test, as ok() suppresses DEBUG output
-# my $i = 1;
-# sub ok {
-#     my ($r, $s) = @_;
-#     print "not " unless ($r);
-#     print "ok ", $i++;
-#     print " - $s" if (defined($s));
-#     print "\n";
-# }	
+use Test::Simple tests => 50;
 
 use Log::Log4perl;
 use Log::Log4perl::Level;
@@ -263,4 +253,43 @@ EOT
 
 # warn("app buffer is: ", $app->buffer(), "\n");
 
-# BEGIN { plan tests => 46 };
+############################################################
+# testing multiple parameters, nested hashes
+############################################################
+
+our $stub_hook;
+
+# -----------------------------------
+# here's a stub
+package Log::Log4perl::AppenderTester;
+use vars qw($IS_LOADED);
+$IS_LOADED = 1; 
+sub new {
+    my($class, %params) = @_;
+    my $self = {};
+    bless $self, $class;
+
+    $self->{P} = \%params;
+
+    $main::stub_hook = $self;
+    
+    return $self;
+}
+package main;
+# -----------------------------------
+
+$app = Log::Log4perl::Appender->new(
+    "Log::Log4perl::AppenderTester",
+    name  => 'dumpy',
+    login => { hostname => 'a.jabber.server',
+               port     => 5222,
+               username => "bugs",
+               password => "bunny",
+               resource => "logger" },
+    to    => [ 'elmer@a.jabber.server', 'sam@another.jabber.server' ],
+);
+
+ok($stub_hook->{P}{login}{hostname}, 'a.jabber.server');
+ok($stub_hook->{P}{login}{password}, 'bunny');
+ok($stub_hook->{P}{to}[0], 'elmer@a.jabber.server');
+ok($stub_hook->{P}{to}[1], 'sam@another.jabber.server');
