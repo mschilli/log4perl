@@ -46,7 +46,7 @@ Revision history for Log::Log4perl
     * Added ':levels' target to Log::Log4perl to import $DEBUG, $ERROR,
       etc. levels (just like 'use Log::Log4perl::Level' works).
     * Added ':easy' target to allow for simple setup
-    * Messages can be passed in as subroutines to avoid parameter
+    * Code references can be passed in as log messages to avoid parameter
       passing penalty
 
 0.20 7/23/2002
