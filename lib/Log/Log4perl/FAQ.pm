@@ -530,6 +530,89 @@ upon redefining C<LWP::Debug>'s C<trace()>, C<debug()> and C<conns()>
 functions. In case you use a perl prior to 5.6.x, you need
 to manipulate C<$^W> instead.
 
+=head2 What if I need dynamic values in a static Log4perl configuration file?
+
+Say, your application uses Log::Log4perl for logging and 
+therefore comes with a Log4perl configuration file, specifying the logging
+behaviour.
+But, you also want it to take command line parameters to set values
+like the name of the log file.
+How can you have
+both a static Log4perl configuration file and a dynamic command line
+interface?
+
+As of Log::Log4perl 0.28, every value in the configuration file
+can be specified as a I<Perl hook>. So, instead of saying
+
+    log4perl.appender.Logfile.filename = test.log
+
+you could just as well have a Perl subroutine deliver the value
+dynamically:
+
+    log4perl.appender.Logfile.filename = sub { logfile(); };
+
+given that C<logfile()> is a valid function in your C<main> package
+returning a string containing the path to the log file.
+
+Or, think about using the value of an environment variable:
+
+    log4perl.appender.DBI.user = sub { $ENV{USERNAME} };
+
+When parsing the configuration file while running 
+C<Log::Log4perl->init()> and executing the assignment above, 
+Log::Log4perl will detect
+the C<sub {...}> pattern, evaluate the subroutine (which can contain
+arbitrary Perl code) and take its return value as the right side
+of the assignment.
+
+A typical applications would be called like this:
+
+    app                # log file is "test.log"
+    app -l mylog.txt   # log file is "mylog.txt"
+
+Here's some sample code implementing the above interface:
+
+    use Log::Log4perl qw(get_logger);
+    use Getopt::Std;
+
+    getopt('l:', \our %OPTS);
+
+    my $conf = q(
+    log4perl.category.Bar.Twix         = WARN, Logfile
+    log4perl.appender.Logfile          = Log::Dispatch::File
+    log4perl.appender.Logfile.filename = sub { logfile(); };
+    log4perl.appender.Logfile.layout   = SimpleLayout
+    );
+
+    Log::Log4perl::init(\$conf);
+
+    my $logger = get_logger("Bar::Twix");
+    $logger->error("Blah");
+
+    ###########################################
+    sub logfile {
+    ###########################################
+        if(exists $OPTS{l}) {
+            return $OPTS{l};
+        } else {
+            return "test.log";
+        }
+    }
+
+Every Perl hook may contain arbitrary perl code,
+just make sure to fully qualify eventual variable names
+(e.g. C<%main::OPTS> instead of C<%OPTS>).
+
+SECURITY NOTE: this feature means arbitrary perl code
+can be embedded in the config file.  In the rare case
+where the people who have access to your config file
+are different from the people who write your code and
+shouldn't have execute rights, you might want to set
+
+    $Log::Log4perl::ALLOW_CODE_IN_CONFIG_FILE = 0;
+
+before you call init().
+
 =cut
 
 =head1 SEE ALSO
@@ -540,7 +623,6 @@ Log::Log4perl
 
 Mike Schilli, E<lt>log4perl@perlmeister.comE<gt>
 
-=cut
 =cut
 
 =head1 SEE ALSO
