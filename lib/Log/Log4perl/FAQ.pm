@@ -335,7 +335,7 @@ C<$SIG{__DIE__}> pseudo signal handler
         $Log::Log4perl::caller_depth++;
         my $logger = get_logger("");
         $logger->fatal(@_);
-        exit 1;
+        die @_; # Now terminate really
     };
 
 This will catch every C<die()>-Exception of your
