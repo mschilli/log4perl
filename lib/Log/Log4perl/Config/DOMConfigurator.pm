@@ -50,12 +50,12 @@ sub parse {
     my $config = $doc->getElementsByTagName("$LOG4J_PREFIX:configuration")->item(0)||
                  $doc->getElementsByTagName("$LOG4PERL_PREFIX:configuration")->item(0);
 
-    my $threshold = uc($config->getAttribute('threshold'));
+    my $threshold = uc(subst($config->getAttribute('threshold')));
     if ($threshold) {
         $l4p_tree->{threshold}{value} = $threshold;
     }
 
-    if ($config->getAttribute('oneMessagePerAppender') eq 'true') {
+    if (subst($config->getAttribute('oneMessagePerAppender')) eq 'true') {
         $l4p_tree->{oneMessagePerAppender}{value} = 1;
     }
 
@@ -105,7 +105,7 @@ sub parse_patternlayout {
     for my $child ($node->getChildNodes) {
         next unless $child->getNodeType == ELEMENT_NODE;
 
-        my $name = $child->getAttribute('name');
+        my $name = subst($child->getAttribute('name'));
         my $value;
 
         foreach my $grandkid ($child->getChildNodes){
@@ -115,7 +115,7 @@ sub parse_patternlayout {
         }
         $value =~ s/^ +//;  #just to make the unit tests pass
         $value =~ s/ +$//;
-        $l4p_branch->{$name}{value} = $value;
+        $l4p_branch->{$name}{value} = subst($value);
     }
     $l4p_tree->{PatternLayout}{cspec} = $l4p_branch;
 }
@@ -138,7 +138,7 @@ sub parse_root {
 sub parse_category {
     my ($l4p_tree, $node) = @_;
 
-    my $name = $node->getAttribute('name');
+    my $name = subst($node->getAttribute('name'));
 
     $l4p_tree->{category} ||= {};
  
@@ -151,14 +151,14 @@ sub parse_category {
 
     my $l4p_branch = $ptr;
 
-    my $class = $node->getAttribute('class');
+    my $class = subst($node->getAttribute('class'));
     $class                       && 
        $class ne 'Log::Log4perl' &&
        $class ne 'org.apache.log4j.Logger' &&
        warn "setting category $name to class $class ignored, only Log::Log4perl implemented";
 
     #this is kind of funky, additivity has its own spot in the tree
-    my $additivity = $node->getAttribute('additivity');
+    my $additivity = subst(subst($node->getAttribute('additivity')));
     if (length $additivity > 0) {
         $l4p_tree->{additivity} ||= {};
         my $add_ptr = $l4p_tree->{additivity};
@@ -185,8 +185,8 @@ sub parse_children_of_logger_element {
         my $tag_name = $child->getTagName();
 
         if ($tag_name eq 'param') {
-            my $name = $child->getAttribute('name');
-            my $value = $child->getAttribute('value');
+            my $name = subst($child->getAttribute('name'));
+            my $value = subst($child->getAttribute('value'));
             if ($value =~ /^(all|debug|info|warn|error|fatal|off|null)^/) {
                 $value = uc $value;
             }
@@ -208,7 +208,7 @@ sub parse_children_of_logger_element {
 sub parse_level {
     my $node = shift;
 
-    my $level = uc ($node->getAttribute('value'));
+    my $level = uc (subst($node->getAttribute('value')));
 
     die "Log4perl: invalid level in config: $level"
         unless Log::Log4perl::Level::is_valid($level);
@@ -221,11 +221,11 @@ sub parse_level {
 sub parse_appender {
     my ($l4p_tree, $node) = @_;
 
-    my $name = $node->getAttribute("name");
+    my $name = subst($node->getAttribute("name"));
 
     my $l4p_branch = {};
 
-    my $class = $node->getAttribute("class");
+    my $class = subst($node->getAttribute("class"));
 
     $l4p_branch->{value} = $class;
 
@@ -236,7 +236,7 @@ sub parse_appender {
 
         my $tag_name = $child->getTagName();
 
-        my $name = unlog4j($child->getAttribute('name'));
+        my $name = unlog4j(subst($child->getAttribute('name')));
 
 
         if ($tag_name =~ /^(param|param-nested|param-text)$/) {
@@ -272,7 +272,7 @@ sub parse_any_param {
     my ($l4p_branch, $child) = @_;
 
     my $tag_name = $child->getTagName();
-    my $name = $child->getAttribute('name');
+    my $name = subst($child->getAttribute('name'));
     my $value;
 
     print "parse_any_param: <$tag_name name=$name\n" if _INTERNAL_DEBUG;
@@ -292,7 +292,7 @@ sub parse_any_param {
     #<param>
     }elsif ($tag_name eq 'param') {
 
-         $value = $child->getAttribute('value');
+         $value = subst($child->getAttribute('value'));
 
          print "parse_param_nested: got param $name = $value\n"  
              if _INTERNAL_DEBUG;
@@ -318,7 +318,8 @@ sub parse_any_param {
             $value = eval_if_perl($value);
         }
     }
-    
+
+    $value = subst($value);
 
      #multiple values for the same param name
      if (defined $l4p_branch->{$name}{value} ) {
@@ -357,7 +358,7 @@ sub parse_layout {
 
     my $layout_tree = {};
 
-    my $class_name = $node->getAttribute('class');
+    my $class_name = subst($node->getAttribute('class'));
     
     $layout_tree->{value} = $class_name;
     #
@@ -365,8 +366,8 @@ sub parse_layout {
     for my $child ($node->getChildNodes) {
         next unless $child->getNodeType == ELEMENT_NODE;
         if ($child->getTagName() eq 'param') {
-            my $name = $child->getAttribute('name');
-            my $value = $child->getAttribute('value');
+            my $name = subst($child->getAttribute('name'));
+            my $value = subst($child->getAttribute('value'));
             if ($value =~ /^(all|debug|info|warn|error|fatal|off|null)$/) {
                 $value = uc $value;
             }
@@ -375,7 +376,7 @@ sub parse_layout {
             $layout_tree->{$name}{value} = $value;  
 
         }elsif ($child->getTagName() eq 'cspec') {
-            my $name = $child->getAttribute('name');
+            my $name = subst($child->getAttribute('name'));
             my $value;
             foreach my $grandkid ($child->getChildNodes){
                 if ($grandkid->getNodeType == TEXT_NODE) {
@@ -384,7 +385,7 @@ sub parse_layout {
             }
             $value =~ s/^ +//;
             $value =~ s/ +$//;
-            $layout_tree->{cspec}{$name}{value} = $value;  
+            $layout_tree->{cspec}{$name}{value} = subst($value);  
         }
     }
     return $layout_tree;
@@ -400,6 +401,16 @@ sub parse_boolean {
     }else{
         return $a; #probably an error, punt
     }
+}
+
+
+#this handles variable substitution
+sub subst {
+    my $val = shift;
+
+    $val =~ s/\${(.*?)}/
+                      Log::Log4perl::Config::basic_subst($1, {})/gex;
+    return $val;
 }
 
 1;
@@ -668,6 +679,16 @@ to extend it.  If you really don't like having to type <log4perl:appender>
 instead of just <appender>, you can make your own DTD combining
 the two DTDs and getting rid of the namespace prefixes.  Then you can
 validate against that, and log4perl should accept it just fine.
+
+=head1 VARIABLE SUBSTITUTION
+
+This supports variable substitution like C<${foobar}> in text and in 
+attribute values except for appender-ref.  If an environment variable is defined
+for that name, its value is substituted. So you can do stuff like
+
+        <param name="${hostname}" value="${hostnameval}.foo.com"/>
+        <param-text name="to">${currentsysadmin}@foo.com</param-text>
+
 
 =head1 REQUIRES
 
