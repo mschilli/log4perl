@@ -31,7 +31,7 @@ ok($@, '/ERROR: appenderclass Log::Log4perl::Appender::FileAppenderx doesn\'t ex
 $conf = <<EOL;
 log4j.category.simplelayout.test=INFO, myAppender
 
-log4j.appender.myAppender        = Log::Dispatch::Appender::FileAppender
+log4j.appender.myAppender        = Log::Dispatch::Buffer
 log4j.appender.myAppender.layout = Log::Log4perl::Layout::SimpleLayoutx
 log4j.appender.myAppender.File   = $testfile
 EOL
@@ -104,7 +104,7 @@ ok($@,"/ERROR:  I don't know how to make a 't/tmp/test12.log' to implement your 
 $conf = <<EOL;
 log4j.category.simplelayout.test=INFO, XXmyAppender
 
-log4j.appender.myAppender        = Log::Log4perl::Appender::FileAppender
+log4j.appender.myAppender        = Log::Dispatch::Buffer
 log4j.appender.myAppender.layout = Log::Log4perl::Layout::SimpleLayout
 log4j.appender.myAppender.File   = $testfile
 EOL
@@ -113,11 +113,27 @@ eval{
     Log::Log4perl->init(\$conf, $debug);
 
 };
-ok($@,'/Layout not specified for appender XXmyAppender/');
+ok($@,"/ERROR: you didn't tell me how to implement your appender 'XXmyAppender'/");
+
+
+# *****************************************************
+# never define a layout
+$conf = <<EOL;
+log4j.category.simplelayout.test=INFO, myAppender
+
+log4j.appender.myAppender        = Log::Dispatch::Buffer
+
+EOL
+
+eval{
+    Log::Log4perl->init(\$conf, $debug);
+
+};
+ok($@,"/Layout not specified for appender myAppender/");
 
 
 
-BEGIN { plan tests => 6, }
+BEGIN { plan tests => 7, }
 
 END{   
      unlink $testfile if (-e $testfile);
