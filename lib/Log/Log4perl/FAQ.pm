@@ -1246,6 +1246,64 @@ the non-interpreting mode of the here-document like in
 instead of a here-document and Perl will treat the backslashes at 
 line-end as intended.
 
+=head2 I want to suppress certain messages based on their content!
+
+Let's assume you've plastered all your functions with Log4perl 
+statements like
+
+    sub some_func {
+
+        INFO("Begin of function");
+
+        # ... Stuff happens here ...
+
+        INFO("End of function");
+    }
+
+to issue two log messages, one at the beginning and one at the end of
+each function. Now you want to suppress the message at the beginning
+and only keep the one at the end, what can you do? You can't use the category
+mechanism, because both messages are issued from the same package.
+
+Log::Log4perl's custom filters (0.30 or better) provide an interface for the 
+Log4perl user to step in right before a message gets logged and decide if 
+it should be written out or suppressed, based on the message content or other
+parameters:
+
+    use Log::Log4perl qw(:easy);
+    
+    Log::Log4perl::init( \ <<'EOT' );
+        log4perl.logger             = INFO, A1
+        log4perl.appender.A1        = Log::Dispatch::Screen
+        log4perl.appender.A1.layout = \
+            Log::Log4perl::Layout::PatternLayout
+        log4perl.appender.A1.layout.ConversionPattern = %m%n
+    
+        log4perl.filter.M1 = Log::Log4perl::Filter::StringMatch
+        log4perl.filter.M1.StringToMatch = Begin
+        log4perl.filter.M1.AcceptOnMatch = false
+    
+        log4perl.appender.A1.Filter = M1
+EOT
+
+The last four statements in the configuration above are defining a custom 
+filter C<M1> of type C<Log::Log4perl::Filter::StringMatch>, which comes with 
+Log4perl right out of the box and allows you to define a text pattern to match
+(as a perl regular expression) and a flag C<AcceptOnMatch> indicating
+if a match is supposed to suppress the message or let it pass through.
+
+The last line then assigns this filter to the C<A1> appender, which will
+call it every time it receives a message to be logged and throw all
+messages out I<not> matching the regular expression C<Begin>.
+
+Instead of using the standard C<Log::Log4perl::Filter::StringMatch> filter,
+you can define your own, simply using a perl subroutine:
+
+    log4perl.filter.ExcludeBegin  = sub { !/Begin/ }
+    log4perl.appender.A1.Filter   = ExcludeBegin
+
+For details on custom filters, check L<Log::Log4perl::Filter>.
+
 =cut
 
 =head1 SEE ALSO
