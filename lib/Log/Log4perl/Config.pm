@@ -75,7 +75,7 @@ sub init {
         my ($level, @appnames) = split /\s*,\s*/, $value;
 
         $logger->level(
-            Log::Log4perl::Level::to_level($level));
+            Log::Log4perl::Level::to_priority($level));
 
         for my $appname (@appnames) {
 

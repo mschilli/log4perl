@@ -224,6 +224,20 @@ sub has_appenders {
 
 ##################################################
 sub log {
+# external api
+##################################################
+    my ($self, $priority, @message) = @_;
+
+    croak "priority $priority isn't numeric" if ($priority =~ /\D/);
+
+    _log ($self, Log::Log4perl::Level::to_level($priority), $priority, @message);
+
+}
+
+
+##################################################
+sub _log {
+# internal implementation of $logger->debug(...), etc.
 ##################################################
     my($self, $level, $priority, @message) = @_;
 
@@ -266,7 +280,7 @@ sub log {
                     # Dispatch the (formatted) message
                 $logger->{dispatcher}->log_to(
                     name    => $appender_name,
-                    level   => lc(Log::Log4perl::Level::to_string($priority)),
+                    level   => lc(Log::Log4perl::Level::to_LogDispatch_string($priority)),
                     message => $rendered_msg,
                     );
             }
@@ -276,11 +290,11 @@ sub log {
 }
 
 ##################################################
-sub debug { &log($_[0], 'DEBUG', $DEBUG, @_[1,]); }
-sub info  { &log($_[0], 'INFO',  $INFO,  @_[1,]); }
-sub warn  { &log($_[0], 'WARN',  $WARN,  @_[1,]); }
-sub error { &log($_[0], 'ERROR', $ERROR, @_[1,]); }
-sub fatal { &log($_[0], 'FATAL', $FATAL, @_[1,]); }
+sub debug { &_log($_[0], 'DEBUG', $DEBUG, @_[1,]); }
+sub info  { &_log($_[0], 'INFO',  $INFO,  @_[1,]); }
+sub warn  { &_log($_[0], 'WARN',  $WARN,  @_[1,]); }
+sub error { &_log($_[0], 'ERROR', $ERROR, @_[1,]); }
+sub fatal { &_log($_[0], 'FATAL', $FATAL, @_[1,]); }
 
 sub is_debug { return $_[0]->level() >= $DEBUG; }
 sub is_info  { return $_[0]->level() >= $INFO; }

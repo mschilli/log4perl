@@ -55,23 +55,33 @@ sub new {
 }
 
 ##################################################
-sub to_level {
+sub to_priority {
+# changes a level name string to a priority numeric
 ##################################################
     my($string) = @_;
 
-    my $priority;
-
     if(exists $PRIORITY{$string}) {
-        $priority = $PRIORITY{$string};
+        return $PRIORITY{$string};
     }else{
         die "level '$string' is not a valid error level (".join ('|', keys %PRIORITY),')';
     }
-         
-    return $priority;
 }
 
 ##################################################
-sub to_string {
+sub to_level {
+# changes a priority numeric constant to a level name string 
+##################################################
+    my ($priority) = @_;
+    if (exists $LEVELS{$priority}) {
+        return $LEVELS{$priority}
+    }else {
+        die "priority '$priority' is not a valid error level number (".join ('|', keys %LEVELS),')';
+    }
+}
+
+##################################################
+sub to_LogDispatch_string {
+# translates into strings that Log::Dispatch recognizes
 ##################################################
     my($priority) = @_;
 

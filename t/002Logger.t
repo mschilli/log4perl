@@ -10,7 +10,7 @@ use strict;
 # change 'tests => 1' to 'tests => last_test_to_print';
 #########################
 use Test;
-BEGIN { plan tests => 41 };
+
 
 use Log::Log4perl;
 use Log::Log4perl::Level;
@@ -175,3 +175,31 @@ ok($log3->is_error(), 1);
 ok($log3->is_info(), 1);
 ok($log3->is_fatal(), 1);
 ok($log3->is_debug(), "");
+
+
+    ##################################################
+    # Check log->(<level_const>,<msg>)
+    ##################################################
+$app->buffer("");
+$app2->buffer("");
+$app3->buffer("");
+
+$log1->level($DEBUG);
+$log2->level($ERROR);
+$log3->level($INFO);
+
+$log1->log($DEBUG, "debug message");
+$log1->log($INFO,  "info message ");
+
+$log2->log($DEBUG, "debug message");
+$log2->log($INFO,  "info message ");
+
+$log3->log($DEBUG, "debug message");
+$log3->log($INFO,  "info message ");
+
+ok($app->buffer(), 'DEBUG - debug messageINFO - info message ');
+ok($app2->buffer(),'DEBUG - debug messageINFO - info message ');
+ok($app3->buffer(),'INFO - info message ');
+
+
+BEGIN { plan tests => 44 };
