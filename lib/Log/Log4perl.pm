@@ -2030,7 +2030,7 @@ selected ones, use
        # decrease thresholds of all appenders
     Log::Log4perl->appender_thresholds_adjust(-1, ['AppName1', ...]);
 
-and pass the names of affected appeders in a ref to an array.
+and pass the names of affected appenders in a ref to an array.
 
 =head1 Advanced configuration within Perl
 

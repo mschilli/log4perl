@@ -85,7 +85,6 @@ How to use it
     Perl commands or via a "log4j"-style configuration file.
 
   Initialize via a configuration file
-
     This is the easiest way to prepare your system for using
     "Log::Log4perl". Use a configuration file like this:
 
@@ -168,7 +167,6 @@ How to use it
     suppressed.
 
   Log Levels
-
     There's five predefined log levels: "FATAL", "ERROR", "WARN", "INFO" and
     "DEBUG" (in descending priority). Your configured logging level has to
     at least match the priority of the logging message.
@@ -214,8 +212,8 @@ How to use it
 
     Example: "$logger->is_warn()" returns true if the logger's current
     level, as derived from either the logger's category (or, in absence of
-    that, one of the logger's parent's level setting) is "$WARN", "$ERROR"
-    or "$FATAL".
+    that, one of the logger's parent's level setting) is $WARN, $ERROR or
+    $FATAL.
 
     Also available are a series of more Java-esque functions which return
     the same values. These are of the format "is*Level*Enabled()", so
@@ -233,10 +231,10 @@ How to use it
 
         $logger->error("Erroneous array: @super_long_array");
 
-    then Perl would have interpolated "@super_long_array" into the string
-    via an expensive operation only to figure out shortly after that the
-    string can be ignored entirely because the configured logging level is
-    lower than "$ERROR".
+    then Perl would have interpolated @super_long_array into the string via
+    an expensive operation only to figure out shortly after that the string
+    can be ignored entirely because the configured logging level is lower
+    than $ERROR.
 
     The to-be-logged message passed to all of the functions described above
     can consist of an arbitrary number of arguments, which the logging
@@ -248,7 +246,6 @@ How to use it
     are identical.
 
   Log and die or warn
-
     Often, when you croak / carp / warn / die, you want to log those
     messages. Rather than doing the following:
 
@@ -276,7 +273,6 @@ How to use it
         $logger->logconfess();     # die w/ full stack trace
 
   Appenders
-
     If you don't define any appenders, nothing will happen. Appenders will
     be triggered whenever the configured logging level requires a message to
     be logged and not suppressed.
@@ -300,12 +296,10 @@ How to use it
         Log::Log4perl::Layout::XMLLayout
 
     by Guido Carls <gcarls@cpan.org>. It allows for hooking up Log::Log4perl
-    with the graphical Log Analyzer Chainsaw (see the section on "Can I use
-    Log::Log4perl with log4j's Chainsaw?" in the Log::Log4perl::FAQ
-    manpage).
+    with the graphical Log Analyzer Chainsaw (see "Can I use Log::Log4perl
+    with log4j's Chainsaw?" in Log::Log4perl::FAQ).
 
   Additional Appenders via Log::Dispatch
-
     "Log::Log4perl" also supports *Dave Rolskys* excellent "Log::Dispatch"
     framework which implements a wide variety of different appenders.
 
@@ -330,11 +324,10 @@ How to use it
     particular appender you're using might require installing the particular
     module.
 
-    For additional information on appenders, please check the the
-    Log::Log4perl::Appender manpage manual page.
+    For additional information on appenders, please check the
+    Log::Log4perl::Appender manual page.
 
   Appender Example
-
     Now let's assume that we want to log "info()" or higher prioritized
     messages in the "Foo::Bar" category to both STDOUT and to a log file,
     say "test.log". In the initialization section of your system, just
@@ -388,8 +381,7 @@ How to use it
 
         INFO - Important Info!
 
-    For more detailed info on layout formats, see the Log Layouts entry
-    elsewhere in this document.
+    For more detailed info on layout formats, see "Log Layouts".
 
     In the configuration sample above, we chose to define a *category*
     logger ("Foo::Bar"). This will cause only messages originating from this
@@ -397,7 +389,6 @@ How to use it
     locations.
 
   Configuration files
-
     As shown above, you can define "Log::Log4perl" loggers both from within
     your Perl code or from configuration files. The latter have the
     unbeatable advantage that you can modify your system's logging behaviour
@@ -460,11 +451,9 @@ How to use it
     "Log::Dispatch::FileRotate" with the "File" attribute specifying the log
     file.
 
-    See the Log::Log4perl::Config manpage for more examples and syntax
-    explanations.
+    See Log::Log4perl::Config for more examples and syntax explanations.
 
   Log Layouts
-
     If the logging engine passes a message to an appender, because it thinks
     it should be logged, the appender doesn't just write it out haphazardly.
     There's ways to tell the appender how to format the message and add all
@@ -478,8 +467,8 @@ How to use it
 
     "Log::Log4perl::SimpleLayout"
         formats a message in a simple way and just prepends it by the debug
-        level and a hyphen: ""$level - $message", for example ""FATAL -
-        Can't open password file"".
+        level and a hyphen: ""$level - $message", for example "FATAL - Can't
+        open password file".
 
     "Log::Log4perl::PatternLayout"
         on the other hand is very powerful and allows for a very flexible
@@ -507,21 +496,21 @@ How to use it
             %X{key} The entry 'key' of the MDC (see below)
             %% A literal percent (%) sign
 
-        NDC and MDC are explained in the section on "Nested Diagnostic
-        Context (NDC)" and the section on "Mapped Diagnostic Context (MDC)".
+        NDC and MDC are explained in "Nested Diagnostic Context (NDC)" and
+        "Mapped Diagnostic Context (MDC)".
 
-        Also, "%d" can be fine-tuned to display only certain characteristics
+        Also, %d can be fine-tuned to display only certain characteristics
         of a date, according to the SimpleDateFormat in the Java World
         (http://java.sun.com/j2se/1.3/docs/api/java/text/SimpleDateFormat.ht
         ml)
 
-        In this way, "%d{HH:mm}" displays only hours and minutes of the
-        current date, while "%d{yy, EEEE}" displays a two-digit year,
-        followed by a spelled-out (like "Wednesday").
+        In this way, %d{HH:mm} displays only hours and minutes of the
+        current date, while %d{yy, EEEE} displays a two-digit year, followed
+        by a spelled-out (like "Wednesday").
 
         Similar options are available for shrinking the displayed category
-        or limit file/path components, "%F{1}" only displays the source file
-        *name* without any path components while "%F" logs the full path.
+        or limit file/path components, %F{1} only displays the source file
+        *name* without any path components while %F logs the full path.
         %c{2} only logs the last two components of the current category,
         "Foo::Bar::Baz" becomes "Bar::Baz" and saves space.
 
@@ -530,8 +519,8 @@ How to use it
 
             log4perl.PatternLayout.cspec.U = sub { return "UID $<" }
 
-        See the Log::Log4perl::Layout::PatternLayout manpage for further
-        details on customized specifiers.
+        See Log::Log4perl::Layout::PatternLayout for further details on
+        customized specifiers.
 
         Please note that the subroutines you're defining in this way are
         going to be run in the "main" namespace, so be sure to fully qualify
@@ -547,8 +536,7 @@ How to use it
 
         before you call init(). Alternatively you can supply a restricted
         set of Perl opcodes that can be embedded in the config file as
-        described in the section on "Restricting what Opcodes can be in a
-        Perl Hook".
+        described in "Restricting what Opcodes can be in a Perl Hook".
 
     All placeholders are quantifiable, just like in *printf*. Following this
     tradition, "%-20c" will reserve 20 chars for the category and
@@ -561,7 +549,6 @@ How to use it
         http://jakarta.apache.org/log4j/docs/api/org/apache/log4j/PatternLayout.html
 
   Penalties
-
     Logging comes with a price tag. "Log::Log4perl" has been optimized to
     allow for maximum performance, both with logging enabled and disabled.
 
@@ -580,7 +567,7 @@ How to use it
             $logger->debug("Element: $_\n");
         }
 
-    and "@super_long_array" is fairly big, so looping through it is pretty
+    and @super_long_array is fairly big, so looping through it is pretty
     expensive. Only you, the programmer, knows that going through that "for"
     loop can be skipped entirely if the current logging level for the actual
     component is higher than "debug". In this case, use this instead:
@@ -599,7 +586,7 @@ How to use it
         use Data::Dumper;
         $logger->debug(sub { Dumper($data) } );
 
-    This won't unravel "$data" via Dumper() unless it's actually needed
+    This won't unravel $data via Dumper() unless it's actually needed
     because it's logged.
 
     Also, Log::Log4perl lets you specify arguments to logger functions in
@@ -699,7 +686,6 @@ Categories
     them to tune the logging to their needs.
 
   Turn off a component
-
     "Log4perl" doesn't only allow you to selectively switch *on* a category
     of log messages, you can also use the mechanism to selectively *disable*
     logging in certain components whereas logging is kept turned on in
@@ -723,7 +709,6 @@ Categories
     other system components even "debug" messages will be logged.
 
   Return Values
-
     All logging methods return values indicating if their message actually
     reached one or more appenders. If the message has been suppressed
     because of level constraints, "undef" is returned.
@@ -740,7 +725,7 @@ Categories
     the log method's return value will have them excluded. This means that
     if you've got one appender holding an appender threshold and you're
     logging a message which passes the system's log level hurdle but not the
-    appender threshold, "0" will be returned by the log function.
+    appender threshold, 0 will be returned by the log function.
 
     The bottom line is: Logging functions will return a *true* value if the
     message made it through to one or more appenders and a *false* value if
@@ -753,7 +738,6 @@ Categories
     appender already points to STDERR.
 
   Pitfalls with Categories
-
     Be careful with just blindly reusing the system's packages as
     categories. If you do, you'll get into trouble with inherited methods.
     Imagine the following class setup:
@@ -808,7 +792,6 @@ Categories
     time.
 
   Initialize once and only once
-
     It's important to realize that Log::Log4perl gets initialized once and
     only once, typically at the start of a program or system. Calling
     "init()" more than once will cause it to clobber the existing
@@ -852,11 +835,10 @@ Custom Filters
     submitted -- and come to a log/no log decision based upon these
     circumstantial facts.
 
-    Check out the Log::Log4perl::Filter manpage for detailed instructions on
-    how to use them.
+    Check out Log::Log4perl::Filter for detailed instructions on how to use
+    them.
 
   Performance
-
     The performance of Log::Log4perl calls obviously depends on a lot of
     things. but to give you a general idea, here's some rough numbers:
 
@@ -875,7 +857,6 @@ Custom Filters
 
 Cool Tricks
   Shortcuts
-
     When getting an instance of a logger, instead of saying
 
         use Log::Log4perl;
@@ -893,7 +874,6 @@ Cool Tricks
     "get_logger()" is equivalent to "get_logger(__PACKAGE__)".
 
   Alternative initialization
-
     Instead of having "init()" read in a configuration file by specifying a
     file name or passing it a reference to an open filehandle
     ("Log::Log4perl->init( \*FILE )"), you can also pass in a reference to a
@@ -916,13 +896,12 @@ Cool Tricks
     Or also you can use a URL, see below:
 
   Using LWP to parse URLs
-
     (This section borrowed from XML::DOM::Parser by T.J. Mather).
 
     The init() function now also supports URLs, e.g.
     *http://www.erols.com/enno/xsa.xml*. It uses LWP to download the file
     and then calls parse() on the resulting string. By default it will use a
-    the LWP::UserAgent manpage that is created as follows:
+    LWP::UserAgent that is created as follows:
 
      use LWP::UserAgent;
      $LWP_USER_AGENT = LWP::UserAgent->new;
@@ -941,7 +920,6 @@ Cool Tricks
     Don't use this feature with init_and_watch().
 
   Automatic reloading of changed configuration files
-
     Instead of just statically initializing Log::Log4perl via
 
         Log::Log4perl->init($conf_file);
@@ -952,7 +930,7 @@ Cool Tricks
         Log::Log4perl->init_and_watch($conf_file, $delay);
 
     In this mode, Log::Log4perl will examine the configuration file
-    "$conf_file" every "$delay" seconds for changes via the file's last
+    $conf_file every $delay seconds for changes via the file's last
     modification timestamp. If the file has been updated, it will be
     reloaded and replace the current Log::Log4perl configuration.
 
@@ -980,9 +958,9 @@ Cool Tricks
 
     where "pid" is the process ID of the application. This will bring you
     back to about 85% of Log::Log4perl's normal execution speed for
-    suppressed statements. For details, check out the section on
-    "Performance". For more info on the signal handler, look for the section
-    on "SIGNAL MODE" in the Log::Log4perl::Config::Watch manpage.
+    suppressed statements. For details, check out "Performance". For more
+    info on the signal handler, look for "SIGNAL MODE" in
+    Log::Log4perl::Config::Watch.
 
     One thing to watch out for: If the configuration file contains a syntax
     or other fatal error, a running application will stop with "die" if this
@@ -991,7 +969,6 @@ Cool Tricks
     behaviour might change in the future.
 
   Variable Substitution
-
     To avoid having to retype the same expressions over and over again,
     Log::Log4perl's configuration files support simple variable
     substitution. New variables are defined simply by adding
@@ -1027,7 +1004,6 @@ Cool Tricks
     will "die()".
 
   Perl Hooks in the Configuration File
-
     If some of the values used in the Log4perl configuration file need to be
     dynamically modified by the program, use Perl hooks:
 
@@ -1049,9 +1025,9 @@ Cool Tricks
             sub { $ENV{DB_USER_NAME } }
 
     However, please note the difference between these code snippets and
-    those used for user-defined conversion specifiers as discussed in the
-    Log::Log4perl::PatternLayout manpage: While the snippets above are run
-    *once* when "Log::Log4perl::init()" is called, the conversion specifier
+    those used for user-defined conversion specifiers as discussed in
+    Log::Log4perl::PatternLayout: While the snippets above are run *once*
+    when "Log::Log4perl::init()" is called, the conversion specifier
     snippets are executed *each time* a message is rendered according to the
     PatternLayout.
 
@@ -1063,11 +1039,10 @@ Cool Tricks
         Log::Log4perl::Config->allow_code(0);
 
     before you call init(). Alternatively you can supply a restricted set of
-    Perl opcodes that can be embedded in the config file as described in the
-    section on "Restricting what Opcodes can be in a Perl Hook".
+    Perl opcodes that can be embedded in the config file as described in
+    "Restricting what Opcodes can be in a Perl Hook".
 
   Restricting what Opcodes can be in a Perl Hook
-
     The value you pass to Log::Log4perl::Config->allow_code() determines
     whether the code that is embedded in the config file is eval'd
     unrestricted, or eval'd in a Safe compartment. By default, a value of
@@ -1084,7 +1059,7 @@ Cool Tricks
 
     Log::Log4perl::Config->allowed_code_ops() takes a list of opcode masks
     that are allowed to run in the compartment. The opcode masks must be
-    specified as described in the Opcode manpage:
+    specified as described in Opcode:
 
      Log::Log4perl::Config->allowed_code_ops(':subprocess');
  
@@ -1176,11 +1151,10 @@ Cool Tricks
         already exists in the map, it's value is replaced with the new
         arrayref of variable names.
 
-    For more information on opcodes and Safe Compartments, see the Opcode
-    manpage and the Safe manpage.
+    For more information on opcodes and Safe Compartments, see Opcode and
+    Safe.
 
   Incrementing and Decrementing the Log Levels
-
     Log4perl provides some internal functions for quickly adjusting the log
     level from within a running Perl program.
 
@@ -1226,7 +1200,6 @@ Cool Tricks
         $logger->more_logging($v);  # inc logging level once for each -v in ARGV
 
   Custom Log Levels
-
     First off, let me tell you that creating custom levels is heavily
     deprecated by the log4j folks. Indeed, instead of creating additional
     levels on top of the predefined DEBUG, INFO, WARN, ERROR and FATAL, you
@@ -1256,7 +1229,6 @@ Cool Tricks
     environment unless you've made the appropriate mods there too.
 
   System-wide log levels
-
     As a fairly drastic measure to decrease (or increase) the logging level
     all over the system with one single configuration option, use the
     "threshold" keyword in the Log4perl configuration file:
@@ -1268,7 +1240,6 @@ Cool Tricks
     system of the right to log lower-prio messages.
 
   Easy Mode
-
     For teaching purposes (especially for [1]), I've put ":easy" mode into
     "Log::Log4perl", which just initializes a single root logger with a
     defined priority and a screen appender including some nice standard
@@ -1296,7 +1267,6 @@ Cool Tricks
     man page (congrats on reading this far :).
 
   Stealth loggers
-
     Sometimes, people are lazy. If you're whipping up a 50-line script and
     want the comfort of Log::Log4perl without having the burden of carrying
     a separate log4perl.conf file or a 5-liner defining that you want to
@@ -1322,10 +1292,10 @@ Cool Tricks
         }
 
     In ":easy" mode, "Log::Log4perl" will instantiate a *stealth logger*
-    named "$_default_logger" and import it into the current package. Also,
-    it will introduce the convenience functions "DEBUG()", "INFO()",
-    "WARN()", "ERROR()" and "FATAL()" into the package namespace, which take
-    arguments and forward them to "_default_logger->debug()",
+    named $_default_logger and import it into the current package. Also, it
+    will introduce the convenience functions "DEBUG()", "INFO()", "WARN()",
+    "ERROR()" and "FATAL()" into the package namespace, which take arguments
+    and forward them to "_default_logger->debug()",
     "_default_logger->info()" and so on.
 
     The "easy_init" method can be called with a single level value to create
@@ -1337,16 +1307,16 @@ Cool Tricks
     hash, specifying values for "level" (the logger's priority), "file" (the
     appender's data sink), "category" (the logger's category> and "layout"
     for the appender's pattern layout specification. All key-value pairs are
-    optional, they default to "$DEBUG" for "level", "STDERR" for "file",
-    """" (root category) for "category" and "%d %m%n" for "layout":
+    optional, they default to $DEBUG for "level", "STDERR" for "file", ""
+    (root category) for "category" and "%d %m%n" for "layout":
 
         Log::Log4perl->easy_init( { level    => $DEBUG,
                                     file     => ">test.log",
                                     category => "Bar::Twix",
                                     layout   => '%F{1}-%L-%M: %m%n' } );
 
-    The "file" parameter takes file names preceded by "">"" (overwrite) and
-    "">>"" (append) as arguments. This will cause
+    The "file" parameter takes file names preceded by ">" (overwrite) and
+    ">>" (append) as arguments. This will cause
     "Log::Log4perl::Appender::File" appenders to be created behind the
     scenes. Also the keywords "STDOUT" and "STDERR" (no ">" or ">>") are
     recognized, which will utilize and configure
@@ -1395,23 +1365,21 @@ Cool Tricks
     "die()" (including the traditional output to STDERR) in any case
     afterwards.
 
-    See the section on "Log and die or warn" for the similar "logdie()" and
-    "logwarn()" functions of regular (i.e non-stealth) loggers.
+    See "Log and die or warn" for the similar "logdie()" and "logwarn()"
+    functions of regular (i.e non-stealth) loggers.
 
     When using Log::Log4perl in easy mode, please make sure you understand
-    the implications of the section on "Pitfalls with Categories".
+    the implications of "Pitfalls with Categories".
 
     By the way, these convenience functions perform exactly as fast as the
     standard Log::Log4perl logger methods, there's *no* performance penalty
     whatsoever.
 
   Nested Diagnostic Context (NDC)
-
     If you find that your application could use a global (thread-specific)
     data stack which your loggers throughout the system have easy access to,
-    use Nested Diagnostic Contexts (NDCs). Also check out the section on
-    "Mapped Diagnostic Context (MDC)", this might turn out to be even more
-    useful.
+    use Nested Diagnostic Contexts (NDCs). Also check out "Mapped Diagnostic
+    Context (MDC)", this might turn out to be even more useful.
 
     For example, when handling a request of a web client, it's probably
     useful to have the user's IP address available in all log statements
@@ -1459,10 +1427,9 @@ Cool Tricks
         Log::Log4perl::NDC->get();
 
     internally. See details on how this standard log4j feature is
-    implemented in the Log::Log4perl::NDC manpage.
+    implemented in Log::Log4perl::NDC.
 
   Mapped Diagnostic Context (MDC)
-
     Just like the previously discussed NDC stores thread-specific
     information in a stack structure, the MDC implements a hash table to
     store key/value pairs in.
@@ -1471,17 +1438,17 @@ Cool Tricks
 
         Log::Log4perl::MDC->put($key, $value);
 
-    stores "$value" under a key "$key", with which it can be retrieved later
+    stores $value under a key $key, with which it can be retrieved later
     (possibly in a totally different part of the system) by calling the
     "get" method:
 
         my $value = Log::Log4perl::MDC->get($key);
 
-    If no value has been stored previously under "$key", the "get" method
-    will return the string ""[undef]"" to allow for easy string
-    interpolation later on.
+    If no value has been stored previously under $key, the "get" method will
+    return the string "[undef]" to allow for easy string interpolation later
+    on.
 
-    Typically, MDC values are retrieved later on via the ""%X{...}""
+    Typically, MDC values are retrieved later on via the "%X{...}"
     placeholder in "Log::Log4perl::Layout::PatternLayout". For example, an
     application taking a web request might store the remote host like
 
@@ -1501,10 +1468,9 @@ Cool Tricks
 
     later on in the program.
 
-    For details, please check the Log::Log4perl::MDC manpage.
+    For details, please check Log::Log4perl::MDC.
 
   Resurrecting hidden Log4perl Statements
-
     Sometimes scripts need to be deployed in environments without having
     Log::Log4perl installed yet. On the other hand, you dont't want to live
     without your Log4perl statements -- they're gonna come in handy later.
@@ -1544,14 +1510,12 @@ Cool Tricks
     because everything's a regular comment now.
 
   Access defined appenders
-
     All appenders defined in the configuration file or via Perl code can be
     retrieved by the "appender_by_name()" class method. This comes in handy
     if you want to manipulate or query appender properties after the
     Log4perl configuration has been loaded via "init()".
 
   Modify appender thresholds
-
     To conveniently adjust appender thresholds (e.g. because a script uses
     more_logging()), use
 
@@ -1565,7 +1529,7 @@ Cool Tricks
            # decrease thresholds of all appenders
         Log::Log4perl->appender_thresholds_adjust(-1, ['AppName1', ...]);
 
-    and pass the names of affected appeders in a ref to an array.
+    and pass the names of affected appenders in a ref to an array.
 
 Advanced configuration within Perl
     Initializing Log::Log4perl can certainly also be done from within Perl.
@@ -1699,7 +1663,7 @@ Using Log::Log4perl from wrapper classes
     classes called the loggers, not where your application called your
     wrapper, which is probably what you want in this case. But don't
     dispair, there's a solution: Just increase the value of
-    "$Log::Log4perl::caller_depth" (defaults to 0) by one for every wrapper
+    $Log::Log4perl::caller_depth (defaults to 0) by one for every wrapper
     that's in between your application and "Log::Log4perl", then
     "Log::Log4perl" will compensate for the difference.
 
@@ -1725,7 +1689,7 @@ Dirty Tricks
         A call to "Log::Log4perl->infiltrate_lwp()" does exactly this. In a
         very rude way, it pulls the rug from under LWP::UserAgent and
         transforms its "debug/conn" messages into "debug()" calls of loggers
-        of the category ""LWP::UserAgent"". Similarily, "LWP::UserAgent"'s
+        of the category "LWP::UserAgent". Similarily, "LWP::UserAgent"'s
         "trace" messages are turned into "Log::Log4perl"'s "info()" method
         calls.
 
@@ -1770,7 +1734,7 @@ INSTALLATION
     shell (CPAN.pm), because they're listed as dependencies.
 
     "Time::HiRes" (1.20 or better) is required only if you need the
-    fine-grained time stamps of the "%r" parameter in
+    fine-grained time stamps of the %r parameter in
     "Log::Log4perl::Layout::PatternLayout".
 
     Manual installation works as usual with
@@ -1783,9 +1747,9 @@ INSTALLATION
     If you're running Windows (98, 2000, NT, XP etc.), and you're too lazy
     to rummage through all of Log-Log4perl's dependencies, don't despair:
     We're providing a PPM package which installs easily with your
-    Activestate Perl. Check the section on
-    "how_can_i_install_log__log4perl_on_microsoft_windows" in the
-    Log::Log4perl::FAQ manpage for details.
+    Activestate Perl. Check
+    "how_can_i_install_log__log4perl_on_microsoft_windows" in
+    Log::Log4perl::FAQ for details.
 
 DEVELOPMENT
     Log::Log4perl is still being actively developed. We will always make
