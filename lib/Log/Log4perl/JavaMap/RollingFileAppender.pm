@@ -57,9 +57,8 @@ sub new {
     }elsif (defined $data->{size}{value}){
         $size = $data->{size}{value};
     }else{
-        $size = 10_000_000;
+        $size = 10;
     }
-
 
     return Log::Log4perl::Appender->new("Log::Dispatch::FileRotate",
         name      => $appender_name,
@@ -90,7 +89,7 @@ Possible config properties for log4j ConsoleAppender are
     File
     Append      "true|false|1|0" default=true
     BufferedIO  "true|false|1|0" default=false (i.e. autoflush is on)
-    MaxFileSize default 10_000_000
+    MaxFileSize default=10 (in MB)
     MaxBackupIndex default is 1
 
 Possible config properties for Log::Dispatch::FileRotate are
