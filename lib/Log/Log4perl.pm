@@ -195,7 +195,7 @@ Log::Log4perl - Log4j implementation for Perl
        
 =head1 ABSTRACT
 
-    Log::Log4perl provides a powerful logging API to your application,
+    Log::Log4perl provides a powerful logging API to your application
 
 =head1 DESCRIPTION
 
@@ -205,11 +205,10 @@ of your system from the outside. It implements the widely popular
 
 B<For a detailed tutorial on Log::Log4perl usage, please read [1]>.
 
-A WORD OF CAUTION: THIS LIBRARY IS ALPHA SOFTWARE AND STILL 
-UNDER CONSTRUCTION -- ON
-http://log4perl.sourceforge.net YOU'LL GET THE LATEST SCOOP.
-THE API HAS REACHED A MATURE STATE, WE WILL NOT CHANGE IT UNLESS FOR
-A GOOD REASON.
+A WORD OF CAUTION: THIS PROJECT IS VERY ACTIVELY BEING DEVELOPED ON.
+THE API HAS REACHED A MATURE STATE, WE WILL NOT CHANGE IT UNLESS 
+FOR A GOOD REASON. ON http://log4perl.sourceforge.net YOU'LL ALWAYS 
+GET THE LATEST SCOOP.
 
 Logging beats a debugger when you want to know what's going on 
 in your code during runtime. However, traditional logging packages
