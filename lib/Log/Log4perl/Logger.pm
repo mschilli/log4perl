@@ -201,8 +201,21 @@ sub generate_coderef {
       my \$message;
       my \$appenders_fired = 0;
       
-      \$message = ref \$_[0] eq 'ARRAY' ? \$_[0] : 
-                  join('', map { ref \$_ eq "CODE" ? \$_->() : defined \$_ ? \$_ : '' } \@_);
+      # Evaluate all parameters that need to evaluated. Two kinds:
+      #
+      # (1) It's a hash like { filter => "filtername",
+      #                        value  => "value" }
+      #     => filtername(value)
+      #
+      # (2) It's a code ref
+      #     => coderef()
+      #
+
+      \$message   = [map { ref \$_ eq "HASH" ?
+                               \$_->{filter}->(\$_->{value}) :
+                           ref \$_ eq "CODE" ?
+                               \$_->() : \$_ 
+                          } \@_];                  
       
       print("coderef: \$logger->{category}\n") if DEBUG;
 
@@ -211,7 +224,7 @@ sub generate_coderef {
       foreach my \$a (\@\$appenders) {   #note the closure here
           my (\$appender_name, \$appender) = \@\$a;
 
-          print("  Sending message '\$message' (\$level) " .
+          print("  Sending message '<\$message>' (\$level) " .
                 "to \$appender_name\n") if DEBUG;
                 
           \$appender->log(
@@ -251,7 +264,6 @@ sub generate_noop_coderef {
         $watch_delay_code = <<EOL;
         my (\$logger)  = shift;
         my (\$level)   = pop;
-        my (\$message) = join '', \@_;
         $watch_delay_code
 EOL
     }
@@ -294,7 +306,7 @@ sub generate_watch_code {
                  Log::Log4perl->init_and_watch($FILE_TO_WATCH, $WATCH_DELAY);
                        
                  my $methodname = lc($level);
-                 $logger->$methodname($message); # send the message
+                 $logger->$methodname(@_); # send the message
                                                  # to the new configuration
                  return;        #and return, we're done with this incarnation
              }
