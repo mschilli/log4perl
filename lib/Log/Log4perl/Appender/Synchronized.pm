@@ -17,7 +17,7 @@ our @ISA = qw(Log::Log4perl::Appender);
 use IPC::Shareable qw(:lock);
 use IPC::Semaphore;
 
-our $CVSVERSION   = '$Revision: 1.3 $';
+our $CVSVERSION   = '$Revision: 1.4 $';
 our ($VERSION)    = ($CVSVERSION =~ /(\d+\.\d+)/);
 
 ###########################################
@@ -124,7 +124,7 @@ sub nuke_sem {
         return undef;
     }
 
-    $sem->remove() || die "Cannot remove semaphore $key";
+    $sem->remove() || die "Cannot remove semaphore $key ($!)";
 
     return 1;
 }
