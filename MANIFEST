@@ -35,7 +35,6 @@ t/011JFile.t
 t/012Deeper.t
 t/013Bench.t
 t/014ConfErrs.t
-t/015Shortcuts.t
 t/016Export.t
 t/deeper1.expected
 t/deeper6.expected
