@@ -26,10 +26,12 @@ sub new {
         $arrows = ">>";
     }
 
-    open FH, "$arrows$self->{filename}" or
+    my $fh = do { local *FH; *FH; };
+
+    open $fh, "$arrows$self->{filename}" or
         die "Can't open $self->{filename} ($@)";
 
-    $self->{fh} = \*FH;
+    $self->{fh} = $fh;
 
     bless $self, $class;
 }
