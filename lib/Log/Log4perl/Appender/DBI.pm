@@ -497,7 +497,7 @@ maybe a pool, subclass and override _init() and/or create_statement(),
 for instance 
 
     sub _init {
-        ; #no-op
+        ; #no-op, no pooling at this level
     }
     sub create_statement {
         my ($self, $stmt) = @_;
