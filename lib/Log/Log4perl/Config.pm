@@ -9,7 +9,6 @@ use warnings;
 use Log::Log4perl::Logger;
 use Log::Log4perl::Level;
 use Log::Log4perl::Config::PropertyConfigurator;
-use Log::Log4perl::Config::DOMConfigurator;
 use Log::Dispatch;
 use Log::Dispatch::File;
 use Log::Log4perl::JavaMap;
@@ -405,6 +404,8 @@ sub config_read {
     print "Reading $config: [@text]\n" if DEBUG;
 
     if ($text[0] =~ /^<\?xml /) {
+        eval { require XML::DOM };
+        if ($@){die "Log4perl: missing XML::DOM needed to parse xml config files\n$@\n"}
         $data = Log::Log4perl::Config::DOMConfigurator::parse(\@text);
     }else{
         $data = Log::Log4perl::Config::PropertyConfigurator::parse(\@text)
