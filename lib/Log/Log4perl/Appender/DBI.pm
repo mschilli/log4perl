@@ -38,7 +38,7 @@ sub new {
                     {ConversionPattern => {value  => $p{sql}}});
     }
 
-    if ($self->{usePreparedStmt} &&  $self->{BUFFERSIZE}){
+    if ($self->{usePreparedStmt} &&  $self->{bufferSize}){
         warn "Log4perl: you've defined both usePreparedStmt and bufferSize \n".
         "in your appender '$p{name}'--\n".
         "I'm going to ignore bufferSize and just use a prepared stmt\n";
