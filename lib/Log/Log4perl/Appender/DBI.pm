@@ -108,7 +108,10 @@ sub log_message {
 
     #%p is
     #    { name    => \$appender_name,
-    #      level   => \$Log::Log4perl::Level::L4P_TO_LD{\$level},   
+    #      level   => \$Log: DBI.pm,v $
+    #      level   => \Revision 1.1  2002/12/27 00:03:28  kgoess
+    #      level   => \initial version
+    #      level   => \level},   
     #      message => \$message,
     #      log4p_category => $category,
     #      log4p_level  => $level,);
@@ -359,7 +362,7 @@ Passing the values in the C<warn> statement as an array reference
 
     $logger->warn( [1234, 'warning message'] );
 
-after setting
+after setting this in the layout
 
     log4j.appender.DBAppndr.layout.dontCollapseArrayRefs = 1
 
