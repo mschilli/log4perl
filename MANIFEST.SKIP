@@ -9,3 +9,4 @@ CVS
 .cvsignore
 docs
 lib/Log/Dispatch
+MANIFEST.bak
