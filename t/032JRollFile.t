@@ -52,9 +52,9 @@ $logger->info("info message 1 ");
 $logger->warn("warning message 1 ");   
 $logger->fatal("fatal message 1 ");   
 
+my $rollfile = File::Spec->catfile($WORK_DIR, 'rolltest.log.2');
 
-
-open (F, File::Spec->catfile($WORK_DIR, 'rolltest.log.2'));
+open F, $rollfile or die "Cannot open $rolfile";
 my $result = <F>;
 close F;
 like($result, qr/^INFO  cat1 - info message 1/);
