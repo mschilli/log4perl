@@ -264,11 +264,19 @@ $app->buffer("");
 $log1->level($DEBUG);
 
 $log1->log($DEBUG, sub { "1" . " " . "2" } );
-$log1->info(sub { "3 " . "4 " }, sub { "5 " . "6 " });
+$log1->info(
+    sub { "3 " . "4 " }, # subroutine
+                         # filter (throw out blanks)
+    { filter => sub { my $v = shift;
+                      $v =~ s/\s+//g; 
+                      return $v;
+                    },
+      value  => "  5   6 " },
+    " 7" );
 
 ok($app->buffer() eq <<EOT, "app buffer contains 2 lines");
 DEBUG - 1 2
-INFO - 3 4 5 6 
+INFO - 3 4 56 7
 EOT
 
 # warn("app buffer is: ", $app->buffer(), "\n");
