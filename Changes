@@ -2,7 +2,7 @@
 Revision history for Log::Log4perl
 ##################################################
 
-0.25 10/01/2002
+0.25 10/05/2002
     * (ms) backwards-compatibility with perl 5.00503
     * (ms) added system-wide threshold, fixed java-app thresholds
     * (kg) Nested configuration structures for appenders like L::D::Jabber
