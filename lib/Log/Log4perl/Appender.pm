@@ -48,7 +48,7 @@ sub new {
         die "" if $appenderclass =~ /[^:\w]/;
     };
 
-    $@ and die "ERROR: appenderclass '$appenderclass' doesn't exist\n";
+    $@ and die "ERROR: appenderclass '$appenderclass' doesn't exist\n$@";
 
     $params{name} = unique_name() unless exists $params{name};
 
