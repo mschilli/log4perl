@@ -9,6 +9,7 @@ use warnings;
 use Log::Log4perl::Level;
 use Log::Log4perl::Layout;
 use Log::Log4perl::Appender;
+use Log::Log4perl::Filter;
 use Carp;
 
 use constant DEBUG => 0;
