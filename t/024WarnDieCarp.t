@@ -35,6 +35,7 @@ sub warndietest {
   
   ok($warnstr =~ /$out_str/, "$mname($in_str): STDERR contains \"$out_str\"");
   ok($app->buffer() =~ /$out_str/, "$mname($in_str): Buffer contains \"$out_str\"");
+  $app->buffer("");
 }
 
 # same as above, just look for no output
@@ -133,7 +134,7 @@ eval { $logger->logdie("Log and die!"); };
 my $app0 = Log::Log4perl::Appender::TestBuffer->by_name("A1");
 # print "Buffer: ", $app0->buffer(), "\n";
 
-my $expected = File::Spec->catfile('t','024WarnDieCarp.t-131').": Log and die!";
+my $expected = File::Spec->catfile('t','024WarnDieCarp.t-132').": Log and die!";
 
 ok($app0->buffer() eq $expected, "%F-%L adjustment, got ".$app0->buffer().", expected $expected");
 
