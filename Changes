@@ -4,6 +4,7 @@ Revision history for Log::Log4perl
 
 0.30 (not officially released yet)
     * (ms) Added Log4perl custom filters
+    * (kg) added url support to init(), finally documenting it
 
 0.29 01/30/2003
     * (kg) Removing debugging from 0.28, big woops
