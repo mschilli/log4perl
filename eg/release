@@ -7,6 +7,7 @@ use warnings;
 use strict;
 
     # Available at http://perlmeister.com/scripts
+use lib "$ENV{HOME}/perl-modules";
 use ModDevUtils;
 
 ModDevUtils::release() or exit 0;
