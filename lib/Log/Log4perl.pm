@@ -117,7 +117,7 @@ sub import {
             my $lclevel = lc($_);
             *{"$caller_pkg\::$_"} = sub { 
                 Log::Log4perl::Logger::init_warn() unless 
-                    $Log::Log4perl::INITIALIZED or
+                    $Log::Log4perl::Logger::INITIALIZED or
                     $Log::Log4perl::Logger::NON_INIT_WARNED;
                 $logger->{$level}->($logger, @_, $level);
             };
@@ -127,7 +127,7 @@ sub import {
 
         *{"$caller_pkg\::LOGDIE"} = sub {
             Log::Log4perl::Logger::init_warn() unless 
-                    $Log::Log4perl::INITIALIZED or
+                    $Log::Log4perl::Logger::INITIALIZED or
                     $Log::Log4perl::Logger::NON_INIT_WARNED;
             $logger->{FATAL}->($logger, @_, "FATAL");
             CORE::die(Log::Log4perl::Logger::callerline(join '', @_));
@@ -135,7 +135,7 @@ sub import {
 
         *{"$caller_pkg\::LOGWARN"} = sub { 
             Log::Log4perl::Logger::init_warn() unless 
-                    $Log::Log4perl::INITIALIZED or
+                    $Log::Log4perl::Logger::INITIALIZED or
                     $Log::Log4perl::Logger::NON_INIT_WARNED;
             $logger->{WARN}->($logger, @_, "WARN");
             CORE::warn(Log::Log4perl::Logger::callerline(join '', @_));
@@ -273,7 +273,7 @@ sub easy_init { # Initialize the root logger with a screen appender
         $log->add_appender($app);
     }
 
-    $Log::Log4perl::INITIALIZED = 1;
+    $Log::Log4perl::Logger::INITIALIZED = 1;
 }
 
 ##################################################

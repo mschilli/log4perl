@@ -49,10 +49,9 @@ sub new {
         if(!scalar(keys %{"$appenderclass\::"})) {
             # Not available yet, try to pull it in.
             # see 'perldoc -f require' for why two evals
-            eval "require $appenderclass"
-                 unless ${$appenderclass.'::IS_LOADED'};  #for unit tests, 
+            eval "require $appenderclass";
+                 #unless ${$appenderclass.'::IS_LOADED'};  #for unit tests, 
                                                           #see 004Config
-                 ;
             die $@ if $@;
         }
     };

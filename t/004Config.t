@@ -94,8 +94,6 @@ our $stub_hook;
 # -----------------------------------
 # here is a stub
 package Log::Log4perl::AppenderTester;
-use vars qw($IS_LOADED);
-$IS_LOADED = 1; 
 sub new {
     my($class, %params) = @_;
     my $self = {};
