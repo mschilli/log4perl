@@ -12,6 +12,7 @@ eg/log4j-manual-3.conf
 lib/Log/Log4perl.pm
 lib/Log/Log4perl/Appender.pm
 lib/Log/Log4perl/Config.pm
+lib/Log/Log4perl/DateFormat.pm
 lib/Log/Log4perl/JavaMap.pm
 lib/Log/Log4perl/JavaMap/ConsoleAppender.pm
 lib/Log/Log4perl/JavaMap/FileAppender.pm
@@ -42,6 +43,7 @@ t/019Warn.t
 t/020Easy.t
 t/021AppThres.t
 t/022Wrap.t
+t/023Date.t
 t/deeper1.expected
 t/deeper6.expected
 t/deeper7.expected
