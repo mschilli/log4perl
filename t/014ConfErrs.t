@@ -195,7 +195,42 @@ eval{
 };
 ok($@,"");
 
-BEGIN { plan tests => 11, }
+# *****************************************************
+# init_once
+# *****************************************************
+Log::Log4perl->reset();
+$conf = <<EOL;
+log4perl.category = INFO, myAppender
+
+log4perl.appender.myAppender        = Log::Log4perl::Appender::TestBuffer
+log4perl.appender.myAppender.layout = SimpleLayout
+EOL
+
+Log::Log4perl->init_once(\$conf);
+my $logger = Log::Log4perl::get_logger("");
+$logger->error("foobar");
+my $buffer = Log::Log4perl::Appender::TestBuffer->by_name("myAppender");
+
+ok($buffer->buffer(),"ERROR - foobar\n");
+
+$conf = <<EOL;
+log4perl.category = FATAL, myAppender
+
+log4perl.appender.myAppender        = Log::Log4perl::Appender::TestBuffer
+log4perl.appender.myAppender.layout = SimpleLayout
+EOL
+
+   # change config, call init_once(), which should ignore the new
+   # settings.
+$buffer->buffer("");
+Log::Log4perl->init_once(\$conf);
+my $logger = Log::Log4perl::get_logger("");
+$logger->error("foobar");
+my $buffer = Log::Log4perl::Appender::TestBuffer->by_name("myAppender");
+
+ok($buffer->buffer(),"ERROR - foobar\n");
+
+BEGIN { plan tests => 12, }
 
 END{   
      unlink $testfile if (-e $testfile);
