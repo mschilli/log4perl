@@ -1303,6 +1303,65 @@ you can define your own, simply using a perl subroutine:
 
 For details on custom filters, check L<Log::Log4perl::Filter>.
 
+=head2 My new module uses Log4perl -- but what happens if the calling program didn't configure it?
+
+If a Perl module uses Log::Log4perl, it will typically rely on the
+calling program to initialize it. If it is using Log::Log4perl in C<:easy>
+mode, like in 
+
+    package MyMod;
+    use Log::Log4perl qw(:easy);
+
+    sub foo {
+        DEBUG("In foo");
+    }
+    
+    1;
+
+and the calling program doesn't initialize Log::Log4perl at all (e.g. because
+it has no clue that it's available), Log::Log4perl will silently
+ignore all logging messages. However, if the module is using Log::Log4perl 
+in regular mode like in
+
+    package MyMod;
+    use Log::Log4perl qw(get_logger);
+
+    sub foo {
+        my $logger = get_logger("");
+        $logger->debug("blah");
+    }
+
+    1;
+
+and the main program is just using the module like in
+
+    use MyMode;
+    MyMode::foo();
+
+then Log::Log4perl will also ignore all logging messages but
+issue a warning like
+
+    Log4perl: Seems like no initialization happened. 
+    Forgot to call init()?
+
+(only once!) to remind novice users to not forget to initialize 
+the logging system before using it. 
+However, if you want to suppress this message, just
+add the C<:nowarn> target to the module's C<use Log::Log4perl> call:
+
+    use Log::Log4perl qw(get_logger :nowarn);
+
+will have Log::Log4perl silently ignore all logging statements if
+no initialization has taken place. 
+
+If the module wants to figure out if some other program part has 
+already initialized Log::Log4perl, it can do so by calling
+
+    Log::Log4perl::initialized()
+
+which will return a true value in case Log::Log4perl has been initialized 
+and a false value if not.
+
 =cut
 
 =head1 SEE ALSO
