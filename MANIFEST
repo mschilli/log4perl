@@ -32,6 +32,7 @@ lib/Log/Log4perl/JavaMap/TestBuffer.pm
 lib/Log/Log4perl/Layout.pm
 lib/Log/Log4perl/Layout/PatternLayout.pm
 lib/Log/Log4perl/Layout/SimpleLayout.pm
+lib/Log/Log4perl/Layout/NoopLayout.pm
 lib/Log/Log4perl/Level.pm
 lib/Log/Log4perl/Logger.pm
 lib/Log/Log4perl/MDC.pm
