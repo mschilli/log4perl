@@ -15,7 +15,7 @@ use vars qw($logfile1 $logfile6 $logfile7);
 $logfile1 = File::Spec->catfile(qw(t tmp deeper1.log));
 $logfile6 = File::Spec->catfile(qw(t tmp deeper6.log));
 $logfile7 = File::Spec->catfile(qw(t tmp deeper7.log)); 
-our @outfiles = ($logfile1, $logfile6, $logfile6);
+our @outfiles = ($logfile1, $logfile6, $logfile7);
 
 foreach my $f (@outfiles){
     unlink $f if (-e $f);

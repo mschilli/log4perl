@@ -20,10 +20,11 @@ $EG_DIR = "../eg" unless -d $EG_DIR;
 ok(1); # If we made it this far, we're ok.
 
 my $LOGFILE = "example.log";
-unlink $LOGFILE;
+unlink $LOGFILE; 
 
-Log::Log4perl->init(
-	File::Spec->catfile($EG_DIR, 'log4j-file-append-java.conf'));
+#Log::Log4perl->init(
+#	File::Spec->catfile($EG_DIR, 'log4j-file-append-java.conf'));
+Log::Log4perl->init("$EG_DIR/log4j-file-append-java.conf");
 
 
 my $logger = Log::Log4perl->get_logger("");
@@ -40,11 +41,11 @@ close FILE;
 my $file = File::Spec->catfile(qw(t 006Config-Java.t));
 
 my $exp = <<EOT;
-$file 28 DEBUG N/A  - Gurgel
-$file 29 INFO N/A  - Gurgel
-$file 30 WARN N/A  - Gurgel
-$file 31 ERROR N/A  - Gurgel
-$file 32 FATAL N/A  - Gurgel
+$file 31 DEBUG N/A  - Gurgel
+$file 32 INFO N/A  - Gurgel
+$file 33 WARN N/A  - Gurgel
+$file 34 ERROR N/A  - Gurgel
+$file 35 FATAL N/A  - Gurgel
 EOT
 
 unlink $LOGFILE;

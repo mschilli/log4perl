@@ -80,7 +80,7 @@ open FILE, "<$TMP_FILE" or die "Cannot open $TMP_FILE";
 my $data = join '', <FILE>;
 close FILE;
 
-ok($data eq "020Easy.t-58-Bar::Mars::crunch: Mars mjam\nTwix mjam\n");
+ok($data ,"020Easy.t-59-Bar::Mars::crunch: Mars mjam\nTwix mjam\n");
 
 ############################################################
 # LOGDIE and LOGWARN
@@ -94,7 +94,7 @@ Log::Log4perl->easy_init($INFO);
 $log = get_logger();
 eval { LOGDIE("logdie"); };
 
-ok($@ =~ /logdie at .*?020Easy.t line 94/);
+ok($@ ,'/logdie at .*?020Easy.t line 95/');
 ok(readstderr() =~ /^[\d:\/ ]+logdie$/);
 
 LOGWARN("logwarn");

@@ -2,7 +2,6 @@ use Log::Log4perl;
 use Test;
 use File::Spec;
 
-File::Spec->catfile($WORK_DIR,'test1.log')
 my $WORK_DIR = File::Spec->catfile(qw(t tmp));
 use vars qw(@outfiles, $test_logfile); 
 $test_logfile = File::Spec->catfile($WORK_DIR, 'test2.log');
