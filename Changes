@@ -2,6 +2,11 @@
 Revision history for Log::Log4perl
 ##################################################
 
+0.22 8/08/2002
+    * Threshold settings of appenders: 
+        $appender->threshold($ERROR);
+        log4j.appender.A.Threshold = ERROR
+
 0.21 8/08/2002
     * Synopsis shows code samples in Log4perl.pm/README
     * Slight Log4j incompatibility but useful: %F{n} lets you
@@ -165,7 +170,6 @@ Revision history for Log::Log4perl
 
 TODO:
 ##################################################
-    * (!!!) Threshold settings of appenders: log4j.appender.A.Threshold = ERROR
     * BasicConfigurator() vs. :easy, PropertyConfigurator()
     * Log/throw exception (either warn/die or real exceptions)
     * get_logger() thread safety (two try to create it at the same time)
@@ -198,6 +202,10 @@ TODO:
 
 Kevin:
 ##################################################
+    * Bug: If the *same* appender is being attached to several loggers,
+      appender inheritance doesn't work as expected: Even if the 
+      appender appears twice in the inheritance tree, it's only executed once.
+      But it actually needs to be run twice.
     * Dave Rolsky says: A couple other things: The JavaMap docs mention
       that SocketAppender has no Log::Dispatch equivalent. You could
       create an IO::Socket object and pass it to Log::Dispatch::Handle.
