@@ -1,0 +1,17 @@
+#!/usr/bin/perl
+###########################################
+# xx -- 
+# Mike Schilli, 2004 (m@perlmeister.com)
+###########################################
+use warnings;
+use strict;
+
+use File::Find;
+
+find(sub {
+         open FILE, "<$_" or die "Cannot open $_";
+         while(<FILE>) {
+             die $_ if /\$\s*Log.*\$/;
+         }
+         close FILE;
+     }, ".");
