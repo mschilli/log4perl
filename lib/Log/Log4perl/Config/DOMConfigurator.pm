@@ -16,7 +16,7 @@ use XML::DOM;
 use Log::Log4perl::Level;
 use strict;
 
-use constant DEBUG => 1;
+use constant DEBUG => 0;
 
 our $VERSION = 0.03;
 
