@@ -813,6 +813,16 @@ email address. Check the C<Log::Dispatch::Email::MailSend> documentation
 for details. And please make sure there's not a flood of email messages 
 sent out by your application, filling up the receipient's inbox.
 
+There's one caveat you need to know about: The C<Log::Dispatch::Email>
+hierarchy of appenders turns on I<buffering> by default. This means that
+the appender will not send out messages right away but wait until a 
+certain threshold has been reached. If you'd rather have your alerts
+sent out immeditately, use
+
+    log4perl.appender.Mailer.buffered = 0
+
+to turn buffering off.
+
 =head2 How can I write my own appender?
 
 First off, Log::Log4perl comes with a set of standard appenders. Then,
