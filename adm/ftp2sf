@@ -1,0 +1,16 @@
+#!/usr/bin/perl
+###########################################
+# xx -- 
+# Mike Schilli, 2003 (m@perlmeister.com)
+###########################################
+use warnings;
+use strict;
+
+use Net::FTP;
+
+my $ftp = Net::FTP->new('upload.sourceforge.net');
+$ftp->login('anonymous', 'a@b.com') or die "Cannot login";
+$ftp->cwd('incoming') or die "Cannot chdir";
+my $gz = <*.gz>;
+$ftp->put($gz) or die "Cannot put";
+$ftp->quit();
