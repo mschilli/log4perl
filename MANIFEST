@@ -20,14 +20,15 @@ lib/Log/Log4perl/FAQ.pm
 lib/Log/Log4perl/JavaMap.pm
 lib/Log/Log4perl/JavaMap/ConsoleAppender.pm
 lib/Log/Log4perl/JavaMap/FileAppender.pm
+lib/Log/Log4perl/JavaMap/RollingFileAppender.pm
 lib/Log/Log4perl/JavaMap/TestBuffer.pm
 lib/Log/Log4perl/Layout.pm
 lib/Log/Log4perl/Layout/PatternLayout.pm
 lib/Log/Log4perl/Layout/SimpleLayout.pm
 lib/Log/Log4perl/Level.pm
 lib/Log/Log4perl/Logger.pm
-lib/Log/Log4perl/NDC.pm
 lib/Log/Log4perl/MDC.pm
+lib/Log/Log4perl/NDC.pm
 lib/Log/Log4perl/TestBuffer.pm
 t/001Level.t
 t/002Logger.t
@@ -59,6 +60,7 @@ t/028Additivity.t
 t/029SysWide.t
 t/030LDLevel.t
 t/031NDC.t
+t/032JRollFile.t
 t/deeper1.expected
 t/deeper6.expected
 t/deeper7.expected
