@@ -2,6 +2,8 @@
  Revision history for Log::Log4perl
 ##################################################
 
+TODO: * remove_appender
+
 0.50 (12/08/2004)
     * (ms) Added ':resurrect' source filter, which uncomments all lines
            starting with "###l4p". Can be used for hidden L4p statements,
