@@ -13,7 +13,7 @@ use Log::Log4perl::Appender;
 
 use constant _INTERNAL_DEBUG => 1;
 
-our $VERSION = '0.39';
+our $VERSION = '0.40';
 
    # set this to '1' if you're using a wrapper
    # around Log::Log4perl
@@ -306,13 +306,7 @@ Log::Log4perl - Log4j implementation for Perl
         # Check config every 10 secs
     Log::Log4perl::init_and_watch('/etc/log4perl.conf',10);
 
-    --or--
-
-        # Reload config on 'SIGHUP'
-    Log::Log4perl::init_and_watch('/etc/log4perl.conf', 'HUP');
-    
     --then--
-    
     
     $logger = Log::Log4perl->get_logger('house.bedrm.desk.topdrwr');
     
@@ -322,15 +316,15 @@ Log::Log4perl - Log4j implementation for Perl
     $logger->error('..');
     $logger->fatal('..');
     
-    #####/etc/log4perl.conf###################
+    #####/etc/log4perl.conf###############################
     log4perl.logger.house              = WARN,  FileAppndr1
-    log4perl.logger.house.bedroom.desk = DEBUG,  FileAppndr1
+    log4perl.logger.house.bedroom.desk = DEBUG, FileAppndr1
     
-    log4perl.appender.FileAppndr1          = Log::Log4perl::Appender::File
+    log4perl.appender.FileAppndr1      = Log::Log4perl::Appender::File
     log4perl.appender.FileAppndr1.filename = desk.log 
     log4perl.appender.FileAppndr1.layout   = \
                             Log::Log4perl::Layout::SimpleLayout
-    ###########################################
+    ######################################################
        
 =head1 ABSTRACT
 
@@ -342,20 +336,16 @@ Log::Log4perl lets you remote-control and fine-tune the logging behaviour
 of your system from the outside. It implements the widely popular 
 (Java-based) Log4j logging package in pure Perl. 
 
-B<For a detailed tutorial on Log::Log4perl usage, please read [1]>.
+B<For a detailed tutorial on Log::Log4perl usage, please read> 
 
-A WORD OF CAUTION: Log::Log4perl IS STILL UNDER DEVELOPMENT. WE WILL
-ALWAYS MAKE SURE THE TEST SUITE (approx. 400 CASES) WILL PASS, BUT THERE 
-MIGHT STILL BE BUGS. PLEASE CHECK http://log4perl.sourceforge.net REGULARILY
-FOR THE LATEST RELEASE. THE API HAS REACHED A MATURE STATE, WE WILL 
-NOT CHANGE IT UNLESS FOR A GOOD REASON. 
+    http://www.perl.com/pub/a/2002/09/11/log4perl.html
 
 Logging beats a debugger if you want to know what's going on 
 in your code during runtime. However, traditional logging packages
 are too static and generate a flood of log messages in your log files
 that won't help you.
 
-C<Log::Log4perl> is different. It allows you to control the amount of 
+C<Log::Log4perl> is different. It allows you to control the number of 
 logging messages generated at three different levels:
 
 =over 4
@@ -390,7 +380,7 @@ C<MySystem::Helpers::ScanDir>
 component. Turning on detailed debugging logs all over the system would
 generate a flood of useless log messages and bog your system down beyond
 recognition. With C<Log::Log4perl>, however, you can tell the system:
-"Continue to log only severe errors in the log file. Open a second
+"Continue to log only severe errors to the log file. Open a second
 log file, turn on full debug logs in the C<MySystem::Helpers::ScanDir>
 component and dump all messages originating from there into the new
 log file". And all this is possible by just changing the parameters
@@ -410,7 +400,6 @@ C<Log::Log4perl>. Use a configuration file like this:
     ############################################################
     # A simple root logger with a Log::Log4perl::Appender::File 
     # file appender in Perl.
-    # Mike Schilli 2002 m@perlmeister.com
     ############################################################
     log4perl.rootLogger=ERROR, LOGFILE
     
@@ -426,10 +415,7 @@ errors to C</var/log/myerrs.log>, using the format
 
     [millisecs] source-filename line-number class - message newline
 
-Check L<Configuration files> for more details on how to control
-your loggers using a configuration file.
-
-Assuming that this file is saved as C<log.conf>, you need to 
+Assuming that this configuration file is saved as C<log.conf>, you need to 
 read it in in the startup section of your code, using the following
 commands:
 
@@ -443,11 +429,11 @@ functions and methods. You can get a logger anytime via a singleton
 mechanism:
 
     package My::MegaPackage;
+    use  Log::Log4perl;
 
     sub some_method {
         my($param) = @_;
 
-        use  Log::Log4perl;
         my $log = Log::Log4perl->get_logger("My::MegaPackage");
 
         $log->debug("Debug message");
@@ -494,43 +480,6 @@ defined somewhere. In the case above, the log level at the root
 defines that 
 the log level is supposed to be C<ERROR> -- meaning that I<debug>
 and I<info> messages are suppressed.
-
-=head2 Configuration within Perl
-
-Initializing the logger can certainly also be done from within Perl.
-At last, this is what C<Log::Log4perl::Config> does behind the scenes.
-At the Perl level, we can specify exactly, which loggers work with
-which appenders and which layouts.
-
-Here's the code for a root logger which sends error and
-higher prioritized messages to the C</tmp/my.log> logfile:
-
-  # Initialize the logger
-
-  use Log::Log4perl qw(:levels);
-  use Log::Log4perl::Appender::Screen;
-  use Log::Log4perl::Appender;
-
-  my $app = Log::Log4perl::Appender->new("Log::Log4perl::Appender::Screen");
-  my $layout = Log::Log4perl::Layout::PatternLayout
-                                        ->new("%d> %F %L %m %n");
-  $app->layout($layout);
-
-  my $logger = Log::Log4perl->get_logger("My.Component");
-  $logger->level($INFO);
-  $logger->add_appender($app);
-
-And after this, we can, again, start logging I<anywhere> in the system
-like this (remember, we don't want to pass around references, so
-we just get the logger via the singleton-mechanism):
-
-  # Use the logger
-
-  use Log::Log4perl;
-  my $log = Log::Log4perl->get_logger("My::Component");
-  $log->debug("Debug Message");  # Suppressed
-  $log->info("Info Message");    # Printed
-  $log->error("Error Message");  # Printed
 
 =head2 Log Levels
 
@@ -651,7 +600,9 @@ C<Log::Log4perl> already comes with a standard set of appenders:
 
     Log::Log4perl::Appender::Screen
     Log::Log4perl::Appender::File
+    Log::Log4perl::Appender::Socket
     Log::Log4perl::Appender::DBI
+    Log::Log4perl::Appender::Synchronized
 
 to log to the screen, to files and to databases.
 
@@ -662,7 +613,6 @@ framework which implements a wide variety of different appenders.
 
 Here's the list of appender modules currently available via C<Log::Dispatch>:
 
-       Log::Log4perl::Appender::DBI (by Kevin Goess)
        Log::Dispatch::ApacheLog
        Log::Dispatch::DBI (by Tatsuhiko Miyagawa)
        Log::Dispatch::Email,
@@ -686,143 +636,68 @@ L<Log::Log4perl::Appender> manual page.
 =head2 Appender Example
 
 Now let's assume that we want to log C<info()> or
-higher prioritized messages in the C<My::Category> class
-to both STDOUT and to a log file, say C</tmp/my.log>.
-In the initialisation section of your system,
+higher prioritized messages in the C<Foo::Bar> category
+to both STDOUT and to a log file, say C<test.log>.
+In the initialization section of your system,
 just define two appenders using the readily available
 C<Log::Log4perl::Appender::File> and C<Log::Log4perl::Appender::Screen> 
-modules via the C<Log::Log4perl::Appender> wrapper:
+modules:
 
-  ########################
-  # Initialisation section
-  ########################
   use Log::Log4perl;
-  use Log::Log4perl::Layout;
-  use Log::Log4perl::Level;
 
-     # Define a category logger
-  my $log = Log::Log4perl->get_logger("My::Category");
+     # Configuration in a string ...
+  my $conf = q(
+    log4perl.category.Foo.Bar          = INFO, Logfile, Screen
 
-     # Define a layout
-  my $layout = Log::Log4perl::Layout::PatternLayout->new("[%r] %F %L %m%n");
+    log4perl.appender.Logfile          = Log::Log4perl::Appender::File
+    log4perl.appender.Logfile.filename = test.log
+    log4perl.appender.Logfile.layout   = Log::Log4perl::Layout::PatternLayout
+    log4perl.appender.Logfile.layout.ConversionPattern = [%r] %F %L %m%n
 
-     # Define a file appender
-  my $file_appender = Log::Log4perl::Appender->new(
-                          "Log::Log4perl::Appender::File",
-                          name      => "filelog",
-                          filename  => "/tmp/my.log");
+    log4perl.appender.Screen         = Log::Log4perl::Appender::Screen
+    log4perl.appender.Screen.stderr  = 0
+    log4perl.appender.Screen.layout = Log::Log4perl::Layout::SimpleLayout
+  );
 
+     # ... passed as a reference to init()
+  Log::Log4perl::init( \$conf );
 
-     # Define a stdout appender
-  my $stdout_appender =  Log::Log4perl::Appender->new(
-                          "Log::Log4perl::Appender::Screen",
-                          name      => "screenlog",
-                          stderr    => 0);
+Once the initialization shown above has happened once, typically in
+the startup code of your system, just use the defined logger anywhere in 
+your system:
 
-     # Have both appenders use the same layout (could be different)
-  $stdout_appender->layout($layout);
-  $file_appender->layout($layout);
+  ##########################
+  # ... in some function ...
+  ##########################
+  my $log = Log::Log4perl::get_logger("Foo::Bar");
 
-  $log->add_appender($stdout_appender);
-  $log->add_appender($file_appender);
-  $log->level($INFO);
+    # Logs both to STDOUT and to the file test.log
+  $log->info("Important Info!");
 
-Please note the class of the appender object is passed as a I<string> to
-C<Log::Log4perl::Appender> in the I<first> argument. Behind the scenes,
-C<Log::Log4perl::Appender> will create the necessary
-C<Log::Log4perl::Appender::*> (or C<Log::Dispatch::*>) object and pass
-along the name value pairs we provided to
-C<Log::Log4perl::Appender-E<gt>new()> after the first argument.
-
-The C<name> value is optional and if you don't provide one,
-C<Log::Log4perl::Appender-E<gt>new()> will create a unique one for you.
-The names and values of additional parameters are dependent on the requirements
-of the particular appender class and can be looked up in their
-manual pages.
-
-A side note: In case you're wondering if
-C<Log::Log4perl::Appender-E<gt>new()> will also take care of the
-C<min_level> argument to the C<Log::Dispatch::*> constructors called
-behind the scenes -- yes, it does. This is because we want the
-C<Log::Dispatch> objects to blindly log everything we send them
-(C<debug> is their lowest setting) because I<we> in C<Log::Log4perl>
-want to call the shots and decide on when and what to log.
-
-The call to the appender's I<layout()> method specifies the format (as a
-previously created C<Log::Log4perl::PatternLayout> object) in which the
-message is being logged in the specified appender. The format shown
-above is logging not only the message but also the number of
+The C<layout> settings specified in the configuration section define the 
+format in which the
+message is going to be logged by the specified appender. The format shown
+for the file appender is logging not only the message but also the number of
 milliseconds since the program has started (%r), the name of the file
 the call to the logger has happened and the line number there (%F and
-%L), the message itself (%m) and a OS-specific newline character (%n).
-For more detailed info on layout formats, see L<Log Layouts>. If you
-don't specify a layout, the logger will fall back to
-C<Log::Log4perl::SimpleLayout>, which logs the debug level, a hyphen (-)
-and the log message.
+%L), the message itself (%m) and a OS-specific newline character (%n):
 
-Once the initialisation shown above has happened once, typically in
-the startup code of your system, just use this logger anywhere in 
-your system (or better yet, only in C<My::Category>, since we
-defined it this way) as often as you like:
+    [187] ./myscript.pl 27 Important Info!
 
-  ##########################
-  # ... in some function ...
-  ##########################
-  my $log = Log::Log4perl->get_logger("My::Category");
-  $log->info("This is an informational message");
+The
+screen appender above, on the other hand, 
+uses a C<SimpleLayout>, which logs the 
+debug level, a hyphen (-) and the log message:
 
-Above, we chose to define a I<category> logger (C<My::Category>)
-in a specific way. This will cause only messages originating from
+    INFO - Important Info!
+
+For more detailed info on layout formats, see L<Log Layouts>. 
+
+In the configuration sample above, we chose to define a I<category> 
+logger (C<Foo::Bar>).
+This will cause only messages originating from
 this specific category logger to be logged in the defined format
 and locations.
-
-Instead, 
-we could have configured the I<root> logger with the appenders and layout
-shown above. Now
-
-  ##########################
-  # ... in some function ...
-  ##########################
-  my $log = Log::Log4perl->get_logger("My::Category");
-  $log->info("This is an informational message");
-
-will trigger a logger with no layout or appenders or even a level
-defined. This logger, however, will inherit the level from categories up
-the hierarchy -- ultimately the root logger, since there's no C<My>
-logger. Once it detects that it needs to log a message, it will first
-try to find its own appenders (which it doesn't have any of) and then
-walk up the hierarchy (first C<My>, then C<root>) to call any appenders
-defined there.
-
-This will result in exactly the same behaviour as shown above -- with the 
-exception that other category loggers could also use the root logger's 
-appenders and layouts, but could certainly define their own categories
-and levels.
-
-=head2 Turn off a component
-
-C<Log4perl> doesn't only allow you to selectively switch I<on> a category
-of log messages, you can also use the mechanism to selectively I<disable>
-logging in certain components whereas logging is kept turned on in higher-level
-categories. This mechanism comes in handy if you find that while bumping 
-up the logging level of a high-level (i. e. close to root) category, 
-that one component logs more than it should, 
-
-Here's how it works: 
-
-    ############################################################
-    # Turn off logging in a lower-level category while keeping
-    # it active in higher-level categories.
-    ############################################################
-    log4perl.rootLogger=debug, LOGFILE
-    log4perl.logger.deep.down.the.hierarchy = error, LOGFILE
-
-    # ... Define appenders ...
-
-This way, log messages issued from within 
-C<Deep::Down::The::Hierarchy> and below will be
-logged only if they're C<error> or worse, while in all other system components
-even C<debug> messages will be logged.
 
 =head2 Configuration files
 
@@ -983,36 +858,6 @@ L<"Restricting what Opcodes can be in a Perl Hook">.
 All placeholders are quantifiable, just like in I<printf>. Following this 
 tradition, C<%-20c> will reserve 20 chars for the category and left-justify it.
 
-Layouts are objects, here's how you create them:
-
-        # Create a simple layout
-    my $simple = Log::Log4perl::SimpleLayout();
-
-        # create a flexible layout:
-        # ("yyyy/MM/dd hh:mm:ss (file:lineno)> message\n")
-    my $pattern = Log::Log4perl::PatternLayout("%d (%F:%L)> %m%n");
-
-Every appender has exactly one layout assigned to it. You assign
-the layout to the appender using the appender's C<layout()> object:
-
-    my $app =  Log::Log4perl::Appender->new(
-                  "Log::Log4perl::Appender::Screen",
-                  name      => "screenlog",
-                  stderr    => 0);
-
-        # Assign the previously defined flexible layout
-    $app->layout($pattern);
-
-        # Add the appender to a previously defined logger
-    $logger->add_appender($app);
-
-        # ... and you're good to go!
-    $logger->debug("Blah");
-        # => "2002/07/10 23:55:35 (test.pl:207)> Blah\n"
-
-If you don't specify a layout for an appender, the logger will fall back 
-to C<SimpleLayout>.
-
 For more details on logging and how to use the flexible and the simple
 format, check out the original C<log4j> website under
 
@@ -1162,6 +1007,31 @@ in object-oriented style, using the class hierarchy is usually your best
 choice. Think about the people taking over your code one day: The
 class hierarchy is probably what they know right up front, so it's easy
 for them to tune the logging to their needs.
+
+=head2 Turn off a component
+
+C<Log4perl> doesn't only allow you to selectively switch I<on> a category
+of log messages, you can also use the mechanism to selectively I<disable>
+logging in certain components whereas logging is kept turned on in higher-level
+categories. This mechanism comes in handy if you find that while bumping 
+up the logging level of a high-level (i. e. close to root) category, 
+that one component logs more than it should, 
+
+Here's how it works: 
+
+    ############################################################
+    # Turn off logging in a lower-level category while keeping
+    # it active in higher-level categories.
+    ############################################################
+    log4perl.rootLogger=debug, LOGFILE
+    log4perl.logger.deep.down.the.hierarchy = error, LOGFILE
+
+    # ... Define appenders ...
+
+This way, log messages issued from within 
+C<Deep::Down::The::Hierarchy> and below will be
+logged only if they're C<error> or worse, while in all other system components
+even C<debug> messages will be logged.
 
 =head2 Return Values
 
@@ -1932,6 +1802,104 @@ later on in the program.
 
 For details, please check L<Log::Log4perl::MDC>.
 
+=head1 Advanced configuration within Perl
+
+Initializing Log::Log4perl can certainly also be done from within Perl.
+At last, this is what C<Log::Log4perl::Config> does behind the scenes.
+Log::Log4perl's configuration file parsers are using a publically 
+available API to set up Log::Log4perl's categories, appenders and layouts.
+
+Here's an example on how to configure two appenders with the same layout
+in Perl, without using a configuration file at all:
+
+  ########################
+  # Initialization section
+  ########################
+  use Log::Log4perl;
+  use Log::Log4perl::Layout;
+  use Log::Log4perl::Level;
+
+     # Define a category logger
+  my $log = Log::Log4perl->get_logger("Foo::Bar");
+
+     # Define a layout
+  my $layout = Log::Log4perl::Layout::PatternLayout->new("[%r] %F %L %m%n");
+
+     # Define a file appender
+  my $file_appender = Log::Log4perl::Appender->new(
+                          "Log::Log4perl::Appender::File",
+                          name      => "filelog",
+                          filename  => "/tmp/my.log");
+
+     # Define a stdout appender
+  my $stdout_appender =  Log::Log4perl::Appender->new(
+                          "Log::Log4perl::Appender::Screen",
+                          name      => "screenlog",
+                          stderr    => 0);
+
+     # Have both appenders use the same layout (could be different)
+  $stdout_appender->layout($layout);
+  $file_appender->layout($layout);
+
+  $log->add_appender($stdout_appender);
+  $log->add_appender($file_appender);
+  $log->level($INFO);
+
+Please note the class of the appender object is passed as a I<string> to
+C<Log::Log4perl::Appender> in the I<first> argument. Behind the scenes,
+C<Log::Log4perl::Appender> will create the necessary
+C<Log::Log4perl::Appender::*> (or C<Log::Dispatch::*>) object and pass
+along the name value pairs we provided to
+C<Log::Log4perl::Appender-E<gt>new()> after the first argument.
+
+The C<name> value is optional and if you don't provide one,
+C<Log::Log4perl::Appender-E<gt>new()> will create a unique one for you.
+The names and values of additional parameters are dependent on the requirements
+of the particular appender class and can be looked up in their
+manual pages.
+
+A side note: In case you're wondering if
+C<Log::Log4perl::Appender-E<gt>new()> will also take care of the
+C<min_level> argument to the C<Log::Dispatch::*> constructors called
+behind the scenes -- yes, it does. This is because we want the
+C<Log::Dispatch> objects to blindly log everything we send them
+(C<debug> is their lowest setting) because I<we> in C<Log::Log4perl>
+want to call the shots and decide on when and what to log.
+
+The call to the appender's I<layout()> method specifies the format (as a
+previously created C<Log::Log4perl::PatternLayout> object) in which the
+message is being logged in the specified appender. 
+If you don't specify a layout, the logger will fall back to
+C<Log::Log4perl::SimpleLayout>, which logs the debug level, a hyphen (-)
+and the log message.
+
+Layouts are objects, here's how you create them:
+
+        # Create a simple layout
+    my $simple = Log::Log4perl::SimpleLayout();
+
+        # create a flexible layout:
+        # ("yyyy/MM/dd hh:mm:ss (file:lineno)> message\n")
+    my $pattern = Log::Log4perl::PatternLayout("%d (%F:%L)> %m%n");
+
+Every appender has exactly one layout assigned to it. You assign
+the layout to the appender using the appender's C<layout()> object:
+
+    my $app =  Log::Log4perl::Appender->new(
+                  "Log::Log4perl::Appender::Screen",
+                  name      => "screenlog",
+                  stderr    => 0);
+
+        # Assign the previously defined flexible layout
+    $app->layout($pattern);
+
+        # Add the appender to a previously defined logger
+    $logger->add_appender($app);
+
+        # ... and you're good to go!
+    $logger->debug("Blah");
+        # => "2002/07/10 23:55:35 (test.pl:207)> Blah\n"
+
 =head1 How about Log::Dispatch::Config?
 
 Tatsuhiko Miyagawa's C<Log::Dispatch::Config> is a very clever 
@@ -2063,10 +2031,15 @@ for details.
 
 =head1 DEVELOPMENT
 
-C<Log::Log4perl> is under heavy development. The latest CVS tarball
-can be obtained from SourceForge, check C<http://log4perl.sourceforge.net>
-for details. Bug reports and feedback are always welcome, just email
-to our mailing list shown in the AUTHORS section.
+Log::Log4perl is still being actively developed. We will
+always make sure the test suite (approx. 500 cases) will pass, but there 
+might still be bugs. please check http://log4perl.sourceforge.net
+for the latest release. The api has reached a mature state, we will 
+not change it unless for a good reason.
+
+Bug reports and feedback are always welcome, just email them to our 
+mailing list shown in the AUTHORS section. We're usually addressing
+them immediately.
 
 =head1 REFERENCES
 
