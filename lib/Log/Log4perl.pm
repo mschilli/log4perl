@@ -830,9 +830,9 @@ Manual installation works as usual with
 =head1 DEVELOPMENT
 
 C<Log::Log4perl> is under heavy development. The latest CVS tarball
-can be obtained from sourcforge, check C<http://log4perl.sorceforge.net>
+can be obtained from SourceForge, check C<http://log4perl.sorceforge.net>
 for details. Bug reports and feedback are always welcome, just email
-to the authors.
+to our mailing list shown in L<CONTACT>.
 
 =head1 REFERENCES
 
@@ -855,12 +855,12 @@ http://www.vipan.com/htdocs/log4jhelp.html
 Please send bugs reports or requests for enhancements to the authors via 
 our 
 
-    Mailing list <log4perl-devel@lists.sourceforge.net>
+    Log4perl mailing list: log4perl-devel@lists.sourceforge.net
 
 =head1 AUTHORS
 
-    Mike Schilli, <m@perlmeister.com>
-    Kevin Goess, <cpan@goess.org>
+    Mike Schilli, m@perlmeister.com
+    Kevin Goess, cpan@goess.org
 
 =head1 COPYRIGHT AND LICENSE
 
