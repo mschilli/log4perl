@@ -2,7 +2,7 @@
  Revision history for Log::Log4perl
 ##################################################
 
-0.51 (01/08/2004)
+0.51 (01/08/2005)
     * (ms) Jon Bjornstad noticed that the file appender wasn't including
            $! in the die() exception thrown if open_file() fails. Added it.
     * (ms) Added umask option to file appender
