@@ -22,6 +22,8 @@ lib/Log/Log4perl/Config/DOMConfigurator.pm
 lib/Log/Log4perl/Config/PropertyConfigurator.pm
 lib/Log/Log4perl/DateFormat.pm
 lib/Log/Log4perl/FAQ.pm
+lib/Log/Log4perl/Filter.pm
+lib/Log/Log4perl/Filter/Bool.pm
 lib/Log/Log4perl/JavaMap.pm
 lib/Log/Log4perl/JavaMap/ConsoleAppender.pm
 lib/Log/Log4perl/JavaMap/FileAppender.pm
@@ -76,6 +78,7 @@ t/035JDBCAppender.t
 t/036JSyslog.t
 t/037JWin32Event.t
 t/038XML-DOM1.t
+t/039XML-DOM2.t
 t/compare.pl
 t/deeper1.expected
 t/deeper6.expected
