@@ -77,7 +77,7 @@ Log::Log4perl->init(\<<'EOT');
     log4perl.additivity.Twix.Bar = true
 EOT
 
-my $logger = get_logger("Twix::Bar");
+$logger = get_logger("Twix::Bar");
 $logger->info("Percolate this!");
 
 $buf1 = Log::Log4perl::TestBuffer->by_name("A1")->buffer();
