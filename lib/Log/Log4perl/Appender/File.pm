@@ -37,6 +37,8 @@ sub file_open {
 
     if($self->{mode} eq "append") {
         $arrows = ">>";
+    } elsif ($self->{mode} eq "pipe") {
+        $arrows = "|";
     }
 
     my $fh = do { local *FH; *FH; };
@@ -114,12 +116,13 @@ Log::Log4perl::Appender::File - Log to file
 
 =head1 DESCRIPTION
 
-This is a simple appender for writing to a file. 
+This is a simple appender for writing to a file.
 
 The constructor C<new()> opens a file, specified in C<filename>, for
 writing. If C<mode> is C<append>, it will append to the file if it
-exists, on other settings of C<mode> it will clobber any existing
-file first. The default C<mode> is C<append>.
+exists, if it is C<pipe> the file will be understood as executable
+to pipe output to. On other settings of C<mode> it will clobber any existing
+file first and then start writing to it. The default C<mode> is C<append>.
 
 C<autoflush>, if set to a true value, triggers flushing the data
 out to the file on every call to C<log()>.
