@@ -44,6 +44,14 @@ sub reset {
     #clear out all the existing appenders
     foreach my $logger (values %$LOGGERS_BY_NAME){
         $logger->{appender_names} = ();
+
+	#this next bit deals with an init_and_watch case where a category
+	#is deleted from the config file, we need to zero out the existing
+	#loggers so ones not in the config file not continue with their old
+	#behavior --kg
+        next if $logger eq $ROOT_LOGGER;
+        $logger->{level} = undef;
+        $logger->level();  #set it from the heirarchy
     }
 }
 
