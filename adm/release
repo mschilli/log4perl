@@ -1,0 +1,28 @@
+#!/usr/bin/perl
+###########################################
+# release -- Release this module
+# Mike Schilli, 2002 (m@perlmeister.com)
+###########################################
+use warnings;
+use strict;
+
+    # Available at http://perlmeister.com/scripts
+use lib "$ENV{HOME}/perl-modules";
+use ModDevUtils;
+
+ModDevUtils::release() or exit 0;
+
+my $ball = ModDevUtils::tarball_name();
+print "Copying $ball to log4perl.sourceforge.net ...\n";
+system("scp $ball log4perl.sourceforge.net:");
+print "Releasing it on sourceforge.net ...\n";
+system("ssh log4perl.sourceforge.net bin/rel $ball\n");
+
+# Win32 package
+print "Building Win32 ppm distribution ...\n";
+system("cd adm; ./mkppm");
+
+print "Copying ppm to log4perl.sourceforge.net ...\n";
+system("scp adm/ppm.tgz log4perl.sourceforge.net:");
+print "Releasing it on sourceforge.net ...\n";
+system("ssh log4perl.sourceforge.net bin/relppm\n");
