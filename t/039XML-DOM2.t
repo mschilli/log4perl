@@ -2,7 +2,6 @@
 use Test;
 use Log::Log4perl;
 use strict;
-use Data::Dumper;
 
 our $no_XMLDOM;
 
@@ -130,8 +129,22 @@ EOL
 my $propsdata = Log::Log4perl::Config::config_read(\$propsconfig);
 
 #brute force testing here, not very granular, but it is thorough
-#use Data::Dump qw(dump);
-#ok(dump($xmldata),dump($propsdata));
-ok(Dumper($xmldata),Dumper($propsdata));
+
+eval {require Data::Dump};
+my $dump_available;
+if (! $@) {
+    $dump_available = 1;
+}
+
+
+require 't/compare.pl';
+
+ok(Compare($xmldata, $propsdata)) || 
+        do {
+          if ($dump_available) {
+              print STDERR "got: ",Data::Dump::dump($xmldata),"\n================\n";
+              print STDERR "expected: ", Data::Dump::dump($propsdata),"\n";
+          }
+        };
 
 
