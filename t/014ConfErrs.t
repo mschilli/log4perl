@@ -228,7 +228,16 @@ my $buffer = Log::Log4perl::Appender::TestBuffer->by_name("myAppender");
 #print "BUFFER: [", $buffer->buffer(), "]\n";
 ok($buffer->buffer(),"ERROR - foobar\n");
 
-BEGIN { plan tests => 13, }
+$conf = <<EOL;
+log4perl.logger.Foo.Bar          = INFO, Screen
+log4perl.logger.Foo.Bar          = INFO, Screen
+EOL
+eval {
+    Log::Log4perl::init( \$conf );
+};
+ok($@, '/Multiple definitions of logger Foo.Bar/');
+
+BEGIN { plan tests => 14, }
 
 END{   
      unlink $testfile if (-e $testfile);

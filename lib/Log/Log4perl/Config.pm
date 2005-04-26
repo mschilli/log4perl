@@ -187,6 +187,11 @@ sub _init {
                     print "Found entry @$path\n" if _INTERNAL_DEBUG;
                     $filter_names{@$path[0]}++;
                 } else {
+
+                    if (ref($value) eq "ARRAY") {
+                      die "Multiple definitions of logger ".join('.',@$path)." in log4perl config";
+                    }
+
                     # This is a regular logger
                     push @loggers, [join('.', @$path), $value];
                 }

@@ -2,6 +2,10 @@
  Revision history for Log::Log4perl
 ##################################################
 
+0.53
+    * (kg) Ola Finsbraaten provided a patch to provide a better error
+           message when a logger is defined twice in a config.
+
 0.52 (03/26/2005)
     * (ms) Jonathan Manning <jmanning@alisa-jon.net> provided a patch
            for DateFormat.pm to fix 3-letter month abbreviations and a
