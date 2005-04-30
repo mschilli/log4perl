@@ -2,7 +2,7 @@
  Revision history for Log::Log4perl
 ##################################################
 
-0.53
+0.53 (2005/04/30)
     * (kg) Ola Finsbraaten provided a patch to provide a better error
            message when a logger is defined twice in a config.
 
