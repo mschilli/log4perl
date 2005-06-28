@@ -379,7 +379,7 @@ sub create_appender_instance {
                 %param,
             ); 
     
-            for(@$depends_on) {
+            for my $dependency (@$depends_on) {
                 # If this appender indicates that it needs other appenders
                 # to exist (e.g. because it's a composite appender that
                 # relays messages on to its appender-refs) then we're 
@@ -390,7 +390,7 @@ sub create_appender_instance {
                 # appenders.
                 $appender->composite(1);
                 next if exists $appenders_created->{$appname};
-                my $app = create_appender_instance($data, $_, 
+                my $app = create_appender_instance($data, $dependency, 
                              $appenders_created,
                              $post_config_subs);
                 # If the appender appended a subroutine to $post_config_subs
@@ -403,7 +403,7 @@ sub create_appender_instance {
                 # Smuggle this sub-appender into the hash of known appenders 
                 # without attaching it to any logger directly.
                 $
-                Log::Log4perl::Logger::APPENDER_BY_NAME{$_} = $app;
+                Log::Log4perl::Logger::APPENDER_BY_NAME{$dependency} = $app;
             }
         }
     }

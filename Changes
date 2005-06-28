@@ -2,6 +2,9 @@
  Revision history for Log::Log4perl
 ##################################################
 
+0.53
+    * (kg) Fixing bug in Appender::Limit regarding $_ scope
+
 0.52 (05/08/2005)
     * (ms) Jonathan Manning <jmanning@alisa-jon.net> provided a patch
            for DateFormat.pm to fix 3-letter month abbreviations and a

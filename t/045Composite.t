@@ -17,7 +17,7 @@ BEGIN {
                                                # early Perl versions dont
                                                # have it.
     }else{
-        plan tests => 13;
+        plan tests => 14;
     }
 }
 
@@ -177,3 +177,34 @@ unlike($buffer->buffer(), qr/right away/);
 
 $logger->warn("This message will show right away");
 like($buffer->buffer(), qr/right away/);
+
+
+#################################
+#demonstrating bug in Limiter.pm regarding $_
+# Reset appender population
+Log::Log4perl::Appender::TestBuffer->reset();
+
+{package My::Test::Appender;
+our @ISA = ('Log::Log4perl::Appender::TestBuffer');
+sub new {
+    my $self = shift;
+    $_ = ''; #aye, there's the rub!
+    $self->SUPER::new; 
+}
+}
+
+$conf = qq(
+  log4perl.category = WARN, Limiter
+
+  log4perl.appender.Buffer          = My::Test::Appender
+  log4perl.appender.Buffer.layout   = SimpleLayout
+  log4perl.appender.Buffer.layout.ConversionPattern=%d %m %n
+
+  log4perl.appender.Limiter         = Log::Log4perl::Appender::Limit
+  log4perl.appender.Limiter.appender     = Buffer
+  log4perl.appender.Limiter.block_period = 3600
+);
+
+Log::Log4perl->init(\$conf);
+ok(1);
+
