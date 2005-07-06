@@ -4,6 +4,8 @@
 
 0.53
     * (kg) Fixing bug in Appender::Limit regarding $_ scope
+    * (ms) logdie() suppresses messages to STDOUT/STDERR to avoid dupes
+    * (ms) corrected typo in Synchronized.pm found by Rob Redmon.
 
 0.52 (05/08/2005)
     * (ms) Jonathan Manning <jmanning@alisa-jon.net> provided a patch
