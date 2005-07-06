@@ -17,7 +17,7 @@ our @ISA = qw(Log::Log4perl::Appender);
 use IPC::Shareable qw(:lock);
 use IPC::Semaphore;
 
-our $CVSVERSION   = '$Revision: 1.5 $';
+our $CVSVERSION   = '$Revision: 1.6 $';
 our ($VERSION)    = ($CVSVERSION =~ /(\d+\.\d+)/);
 
 ###########################################
@@ -219,7 +219,7 @@ To control access to different appender instances, it often makes sense
 to define different keys for different synchronizing appenders. In this
 way, Log::Log4perl serializes access to each appender instance separately:
 
-    log4perl.category                   = WARN, Syncer
+    log4perl.category                   = WARN, Syncer1, Syncer2
     
         # File appender 1 (unsynchronized)
     log4perl.appender.Logfile1           = Log::Log4perl::Appender::File
