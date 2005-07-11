@@ -17,7 +17,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 50;
+use Test::More tests => 52;
 use Log::Log4perl qw(get_logger);
 use Log::Log4perl::Level;
 use File::Spec;
@@ -141,3 +141,32 @@ my $app0 = Log::Log4perl::Appender::TestBuffer->by_name("A1");
 
 like($app0->buffer(), qr/024WarnDieCarp.t-137: Log and die!/,
    "%F-%L adjustment");
+
+######################################################################
+# Check if logcarp/cluck/croak are reporting the calling package,
+# not the one the error happened in.
+######################################################################
+$app0->buffer("");
+
+package Weirdo;
+use Log::Log4perl qw(get_logger);
+sub foo {
+    my $logger = get_logger("Twix::Bar");
+    $logger->logcroak("Inferno!");
+}
+sub bar {
+    my $logger = get_logger("Twix::Bar");
+    $logger->logdie("Inferno!");
+}
+
+package main;
+eval { Weirdo::foo(); };
+
+like($app0->buffer(), qr/163/,
+   "Check logcroak/Carp");
+
+$app0->buffer("");
+eval { Weirdo::bar(); };
+
+like($app0->buffer(), qr/159/,
+   "Check logdie");

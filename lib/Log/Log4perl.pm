@@ -61,6 +61,9 @@ our $DOM_VERSION_REQUIRED = '1.29';
 
 our $CHATTY_DESTROY_METHODS = 0;
 
+our $LOGDIE_MESSAGE_ON_STDERR = 1;
+our $LOGEXIT_CODE             = 1;
+
 ##################################################
 sub import {
 ##################################################
@@ -77,6 +80,11 @@ sub import {
         $tags{':levels'} = 1;
         $tags{':nowarn'} = 1;
         $tags{'get_logger'} = 1;
+    }
+
+    if(exists $tags{':no_extra_logdie_message'}) {
+        $Log::Log4perl::LOGDIE_MESSAGE_ON_STDERR = 0;
+        delete $tags{':no_extra_logdie_message'};
     }
 
     if(exists $tags{get_logger}) {
@@ -130,7 +138,17 @@ sub import {
                     $Log::Log4perl::Logger::INITIALIZED or
                     $Log::Log4perl::Logger::NON_INIT_WARNED;
             $logger->{FATAL}->($logger, @_, "FATAL");
-            CORE::die(Log::Log4perl::Logger::callerline(join '', @_));
+            $Log::Log4perl::LOGDIE_MESSAGE_ON_STDERR ?
+                CORE::die(Log::Log4perl::Logger::callerline(join '', @_)) :
+                exit $Log::Log4perl::LOGEXIT_CODE;
+        };
+
+        *{"$caller_pkg\::LOGEXIT"} = sub {
+            Log::Log4perl::Logger::init_warn() unless 
+                    $Log::Log4perl::Logger::INITIALIZED or
+                    $Log::Log4perl::Logger::NON_INIT_WARNED;
+            $logger->{FATAL}->($logger, @_, "FATAL");
+            exit $Log::Log4perl::LOGEXIT_CODE;
         };
 
         *{"$caller_pkg\::LOGWARN"} = sub { 
@@ -138,7 +156,9 @@ sub import {
                     $Log::Log4perl::Logger::INITIALIZED or
                     $Log::Log4perl::Logger::NON_INIT_WARNED;
             $logger->{WARN}->($logger, @_, "WARN");
-            CORE::warn(Log::Log4perl::Logger::callerline(join '', @_));
+            $Log::Log4perl::LOGDIE_MESSAGE_ON_STDERR ?
+            CORE::warn(Log::Log4perl::Logger::callerline(join '', @_)) :
+            exit $Log::Log4perl::LOGEXIT_CODE;
         };
     }
 
@@ -1859,8 +1879,9 @@ C<Log::Log4perl>'s easy services:
 As shown above, C<easy_init()> will take any number of different logger 
 definitions as hash references.
 
-Also, stealth loggers feature the functions C<LOGWARN()> and C<LOGDIE()>,
-combining a logging request with a subsequent Perl warn() or die()
+Also, stealth loggers feature the functions C<LOGWARN()>, C<LOGDIE()>,
+and C<LOGEXIT()>,
+combining a logging request with a subsequent Perl warn() or die() or exit()
 statement. So, for example
 
     if($all_is_lost) {
@@ -2255,6 +2276,30 @@ In a very rude way, it pulls the rug from under LWP::UserAgent and transforms
 its C<debug/conn> messages into C<debug()> calls of loggers of the category
 C<"LWP::UserAgent">. Similarily, C<LWP::UserAgent>'s C<trace> messages 
 are turned into C<Log::Log4perl>'s C<info()> method calls.
+
+=item Suppressing 'duplicate' LOGDIE messages
+
+If a script with a simple Log4perl configuration uses logdie() to catch
+errors and stop processing, as in 
+
+    use Log::Log4perl qw(:easy) ;
+    Log::Log4perl->easy_init($DEBUG);
+    
+    shaky_function() or LOGDIE "It failed!";
+
+there's a cosmetic problem: The message gets printed twice:
+
+    2005/07/10 18:37:14 It failed!
+    It failed! at ./t line 12
+
+The obvious solution is to use LOGEXIT() instead of LOGDIE(), but there's
+also a special tag for Log4perl that suppresses the second message:
+
+    use Log::Log4perl qw(:no_extra_logdie_message);
+
+This causes logdie() and logcroak() to call exit() instead of die(). To
+modify the script exit code in these occasions, set the variable
+C<$Log::Log4perl::LOGEXIT_CODE> to the desired value, the default is 1.
 
 =back
 
