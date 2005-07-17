@@ -95,7 +95,8 @@ sub log {
 
     my $fh = $self->{fh};
 
-    print $fh $params{message};
+    print $fh $params{message} or
+        die "Cannot write to '$self->{filename}': $!";
 }
 
 ##################################################
