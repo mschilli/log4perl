@@ -18,7 +18,7 @@ unless (-e "$WORK_DIR"){
 my $TMP_FILE = File::Spec->catfile(qw(t tmp easy));
 $TMP_FILE = "tmp/easy" if ! -d "t";
 
-BEGIN { plan tests => 17 }
+BEGIN { plan tests => 20 }
 
 END   { unlink $TMP_FILE;
         close IN;
@@ -152,6 +152,43 @@ sub bar {
 
 foo();
 like(readstderr(), qr(main::bar.*?main::foo));
+close IN;
+
+############################################################
+# LOGCARP and LOGCROAK
+############################################################
+# redir STDERR again
+open STDERR, ">$TMP_FILE";
+select STDERR; $| = 1; #needed on win32
+open IN, "<$TMP_FILE" or die "Cannot open $TMP_FILE";
+
+package Whack;
+use Log::Log4perl qw(:easy);
+sub whack {
+    LOGCROAK("logcroak in whack");
+}
+
+package main;
+
+Log::Log4perl->easy_init($INFO);
+$log = get_logger();
+eval { Whack::whack() };
+
+like($@, qr/logcroak in whack at .*?020Easy.t line 175/);
+like(readstderr(), qr/^[\d:\/ ]+logcroak in whack.*175/m);
+
+package Junk1;
+use Log::Log4perl qw(:easy);
+sub foo {
+    LOGCARP("LOGCARP");
+}
+package Junk2;
+sub foo {
+    Junk1::foo();
+}
+package main;
+Junk2::foo();
+like(readstderr(), qr/LOGCARP.*020Easy.t line 187/);
 
 ############################################################
 # Finally close

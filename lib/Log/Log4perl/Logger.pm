@@ -6,11 +6,15 @@ use 5.006;
 use strict;
 use warnings;
 
+use Log::Log4perl;
 use Log::Log4perl::Level;
 use Log::Log4perl::Layout;
 use Log::Log4perl::Appender;
 use Log::Log4perl::Filter;
 use Carp;
+
+$Carp::Internal{"Log::Log4perl"}++;
+$Carp::Internal{"Log::Log4perl::Logger"}++;
 
 use constant _INTERNAL_DEBUG => 0;
 
@@ -844,7 +848,7 @@ sub logdie {
   }
 
   $Log::Log4perl::LOGDIE_MESSAGE_ON_STDERR ? $self->and_die(@_) : 
-      exit $Log::Log4perl::LOGDIE_EXIT_CODE;
+      exit($Log::Log4perl::LOGEXIT_CODE);
 }
 
 ##################################################
@@ -861,7 +865,7 @@ sub logexit {
     $Log::Log4perl::caller_depth--;
   }
 
-  exit $Log::Log4perl::LOGDIE_EXIT_CODE;
+  exit $Log::Log4perl::LOGEXIT_CODE;
 }
 
 ##################################################
@@ -878,7 +882,7 @@ sub logcluck {
 ##################################################
   my $self = shift;
 
-  local $Carp::CarpLevel = 2;
+  local $Carp::CarpLevel = $Carp::CarpLevel + 1;
 
   if ($self->is_warn()) {
     my $message = Carp::longmess(@_);
@@ -894,16 +898,16 @@ sub logcarp {
 ##################################################
   my $self = shift;
 
-  local $Carp::CarpLevel = 2;
+  local $Carp::CarpLevel = $Carp::CarpLevel + 1;
 
   if ($self->is_warn()) {
     my $message = Carp::shortmess(@_);
     foreach (split(/\n/, $message)) {
       $self->warn("$_\n");
     }
-    Carp::carp(noop($message));
+    Carp::carp(noop($message)) if $Log::Log4perl::LOGDIE_MESSAGE_ON_STDERR;
   }
-} 
+}
 
 ##################################################
 # croaks and confess are FATAL level
@@ -912,7 +916,7 @@ sub logcroak {
 ##################################################
   my $self = shift;
 
-  local $Carp::CarpLevel = 2;
+  local $Carp::CarpLevel = $Carp::CarpLevel + 1;
 
   my $message = Carp::shortmess(@_);
   if ($self->is_fatal()) {
@@ -922,7 +926,7 @@ sub logcroak {
   }
 
   $Log::Log4perl::LOGDIE_MESSAGE_ON_STDERR ? Carp::croak(noop($message)) : 
-      exit $Log::Log4perl::LOGDIE_EXIT_CODE;
+      exit($Log::Log4perl::LOGEXIT_CODE);
 }
 
 ##################################################
@@ -930,7 +934,7 @@ sub logconfess {
 ##################################################
   my $self = shift;
 
-  local $Carp::CarpLevel = 2;
+#local $Carp::CarpLevel = 2;
 
   my $message = Carp::longmess(@_);
   if ($self->is_fatal()) {
@@ -940,7 +944,7 @@ sub logconfess {
   }
 
   $Log::Log4perl::LOGDIE_MESSAGE_ON_STDERR ? die(noop($message)) :
-      exit $Log::Log4perl::LOGDIE_EXIT_CODE;
+      exit($Log::Log4perl::LOGEXIT_CODE);
 }
 
 ##################################################
@@ -966,7 +970,7 @@ sub error_die {
   }
 
   $Log::Log4perl::LOGDIE_MESSAGE_ON_STDERR ? $self->and_die(@_) :
-      exit $Log::Log4perl::LOGDIE_EXIT_CODE;
+      exit($Log::Log4perl::LOGEXIT_CODE);
 }
 
 ##################################################

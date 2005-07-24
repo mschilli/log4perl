@@ -16,7 +16,7 @@ use Log::Log4perl::Appender;
 
 use constant _INTERNAL_DEBUG => 1;
 
-our $VERSION = '0.52';
+our $VERSION = '1.00';
 
    # set this to '1' if you're using a wrapper
    # around Log::Log4perl
@@ -128,6 +128,16 @@ sub import {
                     $Log::Log4perl::Logger::INITIALIZED or
                     $Log::Log4perl::Logger::NON_INIT_WARNED;
                 $logger->{$level}->($logger, @_, $level);
+            };
+        }
+
+            # Define LOGCROAK, LOGCLUCK, etc. routines in caller's package
+        for(qw(LOGCROAK LOGCLUCK LOGCARP LOGCONFESS)) {
+            my $method = "Log::Log4perl::Logger::" . lc($_);
+
+            *{"$caller_pkg\::$_"} = sub {
+                unshift @_, $logger;
+                goto &$method;
             };
         }
 
@@ -1893,6 +1903,10 @@ C<die()> (including the traditional output to STDERR) in any case afterwards.
 
 See L<"Log and die or warn"> for the similar C<logdie()> and C<logwarn()>
 functions of regular (i.e non-stealth) loggers.
+
+Similarily, C<LOGCARP()>, C<LOGCLUCK()>, C<LOGCROAK()>, and C<LOGCONFESS()>
+are provided in C<:easy> mode, facilitating the use of C<logcarp()>,
+C<logcluck()>, C<logcroak()>, and C<logconfess()> with stealth loggers.
 
 B<When using Log::Log4perl in easy mode, 
 please make sure you understand the implications of 

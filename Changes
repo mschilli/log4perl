@@ -2,21 +2,19 @@
  Revision history for Log::Log4perl
 ##################################################
 
-TODO: 
-    * Fix PathTools bug reported on rt.cpan.org
-
-1.00 (not yet released)
+1.00 (07/05/2005)
     * (ms) Added tag qw(:no_extra_logdie_message) to suppress duplicate
            die() messages in scripts using simple configurations and LOGDIE().
            Added logexit() as an alternative way.
     * (ms) Fixed bug with logcarp/croak/cluck, which were using the 
            wrong Carp level.
     * (kg) Fixing bug in Appender::Limit regarding $_ scope
-    * (ms) logdie() suppresses messages to STDOUT/STDERR to avoid dupes
     * (ms) corrected typo in Synchronized.pm found by Rob Redmon.
     * (ms) Fixed bug with Appender::File reported by Michael Smith. Checking
            now if print() succeeds, catching errors with full disks and
            ulimit'ed environments.
+    * (ms) Added LOGCARP(), LOGCLUCK(), LOGCONFESS(), LOGCROAK() macros
+           in :easy mode (suggested by Jud Dagnall).
 
 0.52 (05/08/2005)
     * (ms) Jonathan Manning <jmanning@alisa-jon.net> provided a patch

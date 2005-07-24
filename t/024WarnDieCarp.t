@@ -17,7 +17,7 @@
 use warnings;
 use strict;
 
-use Test::More tests => 52;
+use Test::More tests => 53;
 use Log::Log4perl qw(get_logger);
 use Log::Log4perl::Level;
 use File::Spec;
@@ -170,3 +170,27 @@ eval { Weirdo::bar(); };
 
 like($app0->buffer(), qr/159/,
    "Check logdie");
+
+######################################################################
+# Check if logcarp/cluck/croak are reporting the calling package,
+# when they are more than one hierarchy from the top.
+######################################################################
+$app0->buffer("");
+
+package Foo;
+use Log::Log4perl qw(get_logger);
+sub foo {
+    my $logger = get_logger("Twix::Bar");
+    $logger->logcarp("Inferno!");
+}
+
+package Bar;
+sub bar {
+    Foo::foo();
+}
+
+package main;
+eval { Bar::bar(); };
+
+like($app0->buffer(), qr/189/,
+   "Check logcarp");
