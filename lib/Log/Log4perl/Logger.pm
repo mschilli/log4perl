@@ -53,6 +53,8 @@ sub cleanup {
         delete $APPENDER_BY_NAME{$appendername};
     }
     %APPENDER_BY_NAME   = ();
+
+    undef $INITIALIZED;
 }
 
 ##################################################

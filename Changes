@@ -15,6 +15,7 @@
            ulimit'ed environments.
     * (ms) Added LOGCARP(), LOGCLUCK(), LOGCONFESS(), LOGCROAK() macros
            in :easy mode (suggested by Jud Dagnall).
+    * (ms) $INITIALIZED now gets reset during logger cleanup.
 
 0.52 (05/08/2005)
     * (ms) Jonathan Manning <jmanning@alisa-jon.net> provided a patch
