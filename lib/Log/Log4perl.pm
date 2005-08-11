@@ -445,6 +445,16 @@ Log::Log4perl - Log4j implementation for Perl
 
 =head1 SYNOPSIS
  
+        # Easy mode if you like it simple ...
+
+    use Log::Log4perl qw(:easy);
+    Log::Log4perl->easy_init($ERROR);
+
+    DEBUG "This doesn't go anywhere";
+    ERROR "This gets logged";
+
+        # ... or standard mode for more features:
+
     Log::Log4perl::init('/etc/log4perl.conf');
     
     --or--
