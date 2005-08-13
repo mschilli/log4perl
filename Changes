@@ -2,7 +2,7 @@
  Revision history for Log::Log4perl
 ##################################################
 
-1.00 (07/05/2005)
+1.00 (08/13/2005)
     * (ms) Added tag qw(:no_extra_logdie_message) to suppress duplicate
            die() messages in scripts using simple configurations and LOGDIE().
            Added logexit() as an alternative way.
