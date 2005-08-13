@@ -113,6 +113,7 @@ t/046RRDs.t
 t/048lwp.t
 t/049Unhide.t
 t/050Buffer.t
+t/051Extra.t
 t/compare.pl
 t/deeper1.expected
 t/deeper6.expected

@@ -1,11 +1,21 @@
 ######################################################################
-    Log::Log4perl 0.52
+    Log::Log4perl 1.00
 ######################################################################
 
 NAME
     Log::Log4perl - Log4j implementation for Perl
 
 SYNOPSIS
+            # Easy mode if you like it simple ...
+
+        use Log::Log4perl qw(:easy);
+        Log::Log4perl->easy_init($ERROR);
+
+        DEBUG "This doesn't go anywhere";
+        ERROR "This gets logged";
+
+            # ... or standard mode for more features:
+
         Log::Log4perl::init('/etc/log4perl.conf');
     
         --or--
@@ -1354,9 +1364,9 @@ Cool Tricks
     As shown above, "easy_init()" will take any number of different logger
     definitions as hash references.
 
-    Also, stealth loggers feature the functions "LOGWARN()" and "LOGDIE()",
-    combining a logging request with a subsequent Perl warn() or die()
-    statement. So, for example
+    Also, stealth loggers feature the functions "LOGWARN()", "LOGDIE()", and
+    "LOGEXIT()", combining a logging request with a subsequent Perl warn()
+    or die() or exit() statement. So, for example
 
         if($all_is_lost) {
             LOGDIE("Terrible Problem");
@@ -1368,6 +1378,10 @@ Cool Tricks
 
     See "Log and die or warn" for the similar "logdie()" and "logwarn()"
     functions of regular (i.e non-stealth) loggers.
+
+    Similarily, "LOGCARP()", "LOGCLUCK()", "LOGCROAK()", and "LOGCONFESS()"
+    are provided in ":easy" mode, facilitating the use of "logcarp()",
+    "logcluck()", "logcroak()", and "logconfess()" with stealth loggers.
 
     When using Log::Log4perl in easy mode, please make sure you understand
     the implications of "Pitfalls with Categories".
@@ -1719,6 +1733,30 @@ Dirty Tricks
         of the category "LWP::UserAgent". Similarily, "LWP::UserAgent"'s
         "trace" messages are turned into "Log::Log4perl"'s "info()" method
         calls.
+
+    Suppressing 'duplicate' LOGDIE messages
+        If a script with a simple Log4perl configuration uses logdie() to
+        catch errors and stop processing, as in
+
+            use Log::Log4perl qw(:easy) ;
+            Log::Log4perl->easy_init($DEBUG);
+    
+            shaky_function() or LOGDIE "It failed!";
+
+        there's a cosmetic problem: The message gets printed twice:
+
+            2005/07/10 18:37:14 It failed!
+            It failed! at ./t line 12
+
+        The obvious solution is to use LOGEXIT() instead of LOGDIE(), but
+        there's also a special tag for Log4perl that suppresses the second
+        message:
+
+            use Log::Log4perl qw(:no_extra_logdie_message);
+
+        This causes logdie() and logcroak() to call exit() instead of die().
+        To modify the script exit code in these occasions, set the variable
+        $Log::Log4perl::LOGEXIT_CODE to the desired value, the default is 1.
 
 EXAMPLE
     A simple example to cut-and-paste and get started:

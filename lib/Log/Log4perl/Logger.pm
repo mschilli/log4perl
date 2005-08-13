@@ -849,8 +849,9 @@ sub logdie {
     $Log::Log4perl::caller_depth--;
   }
 
-  $Log::Log4perl::LOGDIE_MESSAGE_ON_STDERR ? $self->and_die(@_) : 
-      exit($Log::Log4perl::LOGEXIT_CODE);
+  $Log::Log4perl::LOGDIE_MESSAGE_ON_STDERR ? 
+      $self->and_die(@_) : 
+        exit($Log::Log4perl::LOGEXIT_CODE);
 }
 
 ##################################################
@@ -927,8 +928,9 @@ sub logcroak {
     }
   }
 
-  $Log::Log4perl::LOGDIE_MESSAGE_ON_STDERR ? Carp::croak(noop($message)) : 
-      exit($Log::Log4perl::LOGEXIT_CODE);
+  $Log::Log4perl::LOGDIE_MESSAGE_ON_STDERR ? 
+      Carp::croak(noop($message)) : 
+        exit($Log::Log4perl::LOGEXIT_CODE);
 }
 
 ##################################################
@@ -945,8 +947,9 @@ sub logconfess {
     }
   }
 
-  $Log::Log4perl::LOGDIE_MESSAGE_ON_STDERR ? die(noop($message)) :
-      exit($Log::Log4perl::LOGEXIT_CODE);
+  $Log::Log4perl::LOGDIE_MESSAGE_ON_STDERR ? 
+      die(noop($message)) :
+        exit($Log::Log4perl::LOGEXIT_CODE);
 }
 
 ##################################################
@@ -971,8 +974,9 @@ sub error_die {
     $Log::Log4perl::caller_depth--;
   }
 
-  $Log::Log4perl::LOGDIE_MESSAGE_ON_STDERR ? $self->and_die(@_) :
-      exit($Log::Log4perl::LOGEXIT_CODE);
+  $Log::Log4perl::LOGDIE_MESSAGE_ON_STDERR ? 
+      $self->and_die(@_) :
+        exit($Log::Log4perl::LOGEXIT_CODE);
 }
 
 ##################################################
