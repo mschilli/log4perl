@@ -1873,6 +1873,32 @@ calling Log::Log4perl->init():
         log4perl.appender.File.layout = SimpleLayout
     });
 
+=head2 Using Log4perl in an END block causes a problem!
+
+It's not easy to get to this error, but if you write something like
+
+    END { Log::Log4perl::get_logger()->debug("Hey there."); }
+
+    use Log::Log4perl qw(:easy);
+    Log::Log4perl->easy_init($DEBUG);
+
+it won't work. The reason is that C<Log::Log4perl> defines an
+END block that cleans up all loggers. And perl will run END blocks
+in the reverse order as they're encountered in the compile phase,
+so in the scenario above, the END block will run I<after> Log4perl
+has cleaned up its loggers.
+
+Placing END blocks using Log4perl I<after>
+a C<use Log::Log4perl> statement fixes the problem:
+
+    use Log::Log4perl qw(:easy);
+    Log::Log4perl->easy_init($DEBUG);
+
+    END { Log::Log4perl::get_logger()->debug("Hey there."); }
+
+In this scenario, the shown END block is executed I<before> Log4perl
+cleans up and the debug message will be processed properly.
+
 =cut
 
 =head1 SEE ALSO
