@@ -484,7 +484,7 @@ Log::Log4perl - Log4j implementation for Perl
        
 =head1 ABSTRACT
 
-    Log::Log4perl provides a powerful logging API to your application
+    Log::Log4perl provides a powerful logging API for your application
 
 =head1 DESCRIPTION
 
