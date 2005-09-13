@@ -44,7 +44,7 @@ SYNOPSIS
         ######################################################
        
 ABSTRACT
-        Log::Log4perl provides a powerful logging API to your application
+        Log::Log4perl provides a powerful logging API for your application
 
 DESCRIPTION
     Log::Log4perl lets you remote-control and fine-tune the logging
@@ -1332,6 +1332,14 @@ Cool Tricks
     scenes. Also the keywords "STDOUT" and "STDERR" (no ">" or ">>") are
     recognized, which will utilize and configure
     "Log::Log4perl::Appender::Screen" appropriately.
+
+    If a file appender receives Unicode strings, use
+
+        file => ":utf8> test.log"
+
+    to establish a utf8 line discpline on the file, otherwise you'll get a
+    'wide character in print' warning message and probably not what you'd
+    expect as output.
 
     The stealth loggers can be used in different packages, you just need to
     make sure you're calling the "use" function in every package you're
