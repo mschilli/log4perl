@@ -114,6 +114,7 @@ t/048lwp.t
 t/049Unhide.t
 t/050Buffer.t
 t/051Extra.t
+t/052Utf8.t
 t/compare.pl
 t/deeper1.expected
 t/deeper6.expected
