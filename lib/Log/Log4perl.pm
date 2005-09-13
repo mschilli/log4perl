@@ -302,13 +302,20 @@ sub easy_init { # Initialize the root logger with a screen appender
             $app = Log::Log4perl::Appender->new(
                 "Log::Log4perl::Appender::Screen",
                 stderr => 0);
-        } elsif($logger->{file} =~ /^(>)?(>)?/) {
+        } else {
+            my $binmode;
+            if($logger->{file} =~ s/^(:.*?)>/>/) {
+                $binmode = $1;
+            }
+            $logger->{file} =~ /^(>)?(>)?/;
             my $mode = ($2 ? "append" : "write");
-            $logger->{file} =~ s/>+//g;
+            $logger->{file} =~ s/.*>+//g;
             $app = Log::Log4perl::Appender->new(
                 "Log::Log4perl::Appender::File",
                 filename => $logger->{file},
-                mode     => $mode);
+                mode     => $mode,
+                binmode  => $binmode,
+            );
         }
 
         my $layout = Log::Log4perl::Layout::PatternLayout->new(
@@ -1867,6 +1874,14 @@ cause C<Log::Log4perl::Appender::File> appenders to be created behind
 the scenes. Also the keywords C<STDOUT> and C<STDERR> (no C<E<gt>> or
 C<E<gt>E<gt>>) are recognized, which will utilize and configure
 C<Log::Log4perl::Appender::Screen> appropriately.
+
+If a file appender receives Unicode strings, use
+
+    file => ":utf8> test.log"
+
+to establish a utf8 line discpline on the file, otherwise you'll get
+a 'wide character in print' warning message and probably not what
+you'd expect as output.
 
 The stealth loggers can be used in different packages, you just need to make
 sure you're calling the "use" function in every package you're using

@@ -15,6 +15,8 @@ sub new {
         umask     => undef,
         autoflush => 1,
         mode      => "append",
+        binmode   => undef,
+        utf8      => undef,
         @options,
     };
 
@@ -68,6 +70,14 @@ sub file_open {
         $| = 1; 
         select $oldfh;
     }
+
+    if (defined $self->{binmode}) {
+        binmode $self->{fh}, $self->{binmode};
+    }
+
+    if (defined $self->{utf8}) {
+        binmode $self->{fh}, ":utf8";
+    }
 }
 
 ##################################################
@@ -85,7 +95,7 @@ sub file_switch {
 
     $self->file_close();
     $self->{filename} = $new_filename;
-    $self->file_open($new_filename);
+    $self->file_open();
 }
 
 ##################################################
@@ -173,6 +183,31 @@ If set to C<0222> (default), new
 files will be created with C<rw-r--r--> permissions.
 If set to C<0000>, new files will be created with C<rw-rw-rw-> permissions.
 
+=item utf8
+
+If you're printing out Unicode strings, the output filehandle needs
+to be set into C<:utf8> mode:
+
+    my $app = Log::Log4perl::Appender::File->new(
+      filename  => 'file.log',
+      mode      => 'append',
+      utf8      => 1,
+    );
+
+=item binmode
+
+To manipulate the output filehandle via C<binmode()>, use the
+binmode parameter:
+
+    my $app = Log::Log4perl::Appender::File->new(
+      filename  => 'file.log',
+      mode      => 'append',
+      binmode   => ":utf8",
+    );
+
+A setting of ":utf8" for C<binmode> is equivalent to specifying
+the C<utf8> option (see above).
+
 =back
 
 Design and implementation of this module has been greatly inspired by
@@ -180,6 +215,6 @@ Dave Rolsky's C<Log::Dispatch> appender framework.
 
 =head1 AUTHOR
 
-Mike Schilli <log4perl@perlmeister.com>, 2003
+Mike Schilli <log4perl@perlmeister.com>, 2003, 2005
 
 =cut
