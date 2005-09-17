@@ -1,6 +1,6 @@
 #testing user-defined conversion specifiers (cspec)
 
-use Test;
+use Test::More;
 use Log::Log4perl;
 use Log::Log4perl::Appender::TestBuffer;
 use File::Spec;
@@ -71,43 +71,43 @@ my $plantbuffer = Log::Log4perl::Appender::TestBuffer->by_name("appndr1");
 my $animalbuffer = Log::Log4perl::Appender::TestBuffer->by_name("appndr2");
 
 $plant->fatal('blah blah blah --- plant --- yadda yadda');
-ok($plantbuffer->buffer(), "$hexpid xx thisistheGcspec UID $uid GID $gid");
+is($plantbuffer->buffer(), "$hexpid xx thisistheGcspec UID $uid GID $gid");
 $plantbuffer->reset;
 
 $animal->fatal('blah blah blah --- animal --- yadda yadda');
-ok($animalbuffer->buffer(), "Fatal-animal-Fatal foobar");
+is($animalbuffer->buffer(), "Fatal-animal-Fatal foobar");
 $animalbuffer->reset;
 
 $plant->error('blah blah blah --- plant --- yadda yadda');
-ok($plantbuffer->buffer(), "$hexpid xx thisistheGcspec UID $uid GID $gid");
+is($plantbuffer->buffer(), "$hexpid xx thisistheGcspec UID $uid GID $gid");
 $plantbuffer->reset;
 
 $animal->error('blah blah blah --- animal --- yadda yadda');
-ok($animalbuffer->buffer(), "Error-animal-Error foobar");
+is($animalbuffer->buffer(), "Error-animal-Error foobar");
 $animalbuffer->reset;
 
 $plant->warn('blah blah blah --- plant --- yadda yadda');
-ok($plantbuffer->buffer(), "$hexpid xx thisistheGcspec UID $uid GID $gid");
+is($plantbuffer->buffer(), "$hexpid xx thisistheGcspec UID $uid GID $gid");
 $plantbuffer->reset;
 
 $animal->warn('blah blah blah --- animal --- yadda yadda');
-ok($animalbuffer->buffer(), "Warn-animal-Warn foobar");
+is($animalbuffer->buffer(), "Warn-animal-Warn foobar");
 $animalbuffer->reset;
 
 $plant->info('blah blah blah --- plant --- yadda yadda');
-ok($plantbuffer->buffer(), "$hexpid xx thisistheGcspec UID $uid GID $gid");
+is($plantbuffer->buffer(), "$hexpid xx thisistheGcspec UID $uid GID $gid");
 $plantbuffer->reset;
 
 $animal->info('blah blah blah --- animal --- yadda yadda');
-ok($animalbuffer->buffer(), "Info-animal-Info foobar");
+is($animalbuffer->buffer(), "Info-animal-Info foobar");
 $animalbuffer->reset;
 
 $plant->debug('blah blah blah --- plant --- yadda yadda'); 
-ok($plantbuffer->buffer(), "$hexpid xx thisistheGcspec UID $uid GID $gid");
+is($plantbuffer->buffer(), "$hexpid xx thisistheGcspec UID $uid GID $gid");
 $plantbuffer->reset;
 
 $animal->debug('blah blah blah --- animal --- yadda yadda'); 
-ok($animalbuffer->buffer(), "Debug-animal-Debug foobar");
+is($animalbuffer->buffer(), "Debug-animal-Debug foobar");
 $animalbuffer->reset;
 
 
@@ -126,7 +126,7 @@ my $layout = Log::Log4perl::Layout::PatternLayout->new(
 $app->layout($layout);
 $logger->debug("That's the message");
 
-ok($app->buffer(), "That's the message zzzzzzzz");
+is($app->buffer(), "That's the message zzzzzzzz");
 
 ###########################################################
 #testing perl code snippets in Log4perl configuration files
@@ -163,7 +163,7 @@ my $buffer = Log::Log4perl::Appender::TestBuffer->by_name("appndr");
 
 #print "Testbuffer: ", $buffer->buffer(), "\n";
 
-ok($buffer->buffer(), "log_message env_value\nlog_message2 env_value2\n");
+is($buffer->buffer(), "log_message env_value\nlog_message2 env_value2\n");
 
 ###########################################################
 #testing perl code snippets with ALLOW_CODE_IN_CONFIG_FILE 
@@ -247,6 +247,6 @@ $some->debug("blah");
 
 my $somebuffer = Log::Log4perl::Appender::TestBuffer->by_name("appndr");
 
-ok($somebuffer->buffer(), File::Spec->catfile("t", "033UsrCspec.t") . " blah \n");
+like($somebuffer->buffer(), qr/033UsrCspec.t blah/);
 
 BEGIN { plan tests => 15, }

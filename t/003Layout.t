@@ -9,7 +9,7 @@ use strict;
 #########################
 # change 'tests => 1' to 'tests => last_test_to_print';
 #########################
-use Test;
+use Test::More;
 BEGIN { plan tests => 20 };
 
 use Log::Log4perl;
@@ -31,7 +31,7 @@ my $layout = Log::Log4perl::Layout::PatternLayout->new(
 $app->layout($layout);
 $logger->debug("That's the message");
 
-ok($app->buffer(), "bugo % def.ghi " . 
+is($app->buffer(), "bugo % def.ghi " . 
                    File::Spec->catfile(qw(t 003Layout.t)) .
                    "     32 hugo"); 
 
@@ -44,7 +44,7 @@ $layout = Log::Log4perl::Layout::PatternLayout->new(
 $app->layout($layout);
 $logger->debug("That's the message");
 
-ok($app->buffer(), "The message is here: That's the message"); 
+is($app->buffer(), "The message is here: That's the message"); 
 
 ############################################################
 # Log the time
@@ -54,7 +54,7 @@ $layout = Log::Log4perl::Layout::PatternLayout->new("[%r] %m");
 $app->layout($layout);
 $logger->debug("That's the message");
 
-ok($app->buffer() =~ /^\[\d+\] That's the message$/); 
+like($app->buffer(), qr/^\[\d+\] That's the message$/); 
 
 ############################################################
 # Log the date/time
@@ -64,8 +64,8 @@ $layout = Log::Log4perl::Layout::PatternLayout->new("%d> %m");
 $app->layout($layout);
 $logger->debug("That's the message");
 
-ok($app->buffer(), 
-   'm#^\d{4}/\d\d/\d\d \d\d:\d\d:\d\d> That\'s the message$#'); 
+like($app->buffer(), 
+   qr#^\d{4}/\d\d/\d\d \d\d:\d\d:\d\d> That\'s the message$#); 
 
 ############################################################
 # Log the date/time with own timer function
@@ -80,7 +80,7 @@ $layout = Log::Log4perl::Layout::PatternLayout->new(
   { time_function => \&mytimer1 }, "%d{MM/yyyy}> %m");
 $app->layout($layout);
 $logger->debug("That's the message");
-ok($app->buffer(), 'm#01/1970#'); 
+like($app->buffer(), qr{01/1970}); 
 
 ############################################################
 # Check SimpleLayout
@@ -90,7 +90,7 @@ $layout = Log::Log4perl::Layout::SimpleLayout->new();
 $app->layout($layout);
 $logger->debug("That's the message");
 
-ok($app->buffer(), "DEBUG - That\'s the message\n"); 
+is($app->buffer(), "DEBUG - That\'s the message\n"); 
 
 ############################################################
 # Check depth level of %M - with debug(...)
@@ -104,7 +104,7 @@ sub mysubroutine {
 }
 
 mysubroutine();
-ok($app->buffer(), 'main::mysubroutine: That\'s the message'); 
+is($app->buffer(), 'main::mysubroutine: That\'s the message'); 
 
 ############################################################
 # Check depth level of %M - with debug(...)
@@ -115,7 +115,7 @@ $layout = Log::Log4perl::Layout::PatternLayout->new("%M: %m");
 $app->layout($layout);
 $logger->debug("That's the message");
 
-ok($app->buffer(), 'main::: That\'s the message'); 
+is($app->buffer(), 'main::: That\'s the message'); 
 
 ############################################################
 # Check Filename and Line #
@@ -125,8 +125,7 @@ $layout = Log::Log4perl::Layout::PatternLayout->new("%F-%L %m");
 $app->layout($layout);
 $logger->debug("That's the message");
 
-ok($app->buffer(), File::Spec->catfile(qw(t 003Layout.t)) .
-                   "-126 That's the message"); 
+like($app->buffer(), qr/003Layout.t-126 That's the message/); 
 
 ############################################################
 # Don't append a newline if the message already contains one
@@ -136,7 +135,7 @@ $layout = Log::Log4perl::Layout::PatternLayout->new("%m%n");
 $app->layout($layout);
 $logger->debug("That's the message\n");
 
-ok($app->buffer(), "That\'s the message\n");
+is($app->buffer(), "That\'s the message\n");
 
 ############################################################
 # But don't suppress other %ns
@@ -146,7 +145,7 @@ $layout = Log::Log4perl::Layout::PatternLayout->new("a%nb%n%m%n");
 $app->layout($layout);
 $logger->debug("That's the message\n");
 
-ok($app->buffer(), "a\nb\nThat\'s the message\n");
+is($app->buffer(), "a\nb\nThat\'s the message\n");
 
 ############################################################
 # Test if the process ID works
@@ -156,7 +155,7 @@ $layout = Log::Log4perl::Layout::PatternLayout->new("%P:%m");
 $app->layout($layout);
 $logger->debug("That's the message\n");
 
-ok($app->buffer() =~ /^\d+:That's the message$/);
+like($app->buffer(), qr/^\d+:That's the message$/);
 
 ############################################################
 # Test if the hostname placeholder %H works
@@ -166,7 +165,7 @@ $layout = Log::Log4perl::Layout::PatternLayout->new("%H:%m");
 $app->layout($layout);
 $logger->debug("That's the message\n");
 
-ok($app->buffer() =~ /^[^:]+:That's the message$/);
+like($app->buffer(), qr/^[^:]+:That's the message$/);
 
 ############################################################
 # Test max width in the format specifiers
@@ -176,19 +175,19 @@ $app->buffer("");
 $layout = Log::Log4perl::Layout::PatternLayout->new("%5.5m");
 $app->layout($layout);
 $logger->debug("123");
-ok($app->buffer(), '  123');
+is($app->buffer(), '  123');
 
 #max width
 $app->buffer("");
 $logger->debug("1234567");
-ok($app->buffer(), '12345');
+is($app->buffer(), '12345');
 
 #left justify
 $app->buffer("");
 $layout = Log::Log4perl::Layout::PatternLayout->new("%-5.5m");
 $app->layout($layout);
 $logger->debug("123");
-ok($app->buffer(), '123  ');
+is($app->buffer(), '123  ');
 
 ############################################################
 # Check depth level of %M - with eval {...}
@@ -203,7 +202,7 @@ sub foo {
     };
 }
 foo();
-ok($app->buffer(), 'main::foo: Thats the message'); 
+is($app->buffer(), 'main::foo: Thats the message'); 
 
 ############################################################
 # Check two levels of %M - with eval {...}
@@ -220,7 +219,7 @@ sub foo2 {
     };
 }
 foo2();
-ok($app->buffer(), 'main::foo2: Thats the message'); 
+is($app->buffer(), 'main::foo2: Thats the message'); 
 
 ############################################################
 # Check depth level of %M - with eval {...}
@@ -232,4 +231,4 @@ $app->layout($layout);
 eval {
     $logger->debug("Thats the message");
 };
-ok($app->buffer(), 'main::: Thats the message'); 
+is($app->buffer(), 'main::: Thats the message'); 
