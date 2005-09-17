@@ -54,14 +54,14 @@ $buf->buffer("");
 LOGCARP("logcarp");
 
 is(readstderr(), "", "No output to stderr");
-like($buf->buffer(), qr/logcarp.*45/, "Appender output intact");
+like($buf->buffer(), qr/logcarp.*54/, "Appender output intact");
 
 $buf->buffer("");
 
 LOGCARP("logcarp");
 
 is(readstderr(), "", "No output to stderr");
-like($buf->buffer(), qr/logcarp.*52/, "Appender output intact");
+like($buf->buffer(), qr/logcarp.*61/, "Appender output intact");
 
 #########################################################################
 # Turn default behaviour back on
@@ -78,13 +78,13 @@ package main;
 
 Foo::foo();
 
-like(readstderr(), qr/logcarp.*70/, "Output to stderr");
-like($buf->buffer(), qr/logcarp.*70/, "Appender output intact");
+like(readstderr(), qr/logcarp.*79/, "Output to stderr");
+like($buf->buffer(), qr/logcarp.*79/, "Appender output intact");
 
 $buf->buffer("");
 eval {
     LOGDIE("logdie");
 };
-like($@, qr/logdie.*77/, "Output to stderr");
+like($@, qr/logdie.*86/, "Output to stderr");
 like($buf->buffer(), qr/logdie/, "Appender output intact");
 

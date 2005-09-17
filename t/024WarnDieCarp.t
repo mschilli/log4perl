@@ -147,7 +147,7 @@ eval { $logger->logdie("Log and die!"); };
 my $app0 = Log::Log4perl::Appender::TestBuffer->by_name("A1");
 # print "Buffer: ", $app0->buffer(), "\n";
 
-like($app0->buffer(), qr/024WarnDieCarp.t-137: Log and die!/,
+like($app0->buffer(), qr/024WarnDieCarp.t-145: Log and die!/,
    "%F-%L adjustment");
 
 ######################################################################
@@ -170,13 +170,13 @@ sub bar {
 package main;
 eval { Weirdo::foo(); };
 
-like($app0->buffer(), qr/163/,
+like($app0->buffer(), qr/171/,
    "Check logcroak/Carp");
 
 $app0->buffer("");
 eval { Weirdo::bar(); };
 
-like($app0->buffer(), qr/159/,
+like($app0->buffer(), qr/167/,
    "Check logdie");
 
 ######################################################################
@@ -200,5 +200,5 @@ sub bar {
 package main;
 eval { Bar::bar(); };
 
-like($app0->buffer(), qr/189/,
+like($app0->buffer(), qr/197/,
    "Check logcarp");

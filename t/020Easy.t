@@ -94,7 +94,7 @@ open FILE, "<$TMP_FILE" or die "Cannot open $TMP_FILE";
 my $data = join '', <FILE>;
 close FILE;
 
-is($data, "020Easy.t-67-Bar::Mars::crunch: Mars mjam\nTwix mjam\n");
+is($data, "020Easy.t-73-Bar::Mars::crunch: Mars mjam\nTwix mjam\n");
 
 ############################################################
 # LOGDIE and LOGWARN
@@ -108,7 +108,7 @@ Log::Log4perl->easy_init($INFO);
 $log = get_logger();
 eval { LOGDIE("logdie"); };
 
-like($@, qr/logdie at .*?020Easy.t line 103/);
+like($@, qr/logdie at .*?020Easy.t line 109/);
 like(readstderr(), qr/^[\d:\/ ]+logdie$/m);
 
 LOGWARN("logwarn");
@@ -180,8 +180,8 @@ Log::Log4perl->easy_init($INFO);
 $log = get_logger();
 eval { Whack::whack() };
 
-like($@, qr/logcroak in whack at .*?020Easy.t line 175/);
-like(readstderr(), qr/^[\d:\/ ]+logcroak in whack.*175/m);
+like($@, qr/logcroak in whack at .*?020Easy.t line 181/);
+like(readstderr(), qr/^[\d:\/ ]+logcroak in whack.*181/m);
 
 package Junk1;
 use Log::Log4perl qw(:easy);
@@ -194,7 +194,7 @@ sub foo {
 }
 package main;
 Junk2::foo();
-like(readstderr(), qr/LOGCARP.*020Easy.t line 187/);
+like(readstderr(), qr/LOGCARP.*020Easy.t line 193/);
 
 ############################################################
 # Finally close
