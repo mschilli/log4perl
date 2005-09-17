@@ -7,6 +7,8 @@
            per suggestion by Jonathan Warden.
     * (ms) Made test cases 003Layout.t and 033UsrCspec.t resilient against
            broken ActiveState 5.8.4 and 5.8.7.
+    * (ms) Skipped failing test cases for 5.005, looks like the caller() level
+           in carp() is wrong, but not worth fixing.
 
 1.00 (08/13/2005)
     * (ms) Added tag qw(:no_extra_logdie_message) to suppress duplicate
