@@ -17,10 +17,18 @@
 use warnings;
 use strict;
 
-use Test::More tests => 53;
+use Test::More;
 use Log::Log4perl qw(get_logger);
 use Log::Log4perl::Level;
 use File::Spec;
+
+BEGIN {
+    if ($] < 5.006) {
+        plan skip_all => "Only with perl >= 5.006";
+    } else {
+        plan tests => 53;
+    }
+}
 
 my $warnstr;
 

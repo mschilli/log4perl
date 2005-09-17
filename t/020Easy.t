@@ -18,7 +18,13 @@ unless (-e "$WORK_DIR"){
 my $TMP_FILE = File::Spec->catfile(qw(t tmp easy));
 $TMP_FILE = "tmp/easy" if ! -d "t";
 
-BEGIN { plan tests => 20 }
+BEGIN {
+    if ($] < 5.006) {
+        plan skip_all => "Only with perl >= 5.006";
+    } else {
+        plan tests => 20;
+    }
+}
 
 END   { unlink $TMP_FILE;
         close IN;

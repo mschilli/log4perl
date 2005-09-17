@@ -7,7 +7,16 @@ use warnings;
 use strict;
 
 use Log::Log4perl qw(:easy :no_extra_logdie_message);
-use Test::More tests => 9;
+use Test::More;
+
+BEGIN {
+    if ($] < 5.006) {
+        plan skip_all => "Only with perl >= 5.006";
+    } else {
+        plan tests => 9;
+    }
+}
+
 use Log::Log4perl::Appender::TestBuffer;
 
 is($Log::Log4perl::LOGDIE_MESSAGE_ON_STDERR, 0, "internal variable set");
