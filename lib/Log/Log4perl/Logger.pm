@@ -381,6 +381,12 @@ sub generate_watch_code {
             Log::Log4perl->init_and_watch();
                        
             my \$methodname = lc(\$level);
+
+                # Bump up the caller level by two, since
+                # we've artifically introduced additional levels.
+            local(\$Log::Log4perl::caller_depth);
+            \$Log::Log4perl::caller_depth += 2;
+
             \$logger->\$methodname(\@_); # send the message
                                          # to the new configuration
             return;        #and return, we're done with this incarnation

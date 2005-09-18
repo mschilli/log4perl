@@ -7,7 +7,7 @@ use Test::More;
 use warnings;
 use strict;
 
-use Log::Log4perl;
+use Log::Log4perl qw(:easy);
 use Log::Log4perl::Appender::TestBuffer;
 use File::Spec;
 
@@ -22,6 +22,7 @@ unless (-e "$WORK_DIR"){
 my $testconf= File::Spec->catfile($WORK_DIR, "test27.conf");
 unlink $testconf if (-e $testconf);
 
+#goto NEW;
 Log::Log4perl::Appender::TestBuffer->reset();
 
 my $conf1 = <<EOL;
@@ -90,7 +91,7 @@ ok(  $logger->is_warn(),  "is_warn - true");
 ok(  $logger->is_error(), "is_error - true");
 ok(  $logger->is_fatal(), "is_fatal - true");
 
-#now the logger is ruled by root's WARN level
+#now the logger is ruled by root/s WARN level
 $logger->debug('debug message, should NOT appear');
 
 my $app1 = Log::Log4perl::Appender::TestBuffer->by_name("myAppender");
@@ -116,5 +117,56 @@ $logger->info('warning message to cat, should appear');
 
 like($app1->buffer(), qr/(WARN - warning message, should appear\n){2}INFO - warning message to cat, should appear/, "message output");
 
-BEGIN {plan tests => 15};
+NEW:
+############################################################################
+# This was a bug in L4p 1.01: After init_and_watch() caused a re-init,
+# filename/linenumber were referring to 'eval', not the actual file
+# name/line number of the message.
+
+conf_file_write();
+Log::Log4perl->init_and_watch($testconf, 1);
+
+
+DEBUG("first");
+  my $buf = Log::Log4perl::Appender::TestBuffer->by_name("Testbuffer");
+  like($buf->buffer(), qr/027Watch2.t 130> first/, 
+       "init-and-watch caller level");
+  $buf->buffer("");
+
+conf_file_write();
+sleep(1);
+DEBUG("second");
+  $buf = Log::Log4perl::Appender::TestBuffer->by_name("Testbuffer");
+  like($buf->buffer(), qr/027Watch2.t 138> second/,
+       "init-and-watch caller level");
+  $buf->buffer("");
+
+conf_file_write();
+sleep(1);
+DEBUG("third");
+  $buf = Log::Log4perl::Appender::TestBuffer->by_name("Testbuffer");
+  like($buf->buffer(), qr/027Watch2.t 146> third/,
+       "init-and-watch caller level");
+  $buf->buffer("");
+
+DEBUG("fourth");
+  $buf = Log::Log4perl::Appender::TestBuffer->by_name("Testbuffer");
+  like($buf->buffer(), qr/027Watch2.t 152> fourth/,
+       "init-and-watch caller level");
+  $buf->buffer("");
+
+###########################################
+sub conf_file_write {
+###########################################
+    open FILE, ">$testconf" or die $!;
+    print FILE <<EOT;
+log4perl.category.main = DEBUG, Testbuffer
+log4perl.appender.Testbuffer        = Log::Log4perl::Appender::TestBuffer
+log4perl.appender.Testbuffer.layout = Log::Log4perl::Layout::PatternLayout
+log4perl.appender.Testbuffer.layout.ConversionPattern = %d %F{1} %L> %m %n
+EOT
+    close FILE;
+}
+
+BEGIN {plan tests => 19};
 unlink $testconf;

@@ -9,6 +9,9 @@
            broken ActiveState 5.8.4 and 5.8.7.
     * (ms) Skipped failing test cases for 5.005, looks like the caller() level
            in carp() is wrong, but not worth fixing.
+    * (ms) Fixed the bug with the caller level of the first 
+           log message sent after init_and_watch() detected a change. Added
+           test case to 027Watch2.t.
 
 1.00 (08/13/2005)
     * (ms) Added tag qw(:no_extra_logdie_message) to suppress duplicate
