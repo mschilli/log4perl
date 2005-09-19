@@ -1899,6 +1899,60 @@ a C<use Log::Log4perl> statement fixes the problem:
 In this scenario, the shown END block is executed I<before> Log4perl
 cleans up and the debug message will be processed properly.
 
+=head2 Help! My appender is throwing a "Wide character in print" warning!
+
+This warning shows up when Unicode strings are printed without
+precautions. The warning goes away if the complaining appender is
+set to utf-8 mode:
+
+      # Either in the log4perl configuration file:
+  log4perl.appender.Logfile.filename = test.log
+  log4perl.appender.Logfile.utf8     = 1
+
+      # Or, in easy mode:
+  Log::Log4perl->easy_init( {
+    level => $DEBUG,
+    file  => ":utf8> test.log" 
+  } );
+
+If the complaining appender is a screen appender, C<binmode> does the trick:
+
+      # Either STDOUT ...
+    binmode(STDOUT, ":utf8);
+
+      # ... or STDERR.
+    binmode(STDERR, ":utf8);
+
+Some background on this: Perl's strings are either byte strings or
+Unicode strings. C<"Mike"> is a byte string.
+C<"\x{30DE}\x{30A4}\x{30AF}"> is a Unicode string. Unicode strings are
+marked specially and are UTF-8 encoded internally. 
+
+If you print a byte string to STDOUT,
+all is well, because STDOUT is by default set to byte mode. However,
+if you print a Unicode string to STDOUT without precautions, C<perl>
+will try to transform the Unicode string back to a byte string before
+printing it out. This is troublesome if the Unicode string contains
+'wide' characters which can't be represented in Latin-1.
+
+For example, if you create a Unicode string with three japanese Katakana
+characters as in
+
+    perl -le 'print "\x{30DE}\x{30A4}\x{30AF}"'
+
+(coincidentally pronounced Ma-i-ku, the japanese pronounciation of 
+"Mike"), STDOUT is in byte mode and the warning
+
+    Wide character in print at ./script.pl line 14.
+
+appears. Setting STDOUT to UTF-8 mode as in
+
+    perl -le 'binmode(STDOUT, ":utf8"); print "\x{30DE}\x{30A4}\x{30AF}"'
+
+will silently print the Unicode string to STDOUT in UTF-8. To see the 
+characters printed, you'll need a UTF-8 terminal with a font including
+japanese Katakana characters.
+
 =cut
 
 =head1 SEE ALSO
