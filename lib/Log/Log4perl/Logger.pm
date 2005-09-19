@@ -335,14 +335,13 @@ sub generate_is_xxx_coderef {
 ##################################################
     my($return_token) = @_;
 
-    my $coderef    = '';
-    my $watch_code = '';
+    my $coderef    = sub { $return_token };
 
     if (defined $Log::Log4perl::Config::WATCHER) {
 
         my $cond = generate_watch_conditional();
 
-        $watch_code = <<EOL;
+        my $watch_code = <<EOL;
         my(\$logger, \$subname) = \@_;
         if($cond) {
             Log::Log4perl->init_and_watch();
@@ -350,13 +349,13 @@ sub generate_is_xxx_coderef {
             return \$logger->\$subname();
         }
 EOL
-    }
 
-    my $code = <<EOL;
-    \$coderef = sub { $watch_code return $return_token; };
+        my $code = <<EOL;
+        \$coderef = sub { $watch_code return $return_token; };
 EOL
 
-    eval $code or die "$@";
+        eval $code or die "$@";
+    }
 
     return $coderef;
 }

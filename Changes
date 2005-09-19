@@ -13,6 +13,8 @@
            log message sent after init_and_watch() detected a change. Added
            test case to 027Watch2.t.
     * (ms) Added FAQ on UTF-8.
+    * (ms) Applied patch by David Britton, improving performance during
+           the init() call.
 
 1.00 (08/13/2005)
     * (ms) Added tag qw(:no_extra_logdie_message) to suppress duplicate
