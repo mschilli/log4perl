@@ -48,7 +48,7 @@ open FILE, "<$LOGFILE" or die "Cannot open $LOGFILE";
 my $data = join '', <FILE>;
 close FILE;
 
-my $file = File::Spec->catfile(qw(t 006Config-Java.t));
+my $file = "t/006Config-Java.t";
 
 my $exp = <<EOT;
 $file 41 DEBUG N/A  - Gurgel
