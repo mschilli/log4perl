@@ -7,8 +7,6 @@ use Test::More;
 
 use Log::Log4perl;
 
-our $no_DBD;
-
 BEGIN {
     eval {
         require DBD::CSV;
