@@ -15,6 +15,8 @@
     * (ms) Added FAQ on UTF-8.
     * (ms) Applied patch by David Britton, improving performance during
            the init() call.
+    * (ms) Fixed bug https://rt.cpan.org/Ticket/Display.html?id=14776
+           to prevent it from modifying $_. Thanks to Steffen Winkler.
 
 1.00 (08/13/2005)
     * (ms) Added tag qw(:no_extra_logdie_message) to suppress duplicate
