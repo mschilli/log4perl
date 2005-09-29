@@ -27,7 +27,7 @@ sub parse {
     my %var_subst = ();
 
     while (@$text) {
-        $_ = shift @$text;
+        local $_ = shift @$text;
         s/^\s*#.*//;
         next unless /\S/;
     
