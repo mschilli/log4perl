@@ -2,7 +2,7 @@
  Revision history for Log::Log4perl
 ##################################################
 
-1.01 (09/12/2005)
+1.01 (09/29/2005)
     * (ms) Added 'utf8' and 'binmode' flags to Log::Log4perl::Appender::File
            per suggestion by Jonathan Warden.
     * (ms) Made test cases 003Layout.t and 033UsrCspec.t resilient against
