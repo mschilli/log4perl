@@ -58,5 +58,8 @@ $file 44 ERROR N/A  - Gurgel
 $file 45 FATAL N/A  - Gurgel
 EOT
 
+    # Adapt Win32 paths
+$data =~ s#\\#/#g;
+
 unlink $LOGFILE;
 is($data, "$exp");
