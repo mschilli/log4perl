@@ -1503,7 +1503,7 @@ XMLSocketReceiver:
   my $app = Log::Log4perl::appenders->{"Appender"};
   $app->layout()->{enc_set} = 1;
 
-  my $logger = get_logger("Bar");
+  my $logger = get_logger("Bar.Twix");
   $logger->error("One");
 
 The nasty hack shown in the code snippet above is currently (October 2003) 
