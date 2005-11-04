@@ -4,6 +4,7 @@
 
 1.02 2005/10/08
     * (ms) Adapted t/006Config-Java.t to cope with Win32 path separators
+    * (ms) Corrected typo in Chainsaw FAQ, reported by Bernd Dirksen.
 
 1.01 (09/29/2005)
     * (ms) Added 'utf8' and 'binmode' flags to Log::Log4perl::Appender::File
