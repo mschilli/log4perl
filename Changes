@@ -2,7 +2,12 @@
  Revision history for Log::Log4perl
 ##################################################
 
-1.02 2005/10/08
+1.03 (not yet released)
+    *  Brian Edwards noticed that (Screen, File) were missing 
+       a base class statement, causing $logger->add_appender to 
+       fail. Fixed with test case.
+
+1.02 (2005/10/08)
     * (ms) Adapted t/006Config-Java.t to cope with Win32 path separators
     * (ms) Corrected typo in Chainsaw FAQ, reported by Bernd Dirksen.
 

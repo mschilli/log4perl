@@ -2,6 +2,8 @@
 package Log::Log4perl::Appender::File;
 ##################################################
 
+our @ISA = qw(Log::Log4perl::Appender);
+
 use warnings;
 use strict;
 

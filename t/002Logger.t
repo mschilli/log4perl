@@ -10,7 +10,7 @@ use strict;
 
 #########################
 # used Test::Simple to help debug the test script
-use Test::More tests => 66;
+use Test::More tests => 68;
 
 use Log::Log4perl;
 use Log::Log4perl::Level;
@@ -311,7 +311,7 @@ EOT
 our $stub_hook;
 
 # -----------------------------------
-# here's a stub
+# here/s a stub
 package Log::Log4perl::AppenderTester;
 sub new {
     my($class, %params) = @_;
@@ -353,4 +353,25 @@ for(sort keys %$href) {
     $result .= "$_ => " . ref($href->{$_}->{appender});
 }
 
-like($result, qr/(app\d+.*?Log::Log4perl::Appender::TestBuffer){3}/);
+like($result, qr/(app\d+.*?Log::Log4perl::Appender::TestBuffer){3}/, 
+     "all appenders");
+
+
+##################################################
+# Bug reported by Brian Edwards: add_appender()
+# with screen/file appender fails because of missing
+# base class declaration
+##################################################
+my $log10 = Log::Log4perl->get_logger("xxx.yyy.zzz");
+
+use Log::Log4perl::Appender::Screen;
+use Log::Log4perl::Appender::File;
+
+my $app_screen = Log::Log4perl::Appender::Screen->new();
+my $app_file = Log::Log4perl::Appender::File->new(filename => "/tmp/foobar");
+
+eval { $log10->add_appender($app_file); };
+is($@, "", "Adding file appender");
+eval { $log10->add_appender($app_screen); };
+is($@, "", "Adding screen appender");
+
