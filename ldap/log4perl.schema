@@ -6,7 +6,7 @@
 #   put "include /path/to/this/file" in your slapd.conf
 # fedora-ds:
 #   run through migrate.pl
-#   rename to log4perl.ldif and copy to slapd-xxx/config/schema/
+#   rename to 99log4perl.ldif and copy to slapd-xxx/config/schema/
 #       
 
 objectidentifier priventerprise 1.3.6.1.4.1
