@@ -1,6 +1,13 @@
 #note, this is all experimental, work in progress
 #not meant to be used for ANYTHING yet --kg 5/2004
 
+#Usage:
+# openldap:
+#   put "include /path/to/this/file" in your slapd.conf
+# fedora-ds:
+#   run through migrate.pl
+#   rename to log4perl.ldif and copy to slapd-xxx/config/schema/
+#       
 
 objectidentifier priventerprise 1.3.6.1.4.1
 objectidentifier log4perl priventerprise:20422.1
@@ -8,96 +15,174 @@ objectidentifier myattrs log4perl:0
 objectidentifier myobjs log4perl:1
 objectidentifier syntaxes 1.3.6.1.4.1.1466.115.121.1
 objectidentifier OIDsyntax syntaxes:38
+objectidentifier ldapDN syntaxes:12
+objectidentifier ia5 syntaxes:26
+objectidentifier boolean syntaxes:7
+
+#http://www.zytrax.com/tech/ia5.html
+#IA5 or more properly now International Reference Alphabet No. 5 (IRA5) and 
+#previously International Alphabet No. 5 (ISO 646) is defined in 
+#ITU-T T.50 and is a 7-bit character code (but encoded as 8 bits). 
+#ASCII is the US implementation of IA5 - there are multiple 
+#other national versions.
+#
+#IA5 is almost the same as ASCII.  There are only two printable differences 
+#- currency (hex 24 - decimal 36) and Equivalence (tilde) (hex 7E - decimal 126). 
+#
+#Could also use
+#DirectoryString (OID=1.3.6.1.4.1.1466.115.121.1.15) 
+#UTF-8 encoding of ISO-10646-1 (Latin-1) - a variable byte encoding system that 
+#includes IA5/ASCII as a subset.  Allows matchingRules of caseIgnoreMatch 
+#and caseIgnoreSubstringsMatch.
+
 
 attributetype ( myattrs:1 NAME ('log4perlClass' 'log4jClass')
-	DESC 'classname'
-	EQUALITY caseExactIA5Match
-	SYNTAX syntaxes:26 SINGLE-VALUE )
+    DESC 'classname'
+    EQUALITY caseExactIA5Match
+    SYNTAX syntaxes:26 SINGLE-VALUE )
 
 attributetype ( myattrs:11 NAME ('log4perlLayoutClass' 'log4jLayoutClass')
-	DESC 'classname'
-	EQUALITY caseExactIA5Match
-	SYNTAX syntaxes:26 SINGLE-VALUE )
+    DESC 'classname'
+    EQUALITY caseExactIA5Match
+    SYNTAX ia5 SINGLE-VALUE )
 
 
 #attributetype ( myattrs:3 NAME ('log4perlLayout' 'log4jLayout')
-#	DESC 'dn to layout'
-#    EQUALITY distinguishedNameMatch
-#    SYNTAX syntaxes:12 SINGLE-VALUE)
+#   DESC 'dn to layout'
+#   EQUALITY distinguishedNameMatch
+#   SYNTAX ldapDN SINGLE-VALUE)
 
 
 attributetype ( myattrs:4 NAME ('log4perlConversionPattern' 'log4jConversionPattern')
-	DESC 'xxx'
-	EQUALITY caseExactIA5Match
-	SYNTAX syntaxes:26 SINGLE-VALUE )
+    DESC 'e.g. %t %p %m%n'
+    EQUALITY caseExactIA5Match
+    SYNTAX ia5 SINGLE-VALUE )
 
 attributetype ( myattrs:5 NAME 'log4perlfilename' 
-	DESC 'filename for FileAppender'
-	EQUALITY caseExactIA5Match
-	SYNTAX syntaxes:26 SINGLE-VALUE )
+    DESC 'filename for FileAppender'
+    EQUALITY caseExactIA5Match
+    SYNTAX ia5 SINGLE-VALUE )
 
 attributetype ( myattrs:6 NAME 'log4perlmode'
-	DESC 'for FileAppender: append (default), anything else clobbers'
-	EQUALITY caseExactIA5Match
-	SYNTAX syntaxes:26 SINGLE-VALUE )
+    DESC 'for FileAppender: append (default), anything else clobbers'
+    EQUALITY caseExactIA5Match
+    SYNTAX ia5 SINGLE-VALUE )
 
 attributetype ( myattrs:7 NAME 'log4perlautoflush'
-	DESC 'FALSE is default, else use TRUE'
-	EQUALITY booleanMatch
-	SYNTAX syntaxes:4 SINGLE-VALUE )
+    DESC 'FALSE is default, else use TRUE'
+    SYNTAX boolean SINGLE-VALUE )    
 
-attributetype ( myattrs:8 NAME 'log4perlParam'
-	DESC '1 is default, else use 0'
-	EQUALITY distinguishedNameMatch
-	SYNTAX syntaxes:12  )
+#attributetype ( myattrs:8 NAME 'log4perlParam'
+#   DESC '1 is default, else use 0'
+#   EQUALITY distinguishedNameMatch
+#   SYNTAX ldapDN  )
+#
+#attributetype ( myattrs:10 NAME 'log4perlvalue'
+#   DESC 'the value half of a name/value tuple'
+#   EQUALITY caseExactIA5Match
+#   SYNTAX ia5 SINGLE-VALUE )
 
-attributetype ( myattrs:10 NAME 'log4perlvalue'
-	DESC 'the value half of a name/value tuple'
-	EQUALITY caseExactIA5Match
-	SYNTAX syntaxes:26 SINGLE-VALUE )
+attributetype ( myattrs:9 NAME 'log4perlstderr'
+    DESC 'print to stderr or not'
+    SYNTAX boolean SINGLE-VALUE )
 
 
+attributetype ( myattrs:17 NAME 'log4perlCategoryName'
+    DESC 'e.g. foo.Bar.Twix'
+    SYNTAX ia5 SINGLE-VALUE )
+    
+attributetype ( myattrs:12 NAME 'log4perlLevel'
+    DESC 'logging level, INFO, DEBUG, etc'
+    SYNTAX ia5 SINGLE-VALUE )
+    
+attributetype ( myattrs:13 NAME 'log4perlAppenderName'
+    DESC 'name of the appender at this level of the DIT'
+    SYNTAX ia5 )
+    
+attributetype ( myattrs:14 NAME 'log4perlAppenderDN'
+    DESC 'if the appender is not at the same level of the DIT as the logger, then we use this to look it up'
+    SYNTAX ldapDN  )
+
+
+#could use nis.schema ipHostNumber,ipServicePort, but then
+#would need a translation scheme?
+attributetype ( myattrs:15 NAME 'log4perlPeerAddr'
+    DESC 'for the socket appender'
+    SYNTAX ia5 SINGLE-VALUE )
+
+attributetype ( myattrs:16 NAME 'log4perlPeerPort'
+    DESC 'for the socket appender'
+    SYNTAX ia5 SINGLE-VALUE )
 
 # Object Class Definitions
 
-                                    
-objectclass ( myobjs:4 NAME 'log4perlLayout' 
-    SUP top AUXILIARY
-	DESC 'A log4perl Layout'
-	MUST ( name $ log4perlLayoutClass )
-	)
+# Can have 1 or more appenders, names or DNs, but how to specify
+# that in this schema?
+# The name is used to look up an appender by name at this level of the DIT
+objectclass ( myobjs:11 NAME 'log4perlLogger' 'log4perlCategory'
+    DESC 'category/logger, e.g. log4perl.logger.Bar.Twix'
+    SUP top
+    STRUCTURAL
+    MUST (log4perlCategoryName $ log4perlLevel $ log4perlAppenderName )
+    MAY ( log4perlAppenderDN ) 
+)
 
-objectclass ( myobjs:5 NAME 'log4perlPatternLayout' 
-    SUP log4perlLayout AUXILIARY
-	DESC 'A log4perl PatternLayout'
-	MUST ( log4perlConversionPattern )
-	)
+
+#DESC **MUST*** be before SUP!
+#fedora-ds seems to ignore ABSTRACT, it has no problem instantiating an ABSTRACT class
+#could also have optional dn pointing to layout class
 
 objectclass ( myobjs:3 
     NAME 'log4perlAppender'   
-    SUP top 
-    STRUCTURAL
     DESC 'A log4perl Appender'
-    MUST ( name $ log4perlClass $ log4perlLayoutClass)
-    MAY ( log4perlParam )
+    SUP top 
+    ABSTRACT
+    MUST ( name $ log4perlClass )
     )
 
 objectclass ( myobjs:6
-    NAME 'log4perlFileAppender'
-    SUP top
-    AUXILIARY
-    DESC 'appends to a file'
-    MUST ( log4perlfilename $ log4perlmode 
-           $log4perlautoflush)
-    
+    NAME 'log4perlFileAppender' 
+    DESC 'Netscape defined objectclass' 
+    SUP log4perlAppender
+    STRUCTURAL 
+    MUST ( log4perlfilename $ log4perlmode )
+    MAY ( log4perlautoflush )
     )
 
-objectclass ( myobjs:7
-    NAME 'log4perlParam'
-    SUP top
-    AUXILIARY
-    DESC 'a name/value tuple'
-    MUST ( name $ log4perlvalue )
-    
+objectclass ( myobjs:10 NAME 'log4perlSocketAppender' 
+    DESC 'log4perl simple layout'
+    SUP log4perlAppender
+    STRUCTURAL
+    MUST ( log4perlPeerAddr  $ log4perlPeerPort ) 
     )
+
+
+
+
+                                    
+objectclass ( myobjs:4 NAME 'log4perlLayout' 
+    DESC 'A log4perl Layout'
+    SUP top 
+    ABSTRACT
+    MUST ( name $ log4perlLayoutClass )
+    )
+
+objectclass ( myobjs:5 NAME 'log4perlPatternLayout' 
+    DESC 'A log4perl PatternLayout'
+    SUP log4perlLayout
+    STRUCTURAL 
+    MUST ( log4perlConversionPattern )
+    )
+
+
+
+
+#objectclass ( myobjs:7
+#    NAME 'log4perlParam'
+#    SUP top
+#    AUXILIARY
+#    DESC 'a name/value tuple'
+#    MUST ( name $ log4perlvalue )
+#    
+#    )
 
