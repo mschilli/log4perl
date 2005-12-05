@@ -114,6 +114,12 @@ attributetype ( myattrs:16 NAME 'log4perlPeerPort'
     DESC 'for the socket appender'
     SYNTAX ia5 SINGLE-VALUE )
 
+attributetype ( myattrs:18 NAME 'log4perlThreshold'
+    DESC 'optional threshold for appenders'
+    SYNTAX ia5 SINGLE-VALUE )
+
+
+
 # Object Class Definitions
 
 # Can have 1 or more appenders, names or DNs, but how to specify
@@ -127,6 +133,12 @@ objectclass ( myobjs:11 NAME 'log4perlLogger' 'log4perlCategory'
     MAY ( log4perlAppenderDN ) 
 )
 
+objectclass ( myobjs:13 NAME 'log4perlRootLogger'
+	DESC 'root logger, the name is only so we can find it in ldap'
+    SUP log4perlLogger
+)
+
+
 
 #DESC **MUST*** be before SUP!
 #fedora-ds seems to ignore ABSTRACT, it has no problem instantiating an ABSTRACT class
@@ -138,11 +150,13 @@ objectclass ( myobjs:3
     SUP top 
     ABSTRACT
     MUST ( name $ log4perlClass )
+    MAY ( log4perlThreshold )
+
     )
 
 objectclass ( myobjs:6
     NAME 'log4perlFileAppender' 
-    DESC 'Netscape defined objectclass' 
+    DESC 'logs to a file' 
     SUP log4perlAppender
     STRUCTURAL 
     MUST ( log4perlfilename $ log4perlmode )
@@ -155,11 +169,14 @@ objectclass ( myobjs:10 NAME 'log4perlSocketAppender'
     STRUCTURAL
     MUST ( log4perlPeerAddr  $ log4perlPeerPort ) 
     )
+objectclass ( myobjs:14 NAME 'log4perlTestBufferAppender' 
+    DESC 'for unit tests'
+    SUP log4perlAppender
+    STRUCTURAL
+    )
 
 
 
-
-                                    
 objectclass ( myobjs:4 NAME 'log4perlLayout' 
     DESC 'A log4perl Layout'
     SUP top 
