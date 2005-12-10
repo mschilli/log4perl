@@ -6,6 +6,7 @@ our @ISA = qw(Log::Log4perl::Appender);
 
 use warnings;
 use strict;
+use Log::Log4perl::Config::Watch;
 
 ##################################################
 sub new {
@@ -19,6 +20,8 @@ sub new {
         mode      => "append",
         binmode   => undef,
         utf8      => undef,
+        recreate  => 0,
+        recreate_check_interval => 30,
         @options,
     };
 
@@ -63,6 +66,13 @@ sub file_open {
     open $fh, "$arrows$self->{filename}" or
         die "Can't open $self->{filename} ($!)";
 
+    if($self->{recreate}) {
+        $self->{watcher} = Log::Log4perl::Config::Watch->new(
+            file           => $self->{filename},
+            check_interval => $self->{recreate_check_interval},
+        );
+    }
+
     umask($old_umask) if defined $self->{umask};
 
     $self->{fh} = $fh;
@@ -104,6 +114,12 @@ sub file_switch {
 sub log {
 ##################################################
     my($self, %params) = @_;
+
+    if($self->{recreate}) {
+        if($self->{watcher}->file_has_moved()) {
+            $self->file_switch($self->{filename});
+        }
+    }
 
     my $fh = $self->{fh};
 
@@ -209,6 +225,35 @@ binmode parameter:
 
 A setting of ":utf8" for C<binmode> is equivalent to specifying
 the C<utf8> option (see above).
+
+=item recreate
+
+Normally, if a file appender logs to a file and the file gets moved to
+a different location (e.g. via C<mv>), the appender's open file handle
+will automatically follow the file to the new location.
+
+This may be undesirable. When using an external logfile rotator, 
+for example, the appender should create a new file under the old name
+and start logging into it. If the C<recreate> option is set to a true value, 
+C<Log::Log4perl::Appender::File> will do exactly that. It defaults to 
+false. Check the C<recreate_check_interval> option for performance 
+optimizations with this feature.
+
+=item recreate_check_interval
+
+In C<recreate> mode, the appender has to continuously check if the
+file it is logging to is still in the same location. This check is
+fairly expensive, since it has to call C<stat> on the file name and
+figure out if its inode has changed. Doing this with every call
+to C<log> can be prohibitively expensive. Setting it to a positive
+integer value N will only check the file every N seconds. It defaults to 30.
+
+This obviously means that the appender will continue writing to 
+a moved file until the next check occurs, in the worst case
+this will happen C<recreate_check_interval> seconds after the file
+has been moved or deleted. If this is undesirable,
+setting C<recreate_check_interval> to 0 will have the appender
+appender check the file with I<every> call to C<log()>.
 
 =back
 

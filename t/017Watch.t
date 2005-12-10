@@ -12,7 +12,7 @@ BEGIN {
     if ($] < 5.006) {
         plan skip_all => "Only with perl >= 5.006";
     } else {
-        plan tests => 19;
+        plan tests => 21;
     }
 }
 
@@ -151,6 +151,34 @@ close LOG;
 $log = join('',@log);
 
 is($log, "INFO - info message\nDEBUG animal.dog - 2nd debug message\nINFO  animal.dog - 2nd info message\nINFO  animal.dog - 2nd info message again\nINFO - 3rd info message\n", "after reload");
+
+
+# ***************************************************************
+# Check the 'recreate' feature
+
+unlink $testfile if (-e $testfile);
+my $conf3 = <<EOL;
+log4j.category.animal.dog   = INFO, myAppender
+
+log4j.appender.myAppender          = Log::Log4perl::Appender::File
+log4j.appender.myAppender.layout   = Log::Log4perl::Layout::SimpleLayout
+log4j.appender.myAppender.filename = $testfile
+log4j.appender.myAppender.recreate = 1
+log4j.appender.myAppender.recreate_check_interval = 0
+log4j.appender.myAppender.mode     = append
+EOL
+
+Log::Log4perl->init(\$conf3);
+
+$logger = Log::Log4perl::get_logger('animal.dog');
+$logger->info("test1");
+open (LOG, $testfile) or die "can't open $testfile $!";
+is(scalar <LOG>, "INFO - test1\n", "Before recreate");
+
+unlink $testfile;
+$logger->info("test2");
+open (LOG, $testfile) or die "can't open $testfile $!";
+is(scalar <LOG>, "INFO - test2\n", "After recreate");
 
 unlink $testfile if (-e $testfile);
 unlink $testconf if (-e $testconf);

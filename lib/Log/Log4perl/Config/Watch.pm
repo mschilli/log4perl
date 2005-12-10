@@ -17,6 +17,7 @@ sub new {
 
     my $self = { file            => "",
                  check_interval  => 30,
+                 l4p_internal    => 0,
                  signal          => undef,
                  %options,
                  _last_checked_at => 0,
@@ -63,9 +64,75 @@ sub check_interval {
 }
 
 ###########################################
+sub file_has_moved {
+###########################################
+    my($self, $time) = @_;
+
+    my $task = sub {
+        my @stat = stat($self->{file});
+
+        my $has_moved = 0;
+
+        if(! $stat[0]) {
+            # The file's gone, obviously it got moved or deleted.
+            print "File is gone\n" if _INTERNAL_DEBUG;
+            return 1;
+        }
+
+        my $current_inode = "$stat[0]:$stat[1]";
+        print "Current inode: $current_inode\n" if _INTERNAL_DEBUG;
+
+        if(exists $self->{_file_inode} and 
+            $self->{_file_inode} ne $current_inode) {
+            print "Inode changed from $self->{_file_inode} to ",
+                  "$current_inode\n" if _INTERNAL_DEBUG;
+            $has_moved = 1;
+        }
+
+        $self->{_file_inode} = $current_inode;
+        return $has_moved;
+    };
+
+    return $self->check($time, $task);
+}
+
+###########################################
 sub change_detected {
 ###########################################
     my($self, $time) = @_;
+
+    my $task = sub {
+        my @stat = stat($self->{file});
+        my $new_timestamp = $stat[9];
+
+        if(! defined $new_timestamp) {
+            if($self->{l4p_internal}) {
+                # The file is gone? Let it slide, we don't want L4p to re-read
+                # the config now, it's gonna die.
+                return undef;
+            }
+            return 1;
+        }
+
+        if($new_timestamp > $self->{_last_timestamp}) {
+            $self->{_last_timestamp} = $new_timestamp;
+            print "Change detected (store=$new_timestamp)!\n" 
+                  if _INTERNAL_DEBUG;
+            return 1; # Has changed
+        }
+           
+        print "Hasn't changed (file=$new_timestamp ",
+              "stored=$self->{_last_timestamp})!\n" if _INTERNAL_DEBUG;
+        return "";  # Hasn't changed
+    };
+
+    return $self->check($time, $task);
+}
+
+###########################################
+sub check {
+###########################################
+    my($self, $time, $task) = @_;
 
     $time = time() unless defined $time;
 
@@ -78,26 +145,13 @@ sub change_detected {
         return ""; # don't need to check, return false
     }
        
-    my $new_timestamp = (stat($self->{file}))[9];
-       # Sometimes, when the file is being updated, obtaining its
-       # timestamp fails. Ignore it, try again later.
-    return "" unless defined $new_timestamp;
-
     $self->{_last_checked_at} = $time;
 
     # Set global var for optimizations in case we just have one watcher
     # (like in Log::Log4perl)
     $NEXT_CHECK_TIME = $time + $self->{check_interval};
 
-    if($new_timestamp > $self->{_last_timestamp}) {
-        $self->{_last_timestamp} = $new_timestamp;
-        print "Change detected (store=$new_timestamp)!\n" if _INTERNAL_DEBUG;
-        return 1; # Has changed
-    }
-       
-    print "Hasn't changed (file=$new_timestamp ",
-          "stored=$self->{_last_timestamp})!\n" if _INTERNAL_DEBUG;
-    return "";  # Hasn't changed
+    return $task->($time);
 }
 
 1;

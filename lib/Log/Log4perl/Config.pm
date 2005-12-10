@@ -75,13 +75,15 @@ sub init_and_watch {
 
     if($delay =~ /\D/) {
         $WATCHER = Log::Log4perl::Config::Watch->new(
-                          file   => $config,
-                          signal => $delay,
+                          file         => $config,
+                          signal       => $delay,
+                          l4p_internal => 1,
                    );
     } else {
         $WATCHER = Log::Log4perl::Config::Watch->new(
                           file           => $config,
                           check_interval => $delay,
+                          l4p_internal   => 1,
                    );
     }
 
