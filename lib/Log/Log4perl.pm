@@ -1338,7 +1338,7 @@ initialize Log::Log4perl seperately, try to consolidate your system
 to use a centralized Log4perl configuration file and use 
 Log4perl's I<categories> to separate your components.
 
-=head1 Custom Filters
+=head2 Custom Filters
 
 Log4perl allows the use of customized filters in its appenders
 to control the output of messages. These filters might grep for
@@ -1353,7 +1353,7 @@ on how to use them.
 =head2 Performance
 
 The performance of Log::Log4perl calls obviously depends on a lot of things.
-but to give you a general idea, here's some rough numbers:
+But to give you a general idea, here's some rough numbers:
 
 On a Pentium 4 Linux box at 2.4 GHz, you'll get through
 
@@ -1379,6 +1379,10 @@ For a more detailed benchmark test, check the C<docs/benchmark.results.txt>
 document in the Log::Log4perl distribution.
 
 =head1 Cool Tricks
+
+Here's a collection of useful tricks for the advanced C<Log::Log4perl> user.
+For more, check the the FAQ, either in the distribution 
+(L<Log::Log4perl::FAQ>) or on http://log4perl.sourceforge.net.
 
 =head2 Shortcuts
 
