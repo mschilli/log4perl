@@ -838,7 +838,7 @@ Categories
     use a centralized Log4perl configuration file and use Log4perl's
     *categories* to separate your components.
 
-Custom Filters
+  Custom Filters
     Log4perl allows the use of customized filters in its appenders to
     control the output of messages. These filters might grep for certain
     text chunks in a message, verify that its priority matches or exceeds a
@@ -851,7 +851,7 @@ Custom Filters
 
   Performance
     The performance of Log::Log4perl calls obviously depends on a lot of
-    things. but to give you a general idea, here's some rough numbers:
+    things. But to give you a general idea, here's some rough numbers:
 
     On a Pentium 4 Linux box at 2.4 GHz, you'll get through
 
@@ -867,6 +867,10 @@ Custom Filters
     document in the Log::Log4perl distribution.
 
 Cool Tricks
+    Here's a collection of useful tricks for the advanced "Log::Log4perl"
+    user. For more, check the the FAQ, either in the distribution
+    (Log::Log4perl::FAQ) or on http://log4perl.sourceforge.net.
+
   Shortcuts
     When getting an instance of a logger, instead of saying
 
@@ -1840,7 +1844,7 @@ REFERENCES
         Log::Log4perl!", Tutorial on perl.com, 09/2002,
         http://www.perl.com/pub/a/2002/09/11/log4perl.html
 
-    [2] Ceki Gülcü, "Short introduction to log4j",
+    [2] Ceki GÃ¼lcÃ¼, "Short introduction to log4j",
         http://jakarta.apache.org/log4j/docs/manual.html
 
     [3] Vipan Singla, "Don't Use System.out.println! Use Log4j.",

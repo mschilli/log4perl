@@ -877,8 +877,7 @@ Log::Log4perl::Config::LDAPConfigurator (coming soon!)
 Kevin Goess, <cpan@goess.org> Jan-2003
 
 The code is brazenly modeled on log4j's DOMConfigurator class, (by 
-Christopher Taylor, Ceki Gülcü and Anders Kristensen) and any
+Christopher Taylor, Ceki GÃ¼lcÃ¼, and Anders Kristensen) and any
 perceived similarity is not coincidental.
-
 
 =cut

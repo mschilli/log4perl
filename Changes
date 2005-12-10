@@ -10,6 +10,8 @@
            fail. Fixed with test case.
     * (ms) Log::Log4perl::Appender::File now handles the case where the
            logfile suddenly disappears.
+    * (ms) Fixed section indentation in main man page
+    * (ms) Converted Ceki's last name to UTF-8 (a historic step!)
 
 1.01 (09/29/2005)
     * (ms) Added 'utf8' and 'binmode' flags to Log::Log4perl::Appender::File

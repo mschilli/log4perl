@@ -2430,7 +2430,7 @@ http://www.perl.com/pub/a/2002/09/11/log4perl.html
 
 =item [2]
 
-Ceki Gülcü, "Short introduction to log4j",
+Ceki GÃ¼lcÃ¼, "Short introduction to log4j",
 http://jakarta.apache.org/log4j/docs/manual.html
 
 =item [3]
