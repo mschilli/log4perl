@@ -13,6 +13,7 @@ eg/syslog.pl
 eg/yamlparser
 ldap/log4perl-2.ldif
 ldap/log4perl-unittest.ldif
+ldap/testload.ldif
 lib/Log/Log4perl.pm
 lib/Log/Log4perl/Appender.pm
 lib/Log/Log4perl/Appender/Buffer.pm
