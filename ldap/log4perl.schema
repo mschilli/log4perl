@@ -164,7 +164,7 @@ objectclass ( myobjs:6
     )
 
 objectclass ( myobjs:10 NAME 'log4perlSocketAppender' 
-    DESC 'log4perl simple layout'
+    DESC 'log4perl socket appender'
     SUP log4perlAppender
     STRUCTURAL
     MUST ( log4perlPeerAddr  $ log4perlPeerPort ) 
@@ -178,7 +178,7 @@ objectclass ( myobjs:14 NAME 'log4perlTestBufferAppender'
 
 
 objectclass ( myobjs:4 NAME 'log4perlLayout' 
-    DESC 'A log4perl Layout'
+    DESC 'A log4perl simple Layout'
     SUP top 
     ABSTRACT
     MUST ( name $ log4perlLayoutClass )
