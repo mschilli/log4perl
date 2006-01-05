@@ -560,7 +560,7 @@ sub config_read {
        require Net::LDAP;
        require Log::Log4perl::Config::LDAPConfigurator;
 
-       return Log::Log4perl::Config::LDAPConfigurator::parse($config);
+       return Log::Log4perl::Config::LDAPConfigurator->new->parse($config);
 
     }else{
 
