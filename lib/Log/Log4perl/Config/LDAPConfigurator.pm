@@ -9,9 +9,10 @@ use Net::LDAP;
 use URI;
 use Log::Log4perl::Level;
 use Data::Dump qw(dump); #DEBUG
+use Carp;
 use strict;
 
-use constant _INTERNAL_DEBUG => 0;
+use constant _INTERNAL_DEBUG => 1;
 
 our $VERSION = 0.01;
 
@@ -26,6 +27,7 @@ sub parse {
     my($self, $newtext) = @_;
 
     $self->text($newtext) if defined $newtext;
+
     my $uri = $self->{text}->[0];
 
     $uri = 
@@ -49,7 +51,6 @@ sub parse {
         $base = $uri->dn;    #"dc=testsystem,dc=log4perl,dc=goess,dc=org" ;
         $searchString = $uri->filter;#"(objectclass=*)";
         $scope = $uri->scope || 'sub';
-
 
         $ldap = Net::LDAP->new ( "localhost" ) or die "$@";
 
@@ -82,7 +83,11 @@ sub parse {
     foreach my $entry ($result->all_entries){
         my $objectclasses = join("\n",$entry->get_value('objectclass'));
         if ($objectclasses =~ /^log4(perl|j)Appender/m) { #DEBUG, make a constant
+           
             parse_appender($l4p_tree, $entry);
+        }elsif ($objectclasses =~ /^log4(perl|j)Layout/m) { #DEBUG, make a constant
+           print "ocs are $objectclasses\n";
+            parse_layout($l4p_tree, $entry);
         }else{
             ;#?
         }
@@ -111,7 +116,7 @@ sub parse_appender {
 
     $l4p_branch->{value} = $class;
 
-    $l4p_branch->{layout} = parse_layout($entry);
+    #$l4p_branch->{layout} = parse_layout($entry);
 
     print "looking at $name----------------------\n"  if _INTERNAL_DEBUG;
 
@@ -121,13 +126,28 @@ sub parse_appender {
 
 }
 sub parse_layout {
-    my ($entry) = @_;
+    my ($l4ptree, $entry) = @_;
 
-    my $layout_tree = {};
+     my $layout_tree = {};
 
     my $class_name = subst($entry->get_value("log4perlLayoutClass"));
 
-    $layout_tree->{value} = $class_name;
+    my $dn = $entry->dn;
+
+    $dn =~ /^name=layout,name=(.+?),/ 
+       or do {
+         warn "layout object at $dn doesn't seem to be in a spot wanting a layout, ",
+               "like 'name=layout,name=<some appender>";
+         return;
+       };
+    my $appender_name = $1;
+
+    $l4ptree->{appender}{$appender_name}{layout}{value} = $class_name;
+
+    #$layout_tree = 
+    #
+    #$layout_tree->{value} = $class_name;
+
 
     #DEBUG lots of other stuff to go here
 
