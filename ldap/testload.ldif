@@ -18,7 +18,7 @@ log4perlClass:Log::Log4perl::Appender::TestBuffer
 dn:name=layout,name=A1,dc=l4ptest,dc=system,dc=goess,dc=org
 objectclass: log4perlLayout
 name: layout
-log4perlLayoutClass:Log::Log4perl::Layout:SimpleLayout
+log4perlLayoutClass:Log::Log4perl::Layout::SimpleLayout
 
 #
 #log4j.appender.A2 = Log::Log4perl::Appender::TestBuffer
@@ -31,7 +31,7 @@ log4perlClass:Log::Log4perl::Appender::TestBuffer
 dn:name=layout,name=A2,dc=l4ptest,dc=system,dc=goess,dc=org
 objectclass: log4perlLayout
 name: layout
-log4perlLayoutClass:Log::Log4perl::Layout:SimpleLayout
+log4perlLayoutClass:Log::Log4perl::Layout::SimpleLayout
 
 
 #log4j.appender.BUF0 = Log::Log4perl::Appender::TestBuffer
@@ -45,12 +45,12 @@ log4perlThreshold:ERROR
 dn:name=layout,name=BUF0,dc=l4ptest,dc=system,dc=goess,dc=org
 objectclass: log4perlLayout
 name: layout
-log4perlLayoutClass:Log::Log4perl::Layout:SimpleLayout
+log4perlLayoutClass:Log::Log4perl::Layout::SimpleLayout
 
 dn:name=layout,name=BUF0,dc=l4ptest,dc=system,dc=goess,dc=org
 objectclass: log4perlLayout
 name=layout
-log4perlLayoutClass:Log::Log4perl::Layout:SimpleLayout
+log4perlLayoutClass:Log::Log4perl::Layout::SimpleLayout
 
 #
 #log4j.appender.FileAppndr1 = org.apache.log4j.FileAppender
@@ -69,7 +69,7 @@ log4perlThreshold:ERROR
 dn:name=layout,name=FileAppndr1,dc=l4ptest,dc=system,dc=goess,dc=org
 objectclass: log4perlLayout
 name:layout
-log4perlLayoutClass:Log::Log4perl::Layout:SimpleLayout
+log4perlLayoutClass:Log::Log4perl::Layout::SimpleLayout
 
 #
 #log4j.category.a.b.c.d = WARN, A1
