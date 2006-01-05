@@ -18,6 +18,15 @@ LDAP_HOST=localhost \
 LDAP_BASE=dc=testsystem,dc=log4perl,dc=goess,dc=org \
 perl -Ilib -Iblib/lib t/047-ldap.t
 
+
+L4P_DO_LDAP_TESTS=1 \
+LOG4PERL_LDAP_USERDN='uid=kgoess,ou=People,dc=mrs.hudson,dc=goess,dc=org' \
+LOG4PERL_LDAP_PWD=ldap123 \
+LDAP_HOST=localhost \
+LDAP_BASE=dc=l4ptest,dc=system,dc=mrs.hudson,dc=goess,dc=org \
+perl -Ilib -Iblib/lib t/047-ldap.t
+
+
 =cut
 
 #
@@ -74,12 +83,12 @@ log4j.appender.A1.layout = Log::Log4perl::Layout::SimpleLayout
 log4j.appender.A2 = Log::Log4perl::Appender::TestBuffer
 log4j.appender.A2.layout = Log::Log4perl::Layout::SimpleLayout
 #
-# log4j.appender.BUF0 = Log::Log4perl::Appender::TestBuffer
-# log4j.appender.BUF0.layout = Log::Log4perl::Layout::SimpleLayout
+ log4j.appender.BUF0 = Log::Log4perl::Appender::TestBuffer
+ log4j.appender.BUF0.layout = Log::Log4perl::Layout::SimpleLayout
 # log4j.appender.BUF0.Threshold = ERROR
 #
-# log4j.appender.FileAppndr1 = org.apache.log4j.FileAppender
-# log4j.appender.FileAppndr1.layout = Log::Log4perl::Layout::PatternLayout
+ log4j.appender.FileAppndr1 = org.apache.log4j.FileAppender
+ log4j.appender.FileAppndr1.layout = Log::Log4perl::Layout::PatternLayout
 # log4j.appender.FileAppndr1.layout.ConversionPattern = %d %4r [%t] %-5p %c %t - %m%n
 # log4j.appender.FileAppndr1.File = t/tmp/DOMtest
 # log4j.appender.FileAppndr1.Append = false
@@ -104,7 +113,7 @@ EOL
 my $propsdata = Log::Log4perl::Config::config_read(\$propsconfig);
 
 use Data::Dump qw(dump); #DEBUG
-dump $propsdata;
-print STDERR "\n--------------\n";
 dump $ldapdata;
+print STDERR "\n--------------\n";
+dump $propsdata;
 is_deeply($ldapdata, $propsdata);
