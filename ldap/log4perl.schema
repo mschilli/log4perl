@@ -160,8 +160,9 @@ objectclass ( myobjs:6
     SUP log4perlAppender
     STRUCTURAL 
     MUST ( log4perlfilename $ log4perlmode )
-    MAY ( log4perlautoflush )
+    MAY ( log4perlautoflush  )
     )
+    #DEBUG: MAY umask --how to do octal?
 
 objectclass ( myobjs:10 NAME 'log4perlSocketAppender' 
     DESC 'log4perl socket appender'
