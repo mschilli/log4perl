@@ -61,15 +61,19 @@ log4perlLayoutClass:Log::Log4perl::Layout::SimpleLayout
 dn:name=FileAppndr1,dc=l4ptest,dc=system,dc=goess,dc=org
 objectclass: log4perlFileAppender
 name:FileAppndr1
-log4perlClass:org.apache.log4j.FileAppender
+log4perlClass:Log::Log4perl::Appender::FileAppender
 log4perlfilename:t/tmp/DOMtest
 log4perlmode:append
-log4perlThreshold:ERROR
+log4perlautoflush:true
+#log4perlumask:0222 DEBUG
 
 dn:name=layout,name=FileAppndr1,dc=l4ptest,dc=system,dc=goess,dc=org
-objectclass: log4perlLayout
+objectclass: log4perlPatternLayout
 name:layout
-log4perlLayoutClass:Log::Log4perl::Layout::SimpleLayout
+log4perlLayoutClass:Log::Log4perl::Layout::PatternLayout
+log4perlConversionPattern:%d %4r [%t] %-5p %c %t - %m%n
+
+
 
 #
 #log4j.category.a.b.c.d = WARN, A1
@@ -93,6 +97,8 @@ objectclass: log4perlLogger
 log4perlCategoryName:xa.b.c.d
 log4perlLevel: INFO
 log4perlAppenderName: A2 
+log4perlAppenderName: BUF0 
+
 
 #log4j.category.xa.b = WARN, A2
 dn:log4perlCategoryName=xa.b,dc=l4ptest,dc=system,dc=goess,dc=org
