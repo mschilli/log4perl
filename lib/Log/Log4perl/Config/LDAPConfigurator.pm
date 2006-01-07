@@ -82,12 +82,22 @@ sub parse {
 
     foreach my $entry ($result->all_entries){
         my $objectclasses = join("\n",$entry->get_value('objectclass'));
-        if ($objectclasses =~ /^log4(perl|j)Appender/m) { #DEBUG, make a constant
-           
+        if ($objectclasses =~ /^log4(perl|j)Appender/m) { #DEBUG, make a constant?
             parse_appender($l4p_tree, $entry);
-        }elsif ($objectclasses =~ /^log4(perl|j)Layout/m) { #DEBUG, make a constant
-           print "ocs are $objectclasses\n";
+
+        }elsif ($objectclasses =~ /^log4(perl|j)Layout/m) { 
             parse_layout($l4p_tree, $entry);
+
+        }elsif ($objectclasses =~ /^log4(perl|j)RootLogger/m) { 
+            my $level = $entry->get_value("log4perlLevel");
+            my @appenders = $entry->get_value("log4perlAppenderName");
+            map {s/ +$//} @appenders;#ldap preserves trailing spaces :-(
+
+            $l4p_tree->{category}{value} = $level;
+            $l4p_tree->{category}{value} .= ", ".join(',',@appenders);
+
+        }elsif ($objectclasses =~ /^log4(perl|j)(Logger|Category)/m) { 
+            parse_category($l4p_tree, $entry);
         }else{
             ;#?
         }
@@ -112,23 +122,49 @@ sub parse_appender {
 
     my $l4p_branch = {};
 
-    my $class = subst($entry->get_value("log4perlclass")); #handle log4j
+    my $class = subst($entry->get_value("log4perlclass")); #DEBUG: handle log4j
 
     $l4p_branch->{value} = $class;
-
-    #$l4p_branch->{layout} = parse_layout($entry);
 
     print "looking at $name----------------------\n"  if _INTERNAL_DEBUG;
 
     $l4p_tree->{appender}{$name} = $l4p_branch;
 
+    my ($attrname, $attrvalue);
 
+    foreach ($entry->attributes) {
+       /^objectclass$/i        && next;
+       /^log4perlclass$/i      && next; #already handled
+
+       #a gross kind of translation?
+       /^log4perl/   && do {
+            ($attrname = $_)  =~ s/log4perl//;
+            $attrvalue = $entry->get_attribute($_);
+
+            #note the '->[0]', log4perl doesn't
+            #accept any multi-valued attributes, does it?
+            #DEBUG
+            $attrvalue = $attrvalue->[0] if (ref $attrvalue eq 'ARRAY');
+
+            if (lc $attrvalue =~ /true/) {
+               $attrvalue = 1;
+            }elsif (lc $attrvalue eq 'false'){
+               $attrvalue = 0;
+            }
+
+       };
+       next unless $attrname && defined $attrvalue;
+
+       $l4p_branch->{$attrname} = {value => $attrvalue};
+                     
+
+    }
 
 }
 sub parse_layout {
     my ($l4ptree, $entry) = @_;
 
-     my $layout_tree = {};
+    my $layout_tree = {};
 
     my $class_name = subst($entry->get_value("log4perlLayoutClass"));
 
@@ -142,18 +178,59 @@ sub parse_layout {
        };
     my $appender_name = $1;
 
-    $l4ptree->{appender}{$appender_name}{layout}{value} = $class_name;
+    $l4ptree->{appender}{$appender_name}{layout} = $layout_tree;
 
-    #$layout_tree = 
-    #
-    #$layout_tree->{value} = $class_name;
+    $layout_tree->{value} = $class_name;
 
+    foreach ($entry->attributes) {
+       /^objectclass$/i        && next;
+       /^name$/i               && next; #is always 'layout'
+       /^log4perlLayoutClass$/ && next; #already handled
+       /^log4perlConversionPattern$/       && do 
+          {
+             $layout_tree->{ConversionPattern}
+                   = {value => $entry->get_attribute($_)};
+             next;
+          };
 
-    #DEBUG lots of other stuff to go here
+    }
 
     return $layout_tree;
     
 }
+
+sub parse_category {
+   my ($l4p_tree, $entry) = @_;
+
+    my $category_name = subst($entry->get_value("log4perlCategoryName"));
+
+    print STDERR "parsing category $category_name\n";
+
+    $l4p_tree->{category} ||= {};
+ 
+    my $ptr = $l4p_tree->{category};
+
+    for my $part (split /\.|::/, $category_name) {
+        $ptr->{$part} = {} unless exists $ptr->{$part};
+        $ptr = $ptr->{$part};
+    }
+
+    my $l4p_branch = $ptr;
+
+    my $level = $entry->get_value("log4perlLevel");
+    my @appenders = $entry->get_value("log4perlAppenderName");
+    map {s/ +$//} @appenders;#ldap preserves trailing spaces :-(
+
+    $l4p_branch->{value} = $level;
+
+    $l4p_branch->{value} .= ", ".join(',',@appenders);
+
+    return $l4p_tree;
+    
+}
+
+
+
 #all other code below is still from DOMConfigurator (kg 5/12)
 
 =pod
@@ -645,13 +722,6 @@ This module implements
 
 =head1 WHY
 
-"Why would I want my config in XML?" you ask.  Well, there are a couple
-reasons you might want to.  Maybe you have a personal preference
-for XML.  Maybe you manage your config with other tools that have an
-affinity for XML, like XML-aware editors or automated config
-generators.  Or maybe (and this is the big one) you don't like
-having to run your application just to check the syntax of your
-config file.
 
 =head1 HOW
 

@@ -85,25 +85,35 @@ log4j.appender.A2.layout = Log::Log4perl::Layout::SimpleLayout
 #
  log4j.appender.BUF0 = Log::Log4perl::Appender::TestBuffer
  log4j.appender.BUF0.layout = Log::Log4perl::Layout::SimpleLayout
-# log4j.appender.BUF0.Threshold = ERROR
+ log4j.appender.BUF0.Threshold = ERROR
 #
- log4j.appender.FileAppndr1 = org.apache.log4j.FileAppender
- log4j.appender.FileAppndr1.layout = Log::Log4perl::Layout::PatternLayout
-# log4j.appender.FileAppndr1.layout.ConversionPattern = %d %4r [%t] %-5p %c %t - %m%n
-# log4j.appender.FileAppndr1.File = t/tmp/DOMtest
-# log4j.appender.FileAppndr1.Append = false
+ #DEBUG: need to test log4j translations
+ #log4j.appender.FileAppndr1 = org.apache.log4j.FileAppender
+ #log4j.appender.FileAppndr1.layout = Log::Log4perl::Layout::PatternLayout
+ #log4j.appender.FileAppndr1.layout.ConversionPattern = %d %4r [%t] %-5p %c %t - %m%n
+ #log4j.appender.FileAppndr1.File = t/tmp/DOMtest
+ #log4j.appender.FileAppndr1.mode = append
+ 
+ log4j.appender.FileAppndr1 = Log::Log4perl::Appender::FileAppender
+ log4j.appender.FileAppndr1.layout = Log::Log4perl::Layout::PatternLayout 
+ log4j.appender.FileAppndr1.layout.ConversionPattern = %d %4r [%t] %-5p %c %t - %m%n
+ log4j.appender.FileAppndr1.filename = t/tmp/DOMtest
+ log4j.appender.FileAppndr1.mode = append
+ log4j.appender.FileAppndr1.autoflush = 1
+#DEBUG todo log4j.appender.FileAppndr1.umask = 0222
+ 
 #
-# log4j.category.a.b.c.d = WARN, A1
-# log4j.category.a.b = INFO, A1
+ log4j.category.a.b.c.d = WARN, A1
+ log4j.category.a.b = INFO, A1
 #
-# log4j.category.xa.b.c.d = INFO, A2
-# log4j.category.xa.b = WARN, A2
-#
-# log4j.category.animal = INFO, FileAppndr1
-# log4j.category.animal.dog = INFO, FileAppndr1,A2
-#
-# log4j.category = WARN, FileAppndr1
-#
+ log4j.category.xa.b.c.d = INFO, A2,BUF0
+ log4j.category.xa.b = WARN, A2
+
+ log4j.category.animal = INFO, FileAppndr1
+ log4j.category.animal.dog = INFO, FileAppndr1,A2
+
+ log4j.category = WARN, FileAppndr1
+
 # log4j.threshold = DEBUG
 #
 # log4j.additivity.a.b.c.d = 0
