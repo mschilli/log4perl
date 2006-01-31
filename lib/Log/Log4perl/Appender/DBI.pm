@@ -55,12 +55,15 @@ sub _init {
     if ($params{dbh}) {
         $self->{dbh} = $params{dbh};
     } else {
-        $self->{dbh} = DBI->connect(@params{qw(datasource username password)})
-            or croak "Log4perl: $DBI::errstr";
+        $self->{connect} = sub {
+            DBI->connect(@params{qw(datasource username password)},
+                         {PrintError => 0})
+                            or croak "Log4perl: $DBI::errstr";
+        };
+        $self->{dbh} = $self->{connect}->();
         $self->{_mine} = 1;
     }
 }
-
 
 sub create_statement {
     my ($self, $stmt) = @_;
@@ -93,7 +96,7 @@ sub log {
 
     if ($self->{usePreparedStmt}) {
 
-        $self->{sth}->execute(@$qmarks);
+        $self->query_execute($self->{sth}, @$qmarks);
 
     }else{
 
@@ -109,6 +112,28 @@ sub log {
 
         $self->check_buffer();
     }
+}
+
+sub query_execute {
+    my($self, $sth, @qmarks) = @_;
+
+    for(1..2) {
+        if(! $sth->execute(@qmarks)) {
+                # Exe failed
+                # warn "Log4perl: DBI->execute failed $DBI::errstr, \n".
+                #                  "on $self->{SQL}\n@qmarks";
+            if(! $self->{dbh}->ping()) {
+                # Ping failed, reconnect
+                $self->{dbh} = $self->{connect}->();
+                $sth = $self->create_statement($self->{SQL});
+                $self->{sth} = $sth if $self->{sth};
+                redo;
+            }
+        }
+        return 1;
+    }
+    croak "Log4perl: DBI->execute failed $DBI::errstr, \n".
+          "on $self->{SQL}\n@qmarks";
 }
 
 sub calculate_bind_values {
@@ -202,9 +227,7 @@ sub check_buffer {
                 $sth = $self->create_statement($stmt);
             }
 
-            $sth->execute(@$qmarks) || 
-                croak "Log4perl: DBI->execute failed $DBI::errstr, \n".
-                    "on $self->{SQL}\n@$qmarks";
+            $self->query_execute($sth, @$qmarks);
 
             $prev_stmt = $stmt;
 
@@ -501,15 +524,16 @@ for instance
 
 If you're using C<log4j.appender.DBAppndr.usePreparedStmt>
 this module creates an sth when it starts and keeps it for the life
-of the program.  For long-running processes (e.g. mod_perl) this
-may be a problem, your connections may go stale.  
+of the program.  For long-running processes (e.g. mod_perl), connections
+might go stale, but if C<Log::Log4perl::Appender::DBI> tries to write
+a message and figures out that the DB connection is no longer working
+(using DBI's ping method), it will reconnect.
 
-It also holds one connection open for every appender, which might
-be too many.
+Alternatively, use C<Apache::DBI> or C<Apache::DBI::Cache> and read
+CHANGING DB CONNECTIONS above.
 
-Even if you're not using that, the database handle may go stale.  If you're
-not using Apache::DBI this may cause you problems.  See CHANGING
-DB CONNECTIONS above.
+Note that C<Log::Log4perl::Appender::DBI> holds one connection open
+for every appender, which might be too many.
 
 =head1 AUTHOR
 
@@ -522,4 +546,3 @@ L<Log::Dispatch::DBI>
 L<Log::Log4perl::JavaMap::JDBCAppender>
 
 =cut
-
