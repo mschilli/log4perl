@@ -194,7 +194,12 @@ sub foo {
 }
 package main;
 Junk2::foo();
-like(readstderr(), qr/LOGCARP.*020Easy.t line 193/);
+SKIP: {
+    use Carp; 
+    skip "Detected buggy Carp.pm (upgrade to perl-5.8.*)", 1 unless 
+        defined $Carp::VERSION;
+    like(readstderr(), qr/LOGCARP.*020Easy.t line 193/);
+}
 
 ############################################################
 # Finally close

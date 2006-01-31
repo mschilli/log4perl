@@ -200,5 +200,10 @@ sub bar {
 package main;
 eval { Bar::bar(); };
 
-like($app0->buffer(), qr/197/,
-   "Check logcarp");
+SKIP: {
+    use Carp; 
+    skip "Detected buggy Carp.pm (upgrade to perl-5.8.*)", 1 unless 
+        defined $Carp::VERSION;
+    like($app0->buffer(), qr/197/,
+       "Check logcarp");
+}

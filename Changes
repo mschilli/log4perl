@@ -2,6 +2,10 @@
  Revision history for Log::Log4perl
 ##################################################
 
+1.03 (2006/01/30)
+    * (ms) Some perl-5.6.1 installations have a buggy Carp.pm. Skipping
+           4 test cases for these. Reported by Andy Ford and Matisse Enzer.
+
 1.02 (2005/12/10)
     * (ms) Adapted t/006Config-Java.t to cope with Win32 path separators
     * (ms) Corrected typo in Chainsaw FAQ, reported by Bernd Dirksen.

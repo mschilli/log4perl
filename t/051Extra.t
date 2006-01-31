@@ -54,15 +54,15 @@ $buf->buffer("");
 LOGCARP("logcarp");
 
 is(readstderr(), "", "No output to stderr");
-like($buf->buffer(), qr/logcarp.*54/, "Appender output intact");
-
-$buf->buffer("");
-
-LOGCARP("logcarp");
-
-is(readstderr(), "", "No output to stderr");
-like($buf->buffer(), qr/logcarp.*61/, "Appender output intact");
-
+SKIP: { use Carp;
+    skip "Detected buggy Carp.pm (upgrade to perl-5.8.*)", 3 unless 
+        defined $Carp::VERSION;
+    like($buf->buffer(), qr/logcarp.*54/, "Appender output intact");
+    $buf->buffer("");
+    LOGCARP("logcarp");
+    is(readstderr(), "", "No output to stderr");
+    like($buf->buffer(), qr/logcarp.*62/, "Appender output intact");
+}
 #########################################################################
 # Turn default behaviour back on
 #########################################################################
