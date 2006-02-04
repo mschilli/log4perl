@@ -1,5 +1,7 @@
 package Log::Log4perl::Appender::DBI;
 
+our @ISA = qw(Log::Log4perl::Appender);
+
 use Carp;
 
 use strict;

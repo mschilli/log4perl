@@ -1,6 +1,7 @@
 ##################################################
 package Log::Log4perl::Appender::RRDs;
 ##################################################
+our @ISA = qw(Log::Log4perl::Appender);
 
 use warnings;
 use strict;

@@ -1,4 +1,5 @@
 package Log::Log4perl::Appender::TestBuffer;
+our @ISA = qw(Log::Log4perl::Appender);
 
 ##################################################
 # Log dispatcher writing to a string buffer

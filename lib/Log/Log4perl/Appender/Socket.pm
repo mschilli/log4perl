@@ -1,6 +1,7 @@
 ##################################################
 package Log::Log4perl::Appender::Socket;
 ##################################################
+our @ISA = qw(Log::Log4perl::Appender);
 
 use warnings;
 use strict;
