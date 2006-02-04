@@ -6,6 +6,10 @@
     * (ms) Some perl-5.6.1 installations have a buggy Carp.pm. Skipping
            4 test cases for these. Reported by Andy Ford and Matisse Enzer.
     * (ms) The DBI appender now reconnects on stale DB connections.
+    * (ms) Fixed Win32 test bug as reported in 
+           http://rt.cpan.org/Ticket/Display.html?id=17436 by barbie.
+           Instead of deleting a file still in use by an appender (which
+           Windows doesn't like), the file gets now truncated.
 
 1.02 (2005/12/10)
     * (ms) Adapted t/006Config-Java.t to cope with Win32 path separators

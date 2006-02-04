@@ -26,10 +26,15 @@ unless (-e "$WORK_DIR"){
 }
 
 my $testfile = File::Spec->catfile($WORK_DIR, "test17.log");
-unlink $testfile if (-e $testfile);
+
+END { 
+    unlink $testfile if (-e $testfile);
+}
+
+trunc($testfile);
 
 my $testconf = File::Spec->catfile($WORK_DIR, "test17.conf");
-unlink $testconf if (-e $testconf);
+trunc($testfile);
 
 my $conf1 = <<EOL;
 log4j.category.animal.dog   = INFO, myAppender
@@ -156,7 +161,7 @@ is($log, "INFO - info message\nDEBUG animal.dog - 2nd debug message\nINFO  anima
 # ***************************************************************
 # Check the 'recreate' feature
 
-unlink $testfile if (-e $testfile);
+trunc($testfile);
 my $conf3 = <<EOL;
 log4j.category.animal.dog   = INFO, myAppender
 
@@ -175,10 +180,15 @@ $logger->info("test1");
 open (LOG, $testfile) or die "can't open $testfile $!";
 is(scalar <LOG>, "INFO - test1\n", "Before recreate");
 
-unlink $testfile;
+trunc($testfile);
 $logger->info("test2");
 open (LOG, $testfile) or die "can't open $testfile $!";
 is(scalar <LOG>, "INFO - test2\n", "After recreate");
 
-unlink $testfile if (-e $testfile);
-unlink $testconf if (-e $testconf);
+trunc($testfile);
+trunc($testconf);
+
+sub trunc {
+    open FILE, ">$_[0]" or die "Cannot open $_[0]";
+    close FILE;
+}
