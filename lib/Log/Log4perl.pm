@@ -2106,6 +2106,22 @@ can be retrieved by the C<appender_by_name()> class method. This comes
 in handy if you want to manipulate or query appender properties after
 the Log4perl configuration has been loaded via C<init()>.
 
+Note that internally, Log::Log4perl uses the C<Log::Log4perl::Appender> 
+wrapper class to control the real appenders (like 
+C<Log::Log4perl::Appender::File> or C<Log::Dispatch::FileRotate>). 
+The C<Log::Log4perl::Appender> class has an C<appender> attribute,
+pointing to the real appender.
+
+The reason for this is that external appenders like 
+C<Log::Dispatch::FileRotate> don't support all of Log::Log4perl's 
+appender control mechanisms (like appender thresholds).
+
+The previously mentioned method C<appender_by_name()> returns a
+referrence to the I<real> appender object. If you want access to the
+wrapper class (e.g. if you want to modify the appender's threshold),
+use the hash C<$Log::Log4perl::Logger::APPENDER_BY_NAME{...}> instead,
+which holds references all appender wrapper objects.
+
 =head2 Modify appender thresholds
 
 To conveniently adjust appender thresholds (e.g. because a script
@@ -2469,6 +2485,7 @@ our
     Contributors:
     Hutton Davidson <Davidson.Hutton@ftid.com>
     Chris R. Donnelly <cdonnelly@digitalmotorworks.com>
+    Matisse Enzer
     James FitzGibbon <james.fitzgibbon@target.com>
     Dennis Gregorovic <dgregor@redhat.com>
     Paul Harrington <Paul-Harrington@deshaw.com>
