@@ -1,5 +1,5 @@
 ######################################################################
-    Log::Log4perl 1.02
+    Log::Log4perl 1.03
 ######################################################################
 
 NAME
@@ -1555,6 +1555,22 @@ Cool Tricks
     if you want to manipulate or query appender properties after the
     Log4perl configuration has been loaded via "init()".
 
+    Note that internally, Log::Log4perl uses the "Log::Log4perl::Appender"
+    wrapper class to control the real appenders (like
+    "Log::Log4perl::Appender::File" or "Log::Dispatch::FileRotate"). The
+    "Log::Log4perl::Appender" class has an "appender" attribute, pointing to
+    the real appender.
+
+    The reason for this is that external appenders like
+    "Log::Dispatch::FileRotate" don't support all of Log::Log4perl's
+    appender control mechanisms (like appender thresholds).
+
+    The previously mentioned method "appender_by_name()" returns a
+    referrence to the *real* appender object. If you want access to the
+    wrapper class (e.g. if you want to modify the appender's threshold), use
+    the hash $Log::Log4perl::Logger::APPENDER_BY_NAME{...} instead, which
+    holds references all appender wrapper objects.
+
   Modify appender thresholds
     To conveniently adjust appender thresholds (e.g. because a script uses
     more_logging()), use
@@ -1872,6 +1888,7 @@ AUTHORS
         Contributors:
         Hutton Davidson <Davidson.Hutton@ftid.com>
         Chris R. Donnelly <cdonnelly@digitalmotorworks.com>
+        Matisse Enzer
         James FitzGibbon <james.fitzgibbon@target.com>
         Dennis Gregorovic <dgregor@redhat.com>
         Paul Harrington <Paul-Harrington@deshaw.com>
