@@ -1702,7 +1702,7 @@ names.
 For more information on opcodes and Safe Compartments, see L<Opcode> and
 L<Safe>.
 
-=head2 Incrementing and Decrementing the Log Levels
+=head2 Changing the Log Level on a Logger
 
 Log4perl provides some internal functions for quickly adjusting the
 log level from within a running Perl program. 
@@ -1715,11 +1715,24 @@ Typically run-time adjusting of levels is done
 at the beginning, or in response to some external input (like a
 "more logging" runtime command for diagnostics).
 
-To increase the level of logging currently being done, use:
+You get the log level from a logger object with:
+
+    $current_level = $logger->level();
+
+and you may set it with the same method, provided you first
+imported the log level constants, with:
+
+    use Log::Log4perl::Level;
+
+Then you can set the level on a logger to one of the constants,
+
+    $logger->level($ERROR); # one of DEBUG, INFO, WARN, ERROR, FATAL
+
+To B<increase> the level of logging currently being done, use:
 
     $logger->more_logging($delta);
 
-and to decrease it, use:
+and to B<decrease> it, use:
 
     $logger->less_logging($delta);
 
