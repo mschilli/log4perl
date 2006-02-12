@@ -20,13 +20,13 @@ use strict;
 use Test::More;
 use Log::Log4perl qw(get_logger);
 use Log::Log4perl::Level;
-use File::Spec;
+use File::Spec; use Data::Dumper;
 
 BEGIN {
     if ($] < 5.006) {
         plan skip_all => "Only with perl >= 5.006";
     } else {
-        plan tests => 53;
+        plan tests => 57;
     }
 }
 
@@ -83,7 +83,7 @@ my $app = Log::Log4perl::Appender->new(
 $log->add_appender($app);
 
 ######################################################################
-# let's start testing!
+# lets start testing!
 
 $log->level($DEBUG);
 
@@ -207,3 +207,25 @@ SKIP: {
     like($app0->buffer(), qr/197/,
        "Check logcarp");
 }
+
+######################################################################
+# Test fix of bug that had logwarn/die/etc print unformatted messages.
+######################################################################
+$app0->buffer("");
+
+$logger = get_logger("Twix::Bar");
+$log->level($DEBUG);
+
+eval { $logger->logdie(sub { "a" . "-" . "b" }); };
+like($@, qr/a-b/, "bugfix: logdie with sub{} as argument");
+
+$logger->logwarn(sub { "a" . "-" . "b" });
+like($warnstr, qr/a-b/, "bugfix: logwarn with sub{} as argument");
+
+$logger->logwarn({ filter => \&Dumper,
+                   value  => "a-b" });
+like($warnstr, qr/a-b/, "bugfix: logwarn with sub{filter/value} as argument");
+
+eval { $logger->logcroak({ filter => \&Dumper,
+                    value  => "a-b" }); };
+like($warnstr, qr/a-b/, "bugfix: logcroak with sub{} as argument");

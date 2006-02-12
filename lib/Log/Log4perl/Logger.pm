@@ -10,6 +10,7 @@ use Log::Log4perl;
 use Log::Log4perl::Level;
 use Log::Log4perl::Layout;
 use Log::Log4perl::Appender;
+use Log::Log4perl::Appender::String;
 use Log::Log4perl::Filter;
 use Carp;
 
@@ -25,7 +26,28 @@ our %APPENDER_BY_NAME = ();
 our $INITIALIZED = 0;
 our $NON_INIT_WARNED;
 
+    # Define the default appender that's used for formatting
+    # warn/die/croak etc. messages.
+our $STRING_APP_NAME = "_l4p_warn";
+our $STRING_APP      = Log::Log4perl::Appender->new(
+                          "Log::Log4perl::Appender::String",
+                          name => $STRING_APP_NAME);
+$STRING_APP->layout(Log::Log4perl::Layout::PatternLayout->new("%m"));
+our $STRING_APP_CODEREF = generate_coderef([[$STRING_APP_NAME, $STRING_APP]]);
+
 __PACKAGE__->reset();
+
+###########################################
+sub warning_render {
+###########################################
+    my($logger, @message) = @_;
+
+    $STRING_APP->string("");
+    $STRING_APP_CODEREF->($logger, 
+                          @message, 
+                          Log::Log4perl::Level::to_level($ALL));
+    return $STRING_APP->string();
+}
 
 ##################################################
 sub cleanup {
@@ -815,15 +837,14 @@ sub and_warn {
 #######################################################
   my $self = shift;
   my $msg = join("", @_[0 .. $#_]);
-  CORE::warn(callerline($msg));
+  CORE::warn(callerline($self->warning_render(@_[0 .. $#_])));
 }
 
 #######################################################
 sub and_die {
 #######################################################
   my $self = shift;
-  my $msg = join("", @_[0 .. $#_]);
-  die(callerline($msg));
+  die(callerline($self->warning_render(@_[0 .. $#_])));
 }
 
 ##################################################
@@ -877,27 +898,20 @@ sub logexit {
 }
 
 ##################################################
-# for die and warn, carp long/shortmess return line #s and the like
-##################################################
-sub noop {
-##################################################
-  return @_;
-}
-
-##################################################
 # clucks and carps are WARN level
 sub logcluck {
 ##################################################
   my $self = shift;
 
   local $Carp::CarpLevel = $Carp::CarpLevel + 1;
+  my $msg = $self->warning_render(@_);
 
   if ($self->is_warn()) {
-    my $message = Carp::longmess(@_);
+    my $message = Carp::longmess($msg);
     foreach (split(/\n/, $message)) {
       $self->warn("$_\n");
     }
-    Carp::cluck(noop($message));
+    Carp::cluck($msg);
   }
 }
 
@@ -907,13 +921,14 @@ sub logcarp {
   my $self = shift;
 
   local $Carp::CarpLevel = $Carp::CarpLevel + 1;
+  my $msg = $self->warning_render(@_);
 
   if ($self->is_warn()) {
-    my $message = Carp::shortmess(@_);
+    my $message = Carp::shortmess($msg);
     foreach (split(/\n/, $message)) {
       $self->warn("$_\n");
     }
-    Carp::carp(noop($message)) if $Log::Log4perl::LOGDIE_MESSAGE_ON_STDERR;
+    Carp::carp($msg) if $Log::Log4perl::LOGDIE_MESSAGE_ON_STDERR;
   }
 }
 
@@ -925,8 +940,9 @@ sub logcroak {
   my $self = shift;
 
   local $Carp::CarpLevel = $Carp::CarpLevel + 1;
+  my $msg = $self->warning_render(@_);
 
-  my $message = Carp::shortmess(@_);
+  my $message = Carp::shortmess($msg);
   if ($self->is_fatal()) {
     foreach (split(/\n/, $message)) {
       $self->fatal("$_\n");
@@ -934,7 +950,7 @@ sub logcroak {
   }
 
   $Log::Log4perl::LOGDIE_MESSAGE_ON_STDERR ? 
-      Carp::croak(noop($message)) : 
+      Carp::croak($msg) : 
         exit($Log::Log4perl::LOGEXIT_CODE);
 }
 
@@ -943,9 +959,10 @@ sub logconfess {
 ##################################################
   my $self = shift;
 
+  my $msg = $self->warning_render(@_);
 #local $Carp::CarpLevel = 2;
 
-  my $message = Carp::longmess(@_);
+  my $message = Carp::longmess($msg);
   if ($self->is_fatal()) {
     foreach (split(/\n/, $message)) {
       $self->fatal("$_\n");
@@ -953,7 +970,7 @@ sub logconfess {
   }
 
   $Log::Log4perl::LOGDIE_MESSAGE_ON_STDERR ? 
-      die(noop($message)) :
+      die($msg) :
         exit($Log::Log4perl::LOGEXIT_CODE);
 }
 
@@ -973,14 +990,17 @@ sub error_warn {
 sub error_die {
 ##################################################
   my $self = shift;
+
+  my $msg = $self->warning_render(@_);
+
   if ($self->is_error()) {
     $Log::Log4perl::caller_depth++;
-    $self->error(@_);
+    $self->error($msg);
     $Log::Log4perl::caller_depth--;
   }
 
   $Log::Log4perl::LOGDIE_MESSAGE_ON_STDERR ? 
-      $self->and_die(@_) :
+      $self->and_die($msg) :
         exit($Log::Log4perl::LOGEXIT_CODE);
 }
 
