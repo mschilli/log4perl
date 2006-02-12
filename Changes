@@ -2,6 +2,20 @@
  Revision history for Log::Log4perl
 ##################################################
 
+1.04 2006/02/08
+    *  TODO: Bug by Bill Mason: If a conversion pattern was specified
+             twice in a config file, the output was "ARRAY(0x808df00)".
+    *  (ms) Multiple calls to import (usually happens if 'use L4p' gets
+            called twice within the same namespace) caused nasty warnings,
+            bug reported by Greg Olszewski. Fixed by ignoring subsequent
+            calls from the same package to import().
+    *  (ms) Changed rendering of logdie/warn/cluck/croak/... messages
+            to fix a bug reported by Martin J. Evans.
+    *  (ms) Added a L4p::Appender::String appender to handle the
+            rendering internally.
+    *  (ms) Documentation patch by Matisse Enzer on increased/
+            decreased log levels.
+
 1.03 (2006/01/30)
     * (ms) Some perl-5.6.1 installations have a buggy Carp.pm. Skipping
            4 test cases for these. Reported by Andy Ford and Matisse Enzer.
