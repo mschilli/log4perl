@@ -63,6 +63,7 @@ our $CHATTY_DESTROY_METHODS = 0;
 
 our $LOGDIE_MESSAGE_ON_STDERR = 1;
 our $LOGEXIT_CODE             = 1;
+our %IMPORT_CALLED;
 
 ##################################################
 sub import {
@@ -72,6 +73,8 @@ sub import {
     no strict qw(refs);
 
     my $caller_pkg = caller();
+
+    return 1 if $IMPORT_CALLED{$caller_pkg}++;
 
     my(%tags) = map { $_ => 1 } @_;
 
