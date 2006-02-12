@@ -24,6 +24,7 @@ lib/Log/Log4perl/Appender/RRDs.pm
 lib/Log/Log4perl/Appender/Screen.pm
 lib/Log/Log4perl/Appender/ScreenColoredLevels.pm
 lib/Log/Log4perl/Appender/Socket.pm
+lib/Log/Log4perl/Appender/String.pm
 lib/Log/Log4perl/Appender/Synchronized.pm
 lib/Log/Log4perl/Appender/TestArrayBuffer.pm
 lib/Log/Log4perl/Appender/TestBuffer.pm
