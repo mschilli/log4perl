@@ -105,9 +105,9 @@ ok($@,"/level 'xxINFO' is not a valid error level/");
 $conf = <<EOL;
 log4j.category.simplelayout.test=INFO, myAppender
 
-log4j.appender.myAppender        = Log::Log4perl::Appender::FileAppender
-log4j.appender.myAppender        = Log::Log4perl::Layout::SimpleLayout
-log4j.appender.myAppender.File   = $testfile
+log4j.appender.myAppender          = Log::Log4perl::Appender::Screen
+log4j.appender.myAppender.nolayout = Log::Log4perl::Layout::SimpleLayout
+log4j.appender.myAppender.File     = $testfile
 EOL
 
 eval{
@@ -130,7 +130,7 @@ eval{
     Log::Log4perl->init(\$conf);
 
 };
-ok($@,"/ERROR: can't load appenderclass 't/tmp/test12.log'/");
+ok($@,"/log4j.appender.myAppender redefined/");
 
 
 
@@ -231,11 +231,13 @@ ok($buffer->buffer(),"ERROR - foobar\n");
 $conf = <<EOL;
 log4perl.logger.Foo.Bar          = INFO, Screen
 log4perl.logger.Foo.Bar          = INFO, Screen
+log4perl.appender.Screen         = Log::Log4perl::Appender::TestBuffer
+log4perl.appender.Screen.layout  = SimpleLayout
 EOL
 eval {
     Log::Log4perl::init( \$conf );
 };
-ok($@, '/Multiple definitions of logger Foo.Bar/');
+ok($@, '/log4perl.logger.Foo.Bar redefined/');
 
 BEGIN { plan tests => 14, }
 

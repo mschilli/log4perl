@@ -6,6 +6,9 @@ use strict;
 
 our @ISA = qw(Log::Log4perl::Config::BaseConfigurator);
 
+our %NOT_A_MULT_VALUE = map { $_ => 1 }
+    qw(conversionpattern);
+
 #poor man's export
 *eval_if_perl = \&Log::Log4perl::Config::eval_if_perl;
 *unlog4j      = \&Log::Log4perl::Config::unlog4j;
@@ -31,6 +34,8 @@ sub parse {
         s/^\s*#.*//;
         next unless /\S/;
     
+        my @parts = ();
+
         while (/(.+?)\\\s*$/) {
             my $prev = $1;
             my $next = shift(@$text);
@@ -41,6 +46,8 @@ sub parse {
         }
 
         if(my($key, $val) = /(\S+?)\s*=\s*(.*)/) {
+
+            my $key_org = $key;
 
             $val =~ s/\s+$//;
 
@@ -58,6 +65,7 @@ sub parse {
             my $how_deep = 0;
             my $ptr = $data;
             for my $part (split /\.|::/, $key) {
+                push @parts, $part;
                 $ptr->{$part} = {} unless exists $ptr->{$part};
                 $ptr = $ptr->{$part};
                 ++$how_deep;
@@ -69,7 +77,14 @@ sub parse {
             #into an arrayref like this:
             #to => { value => 
             #       ["him\@a.jabber.server", "her\@a.jabber.server"] },
-            if (exists $ptr->{value} && $how_deep > 2) {
+            # 
+            # This only is allowed for properties of appenders
+            # not listed in %NOT_A_MULT_VALUE (see top of file).
+            if (exists $ptr->{value} && 
+                $how_deep > 2 &&
+                defined $parts[0] && lc($parts[0]) eq "appender" && 
+                defined $parts[2] && ! exists $NOT_A_MULT_VALUE{lc($parts[2])}
+               ) {
                 if (ref ($ptr->{value}) ne 'ARRAY') {
                     my $temp = $ptr->{value};
                     $ptr->{value} = [];
@@ -77,6 +92,9 @@ sub parse {
                 }
                 push (@{$ptr->{value}}, $val);
             }else{
+                if(defined $ptr->{value}) {
+                    die "$key_org redefined";
+                }
                 $ptr->{value} = $val;
             }
         }
