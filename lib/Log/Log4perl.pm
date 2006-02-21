@@ -2503,6 +2503,7 @@ our
     Chris R. Donnelly <cdonnelly@digitalmotorworks.com>
     Matisse Enzer
     James FitzGibbon <james.fitzgibbon@target.com>
+    Carl Franks
     Dennis Gregorovic <dgregor@redhat.com>
     Paul Harrington <Paul-Harrington@deshaw.com>
     David Hull <hull@paracel.com>
