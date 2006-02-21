@@ -368,7 +368,8 @@ use Log::Log4perl::Appender::Screen;
 use Log::Log4perl::Appender::File;
 
 my $app_screen = Log::Log4perl::Appender::Screen->new();
-my $app_file = Log::Log4perl::Appender::File->new(filename => "/tmp/foobar");
+my $app_file = Log::Log4perl::Appender::File->new(
+    filename => File::Spec->catdir( File::Spec->tmpdir, 'foobar' ));
 
 eval { $log10->add_appender($app_file); };
 is($@, "", "Adding file appender");
