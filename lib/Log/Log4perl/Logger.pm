@@ -960,7 +960,7 @@ sub logconfess {
   my $self = shift;
 
   my $msg = $self->warning_render(@_);
-#local $Carp::CarpLevel = 2;
+  local $Carp::CarpLevel = 2;
 
   my $message = Carp::longmess($msg);
   if ($self->is_fatal()) {
@@ -970,7 +970,7 @@ sub logconfess {
   }
 
   $Log::Log4perl::LOGDIE_MESSAGE_ON_STDERR ? 
-      die($msg) :
+      confess($msg) :
         exit($Log::Log4perl::LOGEXIT_CODE);
 }
 
