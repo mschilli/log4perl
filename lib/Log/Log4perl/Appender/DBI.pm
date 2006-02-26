@@ -15,6 +15,9 @@ sub new {
 
     $self->_init(%p);
 
+    $self->{reconnect_attempts} = 1 unless 
+        exists $self->{reconnect_attempts};
+
     #e.g.
     #log4j.appender.DBAppndr.params.1 = %p    
     #log4j.appender.DBAppndr.params.2 = %5.5m
@@ -119,17 +122,21 @@ sub log {
 sub query_execute {
     my($self, $sth, @qmarks) = @_;
 
-    for(1..2) {
+    for my $attempt (0..$self->{reconnect_attempts}) {
         if(! $sth->execute(@qmarks)) {
                 # Exe failed
                 # warn "Log4perl: DBI->execute failed $DBI::errstr, \n".
                 #                  "on $self->{SQL}\n@qmarks";
             if(! $self->{dbh}->ping()) {
-                # Ping failed, reconnect
+                # Ping failed, try to reconnect
+                if($attempt) {
+                    sleep($self->{reconnect_sleep}) if $self->{reconnect_sleep};
+                }
+
                 $self->{dbh} = $self->{connect}->();
                 $sth = $self->create_statement($self->{SQL});
                 $self->{sth} = $sth if $self->{sth};
-                redo;
+                next;
             }
         }
         return 1;
@@ -530,6 +537,12 @@ of the program.  For long-running processes (e.g. mod_perl), connections
 might go stale, but if C<Log::Log4perl::Appender::DBI> tries to write
 a message and figures out that the DB connection is no longer working
 (using DBI's ping method), it will reconnect.
+
+The reconnection process can be controlled by two parameters,
+C<reconnect_attempts> and C<reconnect_sleep>. C<reconnect_attempts>
+specifies the number of reconnections attempts the DBI appender 
+performs until it gives up and dies. C<reconnect_sleep> is the
+time between reconnection attempts, measured in seconds.
 
 Alternatively, use C<Apache::DBI> or C<Apache::DBI::Cache> and read
 CHANGING DB CONNECTIONS above.

@@ -21,6 +21,8 @@
     *  (ms) Fixed stack trace level of logcarp()
     *  (ms) Carl Franks reported that the test suite failed on WinXP SP2
             because of a hardcoded /tmp - fixed by File::Spec->tempdir().
+    *  (ms) Added reconnect_attempts and reconnect_sleep parameters to 
+            DBI appender.
 
 1.03 (2006/01/30)
     * (ms) Some perl-5.6.1 installations have a buggy Carp.pm. Skipping
