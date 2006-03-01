@@ -2,6 +2,9 @@
  Revision history for Log::Log4perl
 ##################################################
 
+1.05 2006/02/28
+   *   (ms) Hugh Esco submitted a FAQ on where to put logfiles
+
 1.04 2006/02/26
     *  (ms) If a conversion pattern was specified twice in a config
             file, the output was "ARRAY(0x804da00)" (bug reported by
