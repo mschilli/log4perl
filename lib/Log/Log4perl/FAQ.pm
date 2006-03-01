@@ -1953,6 +1953,35 @@ will silently print the Unicode string to STDOUT in UTF-8. To see the
 characters printed, you'll need a UTF-8 terminal with a font including
 japanese Katakana characters.
 
+=head2 Where should I put my logfiles?
+
+Your log files may go anywhere you want them, but the effective
+user id of the calling process must have write access. 
+
+If the log file doesn't exist at program start, Log4perl's file appender
+will create it. For this, it needs write access to the directory where
+the new file will be located in. If the log file already exists at startup,
+the process simply needs write access to the file. Note that it will
+need write access to the file's directory if you're encountering situations
+where the logfile gets recreated, e.g. during log rotation.
+
+If Log::Log4perl is used by a web server application (e.g. in a CGI script
+or mod_perl), then the webserver's user (usually C<nobody> or C<www>)
+must have the permissions mentioned above.
+
+To prepare your web server to use log4perl, we'd recommend:
+
+    webserver:~$ su -
+    webserver:~# mkdir /var/log/cgiapps
+    webserver:~# chown nobody:root /var/log/cgiapps/
+    webserver:~# chown nobody:root -R /var/log/cgiapps/
+    webserver:~# chmod 02755 -R /var/log/cgiapps/
+
+Then set your /etc/log4perl.conf file to include:
+
+    log4perl.appender.FileAppndr1.filename = 
+        /var/log/cgiapps/<app-name>.log
+
 =cut
 
 =head1 SEE ALSO
