@@ -22,6 +22,7 @@ BEGIN {
 }
 
 use Log::Log4perl qw(:easy);
+use Log::Log4perl::Util;
 
 Log::Log4perl->easy_init(
     { level    => $DEBUG,
@@ -32,13 +33,16 @@ Log::Log4perl->easy_init(
 Log::Log4perl->infiltrate_lwp();
 
 my $ua = LWP::UserAgent->new();
-$ua->get("file:/tmp/foobar");
+
+my $tmpfile = Log::Log4perl::Util::tmpfile_name();
+END { unlink $tmpfile };
+$ua->get("file:$tmpfile");
 
 open LOG, "<lwpout.txt" or die "Cannot open lwpout.txt";
 my $data = join('', <LOG>);
 close LOG;
 
-like($data, qr#GET file:/tmp/foobar#);
+like($data, qr#GET file:$tmpfile#);
 
 END { unlink "lwpout.txt" }
 
@@ -55,7 +59,7 @@ Log::Log4perl->easy_init(
 Log::Log4perl->infiltrate_lwp();
 
 $ua = LWP::UserAgent->new();
-$ua->get("file:/tmp/foobar");
+$ua->get("file:$tmpfile");
 
 open LOG, "<lwpout.txt" or die "Cannot open lwpout.txt";
 $data = join('', <LOG>);
@@ -77,7 +81,7 @@ Log::Log4perl->easy_init(
 Log::Log4perl->infiltrate_lwp();
 
 $ua = LWP::UserAgent->new();
-$ua->get("file:/tmp/foobar");
+$ua->get("file:$tmpfile");
 
 open LOG, "<lwpout.txt" or die "Cannot open lwpout.txt";
 $data = join('', <LOG>);

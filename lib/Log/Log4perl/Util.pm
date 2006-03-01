@@ -42,6 +42,20 @@ sub module_available {  # Check if a module is available
     return 0;
 }
 
+##################################################
+sub tmpfile_name {  # File::Temp without the bells and whistles
+##################################################
+
+    my $name = File::Spec->catdir(File::Spec->tmpdir(), 
+                              'l4p-tmpfile-' . 
+                              "$$-" .
+                              int(rand(9999999)));
+
+        # Some crazy versions of File::Spec use backslashes on Win32
+    $name =~ s#\\#/#g;
+    return $name;
+}
+
 1;
 
 __END__
