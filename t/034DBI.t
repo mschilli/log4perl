@@ -3,7 +3,7 @@
 # Kevin Goess <cpan@goess.org>
 ###########################################
 
-use Test;
+use Test::More;
 
 use Log::Log4perl;
 our $no_DBD;
@@ -17,19 +17,11 @@ BEGIN {
         #die "" if $SQL::Statement::VERSION < 1.005;
     };
     if ($@) {
-        print STDERR "DBD::CSV or SQL::Statement 1.005 not installed, skipping tests\n";
-        $no_DBD = 1;
-        plan tests => 1;
+        plan skip_all => "DBD::CSV or SQL::Statement 1.005 not installed, skipping tests\n";
     }else{
         plan tests => 15;
     }
 }
-
-if ($no_DBD){
-    ok(1);
-    exit(0);
-}
-
 
 require DBI;
 my $dbh = DBI->connect('DBI:CSV:f_dir=t/tmp','testuser','testpw',{ PrintError => 1 });
@@ -101,7 +93,7 @@ my $logger = Log::Log4perl->get_logger("groceries.beer");
 #$logger->fatal('fatal message',1234,'foo','bar');
 $logger->fatal('fatal message',1234,'foo',{aaa => 'aaa'});
 
-#since we ARE buffering, that message shouldn't be there yet
+#since we ARE buffering, that message shouldnt be there yet
 {
  local $/ = undef;
  open (F, "t/tmp/log4perltest");
@@ -114,7 +106,7 @@ EOL
   $expected =~ s/[^\w ,"()]//g;
   $got = lc $got;   #accounting for variations in DBD::CSV behavior
   $expected = lc $expected;
-  ok($got, $expected);
+  is($got, $expected, "buffered");
 }
 
 $logger->warn('warning message',3456,'foo','bar');
@@ -136,7 +128,7 @@ EOL
   $expected =~ s/HASH\(.+?\)//;
   $got = lc $got; #accounting for variations in DBD::CSV behavior
   $expected = lc $expected;
-  ok($got, $expected);
+  is($got, $expected, "buffersize=2");
 }
 
 
@@ -147,20 +139,20 @@ my $sth = $dbh->prepare('select * from log4perltest');
 $sth->execute;
 
 my $row = $sth->fetchrow_arrayref;
-ok($row->[0], 'FATAL');
-ok($row->[1], 'fatal message');
-ok($row->[3], '1234');
-ok($row->[4], 'groceries.beer');
-ok($row->[5], 'main');
-ok($row->[6], 'foo');
-ok($row->[7], '/HASH/'); #verifying param checking for "filter=>sub{...} stuff
+is($row->[0], 'FATAL');
+is($row->[1], 'fatal message');
+is($row->[3], '1234');
+is($row->[4], 'groceries.beer');
+is($row->[5], 'main');
+is($row->[6], 'foo');
+like($row->[7], qr/HASH/); #verifying param checking for "filter=>sub{...} stuff
 
 $row = $sth->fetchrow_arrayref;
-ok($row->[0], 'WARN');
-ok($row->[1], 'warning message');
-ok($row->[3], '3456');
-ok($row->[4], 'groceries.beer');
-ok($row->[5], 'main');
+is($row->[0], 'WARN');
+is($row->[1], 'warning message');
+is($row->[3], '3456');
+is($row->[4], 'groceries.beer');
+is($row->[5], 'main');
 
 #$dbh->do('DROP TABLE log4perltest');
 
@@ -226,7 +218,7 @@ EOL
   $expected =~ s/[^\w ,"()]//g;
   $got = lc $got; #accounting for variations in DBD::CSV behavior
   $expected = lc $expected;
-  ok($got, $expected);
+  is($got, $expected);
 }
 
 $logger->fatal('warning message');

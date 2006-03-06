@@ -2,8 +2,10 @@
  Revision history for Log::Log4perl
 ##################################################
 
-1.05 2006/02/28
-   *   (ms) Hugh Esco submitted a FAQ on where to put logfiles
+1.05 (not yet released)
+    *   (ms) Hugh Esco submitted a FAQ on where to put logfiles
+    *   (ms) Applied patch provided by Chia-liang Kao to suppress an error
+             message and skip tests in the suite when DBI is missing.
 
 1.04 2006/02/26
     *  (ms) If a conversion pattern was specified twice in a config
