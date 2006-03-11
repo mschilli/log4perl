@@ -3,6 +3,7 @@
 ##################################################
 
 1.05 (not yet released)
+    *   (ms) die() on undefined configuration (rt 18103 by justice8@wanadoo.fr)
     *   (ms) Hugh Esco submitted a FAQ on where to put logfiles
     *   (ms) Applied patch provided by Chia-liang Kao to suppress an error
              message and skip tests in the suite when DBI is missing.

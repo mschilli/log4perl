@@ -527,6 +527,8 @@ sub config_read {
 ###########################################
     my($config) = @_;
 
+    die "Configuration not defined" unless defined $config;
+
     my @text;
 
     $CONFIG_FILE_READS++;  # Count for statistical purposes
