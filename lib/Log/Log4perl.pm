@@ -644,8 +644,8 @@ In this case, C<Log::Log4perl> will walk up the class hierarchy
 defined somewhere. In the case above, the log level at the root
 (root I<always> defines a log level, but not necessarily an appender)
 defines that 
-the log level is supposed to be C<ERROR> -- meaning that I<debug>
-and I<info> messages are suppressed.
+the log level is supposed to be C<ERROR> -- meaning that I<DEBUG>
+and I<INFO> messages are suppressed.
 
 =head2 Log Levels
 
@@ -901,7 +901,7 @@ how it works:
     log4j.appender.A1.layout=org.apache.log4j.PatternLayout
     log4j.appender.A1.layout.ConversionPattern=%-4r %-5p %c %x - %m%n
 
-This enables messages of priority C<debug> or higher in the root
+This enables messages of priority C<DEBUG> or higher in the root
 hierarchy and has the system write them to the console. 
 C<ConsoleAppender> is a Java appender, but C<Log::Log4perl> jumps
 through a significant number of hoops internally to map these to their
@@ -1421,7 +1421,7 @@ a hash, you can just as well initialize C<Log::Log4perl> with
 a reference to it:
 
     my %key_value_pairs = (
-        "log4perl.rootLogger"       => "error, LOGFILE",
+        "log4perl.rootLogger"       => "ERROR, LOGFILE",
         "log4perl.appender.LOGFILE" => "Log::Log4perl::Appender::File",
         ...
     );
