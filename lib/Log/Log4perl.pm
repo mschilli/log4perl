@@ -1205,15 +1205,15 @@ Here's how it works:
     # Turn off logging in a lower-level category while keeping
     # it active in higher-level categories.
     ############################################################
-    log4perl.rootLogger=debug, LOGFILE
-    log4perl.logger.deep.down.the.hierarchy = error, LOGFILE
+    log4perl.rootLogger=DEBUG, LOGFILE
+    log4perl.logger.deep.down.the.hierarchy = ERROR, LOGFILE
 
     # ... Define appenders ...
 
 This way, log messages issued from within 
 C<Deep::Down::The::Hierarchy> and below will be
-logged only if they're C<error> or worse, while in all other system components
-even C<debug> messages will be logged.
+logged only if they're C<ERROR> or worse, while in all other system components
+even C<DEBUG> messages will be logged.
 
 =head2 Return Values
 
