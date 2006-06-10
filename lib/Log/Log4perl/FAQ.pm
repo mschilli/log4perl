@@ -1982,6 +1982,114 @@ Then set your /etc/log4perl.conf file to include:
     log4perl.appender.FileAppndr1.filename = 
         /var/log/cgiapps/<app-name>.log
 
+=head2 How can my file appender deal with disappearing log files?
+
+The file appender that comes with Log4perl, Log::Log4perl::Appender::File,
+will open a specified log file at initialization time and will
+keep writing to the file handle.
+
+In case the associated file goes way, messages written by a 
+long-running process will still be written
+to the file handle. In case the file has been moved to a different 
+location on the same file system, the writer will keep writing to
+it under the new filename. In case the file has been removed from
+the file system, the log messages will end up in nowhere land. There is
+no error message in this case, because the writer has no idea that
+the file handle is not associated with a visible file.
+
+To prevent the loss of log messages when log files disappear, the
+file appender's C<recreate> option needs to be set to a true value:
+
+    log4perl.appender.Logfile.recreate = 1
+
+This will instruct the file appender to check in regular intervals
+(default: 30 seconds) if the log file is still there. If it finds
+out that the file is missing, it will recreate it.
+
+Checking if the log file still exists is fairly expensive. For this
+reason it is only performed every 30 seconds. To change this interval,
+the option C<recreate_check_interval> can be set to the number of
+seconds between checks. In the extreme case where the check should
+be performed before every write, it can even be set to 0:
+
+    log4perl.appender.Logfile.recreate = 1
+    log4perl.appender.Logfile.recreate_check_interval = 0
+
+To avoid having to check the file system frequently, a signal
+handler can be set up:
+
+    log4perl.appender.Logfile.recreate = 1
+    log4perl.appender.Logfile.recreate_signal = HUP
+
+This will install a signal handler which will recreate a missing log file
+immediatly when it receives the defined signal. 
+
+Note that the init_and_watch() method for Log4perl's initialization
+can also be instructed to install a signal handler. Make sure to
+use a different signal if you're using both of them at the same time.
+
+=head2 How can I rotate a logfile with newsyslog?
+
+Here's a few things that need to be taken care of when using the popular
+log file rotating utilty C<newsyslog>
+(http://www.courtesan.com/newsyslog) with Log4perl's file appender
+in long-running processes.
+
+For example, with a newsyslog configuration like
+
+    # newsyslog.conf
+    /tmp/test.log 666  12  5  *  B
+
+and a call to 
+
+    # newsyslog -f /path/to/newsyslog.conf
+
+C<newsyslog> will (if C</tmp/test.log> is larger than the specified 5K
+in size) move the current log file C</tmp/test.log> to 
+C</tmp/test.log.0> and create a new and empty C</tmp/test.log>. An
+already existing C</tmp/test.log.0> would be moved to C</tmp/test.log.1>,
+C</tmp/test.log.1> to C</tmp/test.log.2>,
+and so forth, for every one of a max number of 12 archived logfiles
+that have been configured in C<newsyslog.conf>.
+
+From Log4perl's appender's point of view, this situation is identical
+to the one described in the previous FAQ entry, labeled
+C<How can my file appender deal with disappearing log files>.
+
+To make sure that log messages are written to the new log file and not
+to an archived one or end up in nowhere land,
+the appender's C<recreate> and C<recreate_check_interval> have to be
+configured to deal with the 'disappearing' log file.
+
+The situation becomes extremely critical when C<newsyslog>'s option
+to compress archived log files is enabled. This causes the
+original log file not to be moved, but to disappear. If the
+file appender isn't configured to recreate the logfile in this situation,
+log messages will actually be lost without warning. This also
+applies for the short time frame of C<recreate_check_interval> seconds
+in between the recreator's file checks.
+
+To make sure that no messages get lost without having to set
+
+    log4perl.appender.Logfile.recreate_check_interval = 0
+
+for a fairly expensive check before every write to the file appender,
+a signal handler can be set up:
+
+    log4perl.appender.Logfile.recreate = 1
+    log4perl.appender.Logfile.recreate_signal  = USR1
+    log4perl.appender.Logfile.recreate_pid_write = /var/myapp.pid
+
+As a service for C<newsyslog> users, Log4perl's file appender writes
+the current process ID to a PID file specified by the C<recreate_pid_write>
+option.  C<newsyslog> then needs to be configured as in
+
+    # newsyslog.conf configuration for compressing archive files and
+    # sending a signal to the Log4perl-enabled application
+    /tmp/test.log 666  12  5  *  BZ /var/myapp.pid
+
+to send the defined signal to the application process at rotation time.
+
 =cut
 
 =head1 SEE ALSO
