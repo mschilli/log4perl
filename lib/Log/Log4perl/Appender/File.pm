@@ -280,6 +280,24 @@ has been moved or deleted. If this is undesirable,
 setting C<recreate_check_interval> to 0 will have the appender
 appender check the file with I<every> call to C<log()>.
 
+=item recreate_signal
+
+In C<recreate> mode, if this option is set to a signal name
+(e.g. "USR1"), the appender will recreate a missing logfile
+when it receives the signal. It uses less resources than constant
+polling. The usual limitation with perl's signal handling apply.
+Check the FAQ for using this option with the log rotating 
+utility C<newsyslog>.
+
+=item recreate_pid_write
+
+The popular log rotating utility C<newsyslog> expects a pid file
+in order to send the application a signal when its logs have
+been rotated. This option expects a path to a file where the pid
+of the currently running application gets written to.
+Check the FAQ for using this option with the log rotating 
+utility C<newsyslog>.
+
 =back
 
 Design and implementation of this module has been greatly inspired by
