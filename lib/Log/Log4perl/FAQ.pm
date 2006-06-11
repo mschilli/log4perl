@@ -632,7 +632,17 @@ the logging system in order not to lose any messages in the process.
 
 Luckily, I<Mark Pfeiffer>'s C<Log::Dispatch::FileRotate> appender
 works well with Log::Log4perl to rotate your logfiles in a variety of ways.
-All you have to do is specify it in your Log::Log4perl configuration file
+
+Note, however, that having the application deal with rotating a log
+file is not cheap. Among other things, it requires locking the log file 
+with every write to avoid race conditions.
+There are good reasons to use external rotators like C<newsyslog>
+instead.
+See the entry C<How can I rotate a logfile with newsyslog?> in the
+FAQ for more information on how to configure it.
+
+When using C<Log::Dispatch::FileRotate>, 
+all you have to do is specify it in your Log::Log4perl configuration file
 and your logfiles will be rotated automatically.
 
 You can choose between rolling based on a maximum size ("roll if greater

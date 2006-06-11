@@ -5,7 +5,7 @@ use strict;
 
 package Log::Log4perl::Config::Watch;
 
-use constant _INTERNAL_DEBUG => 0;
+use constant _INTERNAL_DEBUG => 1;
 
 our $NEXT_CHECK_TIME;
 our $SIGNAL_CAUGHT;
@@ -28,12 +28,20 @@ sub new {
 
     if($self->{signal}) {
             # We're in signal mode, set up the handler
-        $SIG{$self->{signal}} = sub { $SIGNAL_CAUGHT = 1; };
+        print "Setting up signal handler for '$self->{signal}'\n" if
+            _INTERNAL_DEBUG;
+        $SIG{$self->{signal}} = sub { 
+            $self->{signal_caught} = 1; 
+            print "Caught signal\n" if _INTERNAL_DEBUG;
+            $SIGNAL_CAUGHT = 1 if $self->{l4p_internal};
+        };
             # Reset the marker. The handler is going to modify it.
-        $SIGNAL_CAUGHT = 0;
+        $self->{signal_caught} = 0;
+        $SIGNAL_CAUGHT = 0 if $self->{l4p_internal};
     } else {
             # Just called to initialize
-        $self->change_detected();
+        $self->change_detected(undef, 1);
+        $self->file_has_moved(undef, 1);
     }
 
     return $self;
@@ -66,7 +74,7 @@ sub check_interval {
 ###########################################
 sub file_has_moved {
 ###########################################
-    my($self, $time) = @_;
+    my($self, $time, $force) = @_;
 
     my $task = sub {
         my @stat = stat($self->{file});
@@ -93,13 +101,13 @@ sub file_has_moved {
         return $has_moved;
     };
 
-    return $self->check($time, $task);
+    return $self->check($time, $task, $force);
 }
 
 ###########################################
 sub change_detected {
 ###########################################
-    my($self, $time) = @_;
+    my($self, $time, $force) = @_;
 
     my $task = sub {
         my @stat = stat($self->{file});
@@ -126,20 +134,21 @@ sub change_detected {
         return "";  # Hasn't changed
     };
 
-    return $self->check($time, $task);
+    return $self->check($time, $task, $force);
 }
 
 ###########################################
 sub check {
 ###########################################
-    my($self, $time, $task) = @_;
+    my($self, $time, $task, $force) = @_;
 
     $time = time() unless defined $time;
 
     print "Calling change_detected (time=$time)\n" if _INTERNAL_DEBUG;
 
         # Do we need to check?
-    if($self->{_last_checked_at} + 
+    if(!$force and
+       $self->{_last_checked_at} + 
        $self->{check_interval} > $time) {
         print "No need to check\n" if _INTERNAL_DEBUG;
         return ""; # don't need to check, return false
@@ -149,7 +158,8 @@ sub check {
 
     # Set global var for optimizations in case we just have one watcher
     # (like in Log::Log4perl)
-    $NEXT_CHECK_TIME = $time + $self->{check_interval};
+    $self->{next_check_time} = $time + $self->{check_interval};
+    $NEXT_CHECK_TIME = $self->{next_check_time} if $self->{l4p_internal};
 
     return $task->($time);
 }
@@ -236,12 +246,9 @@ to set up a signal handler. If you call the constructor like
                           signal  => 'HUP'
                   );
 
-then a signal handler like
-
-    $SIG{HUP} = sub { $SIGNAL_CAUGHT = 1; };
-
-will be installed, setting a globally accessible variable 
-C<Log::Log4perl::Config::Watch::SIGNAL_CAUGHT> to a true value when
+then a signal handler will be installed, setting the object's variable 
+C<$self-E<gt>{signal_caught}>
+to a true value when
 the signal arrives. Comes with all the problems that signal handlers
 go along with.
 

@@ -7,6 +7,7 @@ our @ISA = qw(Log::Log4perl::Appender);
 use warnings;
 use strict;
 use Log::Log4perl::Config::Watch;
+use constant _INTERNAL_DEBUG => 1;
 
 ##################################################
 sub new {
@@ -22,6 +23,8 @@ sub new {
         utf8      => undef,
         recreate  => 0,
         recreate_check_interval => 30,
+        recreate_signal         => undef,
+        recreate_pid_write      => undef,
         @options,
     };
 
@@ -29,6 +32,15 @@ sub new {
         exists $self->{filename};
 
     bless $self, $class;
+
+    if($self->{recreate_pid_write}) {
+        print "Creating pid file",
+              " $self->{recreate_pid_write}\n" if _INTERNAL_DEBUG;
+        open FILE, ">$self->{recreate_pid_write}" or 
+            die "Cannot open $self->{recreate_pid_write}";
+        print FILE "$$\n";
+        close FILE;
+    }
 
         # This will die() if it fails
     $self->file_open();
@@ -69,7 +81,10 @@ sub file_open {
     if($self->{recreate}) {
         $self->{watcher} = Log::Log4perl::Config::Watch->new(
             file           => $self->{filename},
-            check_interval => $self->{recreate_check_interval},
+            ($self->{recreate_check_interval} ?
+              (check_interval => $self->{recreate_check_interval}) : ()),
+            ($self->{recreate_check_signal} ?
+              (signal => $self->{recreate_check_signal}) : ()),
         );
     }
 
@@ -105,6 +120,9 @@ sub file_switch {
 ##################################################
     my($self, $new_filename) = @_;
 
+    print "Switching file from $self->{filename} to $new_filename\n" if
+        _INTERNAL_DEBUG;
+
     $self->file_close();
     $self->{filename} = $new_filename;
     $self->file_open();
@@ -116,8 +134,15 @@ sub log {
     my($self, %params) = @_;
 
     if($self->{recreate}) {
-        if($self->{watcher}->file_has_moved()) {
-            $self->file_switch($self->{filename});
+        if($self->{recreate_check_signal}) {
+            if($self->{watcher}->{signal_caught}) {
+                $self->{watcher}->{signal_caught} = 0;
+                $self->file_switch($self->{filename});
+            }
+        } else {
+            if($self->{watcher}->file_has_moved()) {
+                $self->file_switch($self->{filename});
+            }
         }
     }
 
