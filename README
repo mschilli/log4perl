@@ -1,5 +1,5 @@
 ######################################################################
-    Log::Log4perl 1.04
+    Log::Log4perl 1.05
 ######################################################################
 
 NAME
@@ -173,7 +173,7 @@ How to use it
     we're at the root) to figure out if a log level is defined somewhere. In
     the case above, the log level at the root (root *always* defines a log
     level, but not necessarily an appender) defines that the log level is
-    supposed to be "ERROR" -- meaning that *debug* and *info* messages are
+    supposed to be "ERROR" -- meaning that *DEBUG* and *INFO* messages are
     suppressed.
 
   Log Levels
@@ -418,7 +418,7 @@ How to use it
         log4j.appender.A1.layout=org.apache.log4j.PatternLayout
         log4j.appender.A1.layout.ConversionPattern=%-4r %-5p %c %x - %m%n
 
-    This enables messages of priority "debug" or higher in the root
+    This enables messages of priority "DEBUG" or higher in the root
     hierarchy and has the system write them to the console.
     "ConsoleAppender" is a Java appender, but "Log::Log4perl" jumps through
     a significant number of hoops internally to map these to their
@@ -710,14 +710,14 @@ Categories
         # Turn off logging in a lower-level category while keeping
         # it active in higher-level categories.
         ############################################################
-        log4perl.rootLogger=debug, LOGFILE
-        log4perl.logger.deep.down.the.hierarchy = error, LOGFILE
+        log4perl.rootLogger=DEBUG, LOGFILE
+        log4perl.logger.deep.down.the.hierarchy = ERROR, LOGFILE
 
         # ... Define appenders ...
 
     This way, log messages issued from within "Deep::Down::The::Hierarchy"
-    and below will be logged only if they're "error" or worse, while in all
-    other system components even "debug" messages will be logged.
+    and below will be logged only if they're "ERROR" or worse, while in all
+    other system components even "DEBUG" messages will be logged.
 
   Return Values
     All logging methods return values indicating if their message actually
@@ -901,7 +901,7 @@ Cool Tricks
     to it:
 
         my %key_value_pairs = (
-            "log4perl.rootLogger"       => "error, LOGFILE",
+            "log4perl.rootLogger"       => "ERROR, LOGFILE",
             "log4perl.appender.LOGFILE" => "Log::Log4perl::Appender::File",
             ...
         );
@@ -1902,6 +1902,7 @@ AUTHORS
         Hutton Davidson <Davidson.Hutton@ftid.com>
         Chris R. Donnelly <cdonnelly@digitalmotorworks.com>
         Matisse Enzer
+        Hugh Esco
         James FitzGibbon <james.fitzgibbon@target.com>
         Carl Franks
         Dennis Gregorovic <dgregor@redhat.com>
