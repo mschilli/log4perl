@@ -5,7 +5,7 @@ use strict;
 
 package Log::Log4perl::Config::Watch;
 
-use constant _INTERNAL_DEBUG => 1;
+use constant _INTERNAL_DEBUG => 0;
 
 our $NEXT_CHECK_TIME;
 our $SIGNAL_CAUGHT;

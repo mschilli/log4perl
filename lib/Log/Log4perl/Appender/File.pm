@@ -7,7 +7,7 @@ our @ISA = qw(Log::Log4perl::Appender);
 use warnings;
 use strict;
 use Log::Log4perl::Config::Watch;
-use constant _INTERNAL_DEBUG => 1;
+use constant _INTERNAL_DEBUG => 0;
 
 ##################################################
 sub new {
