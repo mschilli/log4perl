@@ -2,12 +2,10 @@
  Revision history for Log::Log4perl
 ##################################################
 
-1.05 (not yet released)
-TODO: 
- * Global NEXT_CHECK interferes with config_and_watch
- * Signal handler for file appender (newsyslog)
- * Stack signal handlers if dupe signals are used
-
+1.05 2006/06/10
+    *   (ms) Added recreate signal handler to L4p::Appender::File for
+             newsyslog support. Two new FAQ entries on dealing with 
+             newsyslog and log files being removed by external apps.
     *   (ms) L4p::Config::Watch no longer sets the global $SIGNAL_CAUGHT by
              default but uses an instance variable instead to prevent
              clobbering L4p's config and watch mechanism.
