@@ -1963,6 +1963,44 @@ will silently print the Unicode string to STDOUT in UTF-8. To see the
 characters printed, you'll need a UTF-8 terminal with a font including
 japanese Katakana characters.
 
+=head2 How can I send errors to the screen, and debug messages to a file?
+
+Let's assume you want to maintain a detailed DEBUG output in a file
+and only messages of level ERROR and higher should be printed on the
+screen. Often times, developers come up with something like this:
+
+     # Wrong!!!
+    log4perl.logger = DEBUG, FileApp
+    log4perl.logger = ERROR, ScreenApp
+     # Wrong!!!
+
+This won't work, however. Logger definitions aren't additive, and the
+second statement will overwrite the first one. Log4perl versions
+below 1.04 were silently accepting this, leaving people confused why
+it wouldn't work as expected.
+As of 1.04, this will throw a I<fatal error> to notify the user of
+the problem.
+
+What you want to do instead, is this:
+
+    log4perl.logger                    = DEBUG, FileApp, ScreenApp
+
+    log4perl.appender.FileApp          = Log::Log4perl::Appender::File
+    log4perl.appender.FileApp.filename = test.log
+    log4perl.appender.FileApp.layout   = SimpleLayout
+
+    log4perl.appender.ScreenApp          = Log::Log4perl::Appender::Screen
+    log4perl.appender.ScreenApp.stderr   = 0
+    log4perl.appender.ScreenApp.layout   = SimpleLayout
+       ### limiting output to ERROR messages
+    log4perl.appender.Screenapp.Threshold = ERROR
+       ###
+
+Note that without the second appender's C<Threshold> setting, both appenders
+would receive all messages prioritized DEBUG and higher. With the
+threshold set to ERROR, the second appender will filter the messages
+as required.
+
 =head2 Where should I put my logfiles?
 
 Your log files may go anywhere you want them, but the effective
