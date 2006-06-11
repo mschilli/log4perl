@@ -12,7 +12,7 @@ BEGIN {
     if ($] < 5.006) {
         plan skip_all => "Only with perl >= 5.006";
     } else {
-        plan tests => 21;
+        plan tests => 26;
     }
 }
 
@@ -192,3 +192,36 @@ sub trunc {
     open FILE, ">$_[0]" or die "Cannot open $_[0]";
     close FILE;
 }
+
+# ***************************************************************
+# Check the 'recreate' feature with signal handling
+
+SKIP: {
+  skip "Signal handling not supported on Win32", 5 if $^O eq "MSWin32";
+
+  my $conf3 = <<EOL;
+    log4j.category.animal.dog   = INFO, myAppender
+
+    log4j.appender.myAppender          = Log::Log4perl::Appender::File
+    log4j.appender.myAppender.layout   = Log::Log4perl::Layout::SimpleLayout
+    log4j.appender.myAppender.filename = $testfile
+    log4j.appender.myAppender.recreate = 1
+    log4j.appender.myAppender.recreate_check_signal = USR1
+EOL
+
+  Log::Log4perl->init(\$conf3);
+  
+  $logger = Log::Log4perl::get_logger('animal.dog');
+  $logger->info("test1");
+  ok(-f $testfile, "recreate_signal - testfile created");
+  
+  unlink $testfile;
+  ok(!-f $testfile, "recreate_signal - testfile deleted");
+  
+  $logger->info("test1");
+  ok(!-f $testfile, "recreate_signal - testfile still missing");
+  
+  ok(kill('USR1', $$), "sending signal");
+  $logger->info("test1");
+  ok(-f $testfile, "recreate_signal - testfile reinstated");
+};
