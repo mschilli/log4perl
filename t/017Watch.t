@@ -12,7 +12,7 @@ BEGIN {
     if ($] < 5.006) {
         plan skip_all => "Only with perl >= 5.006";
     } else {
-        plan tests => 26;
+        plan tests => 28;
     }
 }
 
@@ -225,3 +225,65 @@ EOL
   $logger->info("test1");
   ok(-f $testfile, "recreate_signal - testfile reinstated");
 };
+
+# ***************************************************************
+# Check the 'recreate' feature with check_interval
+
+trunc($testfile);
+$conf3 = <<EOL;
+log4j.category.animal.dog   = INFO, myAppender
+
+log4j.appender.myAppender          = Log::Log4perl::Appender::File
+log4j.appender.myAppender.layout   = Log::Log4perl::Layout::SimpleLayout
+log4j.appender.myAppender.filename = $testfile
+log4j.appender.myAppender.recreate = 1
+log4j.appender.myAppender.recreate_check_interval = 1
+log4j.appender.myAppender.mode     = append
+EOL
+
+  # Create logfile
+Log::Log4perl->init(\$conf3);
+  # ... and immediately remove it
+unlink $testfile or die "Cannot unlink $testfile";
+
+print "sleeping for 2 secs\n";
+sleep(2);
+
+$logger = Log::Log4perl::get_logger('animal.dog');
+$logger->info("test1");
+open (LOG, $testfile) or die "can't open $testfile $!";
+is(scalar <LOG>, "INFO - test1\n", "recreate before first write");
+
+# ***************************************************************
+# Check the 'recreate' feature with check_interval (2nd write)
+
+trunc($testfile);
+$conf3 = <<EOL;
+log4j.category.animal.dog   = INFO, myAppender
+
+log4j.appender.myAppender          = Log::Log4perl::Appender::File
+log4j.appender.myAppender.layout   = Log::Log4perl::Layout::SimpleLayout
+log4j.appender.myAppender.filename = $testfile
+log4j.appender.myAppender.recreate = 1
+log4j.appender.myAppender.recreate_check_interval = 1
+log4j.appender.myAppender.mode     = append
+EOL
+
+  # Create logfile
+Log::Log4perl->init(\$conf3);
+
+  # Write to it
+$logger = Log::Log4perl::get_logger('animal.dog');
+$logger->info("test1");
+
+  # ... remove it
+unlink $testfile or die "Cannot unlink $testfile";
+
+print "sleeping for 2 secs\n";
+sleep(2);
+
+  # ... write again
+$logger->info("test2");
+
+open (LOG, $testfile) or die "can't open $testfile $!";
+is(scalar <LOG>, "INFO - test2\n", "recreate before 2nd write");
