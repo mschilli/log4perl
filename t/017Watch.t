@@ -12,7 +12,7 @@ BEGIN {
     if ($] < 5.006) {
         plan skip_all => "Only with perl >= 5.006";
     } else {
-        plan tests => 28;
+        plan tests => 29;
     }
 }
 
@@ -287,3 +287,39 @@ $logger->info("test2");
 
 open (LOG, $testfile) or die "can't open $testfile $!";
 is(scalar <LOG>, "INFO - test2\n", "recreate before 2nd write");
+
+# ***************************************************************
+# Check the 'recreate' feature with moved/recreated file
+
+trunc($testfile);
+$conf3 = <<EOL;
+log4j.category.animal.dog   = INFO, myAppender
+
+log4j.appender.myAppender          = Log::Log4perl::Appender::File
+log4j.appender.myAppender.layout   = Log::Log4perl::Layout::SimpleLayout
+log4j.appender.myAppender.filename = $testfile
+log4j.appender.myAppender.recreate = 1
+log4j.appender.myAppender.recreate_check_interval = 1
+log4j.appender.myAppender.mode     = append
+EOL
+
+  # Create logfile
+Log::Log4perl->init(\$conf3);
+
+  # Get a logger, but dont write to it
+$logger = Log::Log4perl::get_logger('animal.dog');
+
+rename "$testfile", "$testfile.old" or die "Cannot rename ($!)";
+  # recreate it
+trunc($testfile);
+
+print "sleeping for 2 secs\n";
+sleep(2);
+
+  # ... write to (hopefully) truncated file
+$logger->info("test3");
+
+open (LOG, $testfile) or die "can't open $testfile $!";
+is(scalar <LOG>, "INFO - test3\n", "log to externally recreated file");
+
+unlink "$testfile.old";
