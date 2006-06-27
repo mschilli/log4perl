@@ -124,12 +124,12 @@ sub change_detected {
 
         if($new_timestamp > $self->{_last_timestamp}) {
             $self->{_last_timestamp} = $new_timestamp;
-            print "Change detected (store=$new_timestamp)!\n" 
+            print "Change detected (file=$self->{file} store=$new_timestamp)\n"
                   if _INTERNAL_DEBUG;
             return 1; # Has changed
         }
            
-        print "Hasn't changed (file=$new_timestamp ",
+        print "$self->{file} unchanged (file=$new_timestamp ",
               "stored=$self->{_last_timestamp})!\n" if _INTERNAL_DEBUG;
         return "";  # Hasn't changed
     };
@@ -144,7 +144,7 @@ sub check {
 
     $time = time() unless defined $time;
 
-    print "Calling change_detected (time=$time)\n" if _INTERNAL_DEBUG;
+    print "Soft check (file=$self->{file} time=$time)\n" if _INTERNAL_DEBUG;
 
         # Do we need to check?
     if(!$force and
@@ -161,6 +161,7 @@ sub check {
     $self->{next_check_time} = $time + $self->{check_interval};
     $NEXT_CHECK_TIME = $self->{next_check_time} if $self->{l4p_internal};
 
+    print "Hard check (file=$self->{file} time=$time)\n" if _INTERNAL_DEBUG;
     return $task->($time);
 }
 
