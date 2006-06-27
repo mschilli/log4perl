@@ -76,7 +76,7 @@ ok($formatter->format($GMTIME), "Mon Mon Mon Monday");
 # Day of Year
 ###########################################
 $formatter = Log::Log4perl::DateFormat->new("D DD DDD DDDD");
-ok($formatter->format($GMTIME), "237 237 237  237");
+ok($formatter->format($GMTIME), "238 238 238  238");
 
 ###########################################
 # AM/PM

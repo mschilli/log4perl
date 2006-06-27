@@ -191,7 +191,7 @@ sub rep {
 #D - day of the year #
 ######################
     } elsif($first eq "D") {
-        push @{$self->{stack}}, [7, sub { $_[0] }];
+        push @{$self->{stack}}, [7, sub { $_[0] + 1}];
         return "%${len}s";
 
 ######################
