@@ -2149,10 +2149,10 @@ for details.
 =head2 How can a process under user id A log to a file under user id B?
 
 This scenario often occurs in configurations where processes run under
-various user IDs but need to write to a log file under a different
-user id. 
+various user IDs but need to write to a log file under a fixed, but 
+different user id. 
 
-With traditional file appender, the log file will probably be created
+With a traditional file appender, the log file will probably be created
 under one user's id and appended to under a different user's id. With
 a typical umask of 0002, the file will be created with -rw-rw-r--
 permissions. If a user who's not in the first user's group
