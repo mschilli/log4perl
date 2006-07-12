@@ -5,6 +5,7 @@
 1.06 (not yet released)
     *   (ms) Applied patch by Robert Jacobson to fix day-of-year in
              DateFormat, which was off by one.
+    *   (ms) Added FAQ on syslog
 
 1.05 2006/06/10
     *   (ms) Added recreate signal handler to L4p::Appender::File for
