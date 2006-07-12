@@ -2220,7 +2220,7 @@ Without Log4perl's ability to activate logging in only specific
 parts of a system, complex systems will trigger log events all over
 the place and slow down execution to a crawl at high debug levels.
 
-Remote-controlling loggin in the hierarchical parts of an application
+Remote-controlling logging in the hierarchical parts of an application
 via Log4perl's categories is one of its most distinguished features.
 It allows for enabling high debug levels in specified areas without
 noticable performance impact.
