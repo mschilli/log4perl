@@ -2172,13 +2172,13 @@ has an C<umask> option that can be set to support this:
     log4perl.appender.File = Log::Log4perl::Appender::File
     log4perl.appender.File.umask = sub { 0000 };
 
-This way, the log file will be created with -rw-rw-rw permissions and
-therefore has world write permission. This might open up the logfile
-for unwanted manipulations, though.
+This way, the log file will be created with -rw-rw-rw- permissions and
+therefore has world write permissions. This might open up the logfile
+for unwanted manipulations by arbitrary users, though.
 
 =item *
 
-Running the process under an effective user id of root will allow
+Running the process under an effective user id of C<root> will allow
 it to write to the log file, no matter who started the process.
 However, this is not a good idea, because of security concerns.
 
@@ -2186,7 +2186,7 @@ However, this is not a good idea, because of security concerns.
 
 Luckily, under Unix, there's the syslog daemon which runs as root and
 takes log requests from user processes over a socket and writes them
-to log files as configured in /etc/syslog.conf.
+to log files as configured in C</etc/syslog.conf>.
 
 By modifying C</etc/syslog.conf> and HUPing the syslog daemon, you can
 configure new log files:
@@ -2196,7 +2196,7 @@ configure new log files:
     user.* /some/path/file.log
 
 Using the C<Log::Dispatch::Syslog> appender, which comes with the
-C<Log::Log4perl> distribution, will then send messages via syslog:
+C<Log::Log4perl> distribution, you can then send messages via syslog:
 
     use Log::Log4perl qw(:easy);
 
@@ -2209,6 +2209,21 @@ C<Log::Log4perl> distribution, will then send messages via syslog:
     
         # Writes to /some/path/file.log
     ERROR "Message!";
+
+This way, the syslog daemon will solve the permission problem. 
+
+Note that while it is possible to use syslog() without Log4perl (syslog
+supports log levels, too), traditional syslog setups have a
+significant drawback.
+
+Without Log4perl's ability to activate logging in only specific
+parts of a system, complex systems will trigger log events all over
+the place and slow down execution to a crawl at high debug levels.
+
+Remote-controlling loggin in the hierarchical parts of an application
+via Log4perl's categories is one of its most distinguished features.
+It allows for enabling high debug levels in specified areas without
+noticable performance impact.
 
 =cut
 
