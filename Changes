@@ -6,6 +6,10 @@
     *   (ms) Applied patch by Robert Jacobson to fix day-of-year in
              DateFormat, which was off by one.
     *   (ms) Added FAQ on syslog
+    *   (ms) umask values for the file appender are now also accepted 
+             in octal form (0xxx).
+    *   (ms) The file appender now accepts owner/group settings of
+             newly created log files.
 
 1.05 2006/06/10
     *   (ms) Added recreate signal handler to L4p::Appender::File for

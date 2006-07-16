@@ -17,6 +17,8 @@ sub new {
     my $self = {
         name      => "unknown name",
         umask     => undef,
+        owner     => undef,
+        group     => undef,
         autoflush => 1,
         mode      => "append",
         binmode   => undef,
@@ -27,6 +29,11 @@ sub new {
         recreate_pid_write      => undef,
         @options,
     };
+
+    if(defined $self->{umask} and $self->{umask} =~ /^0/) {
+            # umask value is a string, meant to be an oct value
+        $self->{umask} = oct($self->{umask});
+    }
 
     die "Mandatory parameter 'filename' missing" unless
         exists $self->{filename};
@@ -75,8 +82,23 @@ sub file_open {
 
     umask($self->{umask}) if defined $self->{umask};
 
+    my $didnt_exist = ! -f $self->{filename};
+
     open $fh, "$arrows$self->{filename}" or
         die "Can't open $self->{filename} ($!)";
+
+    if($didnt_exist and 
+         ( defined $self->{owner} or defined $self->{group} )
+      ) {
+
+        eval { $self->perms_fix() };
+
+        if($@) {
+              # Cleanup and re-throw
+            unlink $self->{filename};
+            die $@;
+        }
+    }
 
     if($self->{recreate}) {
         $self->{watcher} = Log::Log4perl::Config::Watch->new(
@@ -113,6 +135,43 @@ sub file_close {
     my($self) = @_;
 
     undef $self->{fh};
+}
+
+##################################################
+sub perms_fix {
+##################################################
+    my($self) = @_;
+
+    my ($uid_org, $gid_org) = (stat $self->{filename})[4,5];
+
+    my ($uid, $gid) = ($uid_org, $gid_org);
+
+    if(!defined $uid) {
+        die "stat of $self->{filename} failed ($!)";
+    }
+
+    my $needs_fixing = 0;
+
+    if(defined $self->{owner}) {
+        $uid = $self->{owner};
+        if($self->{owner} !~ /^\d+$/) {
+            $uid = (getpwnam($self->{owner}))[2];
+            die "Unknown user: $self->{owner}" unless defined $uid;
+        }
+    }
+
+    if(defined $self->{group}) {
+        $gid = $self->{group};
+        if($self->{group} !~ /^\d+$/) {
+            $gid = getgrnam($self->{group});
+
+            die "Unknown group: $self->{group}" unless defined $gid;
+        }
+    }
+    if($uid != $uid_org or $gid != $gid_org) {
+        chown($uid, $gid, $self->{filename}) or 
+            die "chown('$uid', '$gid') on '$self->{filename}' failed: $!";
+    }
 }
 
 ##################################################
@@ -225,6 +284,20 @@ the file's permission settings.
 If set to C<0222> (default), new
 files will be created with C<rw-r--r--> permissions.
 If set to C<0000>, new files will be created with C<rw-rw-rw-> permissions.
+
+=item owner
+
+If set, specifies that the owner of the newly created log file should
+be different from the effective user id of the running process.
+Only makes sense if the process is running as root. 
+Both numerical user ids and user names are acceptable.
+
+=item group
+
+If set, specifies that the group of the newly created log file should
+be different from the effective group id of the running process.
+Only makes sense if the process is running as root.
+Both numerical group ids and group names are acceptable.
 
 =item utf8
 
