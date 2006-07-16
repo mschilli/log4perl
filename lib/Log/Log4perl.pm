@@ -312,7 +312,7 @@ sub easy_init { # Initialize the root logger with a screen appender
             }
             $logger->{file} =~ /^(>)?(>)?/;
             my $mode = ($2 ? "append" : "write");
-            $logger->{file} =~ s/.*>+//g;
+            $logger->{file} =~ s/.*>+\s*//g;
             $app = Log::Log4perl::Appender->new(
                 "Log::Log4perl::Appender::File",
                 filename => $logger->{file},
