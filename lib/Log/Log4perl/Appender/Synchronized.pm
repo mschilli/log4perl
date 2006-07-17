@@ -17,7 +17,7 @@ our @ISA = qw(Log::Log4perl::Appender);
 use IPC::Shareable qw(:lock);
 use IPC::Semaphore;
 
-our $CVSVERSION   = '$Revision: 1.6 $';
+our $CVSVERSION   = '$Revision: 1.7 $';
 our ($VERSION)    = ($CVSVERSION =~ /(\d+\.\d+)/);
 
 ###########################################
@@ -101,6 +101,7 @@ sub post_init {
 sub DESTROY {
 ###########################################
     my($self) = @_;
+    delete $self->{ipc_shareable};
     untie $self->{ipc_shareable_var};
 }
 

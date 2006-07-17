@@ -68,6 +68,9 @@ sub cleanup {
     foreach my $appendername (keys %APPENDER_BY_NAME){
         if (exists $APPENDER_BY_NAME{$appendername} &&
             exists $APPENDER_BY_NAME{$appendername}->{appender}) {
+                # Destroy the specific appender
+            my $appref = $APPENDER_BY_NAME{$appendername}->{appender};
+            eval { $appref->DESTROY() };
                 # Destroy L4p::Appender
             $APPENDER_BY_NAME{$appendername}->DESTROY();
             delete $APPENDER_BY_NAME{$appendername}->{appender};

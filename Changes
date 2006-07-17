@@ -10,6 +10,9 @@
              in octal form (0xxx).
     *   (ms) The file appender now accepts owner/group settings of
              newly created log files.
+    *   (ms) Fixed appender cleanup, a bug caused composite appenders
+             to be cleaned up during global destruction, which caused an
+             ugly segfault with the Synchronized appender on FreeBSD.
 
 1.05 2006/06/10
     *   (ms) Added recreate signal handler to L4p::Appender::File for
