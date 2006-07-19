@@ -1898,24 +1898,12 @@ AUTHORS
         Mike Schilli <m@perlmeister.com>
         Kevin Goess <cpan@goess.org>
 
-        Contributors:
-        Hutton Davidson <Davidson.Hutton@ftid.com>
-        Chris R. Donnelly <cdonnelly@digitalmotorworks.com>
-        Matisse Enzer
-        Hugh Esco
-        James FitzGibbon <james.fitzgibbon@target.com>
-        Carl Franks
-        Dennis Gregorovic <dgregor@redhat.com>
-        Paul Harrington <Paul-Harrington@deshaw.com>
-        David Hull <hull@paracel.com>
-        Jeff Macdonald <jeff.macdonald@e-dialog.com>
-        Markus Peter <warp@spin.de>
-        Brett Rann <brettrann@mail.com>
-        Erik Selberg <erik@selberg.com>
-        Aaron Straup Cope <asc@vineyard.net>
-        Lars Thegler <lars@thegler.dk>
-        David Viner <dviner@yahoo-inc.com>
-        Mac Yang <mac@proofpoint.com>
+        Contributors (in alphabetical order):
+        Hutton Davidson, Chris R. Donnelly, Matisse Enzer, Hugh Esco,
+        James FitzGibbon, Carl Franks, Dennis Gregorovic, Paul
+        Harrington, David Hull, Robert Jacobson, Jeff Macdonald, Markus
+        Peter, Brett Rann, Erik Selberg, Aaron Straup Cope, Lars Thegler,
+        David Viner, Mac Yang.
 
 COPYRIGHT AND LICENSE
     Copyright 2002-2004 by Mike Schilli <m@perlmeister.com> and Kevin Goess

@@ -61,9 +61,9 @@ lib/Log/Log4perl/NDC.pm
 lib/Log/Log4perl/Util.pm
 LICENSE
 Makefile.PL
-MANIFEST
+MANIFEST			This list of files
 MANIFEST.SKIP
-META.yml			Module meta-data (added by MakeMaker)
+META.yml
 README
 t/001Level.t
 t/002Logger.t
