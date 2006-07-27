@@ -316,7 +316,7 @@ for example:
       # Define an appender
   my $appender = Log::Log4perl::Appender->new(
       "Log::Log4perl::Appender::File"
-      file => 'out.log');
+      filename => 'out.log');
 
 In case of C<Log::Dispatch> appenders,
 if no C<name> parameter is specified, the appender object will create
@@ -326,7 +326,7 @@ the C<name()> method:
   print "The appender's name is ", $appender->name(), "\n";
 
 Other parameters are specific to the appender class being used.
-In the case above, the C<file> parameter specifies the name of 
+In the case above, the C<filename> parameter specifies the name of 
 the C<Log::Log4perl::Appender::File> dispatcher used. 
 
 However, if, for instance, 

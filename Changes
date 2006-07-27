@@ -2,6 +2,10 @@
  Revision history for Log::Log4perl
 ##################################################
 
+1.07 (not yet released)
+    *   (ms) Fixed doc bug in Appender::File reported by Robert
+             Jacobson.
+
 1.06 2006/07/18
     *   (ms) Applied patch by Robert Jacobson to fix day-of-year in
              DateFormat, which was off by one.
