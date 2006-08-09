@@ -13,9 +13,83 @@ commonly encountered logging tasks and how to solve them
 in the most elegant way with Log::Log4perl. Most of the time, this will
 be just a matter of smartly configuring your Log::Log4perl configuration files.
 
-This document is supposed to grow week by week as the latest
-"Log::Log4perl recipe of the week" hits the Log::Log4perl mailing list
-at C<log4perl-devel@lists.sourceforge.net>.
+=head2 Why use Log::Log4perl instead of any other logging module on CPAN?
+
+That's a good question. There's dozens of logging modules on CPAN.
+When it comes to logging, people typically think: "Aha. Writing out
+debug and error messages. Debug is lower than error. Easy. I'm gonna
+write my own." Writing a logging module is like a rite of passage for
+every Perl programmer, just like writing your own templating system.
+
+Of course, after getting the basics right, features need to
+be added. You'd like to write a timestamp with every message. Then
+timestamps with microseconds. Then messages need to be written to both
+the screen and a log file.
+
+And, as your application grows in size you might wonder: Why doesn't
+my logging system scale along with it? You would like to switch on
+logging in selected parts of the application, and not all across the
+board, because this kills performance. This is when people turn to
+Log::Log4perl, because it handles all of that.
+
+Avoid this costly switch. 
+
+Use C<Log::Log4perl> right from the start. C<Log::Log4perl>'s C<:easy>
+mode supports easy logging in simple scripts:
+
+    use Log::Log4perl qw(:easy);
+    Log::Log4perl->easy_init($DEBUG);
+
+    DEBUG "A low-level message";
+    ERROR "Won't make it until level gets increased to ERROR";
+
+And when your application inevitably grows, your logging system grows
+with it without you having to change any code.
+
+Please, don't re-invent logging. C<Log::Log4perl> is here, it's easy
+to use, it scales, and covers many areas you haven't thought of yet,
+but will enter soon.
+
+=head2 What's the easiest way to use Log4perl?
+
+If you just want to get all the comfort of logging, without much
+overhead, use I<Stealth Loggers>. If you use Log::Log4perl in 
+C<:easy> mode like
+
+    use Log::Log4perl qw(:easy);
+
+you'll have the following functions available in the current package:
+
+    DEBUG("message");
+    INFO("message");
+    WARN("message");
+    ERROR("message");
+    FATAL("message");
+
+Just make sure that every package of your code where you're using them in
+pulls in C<use Log::Log4perl qw(:easy)> first, then you're set.
+Every stealth logger's category will be equivalent to the name of the
+package it's located in.
+
+These stealth loggers
+will be absolutely silent until you initialize Log::Log4perl in 
+your main program with either 
+
+        # Define any Log4perl behaviour
+    Log::Log4perl->init("foo.conf");
+
+(using a full-blown Log4perl config file) or the super-easy method
+
+        # Just log to STDERR
+    Log::Log4perl->easy_init($DEBUG);
+
+or the parameter-style method with a complexity somewhat in between:
+
+        # Append to a log file
+    Log::Log4perl->easy_init( { level   => $DEBUG,
+                                file    => ">>test.log" } );
+
+For more info, please check out L<Log::Log4perl/"Stealth Loggers">.
 
 =head2 How can I simply log all my ERROR messages to a file?
 
@@ -185,47 +259,6 @@ and run it. It should print something like
 
 If you find that something doesn't work, please let us know at
 log4perl-devel@lists.sourceforge.net -- we'll apprechiate it. Have fun!
-
-=head2 What's the easiest way to use Log4perl?
-
-If you just want to get all the comfort of logging, without much
-overhead, use I<Stealth Loggers>. If you use Log::Log4perl in 
-C<:easy> mode like
-
-    use Log::Log4perl qw(:easy);
-
-you'll have the following functions available in the current package:
-
-    DEBUG("message");
-    INFO("message");
-    WARN("message");
-    ERROR("message");
-    FATAL("message");
-
-Just make sure that every package of your code where you're using them in
-pulls in C<use Log::Log4perl qw(:easy)> first, then you're set.
-Every stealth logger's category will be equivalent to the name of the
-package it's located in.
-
-These stealth loggers
-will be absolutely silent until you initialize Log::Log4perl in 
-your main program with either 
-
-        # Define any Log4perl behaviour
-    Log::Log4perl->init("foo.conf");
-
-(using a full-blown Log4perl config file) or the super-easy method
-
-        # Just log to STDERR
-    Log::Log4perl->easy_init($DEBUG);
-
-or the parameter-style method with a complexity somewhat in between:
-
-        # Append to a log file
-    Log::Log4perl->easy_init( { level   => $DEBUG,
-                                file    => ">>test.log" } );
-
-For more info, please check out L<Log::Log4perl/"Stealth Loggers">.
 
 =head2 How can I include global (thread-specific) data in my log messages?
 
