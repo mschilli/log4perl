@@ -5,6 +5,8 @@
 1.07 (not yet released)
     *   (ms) Fixed doc bug in Appender::File reported by Robert
              Jacobson.
+    *   (ms) Added FAQ on why to use Log4perl and not another
+             logging system on CPAN.
 
 1.06 2006/07/18
     *   (ms) Applied patch by Robert Jacobson to fix day-of-year in
