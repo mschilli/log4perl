@@ -3,6 +3,8 @@
 ##################################################
 
 1.07 (not yet released)
+    *   (ms) Removed checks for unlink() in t/017Watch.t since they
+             failed on win32.
     *   (ms) Fixed doc bug in Appender::File reported by Robert
              Jacobson.
     *   (ms) Added FAQ on why to use Log4perl and not another
