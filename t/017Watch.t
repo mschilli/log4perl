@@ -244,7 +244,7 @@ EOL
   # Create logfile
 Log::Log4perl->init(\$conf3);
   # ... and immediately remove it
-unlink $testfile or die "Cannot unlink $testfile";
+unlink $testfile;
 
 print "sleeping for 2 secs\n";
 sleep(2);
@@ -277,7 +277,7 @@ $logger = Log::Log4perl::get_logger('animal.dog');
 $logger->info("test1");
 
   # ... remove it
-unlink $testfile or die "Cannot unlink $testfile";
+unlink $testfile;
 
 print "sleeping for 2 secs\n";
 sleep(2);
