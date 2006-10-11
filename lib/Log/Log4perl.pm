@@ -1134,8 +1134,7 @@ are located in:
     # ...
 
     package main;
-    Log::Log4perl->init("mylogdefs.conf") or 
-        die "Whoa, cannot read mylogdefs.conf!";
+    Log::Log4perl->init("mylogdefs.conf");
 
         # => "LOG> Creating a new Snickers bar"
     my $first = Candy::Snickers->new();
