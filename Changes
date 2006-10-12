@@ -10,6 +10,8 @@
     *   (ms) Added FAQ on why to use Log4perl and not another
              logging system on CPAN.
     *   (ms) Fixed %M, %L, etc. level in logcarp/cluck/croak/confess.
+    *   (ms) Autocorrecting rootlogger/rootLogger typo
+    *   (ms) Better warning on missing loggers in config sanity check
 
 1.06 2006/07/18
     *   (ms) Applied patch by Robert Jacobson to fix day-of-year in

@@ -35,6 +35,7 @@ my @LEVEL_MAP_A = qw(
 our $WATCHER;
 our $DEFAULT_WATCH_DELAY = 60; # seconds
 our $OLD_CONFIG;
+our $LOGGERS_DEFINED;
 
 ###########################################
 sub init {
@@ -104,6 +105,8 @@ sub _init {
 
     my %additivity = ();
 
+    $LOGGERS_DEFINED = 0;
+
     print "Calling _init\n" if _INTERNAL_DEBUG;
     $Log::Log4perl::Logger::INITIALIZED = 1;
 
@@ -141,9 +144,16 @@ sub _init {
 
     my $system_wide_threshold;
 
+      # Autocorrect the rootlogger/rootLogger typo
+    if(exists $data->{rootlogger} and 
+       ! exists $data->{rootLogger}) {
+         $data->{rootLogger} = $data->{rootlogger};
+    }
+
         # Find all logger definitions in the conf file. Start
         # with root loggers.
     if(exists $data->{rootLogger}) {
+        $LOGGERS_DEFINED++;
         push @loggers, ["", $data->{rootLogger}->{value}];
     }
         
@@ -195,6 +205,7 @@ sub _init {
                     }
 
                     # This is a regular logger
+                    $LOGGERS_DEFINED++;
                     push @loggers, [join('.', @$path), $value];
                 }
             }
@@ -303,6 +314,11 @@ sub _init {
 ##################################################
 sub config_is_sane {
 ##################################################
+    if(! $LOGGERS_DEFINED) {
+        $CONFIG_INTEGRITY_ERROR = "No loggers defined";
+        return 0;
+    }    
+
     if(scalar keys %Log::Log4perl::Logger::APPENDER_BY_NAME == 0) {
         $CONFIG_INTEGRITY_ERROR = "No appenders defined";
         return 0;

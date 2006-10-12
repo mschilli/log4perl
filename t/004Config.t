@@ -7,7 +7,7 @@
 # change 'tests => 1' to 'tests => last_test_to_print';
 #########################
 use Test::More;
-BEGIN { plan tests => 13 };
+BEGIN { plan tests => 15 };
 
 use Log::Log4perl;
 use Log::Log4perl::Appender::TestBuffer;
@@ -209,7 +209,50 @@ Log::Log4perl->init(\ <<EOT);
     # Just an empty configuration
 EOT
 
-like(readwarn(), qr/looks suspicious: No appenders/, 
+like(readwarn(), qr/looks suspicious: No loggers/, 
      "Test integrity check on empty conf file");
+
+unlink $TMP_FILE;
+
+######################################################################
+# Misspelled 'rootlogger' (needs to be rootLogger)
+######################################################################
+open STDERR, ">$TMP_FILE";
+open IN, "<$TMP_FILE" or die "Cannot open $TMP_FILE";
+
+Log::Log4perl->reset();
+$Log::Log4perl::Logger::LOGGERS_BY_NAME = {};
+
+Log::Log4perl->init(\ <<EOT);
+  log4perl.rootlogger=ERROR, LOGFILE
+
+  log4perl.appender.LOGFILE=Log::Log4perl::Appender::Screen
+  log4perl.appender.LOGFILE.layout=PatternLayout
+  log4perl.appender.LOGFILE.layout.ConversionPattern=[%r] %F %L %c - %m %n
+EOT
+
+is(readwarn(), "", "Autocorrecting rootLogger/rootlogger typo");
+
+unlink $TMP_FILE;
+
+######################################################################
+# Totally misspelled rootLogger
+######################################################################
+open STDERR, ">$TMP_FILE";
+open IN, "<$TMP_FILE" or die "Cannot open $TMP_FILE";
+
+Log::Log4perl->reset();
+$Log::Log4perl::Logger::LOGGERS_BY_NAME = {};
+
+Log::Log4perl->init(\ <<EOT);
+  log4perl.schtonk=ERROR, LOGFILE
+
+  log4perl.appender.LOGFILE=Log::Log4perl::Appender::Screen
+  log4perl.appender.LOGFILE.layout=PatternLayout
+  log4perl.appender.LOGFILE.layout.ConversionPattern=[%r] %F %L %c - %m %n
+EOT
+
+like(readwarn(), qr/looks suspicious: No loggers/, 
+     "Test integrity check on totally misspelled rootLogger typo");
 
 unlink $TMP_FILE;
