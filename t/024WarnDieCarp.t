@@ -256,9 +256,17 @@ like($warnstr, qr/foocarp.*line $call_line/, "carp output");
 
 $app0->buffer("");
 Bar1::bar(); 
-  # Foo1::foo#238 foocarp at 024WarnDieCarp.t line 250
-like($app0->buffer(), qr/Foo1::foo#$carp_line foocarp.*$call_line/,
-     "carp in sub-sub-function");
+
+SKIP: {
+    use Carp; 
+    skip "Detected buggy Carp.pm (upgrade to perl-5.8.*)", 1 unless 
+        defined $Carp::VERSION;
+
+    # Foo1::foo#238 foocarp at 024WarnDieCarp.t line 250
+    like($app0->buffer(), qr/Foo1::foo#$carp_line foocarp.*$call_line/,
+       "carp in sub-sub-function");
+}
+
     # foocarp at 024WarnDieCarp.t line 250
 like($warnstr, qr/foocarp.*line $call_line/, "carp output");
 
