@@ -1,5 +1,5 @@
 ######################################################################
-    Log::Log4perl 1.06
+    Log::Log4perl 1.07
 ######################################################################
 
 NAME
@@ -643,8 +643,7 @@ Categories
         # ...
 
         package main;
-        Log::Log4perl->init("mylogdefs.conf") or 
-            die "Whoa, cannot read mylogdefs.conf!";
+        Log::Log4perl->init("mylogdefs.conf");
 
             # => "LOG> Creating a new Snickers bar"
         my $first = Candy::Snickers->new();
