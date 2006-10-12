@@ -2498,8 +2498,8 @@ our
     Kevin Goess <cpan@goess.org>
 
     Contributors (in alphabetical order):
-    Hutton Davidson, Chris R. Donnelly, Matisse Enzer, Hugh Esco,
-    James FitzGibbon, Carl Franks, Dennis Gregorovic, Paul
+    Ateeq Altaf, Hutton Davidson, Chris R. Donnelly, Matisse Enzer,
+    Hugh Esco, James FitzGibbon, Carl Franks, Dennis Gregorovic, Paul
     Harrington, David Hull, Robert Jacobson, Jeff Macdonald, Markus
     Peter, Brett Rann, Erik Selberg, Aaron Straup Cope, Lars Thegler,
     David Viner, Mac Yang.

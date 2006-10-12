@@ -9,7 +9,8 @@
              Jacobson.
     *   (ms) Added FAQ on why to use Log4perl and not another
              logging system on CPAN.
-    *   (ms) Fixed %M, %L, etc. level in logcarp/cluck/croak/confess.
+    *   (ms) Fixed %M, %L, etc. level in logcarp/cluck/croak/confess
+             (thanks to Ateeq Altaf)
     *   (ms) Autocorrecting rootlogger/rootLogger typo
     *   (ms) Better warning on missing loggers in config sanity check
 
