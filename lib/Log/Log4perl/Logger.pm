@@ -911,7 +911,8 @@ sub logcluck {
 
   if ($self->is_warn()) {
     my $message = Carp::longmess($msg);
-    local $Log::Log4perl::caller_depth = $Log::Log4perl::caller_depth + 1;
+    local $Log::Log4perl::caller_depth = 
+          $Log::Log4perl::caller_depth + 1;
     foreach (split(/\n/, $message)) {
       $self->warn("$_\n");
     }
@@ -929,7 +930,8 @@ sub logcarp {
 
   if ($self->is_warn()) {
     my $message = Carp::shortmess($msg);
-    local $Log::Log4perl::caller_depth = $Log::Log4perl::caller_depth + 1;
+    local $Log::Log4perl::caller_depth = 
+          $Log::Log4perl::caller_depth + 1;
     foreach (split(/\n/, $message)) {
       $self->warn("$_\n");
     }
@@ -948,7 +950,8 @@ sub logcroak {
   my $msg = $self->warning_render(@_);
 
   my $message = Carp::shortmess($msg);
-  local $Log::Log4perl::caller_depth = $Log::Log4perl::caller_depth + 1;
+  local $Log::Log4perl::caller_depth = 
+        $Log::Log4perl::caller_depth + 1;
   if ($self->is_fatal()) {
     foreach (split(/\n/, $message)) {
       $self->fatal("$_\n");
@@ -969,7 +972,8 @@ sub logconfess {
   local $Carp::CarpLevel = 2;
 
   my $message = Carp::longmess($msg);
-  local $Log::Log4perl::caller_depth = $Log::Log4perl::caller_depth + 1;
+  local $Log::Log4perl::caller_depth = 
+        $Log::Log4perl::caller_depth + 1;
   if ($self->is_fatal()) {
     foreach (split(/\n/, $message)) {
       $self->fatal("$_\n");
