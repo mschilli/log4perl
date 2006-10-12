@@ -2,13 +2,14 @@
  Revision history for Log::Log4perl
 ##################################################
 
-1.07 (not yet released)
+1.07 2006/10/11
     *   (ms) Removed checks for unlink() in t/017Watch.t since they
              failed on win32.
     *   (ms) Fixed doc bug in Appender::File reported by Robert
              Jacobson.
     *   (ms) Added FAQ on why to use Log4perl and not another
              logging system on CPAN.
+    *   (ms) Fixed %M, %L, etc. level in logcarp/cluck/croak/confess.
 
 1.06 2006/07/18
     *   (ms) Applied patch by Robert Jacobson to fix day-of-year in

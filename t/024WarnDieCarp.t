@@ -18,7 +18,7 @@ use warnings;
 use strict;
 
 use Test::More;
-use Log::Log4perl qw(get_logger);
+use Log::Log4perl qw(get_logger :easy);
 use Log::Log4perl::Level;
 use File::Spec; use Data::Dumper;
 
@@ -26,7 +26,7 @@ BEGIN {
     if ($] < 5.006) {
         plan skip_all => "Only with perl >= 5.006";
     } else {
-        plan tests => 57;
+        plan tests => 61;
     }
 }
 
@@ -118,7 +118,7 @@ foreach my $f ("logwarn", "logcarp", "logcluck",
 ######################################################################
 # change logging to OFF... FATALs still produce output though.
 
-$log->level($OFF); # $OFF == $FATAL... although I suspect that's a bug in the log4j spec
+$log->level($OFF); # $OFF == $FATAL... although I suspect thats a bug in the log4j spec
 
 foreach my $f ("logwarn", "logcarp", "logcluck", "error_warn") {
   warndietest_nooutput(sub {$log->$f(@_)}, "Test $test: $f", "Test $test: $f", $app, "$f");
@@ -211,11 +211,77 @@ SKIP: {
 ######################################################################
 # Test fix of bug that had logwarn/die/etc print unformatted messages.
 ######################################################################
-$app0->buffer("");
-
 $logger = get_logger("Twix::Bar");
 $log->level($DEBUG);
 
+eval { $logger->logdie(sub { "a" . "-" . "b" }); };
+like($@, qr/a-b/, "bugfix: logdie with sub{} as argument");
+
+$logger->logwarn(sub { "a" . "-" . "b" });
+like($warnstr, qr/a-b/, "bugfix: logwarn with sub{} as argument");
+
+$logger->logwarn({ filter => \&Dumper,
+                   value  => "a-b" });
+like($warnstr, qr/a-b/, "bugfix: logwarn with sub{filter/value} as argument");
+
+eval { $logger->logcroak({ filter => \&Dumper,
+                    value  => "a-b" }); };
+like($warnstr, qr/a-b/, "bugfix: logcroak with sub{} as argument");
+
+######################################################################
+# logcroak/cluck/carp/confess level test
+######################################################################
+our($carp_line, $call_line);
+
+package Foo1;
+use Log::Log4perl qw(:easy);
+sub foo { get_logger("Twix::Bar")->logcarp("foocarp"); $carp_line = __LINE__ }
+
+package Bar1;
+sub bar { Foo1::foo(); $call_line = __LINE__; }
+
+package main;
+
+my $l4p_app = $Log::Log4perl::Logger::APPENDER_BY_NAME{"A1"};
+my $layout = Log::Log4perl::Layout::PatternLayout->new("%M#%L %m%n");
+$l4p_app->layout($layout);
+
+$app0->buffer("");
+Foo1::foo(); $call_line = __LINE__;
+  # Foo1::foo#238 foocarp at 024WarnDieCarp.t line 250
+like($app0->buffer(), qr/Foo1::foo#$carp_line foocarp.*$call_line/,
+     "carp in subfunction");
+    # foocarp at 024WarnDieCarp.t line 250
+like($warnstr, qr/foocarp.*line $call_line/, "carp output");
+
+$app0->buffer("");
+Bar1::bar(); 
+  # Foo1::foo#238 foocarp at 024WarnDieCarp.t line 250
+like($app0->buffer(), qr/Foo1::foo#$carp_line foocarp.*$call_line/,
+     "carp in sub-sub-function");
+    # foocarp at 024WarnDieCarp.t line 250
+like($warnstr, qr/foocarp.*line $call_line/, "carp output");
+
+__END__
+
+######################################################################
+# Several layers
+######################################################################
+$app0->buffer("");
+
+sub foo2 { $logger->logcarp("l4pcarp_a"); $carp_line = __LINE__; }
+sub foo1 { foo2(); }
+foo1(); $call_line = __LINE__;
+
+    # *L4P* main::bar-11 l4pcroak_i at ./t line 11
+    # *L4P* main::bar-11      main::bar() called at ./t line 15
+    # *L4P* main::bar-11      main::foo() called at ./t line 18
+like($app0->buffer(), qr/main::foo2#$carp_line l4pcarp_a.*$carp_line/,
+    "carp in subfunction (1)");
+like($app0->buffer(), qr/main::foo2#$carp_line.*main::foo l4pcarp_a.*$carp_line/,
+    "carp in subfunction (2)");
+
+__END__
 eval { $logger->logdie(sub { "a" . "-" . "b" }); };
 like($@, qr/a-b/, "bugfix: logdie with sub{} as argument");
 
