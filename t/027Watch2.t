@@ -11,6 +11,14 @@ use Log::Log4perl qw(:easy);
 use Log::Log4perl::Appender::TestBuffer;
 use File::Spec;
 
+BEGIN {
+    if ($] < 5.006) {
+        plan skip_all => "Only with perl >= 5.006";
+    } else {
+        plan tests => 19;
+    }
+}
+
 my $WORK_DIR = "tmp";
 if(-d "t") {
     $WORK_DIR = "t/tmp";
@@ -168,5 +176,4 @@ EOT
     close FILE;
 }
 
-BEGIN {plan tests => 19};
 unlink $testconf;

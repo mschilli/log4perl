@@ -1,7 +1,7 @@
 # http://module-build.sourceforge.net/META-spec.html
 #XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
 name:         Log-Log4perl
-version:      1.07
+version:      1.08
 version_from: lib/Log/Log4perl.pm
 installdirs:  site
 requires:

@@ -202,7 +202,7 @@ is(Log::Log4perl::Appender::TestBuffer->by_name("A1")->buffer(),
 ######################################################################
 open STDERR, ">$TMP_FILE";
 open IN, "<$TMP_FILE" or die "Cannot open $TMP_FILE";
-sub readwarn { return scalar <IN>; }
+sub readwarn { return (scalar <IN>) || ''; }
 END { close IN }
 
 Log::Log4perl->init(\ <<EOT);
