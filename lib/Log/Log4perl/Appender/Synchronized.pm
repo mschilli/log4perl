@@ -17,7 +17,7 @@ our @ISA = qw(Log::Log4perl::Appender);
 use IPC::Shareable qw(:lock);
 use IPC::Semaphore;
 
-our $CVSVERSION   = '$Revision: 1.8 $';
+our $CVSVERSION   = '$Revision: 1.9 $';
 our ($VERSION)    = ($CVSVERSION =~ /(\d+\.\d+)/);
 
 ###########################################
@@ -246,6 +246,26 @@ way, Log::Log4perl serializes access to each appender instance separately:
 Without the C<.key = l4p1> and C<.key = l4p2> lines, both Synchronized 
 appenders would be using the default C<_l4p> key, causing unnecessary
 serialization of output written to different files.
+
+=head2 Advanced configuration
+
+To configure the underlying IPC::Shareable module, use the I<options>
+property and hand it a reference to a hash of options.
+
+By default, the setting is equal to
+
+      { create=>1, destroy=>1 }
+
+which has the appender create the semaphore at startup and remove
+it at shutdown.
+
+In order to add another option, e.g. a setting of C<0775> for
+IPC::Shareable's C<mode> parameter, add
+
+    log4perl.appender.Syncer1.options  = \
+      sub { { create=>1, destroy=>1, mode=>0775 } }
+
+to the Log4perl configuration file.
 
 =head1 DEVELOPMENT NOTES
 
