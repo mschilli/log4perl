@@ -212,6 +212,8 @@ EOT
 like(readwarn(), qr/looks suspicious: No loggers/, 
      "Test integrity check on empty conf file");
 
+close STDERR;
+close IN;
 unlink $TMP_FILE;
 
 ######################################################################
@@ -233,6 +235,8 @@ EOT
 
 is(readwarn(), "", "Autocorrecting rootLogger/rootlogger typo");
 
+close STDERR;
+close IN;
 unlink $TMP_FILE;
 
 ######################################################################
@@ -255,4 +259,6 @@ EOT
 like(readwarn(), qr/looks suspicious: No loggers/, 
      "Test integrity check on totally misspelled rootLogger typo");
 
+close STDERR;
+close IN;
 unlink $TMP_FILE;

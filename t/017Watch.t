@@ -179,11 +179,13 @@ $logger = Log::Log4perl::get_logger('animal.dog');
 $logger->info("test1");
 open (LOG, $testfile) or die "can't open $testfile $!";
 is(scalar <LOG>, "INFO - test1\n", "Before recreate");
+close LOG;
 
 trunc($testfile);
 $logger->info("test2");
 open (LOG, $testfile) or die "can't open $testfile $!";
 is(scalar <LOG>, "INFO - test2\n", "After recreate");
+close LOG;
 
 trunc($testfile);
 trunc($testconf);
@@ -253,6 +255,7 @@ $logger = Log::Log4perl::get_logger('animal.dog');
 $logger->info("test1");
 open (LOG, $testfile) or die "can't open $testfile $!";
 is(scalar <LOG>, "INFO - test1\n", "recreate before first write");
+close LOG;
 
 # ***************************************************************
 # Check the 'recreate' feature with check_interval (2nd write)
@@ -287,6 +290,7 @@ $logger->info("test2");
 
 open (LOG, $testfile) or die "can't open $testfile $!";
 is(scalar <LOG>, "INFO - test2\n", "recreate before 2nd write");
+close LOG;
 
 # ***************************************************************
 # Check the 'recreate' feature with moved/recreated file
@@ -321,5 +325,6 @@ $logger->info("test3");
 
 open (LOG, $testfile) or die "can't open $testfile $!";
 is(scalar <LOG>, "INFO - test3\n", "log to externally recreated file");
+close LOG;
 
 unlink "$testfile.old";
