@@ -25,7 +25,7 @@ sub new {
         utf8      => undef,
         recreate  => 0,
         recreate_check_interval => 30,
-        recreate_signal         => undef,
+        recreate_check_signal   => undef,
         recreate_pid_write      => undef,
         @options,
     };
@@ -353,7 +353,7 @@ has been moved or deleted. If this is undesirable,
 setting C<recreate_check_interval> to 0 will have the appender
 appender check the file with I<every> call to C<log()>.
 
-=item recreate_signal
+=item recreate_check_signal
 
 In C<recreate> mode, if this option is set to a signal name
 (e.g. "USR1"), the appender will recreate a missing logfile
