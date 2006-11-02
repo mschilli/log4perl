@@ -2163,7 +2163,7 @@ However, this is fairly expensive. A better approach is to define
 a signal handler:
 
     log4perl.appender.Logfile.recreate = 1
-    log4perl.appender.Logfile.recreate_signal  = USR1
+    log4perl.appender.Logfile.recreate_check_signal  = USR1
     log4perl.appender.Logfile.recreate_pid_write = /tmp/myappid
 
 As a service for C<newsyslog> users, Log4perl's file appender writes
