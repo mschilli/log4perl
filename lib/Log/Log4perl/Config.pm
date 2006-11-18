@@ -42,6 +42,8 @@ sub init {
 ###########################################
     Log::Log4perl::Logger->reset();
 
+    undef $WATCHER; # just in case there's a one left over (e.g. test cases)
+
     return _init(@_);
 }
 
@@ -553,19 +555,23 @@ sub config_read {
 
     if (ref($config) eq 'HASH') {   # convert the hashref into a list 
                                     # of name/value pairs
+        print "Reading config from hash\n" if _INTERNAL_DEBUG;
         @text = map { $_ . '=' . $config->{$_} } keys %{$config};
 
     } elsif (ref $config eq 'SCALAR') {
+        print "Reading config from scalar\n" if _INTERNAL_DEBUG;
         @text = split(/\n/,$$config);
 
     } elsif (ref $config eq 'GLOB' or 
              ref $config eq 'IO::File') {
             # If we have a file handle, just call the reader
+        print "Reading config from file handle\n" if _INTERNAL_DEBUG;
         config_file_read($config, \@text);
 
     } elsif (ref $config) {
             # Caller provided a config parser object, which already
             # knows which file (or DB or whatever) to parse.
+        print "Reading config from parser object\n" if _INTERNAL_DEBUG;
         $data = $config->parse();
         return $data;
 
@@ -609,7 +615,9 @@ sub config_read {
                      $res->message." ";
             }
         }else{
+            print "Reading config from file '$config'\n" if _INTERNAL_DEBUG;
             open FILE, "<$config" or die "Cannot open config file '$config'";
+            print "Reading ", -s $config, " bytes.\n" if _INTERNAL_DEBUG;
             config_file_read(\*FILE, \@text);
             close FILE;
         }

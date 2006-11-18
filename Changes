@@ -2,7 +2,7 @@
  Revision history for Log::Log4perl
 ##################################################
 
-1.08 (not yet released)
+1.08 2006/11/18
     *   (ms) Applied test suite patch by Lars Thegler for 
              ancient perl 5.005_03.
     *   (ms) Applied patch by Jeremy Bopp to fix test suite running
@@ -10,6 +10,10 @@
     *   (ms) Fixed documentation bug in L4p:Appender::File,
              s/recreate_signal/recreate_check_signal. Thanks to
              Todd Chapman and Robert Jacobson for reporting this.
+    *   (ms) Fixed init(), which now deletes any config file watchers 
+             left over from previous init_and_watch() calls. Reported
+             by Andreas Koenig who saw sporadic errors in the test suite, 
+             thanks!
 
 1.07 2006/10/11
     *   (ms) Removed checks for unlink() in t/017Watch.t since they
