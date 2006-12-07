@@ -2258,6 +2258,15 @@ via Log4perl's categories is one of its most distinguished features.
 It allows for enabling high debug levels in specified areas without
 noticable performance impact.
 
+=head2 I want to use UTC instead of the local time!
+
+If a layout defines a date, Log::Log4perl uses local time to populate it.
+If you want UTC instead, set
+
+    $Log::Log4perl::DateFormat::GMTIME = 1;
+
+in your program before the first log statement.
+
 =cut
 
 =head1 SEE ALSO
