@@ -365,6 +365,11 @@ C<$SIG{__DIE__}> pseudo signal handler
     use Log::Log4perl qw(get_logger);
 
     $SIG{__DIE__} = sub {
+        if($^S) {
+            # We're in an eval {} and don't want log
+            # this message but catch it later
+            return;
+        }
         $Log::Log4perl::caller_depth++;
         my $logger = get_logger("");
         $logger->fatal(@_);
@@ -372,7 +377,8 @@ C<$SIG{__DIE__}> pseudo signal handler
     };
 
 This will catch every C<die()>-Exception of your
-application or the modules it uses. It
+application or the modules it uses. In case you want to 
+It
 will fetch a root logger and pass on the C<die()>-Message to it.
 If you make sure you've configured with a root logger like this:
 
@@ -1663,6 +1669,11 @@ If, on the other hand, catching C<die()> and friends is
 required, a C<__DIE__> handler is appropriate:
 
     $SIG{__DIE__} = sub {
+        if($^S) {
+            # We're in an eval {} and don't want log
+            # this message but catch it later
+            return;
+        }
         $Log::Log4perl::caller_depth++;
         LOGDIE @_;
     };
