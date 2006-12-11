@@ -2,6 +2,9 @@
  Revision history for Log::Log4perl
 ##################################################
 
+1.09 (not yet released)
+    *   (ms) Added $^S check in FAQ, as suggested by J. David Blackstone.
+
 1.08 2006/11/18
     *   (ms) Applied test suite patch by Lars Thegler for 
              ancient perl 5.005_03.
