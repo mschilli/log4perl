@@ -192,7 +192,7 @@ sub rep {
 ######################
     } elsif($first eq "D") {
         push @{$self->{stack}}, [7, sub { $_[0] + 1}];
-        return "%${len}s";
+        return "%0" . $len . "d";
 
 ######################
 #a - am/pm marker    #

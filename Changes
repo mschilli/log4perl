@@ -4,6 +4,9 @@
 
 1.09 (not yet released)
     *   (ms) Added $^S check in FAQ, as suggested by J. David Blackstone.
+    *   (ms) Applied Robert Jacobson's patch for the "DDD" formatter
+             in L4p::DateFormats, which now formats the day-of-year values
+             numerically and precedes them with zeroes if necessary.
 
 1.08 2006/11/18
     *   (ms) Applied test suite patch by Lars Thegler for 
