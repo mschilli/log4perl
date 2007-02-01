@@ -185,8 +185,8 @@ Log::Log4perl::Config::Watch - Detect file changes
     while(1) {
         if($watcher->change_detected()) {
             print "Change detected!\n";
-            sleep(1);
         }
+        sleep(1);
     }
 
 =head1 DESCRIPTION
