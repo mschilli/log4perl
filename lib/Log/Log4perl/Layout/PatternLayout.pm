@@ -299,6 +299,8 @@ sub curly_action {
         $data = Log::Log4perl::MDC->get($curlies);
     } elsif($ops eq "d") {
         $data = $curlies->format($self->{time_function}->());
+    } elsif($ops eq "M") {
+        $data = shrink_category($data, $curlies);
     } elsif($ops eq "F") {
         my @parts = File::Spec->splitdir($data);
             # Limit it to max curlies entries
@@ -512,6 +514,10 @@ with content after them:
     %F{1}  Just display filename
     %F{2}  Display filename and last path component (dir/test.log)
     %F{3}  Display filename and last two path components (d1/d2/test.log)
+
+    %m     Display fully qualified method/function name
+    %m{1}  Just display method name (foo)
+    %m{2}  Display method name and last path component (main::foo)
 
 In this way, you're able to shrink the displayed category or
 limit file/path components to save space in your logs.

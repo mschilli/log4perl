@@ -7,6 +7,8 @@
     *   (ms) Applied Robert Jacobson's patch for the "DDD" formatter
              in L4p::DateFormats, which now formats the day-of-year values
              numerically and precedes them with zeroes if necessary.
+    *   (ms) Added %m{x} PatternLayout notation as requested by
+             Ankur Gupta.
 
 1.08 2006/11/18
     *   (ms) Applied test suite patch by Lars Thegler for 
