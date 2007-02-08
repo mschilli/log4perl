@@ -2,7 +2,7 @@
  Revision history for Log::Log4perl
 ##################################################
 
-1.09
+1.09 (2007/02/07)
     *   (ms) Added $^S check in FAQ, as suggested by J. David Blackstone.
     *   (ms) Applied Robert Jacobson's patch for the "DDD" formatter
              in L4p::DateFormats, which now formats the day-of-year values
