@@ -3,11 +3,11 @@
 ##################################################
 
 1.09 (2007/02/07)
-    *   (ms) Added $^S check in FAQ, as suggested by J. David Blackstone.
+    *   (ms) Added $^S check to FAQ, as suggested by J. David Blackstone.
     *   (ms) Applied Robert Jacobson's patch for the "DDD" formatter
              in L4p::DateFormats, which now formats the day-of-year values
              numerically and precedes them with zeroes if necessary.
-    *   (ms) Added %m{x} PatternLayout notation as requested by
+    *   (ms) Added %M{x} PatternLayout notation as requested by
              Ankur Gupta.
     *   (ms) Another Win32 test suite fix, no longer deleting an open
              file but moving it aside (rt.cpan:23520).
