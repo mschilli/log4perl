@@ -279,7 +279,8 @@ Log::Log4perl->init(\$conf3);
 $logger = Log::Log4perl::get_logger('animal.dog');
 $logger->info("test1");
 
-  # ... remove it
+  # ... remove it (stupid windoze cannot remove an open file)
+rename $testfile, "$testfile.old";
 unlink $testfile;
 
 print "sleeping for 2 secs\n";
@@ -291,6 +292,7 @@ $logger->info("test2");
 open (LOG, $testfile) or die "can't open $testfile $!";
 is(scalar <LOG>, "INFO - test2\n", "recreate before 2nd write");
 close LOG;
+unlink "$testfile.old";
 
 # ***************************************************************
 # Check the 'recreate' feature with moved/recreated file
