@@ -260,73 +260,80 @@ close LOG;
 # ***************************************************************
 # Check the 'recreate' feature with check_interval (2nd write)
 
-trunc($testfile);
-$conf3 = <<EOL;
-log4j.category.animal.dog   = INFO, myAppender
+SKIP: {
+  skip "Signal handling not supported on Win32", 1 if $^O eq "MSWin32";
+    trunc($testfile);
+    $conf3 = <<EOL;
+    log4j.category.animal.dog   = INFO, myAppender
 
-log4j.appender.myAppender          = Log::Log4perl::Appender::File
-log4j.appender.myAppender.layout   = Log::Log4perl::Layout::SimpleLayout
-log4j.appender.myAppender.filename = $testfile
-log4j.appender.myAppender.recreate = 1
-log4j.appender.myAppender.recreate_check_interval = 1
-log4j.appender.myAppender.mode     = append
+    log4j.appender.myAppender          = Log::Log4perl::Appender::File
+    log4j.appender.myAppender.layout   = Log::Log4perl::Layout::SimpleLayout
+    log4j.appender.myAppender.filename = $testfile
+    log4j.appender.myAppender.recreate = 1
+    log4j.appender.myAppender.recreate_check_interval = 1
+    log4j.appender.myAppender.mode     = append
 EOL
 
-  # Create logfile
-Log::Log4perl->init(\$conf3);
+      # Create logfile
+    Log::Log4perl->init(\$conf3);
 
-  # Write to it
-$logger = Log::Log4perl::get_logger('animal.dog');
-$logger->info("test1");
+      # Write to it
+    $logger = Log::Log4perl::get_logger('animal.dog');
+    $logger->info("test1");
 
-  # ... remove it (stupid windoze cannot remove an open file)
-rename $testfile, "$testfile.old";
-unlink $testfile;
+      # ... remove it (stupid windoze cannot remove an open file)
+    rename $testfile, "$testfile.old";
+    unlink $testfile;
 
-print "sleeping for 2 secs\n";
-sleep(2);
+    print "sleeping for 2 secs\n";
+    sleep(2);
 
-  # ... write again
-$logger->info("test2");
+      # ... write again
+    $logger->info("test2");
 
-open (LOG, $testfile) or die "can't open $testfile $!";
-is(scalar <LOG>, "INFO - test2\n", "recreate before 2nd write");
-close LOG;
-unlink "$testfile.old";
+    open (LOG, $testfile) or die "can't open $testfile $!";
+    is(scalar <LOG>, "INFO - test2\n", "recreate before 2nd write");
+    close LOG;
+    unlink "$testfile.old";
+};
 
 # ***************************************************************
 # Check the 'recreate' feature with moved/recreated file
 
-trunc($testfile);
-$conf3 = <<EOL;
-log4j.category.animal.dog   = INFO, myAppender
+SKIP: {
+  skip "Moving busy files not supported on Win32", 1 if $^O eq "MSWin32";
 
-log4j.appender.myAppender          = Log::Log4perl::Appender::File
-log4j.appender.myAppender.layout   = Log::Log4perl::Layout::SimpleLayout
-log4j.appender.myAppender.filename = $testfile
-log4j.appender.myAppender.recreate = 1
-log4j.appender.myAppender.recreate_check_interval = 1
-log4j.appender.myAppender.mode     = append
+    trunc($testfile);
+    $conf3 = <<EOL;
+    log4j.category.animal.dog   = INFO, myAppender
+
+    log4j.appender.myAppender          = Log::Log4perl::Appender::File
+    log4j.appender.myAppender.layout   = Log::Log4perl::Layout::SimpleLayout
+    log4j.appender.myAppender.filename = $testfile
+    log4j.appender.myAppender.recreate = 1
+    log4j.appender.myAppender.recreate_check_interval = 1
+    log4j.appender.myAppender.mode     = append
 EOL
 
-  # Create logfile
-Log::Log4perl->init(\$conf3);
+      # Create logfile
+    Log::Log4perl->init(\$conf3);
 
-  # Get a logger, but dont write to it
-$logger = Log::Log4perl::get_logger('animal.dog');
+      # Get a logger, but dont write to it
+    $logger = Log::Log4perl::get_logger('animal.dog');
 
-rename "$testfile", "$testfile.old" or die "Cannot rename ($!)";
-  # recreate it
-trunc($testfile);
+    rename "$testfile", "$testfile.old" or die "Cannot rename ($!)";
+      # recreate it
+    trunc($testfile);
 
-print "sleeping for 2 secs\n";
-sleep(2);
+    print "sleeping for 2 secs\n";
+    sleep(2);
 
-  # ... write to (hopefully) truncated file
-$logger->info("test3");
+      # ... write to (hopefully) truncated file
+    $logger->info("test3");
 
-open (LOG, $testfile) or die "can't open $testfile $!";
-is(scalar <LOG>, "INFO - test3\n", "log to externally recreated file");
-close LOG;
+    open (LOG, $testfile) or die "can't open $testfile $!";
+    is(scalar <LOG>, "INFO - test3\n", "log to externally recreated file");
+    close LOG;
 
-unlink "$testfile.old";
+    unlink "$testfile.old";
+};
