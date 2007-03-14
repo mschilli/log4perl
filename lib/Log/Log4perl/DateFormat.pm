@@ -11,7 +11,7 @@ January February March April May June July
 August September October November December);
 
 my @WEEK_DAYS = qw(
-Sunday Monday Tuesday Wednesday Thursday Friday);
+Sunday Monday Tuesday Wednesday Thursday Friday Saturday);
 
 ###########################################
 sub new {

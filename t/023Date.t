@@ -8,7 +8,7 @@ use strict;
 
 use Test;
 
-BEGIN { plan tests => 20 }
+BEGIN { plan tests => 26 }
 
 use Log::Log4perl qw(get_logger);
 use Log::Log4perl::DateFormat;
@@ -71,6 +71,12 @@ ok($formatter->format($GMTIME), "22 22 022 0022");
 ###########################################
 $formatter = Log::Log4perl::DateFormat->new("E EE EEE EEEE");
 ok($formatter->format($GMTIME), "Mon Mon Mon Monday");
+ok($formatter->format($GMTIME+24*60*60*1), "Tue Tue Tue Tuesday");
+ok($formatter->format($GMTIME+24*60*60*2), "Wed Wed Wed Wednesday");
+ok($formatter->format($GMTIME+24*60*60*3), "Thu Thu Thu Thursday");
+ok($formatter->format($GMTIME+24*60*60*4), "Fri Fri Fri Friday");
+ok($formatter->format($GMTIME+24*60*60*5), "Sat Sat Sat Saturday");
+ok($formatter->format($GMTIME+24*60*60*6), "Sun Sun Sun Sunday");
 
 ###########################################
 # Day of Year
