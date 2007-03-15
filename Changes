@@ -3,6 +3,8 @@
 ##################################################
 
 1.10 (not yet released)
+    *   (kg) Nikita Dedik pointed out that Saturday is missing from 
+             @Log::Log4perl::DateFormat::WEEK_DAYS
     *   (ms) Scott Cline noticed a potential problem with the DBI
              appender reconnection logic in 'buffered' mode. Applied
              a patch.
