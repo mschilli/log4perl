@@ -324,8 +324,8 @@ is(Log::Log4perl::Appender::TestBuffer->by_name("A1")->buffer(),
 ######################################################################
 # Test accessors
 ######################################################################
-my $parser = Log::Log4perl::Config::PropertyConfigurator->new();
-my @lines = split "\n", <<EOT;
+$parser = Log::Log4perl::Config::PropertyConfigurator->new();
+@lines = split "\n", <<EOT;
 log4j.rootLogger         = DEBUG, A1
 log4j.appender.A1        = Log::Log4perl::Appender::TestBuffer
 log4j.appender.A1.layout = org.apache.log4j.PatternLayout
