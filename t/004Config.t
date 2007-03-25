@@ -7,7 +7,7 @@
 # change 'tests => 1' to 'tests => last_test_to_print';
 #########################
 use Test::More;
-BEGIN { plan tests => 19 };
+BEGIN { plan tests => 23 };
 
 use Log::Log4perl;
 use Log::Log4perl::Appender::TestBuffer;
@@ -320,3 +320,24 @@ Log::Log4perl::Appender::TestBuffer->by_name("A1")->buffer("");
 SomePackage::somepackagefunc();
 is(Log::Log4perl::Appender::TestBuffer->by_name("A1")->buffer(), 
         "somepackagefuncGurgel", "%M{1} package");
+
+######################################################################
+# Test accessors
+######################################################################
+my $parser = Log::Log4perl::Config::PropertyConfigurator->new();
+my @lines = split "\n", <<EOT;
+log4j.rootLogger         = DEBUG, A1
+log4j.appender.A1        = Log::Log4perl::Appender::TestBuffer
+log4j.appender.A1.layout = org.apache.log4j.PatternLayout
+log4j.appender.A1.layout.ConversionPattern = object%m%n
+EOT
+$parser->text(\@lines);
+$parser->parse();
+is($parser->value("log4j.rootLogger"), "DEBUG, A1", "value() accessor");
+is($parser->value("log4j.foobar"), undef, "value() accessor undef");
+
+is($parser->value("log4j.appender.A1"), 
+   "Log::Log4perl::Appender::TestBuffer", "value() accessor");
+
+is($parser->value("log4perl.appender.A1.layout.ConversionPattern"), 
+   "object%m%n", "value() accessor log4perl");

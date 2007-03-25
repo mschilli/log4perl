@@ -10,6 +10,9 @@
              a patch.
     *   (ms) Changed DBI reconnect logic to perform even if the DB
              is pingable again.
+    *   (ms) Applied code by Valerio Valdez Paolini with modifications
+             to PropertyConfigurator.pm to allow pulling values from
+             the property configurator by path.
 
 1.09 (2007/02/07)
     *   (ms) Added $^S check to FAQ, as suggested by J. David Blackstone.
