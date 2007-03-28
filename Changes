@@ -2,7 +2,7 @@
  Revision history for Log::Log4perl
 ##################################################
 
-1.10 (not yet released)
+1.10 (2007/03/27)
     *   (kg) Nikita Dedik pointed out that Saturday is missing from 
              @Log::Log4perl::DateFormat::WEEK_DAYS
     *   (ms) Scott Cline noticed a potential problem with the DBI
