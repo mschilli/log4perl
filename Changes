@@ -2,6 +2,10 @@
  Revision history for Log::Log4perl
 ##################################################
 
+1.11 (not yet released)
+    *   (ms) Added PatternLayout::Multiline code by Cory Bennett to 
+             render multiline messages.
+
 1.10 (2007/03/27)
     *   (kg) Nikita Dedik pointed out that Saturday is missing from 
              @Log::Log4perl::DateFormat::WEEK_DAYS

@@ -16,7 +16,7 @@ use Log::Log4perl::Appender;
 
 use constant _INTERNAL_DEBUG => 1;
 
-our $VERSION = '1.10';
+our $VERSION = '1.11';
 
    # set this to '1' if you're using a wrapper
    # around Log::Log4perl
@@ -2498,15 +2498,15 @@ our
     Kevin Goess <cpan@goess.org>
 
     Contributors (in alphabetical order):
-    Ateeq Altaf, Jeremy Bopp, Hutton Davidson, Chris R. Donnelly,
-    Matisse Enzer, Hugh Esco, James FitzGibbon, Carl Franks, Dennis
-    Gregorovic, Paul Harrington, David Hull, Robert Jacobson, Jeff
-    Macdonald, Markus Peter, Brett Rann, Erik Selberg, Aaron Straup
-    Cope, Lars Thegler, David Viner, Mac Yang.
+    Ateeq Altaf, Cory Bennett, Jeremy Bopp, Hutton Davidson, Chris R.
+    Donnelly, Matisse Enzer, Hugh Esco, James FitzGibbon, Carl Franks,
+    Dennis Gregorovic, Paul Harrington, David Hull, Robert Jacobson,
+    Jeff Macdonald, Markus Peter, Brett Rann, Erik Selberg, Aaron
+    Straup Cope, Lars Thegler, David Viner, Mac Yang.
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2002-2004 by Mike Schilli E<lt>m@perlmeister.comE<gt> and Kevin Goess
+Copyright 2002-2007 by Mike Schilli E<lt>m@perlmeister.comE<gt> and Kevin Goess
 E<lt>cpan@goess.orgE<gt>.
 
 This library is free software; you can redistribute it and/or modify

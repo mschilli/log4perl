@@ -2345,6 +2345,43 @@ If you want, you can even specify a different log level or category:
     tie *SOMEHANDLE, 'FileHandleLogger',
         level => $INFO, category => "Foo::Bar" or die "tie failed ($!)";
 
+=head2 I want multiline messages rendered line-by-line!
+
+With the standard C<PatternLayout>, if you send a multiline message to
+an appender as in
+
+    use Log::Log4perl qw(:easy);
+    Log
+
+it gets rendered this way:
+
+    2007/04/04 23:23:39 multi
+    line
+    message
+
+If you want each line to be rendered separately according to
+the layout use C<Log::Log4perl::Layout::PatternLayout::Multiline>:
+
+    use Log::Log4perl qw(:easy);
+
+    Log::Log4perl->init(\<<EOT);
+      log4perl.category         = DEBUG, Screen
+      log4perl.appender.Screen = Log::Log4perl::Appender::Screen
+      log4perl.appender.Screen.layout = \\
+        Log::Log4perl::Layout::PatternLayout::Multiline
+      log4perl.appender.Screen.layout.ConversionPattern = %d %m %n
+    EOT
+    
+    DEBUG "some\nmultiline\nmessage";
+
+and you'll get 
+
+    2007/04/04 23:23:39 some 
+    2007/04/04 23:23:39 multiline 
+    2007/04/04 23:23:39 message 
+
+instead.
+
 =cut
 
 =head1 SEE ALSO

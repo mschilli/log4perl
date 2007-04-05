@@ -10,7 +10,7 @@ use strict;
 # change 'tests => 1' to 'tests => last_test_to_print';
 #########################
 use Test::More;
-BEGIN { plan tests => 20 };
+BEGIN { plan tests => 21 };
 
 use Log::Log4perl;
 use Log::Log4perl::Layout;
@@ -232,3 +232,16 @@ eval {
     $logger->debug("Thats the message");
 };
 is($app->buffer(), 'main::: Thats the message'); 
+
+############################################################
+# Render a multiline message
+############################################################
+
+$app->buffer("");
+$layout = Log::Log4perl::Layout::PatternLayout::Multiline->new("%M: %m%n");
+$app->layout($layout);
+eval {
+    $logger->debug("Thats the\nmultiline\nmessage");
+};
+is($app->buffer(), "main::: Thats the\nmain::: multiline\nmain::: message\n"); 
+
