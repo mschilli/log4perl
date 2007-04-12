@@ -2033,12 +2033,13 @@ the C<get> method:
     my $value = Log::Log4perl::MDC->get($key);
 
 If no value has been stored previously under C<$key>, the C<get> method
-will return the string C<"[undef]"> to allow for easy string interpolation
-later on.
+will return C<undef>.
 
 Typically, MDC values are retrieved later on via the C<"%X{...}"> placeholder
-in C<Log::Log4perl::Layout::PatternLayout>.
-For example, an application taking a web request might store the remote host
+in C<Log::Log4perl::Layout::PatternLayout>. If the C<get()> method
+returns C<undef>, the placeholder will expand to the string C<[undef]>.
+
+An application taking a web request might store the remote host
 like
 
     Log::Log4perl::MDC->put("remote_host", $r->headers("HOST"));
