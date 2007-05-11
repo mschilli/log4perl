@@ -2382,6 +2382,23 @@ and you'll get
 
 instead.
 
+=head2 I'm on Windows and I'm getting all these 'redefined' messages!
+
+If you're on Windows and are getting warning messages like
+
+  Constant subroutine Log::Log4perl::_INTERNAL_DEBUG redefined at
+    C:/Programme/Perl/lib/constant.pm line 103.
+  Subroutine import redefined at
+    C:/Programme/Perl/site/lib/Log/Log4Perl.pm line 69.
+  Subroutine initialized redefined at
+    C:/Programme/Perl/site/lib/Log/Log4Perl.pm line 207.
+
+then chances are that you're using 'Log::Log4Perl' (wrong uppercase P) 
+instead of the correct 'Log::Log4perl'. Perl on Windows doesn't
+handle this error well and spits out a slew of confusing warning
+messages. But now you know, just use the correct module name and
+you'll be fine.
+
 =cut
 
 =head1 SEE ALSO
