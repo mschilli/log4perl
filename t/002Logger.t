@@ -10,7 +10,7 @@ use strict;
 
 #########################
 # used Test::Simple to help debug the test script
-use Test::More tests => 68;
+use Test::More tests => 70;
 
 use Log::Log4perl;
 use Log::Log4perl::Level;
@@ -18,6 +18,7 @@ use Log::Log4perl::Util;
 
 ok(1); # If we made it this far, we're ok.
 
+my $log0 = Log::Log4perl->get_logger("abc.def");
 my $log1 = Log::Log4perl->get_logger("abc.def");
 my $log2 = Log::Log4perl->get_logger("abc.def");
 my $log3 = Log::Log4perl->get_logger("abc.def.ghi");
@@ -174,9 +175,13 @@ ok($app3->buffer() eq "", "app3 buffer is empty");
     ##################################################
     # Check is_*() functions
     ##################################################
+$log0->level($TRACE);
 $log1->level($DEBUG);
 $log2->level($ERROR);
 $log3->level($INFO);
+
+ok($log0->is_trace(), "log0 is_trace == 1");
+ok($log0->is_error(), "log0 is_error == 1");
 
 ok($log1->is_error(), "log1 is_error == 1");
 ok($log1->is_info(), "log1 is_info == 1");

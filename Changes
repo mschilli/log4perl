@@ -5,6 +5,8 @@
 1.11 (not yet released)
     *   (ms) Added PatternLayout::Multiline code by Cory Bennett to 
              render multiline messages.
+    *   (ms) Added log level TRACE (lets through even more messages
+             than DEBUG) (suggested by Craig).
 
 1.10 (2007/03/27)
     *   (kg) Nikita Dedik pointed out that Saturday is missing from 

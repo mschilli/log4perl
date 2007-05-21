@@ -123,7 +123,7 @@ sub import {
         ${$caller_pkg . '::_default_logger'} = $logger;
         
             # Define DEBUG, INFO, etc. routines in caller's package
-        for(qw(DEBUG INFO WARN ERROR FATAL)) {
+        for(qw(TRACE DEBUG INFO WARN ERROR FATAL)) {
             my $level   = $_;
             my $lclevel = lc($_);
             *{"$caller_pkg\::$_"} = sub { 
@@ -649,8 +649,8 @@ and I<INFO> messages are suppressed.
 
 =head2 Log Levels
 
-There are five predefined log levels: C<FATAL>, C<ERROR>, C<WARN>, C<INFO> 
-and C<DEBUG> (in descending priority). Your configured logging level
+There are five predefined log levels: C<FATAL>, C<ERROR>, C<WARN>, C<INFO>,
+C<DEBUG>, and C<TRACE> (in descending priority). Your configured logging level
 has to at least match the priority of the logging message.
 
 If your configured logging level is C<WARN>, then messages logged 
@@ -671,6 +671,7 @@ using the constants defined in C<Log::Log4perl::Level>:
 
     use Log::Log4perl::Level;
 
+    $logger->log($TRACE, "...");
     $logger->log($DEBUG, "...");
     $logger->log($INFO, "...");
     $logger->log($WARN, "...");
@@ -686,6 +687,7 @@ If you need to find out if the currently configured logging
 level would allow a logger's logging statement to go through, use the
 logger's C<is_I<level>()> methods:
 
+    $logger->is_trace()    # True if trace messages would go through
     $logger->is_debug()    # True if debug messages would go through
     $logger->is_info()     # True if info messages would go through
     $logger->is_warn()     # True if warn messages would go through
