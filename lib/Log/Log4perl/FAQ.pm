@@ -1456,10 +1456,16 @@ it comes to logging, Log::Log4perl won't synchronize access to it.
 Depending on your operating system's flush mechanism, buffer size and the size
 of your messages, there's a small chance of an overlap.
 
-A guaranteed way of having messages separated is putting a
-Log::Log4perl::Appender::Synchronized composite appender in 
-between Log::Log4perl and the real appender. It will make sure to
-let messages pass through this virtual gate one by one only. 
+The easiest way to prevent overlapping messages in logfiles is setting the 
+file appender's C<syswrite> flag. This makes sure that 
+C<Log::Log4perl::Appender::File> uses C<syswrite()> (which is guaranteed
+to run uninterrupted) instead of C<print()> which might buffer
+the message or get interrupted by the OS while it is writing.
+
+Another guaranteed way of having messages separated with any kind of
+appender is putting a Log::Log4perl::Appender::Synchronized composite
+appender in between Log::Log4perl and the real appender. It will make
+sure to let messages pass through this virtual gate one by one only.
 
 Here's a sample configuration to synchronize access to a file appender:
 

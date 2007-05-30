@@ -7,6 +7,10 @@
              render multiline messages.
     *   (ms) Added log level TRACE (lets through even more messages
              than DEBUG) (suggested by Craig).
+    *   (ms) Added 'syswrite' flag to file appender to have it use
+             'syswrite' instead of 'print', avoiding buffered or
+             interleaving messages originating from different processes
+             (thanks to Evan Miller).
 
 1.10 (2007/03/27)
     *   (kg) Nikita Dedik pointed out that Saturday is missing from 

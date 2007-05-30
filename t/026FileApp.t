@@ -27,7 +27,7 @@ unless (-e "$WORK_DIR"){
 
 my $testfile = File::Spec->catfile($WORK_DIR, "test26.log");
 
-BEGIN {plan tests => 10}
+BEGIN {plan tests => 13}
 
 END { unlink $testfile;
       unlink "${testfile}_1";
@@ -197,3 +197,56 @@ for(qw(1 2)) {
 }
 
 ok($app->filename(), "${testfile}_2");
+
+#########################################################
+# Testing syswrite
+#########################################################
+$data = <<EOT;
+log4perl.category = INFO, FileAppndr1
+log4perl.appender.FileAppndr1          = Log::Log4perl::Appender::File
+log4perl.appender.FileAppndr1.filename = ${testfile}_1
+log4perl.appender.FileAppndr1.syswrite = 1
+log4perl.appender.FileAppndr1.mode     = write
+log4perl.appender.FileAppndr1.layout   = Log::Log4perl::Layout::SimpleLayout
+EOT
+
+Log::Log4perl::init(\$data);
+$log = Log::Log4perl::get_logger("");
+$log->info("File1");
+
+open FILE, "<${testfile}_1" or die "Cannot open ${testfile}_1";
+$content = join '', <FILE>;
+close FILE;
+
+ok($content, "INFO - File1\n");
+
+Log::Log4perl::init(\$data);
+$log->info("File1");
+
+open FILE, "<${testfile}_1" or die "Cannot open ${testfile}_1";
+$content = join '', <FILE>;
+close FILE;
+
+ok($content, "INFO - File1\n");
+
+#########################################################
+# Testing syswrite with append
+#########################################################
+$data = <<EOT;
+log4perl.category = INFO, FileAppndr1
+log4perl.appender.FileAppndr1          = Log::Log4perl::Appender::File
+log4perl.appender.FileAppndr1.filename = ${testfile}_1
+log4perl.appender.FileAppndr1.syswrite = 1
+log4perl.appender.FileAppndr1.mode     = append
+log4perl.appender.FileAppndr1.layout   = Log::Log4perl::Layout::SimpleLayout
+EOT
+
+Log::Log4perl::init(\$data);
+$log = Log::Log4perl::get_logger("");
+$log->info("File1");
+
+open FILE, "<${testfile}_1" or die "Cannot open ${testfile}_1";
+$content = join '', <FILE>;
+close FILE;
+
+ok($content, "INFO - File1\nINFO - File1\n");
