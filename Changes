@@ -2,7 +2,7 @@
  Revision history for Log::Log4perl
 ##################################################
 
-1.11 (not yet released)
+1.11 (2007/05/29)
     *   (ms) Added PatternLayout::Multiline code by Cory Bennett to 
              render multiline messages.
     *   (ms) Added log level TRACE (lets through even more messages
