@@ -1,5 +1,5 @@
 ######################################################################
-    Log::Log4perl 1.10
+    Log::Log4perl 1.11
 ######################################################################
 
 NAME
@@ -177,9 +177,9 @@ How to use it
     suppressed.
 
   Log Levels
-    There are five predefined log levels: "FATAL", "ERROR", "WARN", "INFO"
-    and "DEBUG" (in descending priority). Your configured logging level has
-    to at least match the priority of the logging message.
+    There are five predefined log levels: "FATAL", "ERROR", "WARN", "INFO",
+    "DEBUG", and "TRACE" (in descending priority). Your configured logging
+    level has to at least match the priority of the logging message.
 
     If your configured logging level is "WARN", then messages logged with
     "info()" and "debug()" message will be suppressed. "fatal()", "error()"
@@ -199,6 +199,7 @@ How to use it
 
         use Log::Log4perl::Level;
 
+        $logger->log($TRACE, "...");
         $logger->log($DEBUG, "...");
         $logger->log($INFO, "...");
         $logger->log($WARN, "...");
@@ -214,6 +215,7 @@ How to use it
     allow a logger's logging statement to go through, use the logger's
     "is_*level*()" methods:
 
+        $logger->is_trace()    # True if trace messages would go through
         $logger->is_debug()    # True if debug messages would go through
         $logger->is_info()     # True if info messages would go through
         $logger->is_warn()     # True if warn messages would go through
@@ -1484,12 +1486,14 @@ Cool Tricks
         my $value = Log::Log4perl::MDC->get($key);
 
     If no value has been stored previously under $key, the "get" method will
-    return the string "[undef]" to allow for easy string interpolation later
-    on.
+    return "undef".
 
     Typically, MDC values are retrieved later on via the "%X{...}"
-    placeholder in "Log::Log4perl::Layout::PatternLayout". For example, an
-    application taking a web request might store the remote host like
+    placeholder in "Log::Log4perl::Layout::PatternLayout". If the "get()"
+    method returns "undef", the placeholder will expand to the string
+    "[undef]".
+
+    An application taking a web request might store the remote host like
 
         Log::Log4perl::MDC->put("remote_host", $r->headers("HOST"));
 
@@ -1898,14 +1902,14 @@ AUTHORS
         Kevin Goess <cpan@goess.org>
 
         Contributors (in alphabetical order):
-        Ateeq Altaf, Jeremy Bopp, Hutton Davidson, Chris R. Donnelly,
-        Matisse Enzer, Hugh Esco, James FitzGibbon, Carl Franks, Dennis
-        Gregorovic, Paul Harrington, David Hull, Robert Jacobson, Jeff
-        Macdonald, Markus Peter, Brett Rann, Erik Selberg, Aaron Straup
-        Cope, Lars Thegler, David Viner, Mac Yang.
+        Ateeq Altaf, Cory Bennett, Jeremy Bopp, Hutton Davidson, Chris R.
+        Donnelly, Matisse Enzer, Hugh Esco, James FitzGibbon, Carl Franks,
+        Dennis Gregorovic, Paul Harrington, David Hull, Robert Jacobson,
+        Jeff Macdonald, Markus Peter, Brett Rann, Erik Selberg, Aaron
+        Straup Cope, Lars Thegler, David Viner, Mac Yang.
 
 COPYRIGHT AND LICENSE
-    Copyright 2002-2004 by Mike Schilli <m@perlmeister.com> and Kevin Goess
+    Copyright 2002-2007 by Mike Schilli <m@perlmeister.com> and Kevin Goess
     <cpan@goess.org>.
 
     This library is free software; you can redistribute it and/or modify it
