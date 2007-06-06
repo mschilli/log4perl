@@ -1053,8 +1053,8 @@ Here's some examples of often-used Log4perl configuration files:
 
     log4perl.category.Bar.Twix      = WARN, Screen
     log4perl.appender.Screen        = Log::Log4perl::Appender::Screen
-    log4perl.appender.Screen.layout = \
     log4perl.appender.Screen.stderr = 0
+    log4perl.appender.Screen.layout = \
         Log::Log4perl::Layout::PatternLayout
     log4perl.appender.Screen.layout.ConversionPattern = %d %m %n
 
