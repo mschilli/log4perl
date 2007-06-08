@@ -2,6 +2,10 @@
  Revision history for Log::Log4perl
 ##################################################
 
+1.12 (not yet released)
+    *   (ms) Added Log::Log4perl::Resurrector to resurrect commented-out
+             Log4perl statements in all subsequently loaded modules.
+
 1.11 (2007/05/29)
     *   (ms) Added PatternLayout::Multiline code by Cory Bennett to 
              render multiline messages.

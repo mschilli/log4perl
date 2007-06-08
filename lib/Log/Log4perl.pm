@@ -16,7 +16,7 @@ use Log::Log4perl::Appender;
 
 use constant _INTERNAL_DEBUG => 1;
 
-our $VERSION = '1.11';
+our $VERSION = '1.12';
 
    # set this to '1' if you're using a wrapper
    # around Log::Log4perl
@@ -2116,6 +2116,22 @@ the following:
 
     ###l4p Log::Log4perl->easy_init($DEBUG);
     ###l4p DEBUG "It works!";
+
+As of C<Log::Log4perl> 1.12, you can even force I<all> modules
+loaded by a script to have their hidden Log4perl statements
+resurrected. For this to happen, load C<Log::Log4perl::Resurrector>
+I<before> loading any modules:
+
+    use Log::Log4perl qw(:easy);
+    use Log::Log4perl::Resurrector;
+
+    use Foobar; # All hidden Log4perl statements in here will
+                # be uncommented before Foobar gets loaded.
+
+    Log::Log4perl->easy_init($DEBUG);
+    ...
+
+Check the C<Log::Log4perl::Resurrector> manpage for more details.
 
 =head2 Access defined appenders
 
