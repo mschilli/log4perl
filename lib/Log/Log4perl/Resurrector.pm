@@ -55,6 +55,7 @@ sub resurrector_loader {
             print "File $module not found\n" if INTERNAL_DEBUG;
             return undef;
         }
+        print "File $module found in $path\n" if INTERNAL_DEBUG;
         $module = $path;
     }
 
@@ -72,6 +73,8 @@ sub pm_search {
     my($pmfile) = @_;
 
     for(@INC) {
+          # Skip subrefs
+        next if ref($_);
         my $path = File::Spec->catfile($_, $pmfile);
         return $path if -f $path;
     }
