@@ -42,7 +42,20 @@ sub resurrector_loader {
 
       # Skip Log4perl appenders
     if($module =~ m#^Log/Log4perl/Appender#) {
+        print "Ignoreing $module (Log4perl-internal)\n" if INTERNAL_DEBUG;
         return undef;
+    }
+
+      # Skip unknown files
+    if(!-f $module) {
+          # We might have a 'use lib' statement that modified the
+          # INC path, search again.
+        my $path = pm_search($module);
+        if(! defined $path) {
+            print "File $module not found\n" if INTERNAL_DEBUG;
+            return undef;
+        }
+        $module = $path;
     }
 
     print "Resurrecting module $module\n" if INTERNAL_DEBUG;
@@ -51,6 +64,19 @@ sub resurrector_loader {
 
     $INC{$module} = 1;
     return $fh;
+}
+
+###########################################
+sub pm_search {
+###########################################
+    my($pmfile) = @_;
+
+    for(@INC) {
+        my $path = File::Spec->catfile($_, $pmfile);
+        return $path if -f $path;
+    }
+
+    return undef;
 }
 
 ###########################################
@@ -116,7 +142,7 @@ There's a startup cost to using C<Log::Log4perl::Resurrector> (all
 subsequently loaded modules are examined) but once the compilation
 phase has finished, the perl program will run at full speed.
 
-The techniques used in this module have been stolen from the
+Some of the techniques used in this module have been stolen from the
 C<Acme::Incorporated> CPAN module, written by I<chromatic>. Long
 live CPAN!
 
