@@ -1,0 +1,87 @@
+#!/usr/bin/perl -w
+use strict;
+use Sysadm::Install qw(:all);
+use DateTime;
+use RRDTool::OO;
+use Log::Log4perl qw(:easy);
+Log::Log4perl->easy_init($DEBUG);
+
+my @points;
+
+my $ymd_date = qr(\d\d\d\d/\d\d/\d\d);
+my $mdy_date = qr(\d\d/\d\d/\d\d\d\d);
+my $version  = qr(\d+\.\d+);
+
+my($y, $m, $d);
+
+my $last_time = undef;
+
+open FILE, "<Changes";
+while(<FILE>) {
+    chomp;
+
+    if(/^($version)\s+\(?(?:($ymd_date)|($mdy_date))/) {
+        my $v = $1;
+        if($2) {
+            #ymd
+            ($y, $m, $d) = split m#/#, $2;
+        } else {
+            #mdy
+            ($m, $d, $y) = split m#/#, $3;
+        }
+        my $date = DateTime->new(
+                year   => $y,
+                month  => $m,
+                day    => $d,
+        );
+        if(defined $last_time and $last_time == $date->epoch()) {
+            next;
+        }
+        push @points, [$date->epoch(), $v];
+        $last_time = $date->epoch();
+    }
+}
+
+@points = reverse @points;
+
+   # Constructor
+my $rrd = RRDTool::OO->new(
+	    file => "releases.rrd" );
+
+   # Create a round-robin database
+$rrd->create(
+  step        => 3600*24*1,
+  start       => $points[0]->[0] - 1,
+  data_source => { name => "releases",
+                   type => "GAUGE" },
+  archive     => { rows => 10_000 });
+
+my $last_point;
+
+for(@points) {
+  next if $last_point == $_->[0];
+  if(defined $last_point and
+     $_->[0] - $last_point > 3600*24) {
+       $last_point += 3600*24;
+       $rrd->update(time  => $last_point,
+                    value => $_->[1]);
+       redo;
+  }
+  $rrd->update(time  => $_->[0], 
+               value => $_->[1]);
+  $last_point = $_->[0];
+}
+
+$rrd->graph(
+ width  => 600,
+ height => 400,
+ image          => "releases.png",
+ vertical_label => "Version",
+ start          => $points[0]->[0],
+ end            => $points[-1]->[0],
+ draw           => {
+     type   => "line",
+     color  => "0000FF",
+     legend => "Log4perl Releases",
+ }
+);
