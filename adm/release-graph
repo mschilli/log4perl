@@ -79,6 +79,7 @@ $rrd->graph(
  vertical_label => "Version",
  start          => $points[0]->[0],
  end            => $points[-1]->[0],
+ x_grid => "YEAR:1:YEAR:1:YEAR:1:0:%Y",
  draw           => {
      type   => "line",
      color  => "0000FF",
