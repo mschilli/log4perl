@@ -123,8 +123,9 @@ sub import {
         ${$caller_pkg . '::_default_logger'} = $logger;
         
             # Define DEBUG, INFO, etc. routines in caller's package
-        for(qw(TRACE DEBUG INFO WARN ERROR FATAL)) {
+        for(qw(TRACE DEBUG INFO WARN ERROR FATAL ALWAYS)) {
             my $level   = $_;
+            $level = "OFF" if $level eq "ALWAYS";
             my $lclevel = lc($_);
             *{"$caller_pkg\::$_"} = sub { 
                 Log::Log4perl::Logger::init_warn() unless 
@@ -1864,10 +1865,15 @@ your log statements to a file, you can use the following features:
 In C<:easy> mode, C<Log::Log4perl> will instantiate a I<stealth logger>
 named C<$_default_logger> and import it into the current package. Also,
 it will introduce the
-convenience functions C<DEBUG()>, C<INFO()>, C<WARN()>, 
-C<ERROR()> and C<FATAL()> into the package namespace,
-which take arguments and forward them to C<_default_logger-E<gt>debug()>,
+convenience functions C<TRACE>, C<DEBUG()>, C<INFO()>, C<WARN()>, 
+C<ERROR()>, C<FATAL()>, and C<ALWAYS> into the package namespace.
+These functions simply take messages as
+arguments and forward them to C<_default_logger-E<gt>debug()>,
 C<_default_logger-E<gt>info()> and so on.
+If a message should never be blocked, regardless of the log level,
+use the C<ALWAYS> function which corresponds to a log level of C<OFF>:
+
+    ALWAYS "This will be printed regardless of the log level";
 
 The C<easy_init> method can be called with a single level value to
 create a STDERR appender and a root logger as in
