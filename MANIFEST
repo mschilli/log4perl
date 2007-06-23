@@ -2,6 +2,7 @@ Changes
 eg/5005it.pl
 eg/color
 eg/jabber.conf
+eg/L4pResurrectable.pm
 eg/log4j-file-append-java.conf
 eg/log4j-file-append-perl.conf
 eg/log4j-manual-1.conf
@@ -120,6 +121,7 @@ t/049Unhide.t
 t/050Buffer.t
 t/051Extra.t
 t/052Utf8.t
+t/053Resurrect.t
 t/compare.pl
 t/deeper1.expected
 t/deeper6.expected
