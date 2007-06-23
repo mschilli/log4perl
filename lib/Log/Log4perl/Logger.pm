@@ -969,7 +969,7 @@ sub logconfess {
   my $self = shift;
 
   my $msg = $self->warning_render(@_);
-  local $Carp::CarpLevel = 2;
+  local $Carp::CarpLevel = $Carp::CarpLevel + 1;
 
   my $message = Carp::longmess($msg);
   local $Log::Log4perl::caller_depth = 

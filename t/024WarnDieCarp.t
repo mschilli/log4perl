@@ -26,7 +26,7 @@ BEGIN {
     if ($] < 5.006) {
         plan skip_all => "Only with perl >= 5.006";
     } else {
-        plan tests => 61;
+        plan tests => 62;
     }
 }
 
@@ -270,36 +270,25 @@ SKIP: {
     # foocarp at 024WarnDieCarp.t line 250
 like($warnstr, qr/foocarp.*line $call_line/, "carp output");
 
-__END__
-
 ######################################################################
-# Several layers
+# logconfess fix (1.12)
 ######################################################################
 $app0->buffer("");
 
-sub foo2 { $logger->logcarp("l4pcarp_a"); $carp_line = __LINE__; }
-sub foo1 { foo2(); }
-foo1(); $call_line = __LINE__;
+package Foo1;
+sub new {
+    my($class) = @_;
+    bless {}, $class;
+}
 
-    # *L4P* main::bar-11 l4pcroak_i at ./t line 11
-    # *L4P* main::bar-11      main::bar() called at ./t line 15
-    # *L4P* main::bar-11      main::foo() called at ./t line 18
-like($app0->buffer(), qr/main::foo2#$carp_line l4pcarp_a.*$carp_line/,
-    "carp in subfunction (1)");
-like($app0->buffer(), qr/main::foo2#$carp_line.*main::foo l4pcarp_a.*$carp_line/,
-    "carp in subfunction (2)");
+sub foo1 {
+    my $log = get_logger();
+    $log->logconfess("bah!");
+}
 
-__END__
-eval { $logger->logdie(sub { "a" . "-" . "b" }); };
-like($@, qr/a-b/, "bugfix: logdie with sub{} as argument");
+package main;
 
-$logger->logwarn(sub { "a" . "-" . "b" });
-like($warnstr, qr/a-b/, "bugfix: logwarn with sub{} as argument");
+my $foo = Foo1->new();
+eval { $foo->foo1() };
 
-$logger->logwarn({ filter => \&Dumper,
-                   value  => "a-b" });
-like($warnstr, qr/a-b/, "bugfix: logwarn with sub{filter/value} as argument");
-
-eval { $logger->logcroak({ filter => \&Dumper,
-                    value  => "a-b" }); };
-like($warnstr, qr/a-b/, "bugfix: logcroak with sub{} as argument");
+like $@, qr/024WarnDieCarp.*Foo1::foo1.*eval/s, "Confess logs correct frame";
