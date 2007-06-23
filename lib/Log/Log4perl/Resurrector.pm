@@ -27,7 +27,9 @@ sub resurrector_fh {
     my($tmp_fh, $tmpfile) = tempfile( UNLINK => 1 );
     print "Opened tmpfile $tmpfile\n" if INTERNAL_DEBUG;
 
-    $text =~ s/^\s*###l4p//m;
+    $text =~ s/^\s*###l4p//mg;
+
+    print "Text=[$text]\n" if INTERNAL_DEBUG;
 
     print $tmp_fh $text;
     seek $tmp_fh, 0, 0;
