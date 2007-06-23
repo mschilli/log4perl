@@ -1,5 +1,5 @@
 ######################################################################
-    Log::Log4perl 1.11
+    Log::Log4perl 1.12
 ######################################################################
 
 NAME
@@ -1322,10 +1322,14 @@ Cool Tricks
 
     In ":easy" mode, "Log::Log4perl" will instantiate a *stealth logger*
     named $_default_logger and import it into the current package. Also, it
-    will introduce the convenience functions "DEBUG()", "INFO()", "WARN()",
-    "ERROR()" and "FATAL()" into the package namespace, which take arguments
-    and forward them to "_default_logger->debug()",
-    "_default_logger->info()" and so on.
+    will introduce the convenience functions "TRACE", "DEBUG()", "INFO()",
+    "WARN()", "ERROR()", "FATAL()", and "ALWAYS" into the package namespace.
+    These functions simply take messages as arguments and forward them to
+    "_default_logger->debug()", "_default_logger->info()" and so on. If a
+    message should never be blocked, regardless of the log level, use the
+    "ALWAYS" function which corresponds to a log level of "OFF":
+
+        ALWAYS "This will be printed regardless of the log level";
 
     The "easy_init" method can be called with a single level value to create
     a STDERR appender and a root logger as in
@@ -1564,6 +1568,21 @@ Cool Tricks
 
         ###l4p Log::Log4perl->easy_init($DEBUG);
         ###l4p DEBUG "It works!";
+
+    As of "Log::Log4perl" 1.12, you can even force *all* modules loaded by a
+    script to have their hidden Log4perl statements resurrected. For this to
+    happen, load "Log::Log4perl::Resurrector" *before* loading any modules:
+
+        use Log::Log4perl qw(:easy);
+        use Log::Log4perl::Resurrector;
+
+        use Foobar; # All hidden Log4perl statements in here will
+                    # be uncommented before Foobar gets loaded.
+
+        Log::Log4perl->easy_init($DEBUG);
+        ...
+
+    Check the "Log::Log4perl::Resurrector" manpage for more details.
 
   Access defined appenders
     All appenders defined in the configuration file or via Perl code can be
