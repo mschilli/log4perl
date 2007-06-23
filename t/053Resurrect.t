@@ -26,4 +26,5 @@ EOT
 my $buffer = Log::Log4perl::Appender::TestBuffer->by_name("A1");
 
 L4pResurrectable::foo();
-is($buffer->buffer(), "DEBUG - foo was here\n", "resurrected statement");
+is($buffer->buffer(), "DEBUG - foo was here\nINFO - bar was here\n", 
+   "resurrected statement");
