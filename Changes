@@ -2,6 +2,9 @@
  Revision history for Log::Log4perl
 ##################################################
 
+1.13 (not yet released)
+    *   (ms) Another doc fix by Craig
+
 1.12 (2007/06/23)
     *   (ms) Added Log::Log4perl::Resurrector to resurrect commented-out
              Log4perl statements in all subsequently loaded modules (allows

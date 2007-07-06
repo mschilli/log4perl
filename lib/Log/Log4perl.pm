@@ -655,12 +655,13 @@ C<DEBUG>, and C<TRACE> (in descending priority). Your configured logging level
 has to at least match the priority of the logging message.
 
 If your configured logging level is C<WARN>, then messages logged 
-with C<info()> and C<debug()> message will be suppressed. 
+with C<info()>, C<debug()>, and C<trace()> will be suppressed. 
 C<fatal()>, C<error()> and C<warn()> will make their way through,
 because their priority is higher or equal than the configured setting.
 
 Instead of calling the methods
 
+    $logger->trace("...");  # Log a trace message
     $logger->debug("...");  # Log a debug message
     $logger->info("...");   # Log a info message
     $logger->warn("...");   # Log a warn message
