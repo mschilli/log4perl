@@ -1,8 +1,3 @@
-#!/usr/bin/perl
-###########################################
-use warnings;
-use strict;
-
 package Log::Log4perl::Config::Watch;
 
 use constant _INTERNAL_DEBUG => 0;
