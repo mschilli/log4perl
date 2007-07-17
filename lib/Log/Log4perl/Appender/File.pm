@@ -29,8 +29,13 @@ sub new {
         recreate_check_interval => 30,
         recreate_check_signal   => undef,
         recreate_pid_write      => undef,
+        create_at_logtime       => 0,
         @options,
     };
+
+    if($self->{create_at_logtime}) {
+        $self->{recreate}  = 1;
+    }
 
     if(defined $self->{umask} and $self->{umask} =~ /^0/) {
             # umask value is a string, meant to be an oct value
@@ -52,7 +57,7 @@ sub new {
     }
 
         # This will die() if it fails
-    $self->file_open();
+    $self->file_open() unless $self->{create_at_logtime};
 
     return $self;
 }
@@ -210,7 +215,8 @@ sub log {
                 $self->file_switch($self->{filename});
             }
         } else {
-            if($self->{watcher}->file_has_moved()) {
+            if(!$self->{watcher} or
+                $self->{watcher}->file_has_moved()) {
                 $self->file_switch($self->{filename});
             }
         }
@@ -395,6 +401,22 @@ been rotated. This option expects a path to a file where the pid
 of the currently running application gets written to.
 Check the FAQ for using this option with the log rotating 
 utility C<newsyslog>.
+
+=item create_at_logtime
+
+The file appender typically creates its logfile in its constructor, i.e. 
+at Log4perl C<init()> time. This is desirable for most use cases, because
+it makes sure that file permission problems get detected right away, and 
+not after days/weeks/months of operation when the appender suddenly needs
+to log something and fails because of a problem that was obvious at
+startup.
+
+However, there are rare use cases where the file shouldn't be created
+at Log4perl C<init()> time, e.g. if the appender can't be used by the current
+user although it is defined in the configuration file. If you set
+C<create_at_logtime> to a true value, the file appender will try to create
+the file at log time. Note that this setting lets permission problems
+sit undetected until log time, which might be undesirable.
 
 =back
 

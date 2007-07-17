@@ -27,7 +27,7 @@ unless (-e "$WORK_DIR"){
 
 my $testfile = File::Spec->catfile($WORK_DIR, "test26.log");
 
-BEGIN {plan tests => 13}
+BEGIN {plan tests => 15}
 
 END { unlink $testfile;
       unlink "${testfile}_1";
@@ -250,3 +250,27 @@ $content = join '', <FILE>;
 close FILE;
 
 ok($content, "INFO - File1\nINFO - File1\n");
+
+#########################################################
+# Testing create_at_logtime
+#########################################################
+unlink "${testfile}_1";
+$data = qq(
+log4perl.category         = DEBUG, Logfile
+log4perl.appender.Logfile          = Log::Log4perl::Appender::File
+log4perl.appender.Logfile.filename = ${testfile}_1
+log4perl.appender.Logfile.create_at_logtime = 1
+log4perl.appender.Logfile.layout   = Log::Log4perl::Layout::SimpleLayout
+);
+
+Log::Log4perl->init(\$data);
+ok(! -f "${testfile}_1");
+
+$log = Log::Log4perl::get_logger("");
+$log->info("File1");
+
+open FILE, "<${testfile}_1" or die "Cannot open ${testfile}_1";
+$content = join '', <FILE>;
+close FILE;
+
+ok($content, "INFO - File1\n");
