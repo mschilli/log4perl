@@ -2043,7 +2043,7 @@ What you want to do instead, is this:
     log4perl.appender.ScreenApp.stderr   = 0
     log4perl.appender.ScreenApp.layout   = SimpleLayout
        ### limiting output to ERROR messages
-    log4perl.appender.Screenapp.Threshold = ERROR
+    log4perl.appender.ScreenApp.Threshold = ERROR
        ###
 
 Note that without the second appender's C<Threshold> setting, both appenders
