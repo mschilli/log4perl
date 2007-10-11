@@ -2,10 +2,12 @@
  Revision history for Log::Log4perl
 ##################################################
 
-1.13 (not yet released)
+1.13 (2007/10/11)
     *   (ms) Another doc fix by Craig
     *   (ms) Applied Fedora 7 patches
     *   (ms) Added create_at_logtime option to file appender
+    *   (ms) Added trace level color (yellow) in ScreenColoredLevels
+             appender as suggested by Arvind Jayaprakash.
 
 1.12 (2007/06/23)
     *   (ms) Added Log::Log4perl::Resurrector to resurrect commented-out
