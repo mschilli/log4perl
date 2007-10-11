@@ -7,7 +7,9 @@
     *   (ms) Applied Fedora 7 patches
     *   (ms) Added create_at_logtime option to file appender
     *   (ms) Added trace level color (yellow) in ScreenColoredLevels
-             appender as suggested by Arvind Jayaprakash.
+             appender as suggested by Arvind Jayaprakash in
+             https://sourceforge.net/tracker/index.php?
+                 func=detail&aid=1791445&group_id=56939&atid=482388
 
 1.12 (2007/06/23)
     *   (ms) Added Log::Log4perl::Resurrector to resurrect commented-out
