@@ -182,12 +182,13 @@ How to use it
     level has to at least match the priority of the logging message.
 
     If your configured logging level is "WARN", then messages logged with
-    "info()" and "debug()" message will be suppressed. "fatal()", "error()"
-    and "warn()" will make their way through, because their priority is
-    higher or equal than the configured setting.
+    "info()", "debug()", and "trace()" will be suppressed. "fatal()",
+    "error()" and "warn()" will make their way through, because their
+    priority is higher or equal than the configured setting.
 
     Instead of calling the methods
 
+        $logger->trace("...");  # Log a trace message
         $logger->debug("...");  # Log a debug message
         $logger->info("...");   # Log a info message
         $logger->warn("...");   # Log a warn message
