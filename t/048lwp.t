@@ -42,7 +42,7 @@ open LOG, "<lwpout.txt" or die "Cannot open lwpout.txt";
 my $data = join('', <LOG>);
 close LOG;
 
-like($data, qr#GET file:$tmpfile#);
+like($data, qr#\QGET file:$tmpfile\E#);
 
 END { unlink "lwpout.txt" }
 

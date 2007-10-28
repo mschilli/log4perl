@@ -2,6 +2,10 @@
  Revision history for Log::Log4perl
 ##################################################
 
+1.14 (not yet released)
+    *   (ms) Fixed test suite bug which surfaced in Darwin because temporary
+             files contain '++' which freaked out the sloppy regex match.
+
 1.13 (2007/10/11)
     *   (ms) Another doc fix by Craig
     *   (ms) Applied Fedora 7 patches
