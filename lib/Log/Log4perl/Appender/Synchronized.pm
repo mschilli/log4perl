@@ -15,7 +15,7 @@ use Log::Log4perl::Util::Semaphore;
 
 our @ISA = qw(Log::Log4perl::Appender);
 
-our $CVSVERSION   = '$Revision: 1.11 $';
+our $CVSVERSION   = '$Revision: 1.12 $';
 our ($VERSION)    = ($CVSVERSION =~ /(\d+\.\d+)/);
 
 ###########################################
@@ -31,7 +31,7 @@ sub new {
     };
 
     my @values = ();
-    for my $param (qw(uid gid mode destroy)) {
+    for my $param (qw(uid gid mode destroy key)) {
         push @values, $param, $self->{$param} if defined $self->{$param};
     }
 
