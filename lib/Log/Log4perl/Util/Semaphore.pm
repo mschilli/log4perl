@@ -21,6 +21,12 @@ sub new {
 
     $self->{ikey} = unpack("i", pack("A4", $self->{key}));
 
+      # Accept usernames in the uid field as well
+    if(defined $self->{uid} and 
+       $self->{uid} =~ /\D/) {
+        $self->{uid} = (getpwnam $self->{uid})[2];
+    }
+
     bless $self, $class;
     $self->init();
 
@@ -147,6 +153,9 @@ Log::Log4perl::Util::Semaphore - Easy to use semaphores
 Log::Log4perl::Util::Semaphore provides the synchronisation mechanism
 for the Synchronized.pm appender in Log4perl, but can be used independently
 of Log4perl.
+
+As a convenience, the C<uid> field accepts user names as well, which it 
+translates into the corresponding uid by running C<getpwnam>.
 
 =head1 LEGALESE
 
