@@ -33,10 +33,6 @@ our $lock;
 our $locker;
 our $shared_name = "_l4_";
 
-#print "Nuking semaphore\n";
-Log::Log4perl::Appender::Synchronized::nuke_sem($shared_name);
-Log::Log4perl::Appender::Synchronized::nuke_sem("_l4p");
-
 unlink $logfile;
 
 #goto SECOND;
@@ -118,10 +114,6 @@ ok(! $clashes_found, "Checking for clashes in logfile");
 use IO::Socket::INET;
 
 SECOND:
-
-#print "Nuking semaphore\n";
-Log::Log4perl::Appender::Synchronized::nuke_sem($shared_name);
-Log::Log4perl::Appender::Synchronized::nuke_sem("_l4p");
 
 unlink $logfile;
 
