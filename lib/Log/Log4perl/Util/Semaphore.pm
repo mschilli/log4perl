@@ -12,9 +12,10 @@ sub new {
 
     my $self = {
         key     => undef,
-        perm    => 0777,
-        owner   => undef,
-        group   => undef,
+        mode    => undef,
+        uid     => undef,
+        gid     => undef,
+        destroy => undef,
         %options,
     };
 
@@ -22,6 +23,12 @@ sub new {
 
     bless $self, $class;
     $self->init();
+
+    my @values = ();
+    for my $param (qw(mode uid gid)) {
+        push @values, $param, $self->{$param} if defined $self->{$param};
+    }
+    $self->semset(@values) if @values;
 
     return $self;
 }
@@ -35,7 +42,7 @@ sub init {
 
     $self->{id} = semget( $self->{ikey}, 
                           1, 
-                          &IPC_EXCL|&IPC_CREAT|$self->{perm},
+                          &IPC_EXCL|&IPC_CREAT|($self->{mode}||0777),
                   );
    
    if($! =~ /exists/) {
@@ -103,6 +110,16 @@ sub remove {
         die "Removing semaphore $self->{key} failed: $!";
 }
 
+###########################################
+sub DESTROY {
+###########################################
+    my($self) = @_;
+
+    if($self->{destroy}) {
+        $self->remove();
+    }
+}
+
 1;
 
 __END__
@@ -120,9 +137,9 @@ Log::Log4perl::Util::Semaphore - Easy to use semaphores
       # ... critical section 
     $sem->semunlock();
 
-    $sem->semset( uid => getpwnam("hugo"), 
-                  gid => 102,
-                  perm => 0644
+    $sem->semset( uid  => (getpwnam("hugo"))[2], 
+                  gid  => 102,
+                  mode => 0644
                 );
 
 =head1 DESCRIPTION
