@@ -625,6 +625,10 @@ sub config_read {
     
     print "Reading $config: [@text]\n" if _INTERNAL_DEBUG;
 
+    if(! grep /\S/, @text) {
+        return $data;
+    }
+
     if ($text[0] =~ /^<\?xml /) {
 
         die "XML::DOM not available" unless

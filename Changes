@@ -5,6 +5,7 @@
 1.14 (not yet released)
     *   (ms) Fixed test suite bug which surfaced in Darwin because temporary
              files contain '++' which freaked out the sloppy regex match.
+    *   (ms) Better handling of empty config files (reported by Robert Raisch)
 
 1.13 (2007/10/11)
     *   (ms) Another doc fix by Craig
