@@ -1,5 +1,5 @@
 ######################################################################
-# Synchronized.pm -- 2003, Mike Schilli <m@perlmeister.com>
+# Synchronized.pm -- 2003, 2007 Mike Schilli <m@perlmeister.com>
 ######################################################################
 # Special appender employing a locking strategy to synchronize
 # access.
@@ -11,13 +11,11 @@ package Log::Log4perl::Appender::Synchronized;
 
 use strict;
 use warnings;
+use Log::Log4perl::Util::Semaphore;
 
 our @ISA = qw(Log::Log4perl::Appender);
 
-use IPC::Shareable qw(:lock);
-use IPC::Semaphore;
-
-our $CVSVERSION   = '$Revision: 1.10 $';
+our $CVSVERSION   = '$Revision: 1.11 $';
 our ($VERSION)    = ($CVSVERSION =~ /(\d+\.\d+)/);
 
 ###########################################
@@ -28,26 +26,22 @@ sub new {
     my $self = {
         appender=> undef,
         key     => '_l4p',
-        options => { create => 1, destroy => 1 },
         level   => 0,
         %options,
     };
 
+    my @values = ();
+    for my $param (qw(uid gid mode destroy)) {
+        push @values, $param, $self->{$param} if defined $self->{$param};
+    }
+
+    $self->{sem} = Log::Log4perl::Util::Semaphore->new(
+        @values
+    );
+
         # Pass back the appender to be synchronized as a dependency
         # to the configuration file parser
     push @{$options{l4p_depends_on}}, $self->{appender};
-
-        # Blow away lingering semaphores
-    nuke_sem($self->{key});
-
-    #warn "$$: IPCshareable created with $self->{key} $self->{options}\n";
-
-    $self->{ipc_shareable} =
-    tie $self->{ipc_shareable_var}, 'IPC::Shareable', 
-        $self->{key}, $self->{options} or
-            die "tie failed: $!";
-
-    $self->{ipc_shareable}->shunlock();
 
         # Run our post_init method in the configurator after
         # all appenders have been defined to make sure the
@@ -62,8 +56,7 @@ sub log {
 ###########################################
     my($self, %params) = @_;
     
-    $self->{ipc_shareable}->shlock();
-    #warn "pid $$ entered\n";
+    $self->{sem}->semlock();
 
     # Relay that to the SUPER class which needs to render the
     # message according to the appender's layout, first.
@@ -73,8 +66,7 @@ sub log {
                              $params{log4p_level});
     $Log::Log4perl::caller_depth -=2;
 
-    #warn "pid $$ leaves\n";
-    $self->{ipc_shareable}->shunlock();
+    $self->{sem}->semunlock();
 }
 
 ###########################################
@@ -95,152 +87,6 @@ sub post_init {
     }
 
     $self->{app} = $appender;
-}
-
-###########################################
-sub DESTROY {
-###########################################
-    my($self) = @_;
-    no warnings;
-    delete $self->{ipc_shareable};
-    untie $self->{ipc_shareable_var};
-}
-
-###########################################
-sub nuke_sem {
-###########################################
-# This function nukes a semaphore previously
-# allocated by IPC::Shareable, which seems to
-# hang in its tie() function if an old semaphore
-# is still lingering around.
-###########################################
-    my($key) = @_;
-
-    $key = pack   A4 => $key;
-    $key = unpack i  => $key;
-
-    my $sem = IPC::Semaphore->new($key, 3, 0);
-
-        # Didn't exist
-    unless(defined $sem) {
-        return undef;
-    }
-
-    $sem->remove() || die "Cannot remove semaphore $key ($!)";
-
-    return 1;
-}
-
-#//////////////////////////////////////////
-package Log::Log4perl::Util::Semaphore;
-#//////////////////////////////////////////
-use Log::Log4perl qw(:easy);
-
-use IPC::SysV qw( IPC_RMID IPC_CREAT IPC_EXCL SEM_UNDO IPC_NOWAIT);
-
-###########################################
-sub new {
-###########################################
-    my($class, %options) = @_;
-
-    my $self = {
-        key     => undef,
-        perm    => 0777,
-        owner   => undef,
-        group   => undef,
-        %options,
-    };
-
-    $self->{ikey} = unpack("i", pack("A4", $self->{key}));
-
-    bless $self, $class;
-    $self->init();
-
-    return $self;
-}
-
-###########################################
-sub init {
-###########################################
-    my($self) = @_;
-
-    ###l4p DEBUG "Semaphore init '$self->{key}'/'$self->{ikey}'";
-
-    $self->{id} = semget( $self->{ikey}, 
-                          1, 
-                          &IPC_EXCL|&IPC_CREAT|$self->{perm},
-                  );
-   
-   if($! =~ /exists/) {
-       ###l4p DEBUG "Semaphore '$self->{key}' already exists";
-       $self->{id} = semget( $self->{ikey}, 1, 0 )
-           or die "semget($self->{ikey}) failed: $!";
-   } elsif($!) {
-       die "Cannot create semaphore $self->{key}/$self->{ikey} ($!)";
-   }
-}
-
-###########################################
-sub chown {
-###########################################
-    my($self, $owner) = @_;
-}
-
-###########################################
-sub chgrp {
-###########################################
-    my($self, $group) = @_;
-}
-
-###########################################
-sub chmod {
-###########################################
-    my($self, $group) = @_;
-}
-
-###########################################
-sub lock {
-###########################################
-    my($self) = @_;
-
-    my $operation = pack("s*", 
-                          # wait until it's 0
-                         0, 0, 0,
-                          # increment by 1
-                         0, 1, SEM_UNDO
-                        );
-
-    ###l4p DEBUG "Locking semaphore '$self->{key}'";
-
-    semop($self->{id}, $operation) or 
-        die "semop($self->{key}, $operation) failed: $! ";
-}
-
-###########################################
-sub unlock {
-###########################################
-    my($self) = @_;
-
-    my $operation = pack("s*", 
-                          # decrement by 1
-                         0, -1, (IPC_NOWAIT|SEM_UNDO)
-                        );
-
-    ###l4p DEBUG "Unlocking semaphore '$self->{key}'";
-
-    semop($self->{id}, $operation) or 
-        die "semop($self->{key}, $operation) failed: $! ";
-}
-
-###########################################
-sub remove {
-###########################################
-    my($self) = @_;
-
-    ###l4p DEBUG "Removing semaphore '$self->{key}'";
-
-    semctl ($self->{id}, 0, &IPC_RMID, 0) or 
-        die "Removing semaphore $self->{key} failed: $!";
 }
 
 1;
@@ -280,11 +126,14 @@ without synchronization, overwrites might happen. A typical scenario
 for this would be a process spawning children, each of which inherits
 the parent's Log::Log4perl configuration.
 
-Usually, you should avoid this scenario and have each child have its
-own Log::Log4perl configuration, ensuring that each e.g. writes to
-a different logfile.
+In most cases, you won't need an external synchronisation tool like
+Log::Log4perl::Appender::Synchronized at all. Log4perl's file appender, 
+Log::Log4perl::Appender::File, for example, provides the C<syswrite>
+mechanism for making sure that even long log lines won't interleave.
+Short log lines won't interleave anyway, because the operating system
+makes sure the line gets written before a task switch occurs.
 
-In cases where you need additional synchronization, however, use
+In cases where you need additional synchronization, however, you can use
 C<Log::Log4perl::Appender::Synchronized> as a gateway between your
 loggers and your appenders. An appender itself, 
 C<Log::Log4perl::Appender::Synchronized> just takes two additional
@@ -315,7 +164,7 @@ pointing this out).
 
 =back
 
-C<Log::Log4perl::Appender::Synchronized> uses C<IPC::Shareable>
+C<Log::Log4perl::Appender::Synchronized> uses Log::Log4perl::Util::Semaphore
 internally to perform locking with semaphores provided by the
 operating system used.
 
@@ -361,23 +210,37 @@ serialization of output written to different files.
 
 =head2 Advanced configuration
 
-To configure the underlying IPC::Shareable module, use the I<options>
-property and hand it a reference to a hash of options.
+To configure the underlying Log::Log4perl::Util::Semaphore module in 
+a different way than with the default settings provided by 
+Log::Log4perl::Appender::Synchronized, use the options parameter:
 
-By default, the setting is equal to
+    log4perl.appender.Syncer1.destroy  = 1
+    log4perl.appender.Syncer1.mode     = sub { 0775 }
+    log4perl.appender.Syncer1.uid      = hugo
+    log4perl.appender.Syncer1.gid      = 100
 
-      { create=>1, destroy=>1 }
+Valid keys are 
+C<destroy> (Remove the semaphore on exit), 
+C<mode> (permissions on the semaphore), 
+C<uid> (uid or user name the semaphore is owned by), 
+and
+C<gid> (group id the semaphore is owned by), 
 
-which has the appender create the semaphore at startup and remove
-it at shutdown.
+Note that C<mode> is usually given in octal and therefore needs to be
+specified as a perl sub {}, unless you want to calculate what 0755 means
+in decimal.
 
-In order to add another option, e.g. a setting of C<0775> for
-IPC::Shareable's C<mode> parameter, add
+Changing ownership or group settings for a semaphore will obviously only
+work if the current user ID owns the semaphore already or if the current
+user is C<root>.
 
-    log4perl.appender.Syncer1.options  = \
-      sub { { create=>1, destroy=>1, mode=>0775 } }
+=head2 Semaphore user and group IDs with mod_perl
 
-to the Log4perl configuration file.
+Setting user and group IDs is especially important when the Synchronized
+appender is used with mod_perl. If Log4perl gets initialized by a startup
+handler, which runs as root, and not as the user who will later use
+the semaphore, the settings for uid, gid, and mode can help establish 
+matching semaphore ownership and access rights.
 
 =head1 DEVELOPMENT NOTES
 
