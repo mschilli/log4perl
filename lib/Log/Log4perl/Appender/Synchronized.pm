@@ -17,7 +17,7 @@ our @ISA = qw(Log::Log4perl::Appender);
 use IPC::Shareable qw(:lock);
 use IPC::Semaphore;
 
-our $CVSVERSION   = '$Revision: 1.9 $';
+our $CVSVERSION   = '$Revision: 1.10 $';
 our ($VERSION)    = ($CVSVERSION =~ /(\d+\.\d+)/);
 
 ###########################################
@@ -129,6 +129,118 @@ sub nuke_sem {
     $sem->remove() || die "Cannot remove semaphore $key ($!)";
 
     return 1;
+}
+
+#//////////////////////////////////////////
+package Log::Log4perl::Util::Semaphore;
+#//////////////////////////////////////////
+use Log::Log4perl qw(:easy);
+
+use IPC::SysV qw( IPC_RMID IPC_CREAT IPC_EXCL SEM_UNDO IPC_NOWAIT);
+
+###########################################
+sub new {
+###########################################
+    my($class, %options) = @_;
+
+    my $self = {
+        key     => undef,
+        perm    => 0777,
+        owner   => undef,
+        group   => undef,
+        %options,
+    };
+
+    $self->{ikey} = unpack("i", pack("A4", $self->{key}));
+
+    bless $self, $class;
+    $self->init();
+
+    return $self;
+}
+
+###########################################
+sub init {
+###########################################
+    my($self) = @_;
+
+    ###l4p DEBUG "Semaphore init '$self->{key}'/'$self->{ikey}'";
+
+    $self->{id} = semget( $self->{ikey}, 
+                          1, 
+                          &IPC_EXCL|&IPC_CREAT|$self->{perm},
+                  );
+   
+   if($! =~ /exists/) {
+       ###l4p DEBUG "Semaphore '$self->{key}' already exists";
+       $self->{id} = semget( $self->{ikey}, 1, 0 )
+           or die "semget($self->{ikey}) failed: $!";
+   } elsif($!) {
+       die "Cannot create semaphore $self->{key}/$self->{ikey} ($!)";
+   }
+}
+
+###########################################
+sub chown {
+###########################################
+    my($self, $owner) = @_;
+}
+
+###########################################
+sub chgrp {
+###########################################
+    my($self, $group) = @_;
+}
+
+###########################################
+sub chmod {
+###########################################
+    my($self, $group) = @_;
+}
+
+###########################################
+sub lock {
+###########################################
+    my($self) = @_;
+
+    my $operation = pack("s*", 
+                          # wait until it's 0
+                         0, 0, 0,
+                          # increment by 1
+                         0, 1, SEM_UNDO
+                        );
+
+    ###l4p DEBUG "Locking semaphore '$self->{key}'";
+
+    semop($self->{id}, $operation) or 
+        die "semop($self->{key}, $operation) failed: $! ";
+}
+
+###########################################
+sub unlock {
+###########################################
+    my($self) = @_;
+
+    my $operation = pack("s*", 
+                          # decrement by 1
+                         0, -1, (IPC_NOWAIT|SEM_UNDO)
+                        );
+
+    ###l4p DEBUG "Unlocking semaphore '$self->{key}'";
+
+    semop($self->{id}, $operation) or 
+        die "semop($self->{key}, $operation) failed: $! ";
+}
+
+###########################################
+sub remove {
+###########################################
+    my($self) = @_;
+
+    ###l4p DEBUG "Removing semaphore '$self->{key}'";
+
+    semctl ($self->{id}, 0, &IPC_RMID, 0) or 
+        die "Removing semaphore $self->{key} failed: $!";
 }
 
 1;
