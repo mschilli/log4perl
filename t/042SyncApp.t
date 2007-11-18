@@ -9,6 +9,11 @@ use warnings;
 use strict;
 
 use Test::More;
+use Log::Log4perl qw(:easy);
+use Log::Log4perl::Resurrector;
+Log::Log4perl->easy_init($DEBUG);
+
+our $INTERNAL_DEBUG = 1;
 
 $| = 1;
 
@@ -20,7 +25,7 @@ BEGIN {
     }
 }
 
-use IPC::Shareable qw(:lock);
+use Log::Log4perl::Util::Semaphore;
 use Log::Log4perl qw(get_logger);
 use Log::Log4perl::Appender::Synchronized;
 
@@ -31,17 +36,18 @@ my $logfile = "$EG_DIR/fork.log";
 
 our $lock;
 our $locker;
-our $shared_name = "_l4_";
+our $locker_key  = "abc";
 
 unlink $logfile;
 
 #goto SECOND;
 
 #print "tie\n";
-$locker = tie $lock, 'IPC::Shareable', $shared_name, 
-    { create  => 1, 
-      destroy => 1} or
-    die "Cannot create shareable $shared_name";
+$locker = Log::Log4perl::Util::Semaphore->new(
+    key => $locker_key,
+);
+
+print $locker->status_as_string, "\n";
 
 my $conf = qq(
 log4perl.category.Bar.Twix          = WARN, Syncer
@@ -57,8 +63,7 @@ log4perl.appender.Syncer.appender  = Logfile
 log4perl.appender.Syncer.key       = blah
 );
 
-$locker->shunlock();
-$locker->shlock();
+$locker->semlock();
 
 Log::Log4perl::init(\$conf);
 
@@ -69,7 +74,7 @@ die "fork failed" unless defined $pid;
 my $logger = get_logger("Bar::Twix");
 if($pid) {
    #parent
-   $locker->shlock();
+   $locker->semlock();
    #print "Waiting for child\n";
    for(1..10) {
        #print "Parent: Writing\n";
@@ -77,7 +82,7 @@ if($pid) {
    }
 } else { 
    #child
-   $locker->shunlock();
+   $locker->semunlock();
    for(1..10) {
        #print "Child: Writing\n";
        $logger->error("Y" x 4097);
@@ -86,7 +91,9 @@ if($pid) {
 }
 
    # Wait for child to finish
+print "Waiting for pid $pid\n" if $INTERNAL_DEBUG;
 waitpid($pid, 0);
+print "Done waiting for pid $pid\n" if $INTERNAL_DEBUG;
 
 my $clashes_found = 0;
 
@@ -103,8 +110,6 @@ unlink $logfile;
 #print $logfile, "\n";
 #exit 0;
 
-$locker->clean_up;
-
 ok(! $clashes_found, "Checking for clashes in logfile");
 
 ###################################################################
@@ -118,10 +123,9 @@ SECOND:
 unlink $logfile;
 
 #print "tie\n";
-$locker = tie $lock, 'IPC::Shareable', $shared_name, 
-    { create  => 1, 
-      destroy => 1} or
-    die "Cannot create shareable $shared_name";
+$locker = Log::Log4perl::Util::Semaphore->new(
+    key => $locker_key,
+);
 
 $conf = q{
     log4perl.category                  = WARN, Socket
@@ -131,10 +135,15 @@ $conf = q{
     log4perl.appender.Socket.layout    = SimpleLayout
 };
 
-#print "unlock\n";
-$locker->shunlock();
-#print "lock\n";
-$locker->shlock();
+print "1 Semunlock\n" if $INTERNAL_DEBUG;
+print $locker->status_as_string, "\n";
+$locker->semunlock();
+print "1 Done semunlock\n" if $INTERNAL_DEBUG;
+
+print "2 Semlock\n" if $INTERNAL_DEBUG;
+print $locker->status_as_string, "\n";
+$locker->semlock();
+print "2 Done semlock\n" if $INTERNAL_DEBUG;
 
 #print "forking\n";
 $pid = fork();
@@ -144,7 +153,9 @@ die "fork failed" unless defined $pid;
 if($pid) {
    #parent
    #print "Waiting for child\n";
-   $locker->shlock();
+   print "Before semlock\n" if $INTERNAL_DEBUG;
+   $locker->semlock();
+   print "Done semlock\n" if $INTERNAL_DEBUG;
 
    {
        my $client = IO::Socket::INET->new( PeerAddr => 'localhost',
@@ -169,8 +180,6 @@ if($pid) {
        $client->close();
    }
 
-   #print "Done\n";
-
    Log::Log4perl::init(\$conf);
    $logger = get_logger("Bar::Twix");
    #print "Sending message\n";
@@ -189,7 +198,9 @@ if($pid) {
    die "Cannot start server: $!" unless defined $sock;
        # Ready to receive
    #print "Server started\n";
-   $locker->shunlock();
+   print "Before semunlock\n" if $INTERNAL_DEBUG;
+   $locker->semunlock();
+   print "After semunlock\n" if $INTERNAL_DEBUG;
 
    my $nof_messages = 2;
 
@@ -208,7 +219,9 @@ if($pid) {
 }
 
    # Wait for child to finish
+print "Waiting for pid $pid\n" if $INTERNAL_DEBUG;
 waitpid($pid, 0);
+print "Done waiting for pid $pid\n" if $INTERNAL_DEBUG;
 
 open FILE, "<$logfile" or die "Cannot open $logfile";
 my $data = join '', <FILE>;
@@ -252,8 +265,8 @@ $logger = get_logger("foobar");
     # silently ignored
 $logger->warn("message lost");
 
-$locker->shunlock();
-$locker->shlock();
+$locker->semunlock();
+$locker->semlock();
 
     # Now start a server
 $pid = fork();
@@ -263,7 +276,7 @@ if($pid) {
 
        # wait for child
    #print "Waiting for server to start\n";
-   $locker->shlock();
+   $locker->semlock();
    
        # Send another message (should be sent)
    #print "Sending message\n";
@@ -282,7 +295,7 @@ if($pid) {
    die "Cannot start server: $!" unless defined $sock;
        # Ready to receive
    #print "Server started\n";
-   $locker->shunlock();
+   $locker->semunlock();
 
    my $nof_messages = 1;
 
@@ -302,7 +315,9 @@ if($pid) {
 }
 
    # Wait for child to finish
+print "Waiting for pid $pid\n" if $INTERNAL_DEBUG;
 waitpid($pid, 0);
+print "Done waiting for pid $pid\n" if $INTERNAL_DEBUG;
 
 open FILE, "<$logfile" or die "Cannot open $logfile";
 $data = join '', <FILE>;

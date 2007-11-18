@@ -4,6 +4,9 @@ package Log::Log4perl::Util::Semaphore;
 use IPC::SysV qw(IPC_RMID IPC_CREAT IPC_EXCL SEM_UNDO IPC_NOWAIT 
                  IPC_SET IPC_STAT);
 use IPC::Semaphore;
+use strict;
+use warnings;
+use constant INTERNAL_DEBUG => 0;
 
 ###########################################
 sub new {
@@ -11,11 +14,13 @@ sub new {
     my($class, %options) = @_;
 
     my $self = {
-        key     => undef,
-        mode    => undef,
-        uid     => undef,
-        gid     => undef,
-        destroy => undef,
+        key           => undef,
+        mode          => undef,
+        uid           => undef,
+        gid           => undef,
+        destroy       => undef,
+        semop_wait    => .1,
+        semop_retries => 1,
         %options,
     };
 
@@ -44,15 +49,16 @@ sub init {
 ###########################################
     my($self) = @_;
 
-    ###l4p DEBUG "Semaphore init '$self->{key}'/'$self->{ikey}'";
+    print "Semaphore init '$self->{key}'/'$self->{ikey}'\n" if INTERNAL_DEBUG;
 
     $self->{id} = semget( $self->{ikey}, 
                           1, 
                           &IPC_EXCL|&IPC_CREAT|($self->{mode}||0777),
                   );
    
-   if($! =~ /exists/) {
-       ###l4p DEBUG "Semaphore '$self->{key}' already exists";
+   if(! defined $self->{id} and
+      $! =~ /exists/) {
+       print "Semaphore '$self->{key}' already exists\n" if INTERNAL_DEBUG;
        $self->{id} = semget( $self->{ikey}, 1, 0 )
            or die "semget($self->{ikey}) failed: $!";
    } elsif($!) {
@@ -61,11 +67,46 @@ sub init {
 }
 
 ###########################################
+sub status_as_string {
+###########################################
+    my($self, @values) = @_;
+
+    my $sem = IPC::Semaphore->new($self->{ikey}, 1, 0);
+
+    my $values  = join('/', $sem->getall());
+    my $ncnt    = $sem->getncnt(0);
+    my $pidlast = $sem->getpid(0);
+    my $zcnt    = $sem->getzcnt(0);
+    my $id      = $sem->id();
+
+    return <<EOT;
+Semaphore Status
+Key ...................................... $self->{key}
+iKey ..................................... $self->{ikey}
+Id ....................................... $id
+Values ................................... $values
+Processes waiting for counter increase ... $ncnt
+Processes waiting for counter to hit 0 ... $zcnt
+Last process to perform an operation ..... $pidlast
+EOT
+}
+
+###########################################
+sub semsetval {
+###########################################
+    my($self, %keyvalues) = @_;
+
+    my $sem = IPC::Semaphore->new($self->{ikey}, 1, 0);
+    $sem->setval(%keyvalues);
+}
+
+###########################################
 sub semset {
 ###########################################
     my($self, @values) = @_;
 
-    ###l4p "Setting values for semaphore $self->{key}/$self->{ikey}";
+    print "Setting values for semaphore $self->{key}/$self->{ikey}\n" if
+        INTERNAL_DEBUG;
 
     my $sem = IPC::Semaphore->new($self->{ikey}, 1, 0);
     $sem->set(@values);
@@ -83,10 +124,8 @@ sub semlock {
                          0, 1, SEM_UNDO
                         );
 
-    ###l4p DEBUG "Locking semaphore '$self->{key}'";
-
-    semop($self->{id}, $operation) or 
-        die "semop($self->{key}, $operation) failed: $! ";
+    print "Locking semaphore '$self->{key}'\n" if INTERNAL_DEBUG;
+    $self->semop($self->{id}, $operation);
 }
 
 ###########################################
@@ -96,13 +135,12 @@ sub semunlock {
 
     my $operation = pack("s!*", 
                           # decrement by 1
-                         0, -1, (IPC_NOWAIT|SEM_UNDO)
+                         0, -1, (IPC_NOWAIT)
                         );
 
-    ###l4p DEBUG "Unlocking semaphore '$self->{key}'";
+    print "Unlocking semaphore '$self->{key}'\n" if INTERNAL_DEBUG;
 
-    semop($self->{id}, $operation) or 
-        die "semop($self->{key}, $operation) failed: $! ";
+    $self->semop($self->{id}, $operation);
 }
 
 ###########################################
@@ -110,7 +148,7 @@ sub remove {
 ###########################################
     my($self) = @_;
 
-    ###l4p DEBUG "Removing semaphore '$self->{key}'";
+    print "Removing semaphore '$self->{key}'\n" if INTERNAL_DEBUG;
 
     semctl ($self->{id}, 0, &IPC_RMID, 0) or 
         die "Removing semaphore $self->{key} failed: $!";
@@ -124,6 +162,33 @@ sub DESTROY {
     if($self->{destroy}) {
         $self->remove();
     }
+}
+
+###########################################
+sub semop {
+###########################################
+    my($self, @args) = @_;
+
+    my $retries     = $self->{semop_retries};
+
+    my $rc;
+
+    {
+        $rc = semop($args[0], $args[1]);
+
+        if(!$rc and 
+           $! =~ /temporarily unavailable/ and
+           $retries-- > 0) {
+            $rc = 'undef' unless defined $rc;
+            print "semop failed (rc=$rc), retrying\n", 
+                  $self->status_as_string if INTERNAL_DEBUG;
+            select undef, undef, undef, $self->{semop_wait};
+            redo;
+        }
+    }
+
+    $rc or die "semop(@args) failed: $! ";
+    $rc;
 }
 
 1;
