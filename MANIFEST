@@ -62,6 +62,7 @@ lib/Log/Log4perl/MDC.pm
 lib/Log/Log4perl/NDC.pm
 lib/Log/Log4perl/Resurrector.pm
 lib/Log/Log4perl/Util.pm
+lib/Log/Log4perl/Util/Semaphore.pm
 LICENSE
 Makefile.PL
 MANIFEST			This list of files
