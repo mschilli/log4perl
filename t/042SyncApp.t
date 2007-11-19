@@ -10,10 +10,10 @@ use strict;
 
 use Test::More;
 use Log::Log4perl qw(:easy);
-use Log::Log4perl::Resurrector;
 Log::Log4perl->easy_init($DEBUG);
+use constant INTERNAL_DEBUG => 0;
 
-our $INTERNAL_DEBUG = 1;
+our $INTERNAL_DEBUG = 0;
 
 $| = 1;
 
@@ -47,7 +47,7 @@ $locker = Log::Log4perl::Util::Semaphore->new(
     key => $locker_key,
 );
 
-print $locker->status_as_string, "\n";
+print $locker->status_as_string, "\n" if INTERNAL_DEBUG;
 
 my $conf = qq(
 log4perl.category.Bar.Twix          = WARN, Syncer
@@ -136,12 +136,12 @@ $conf = q{
 };
 
 print "1 Semunlock\n" if $INTERNAL_DEBUG;
-print $locker->status_as_string, "\n";
+print $locker->status_as_string, "\n" if INTERNAL_DEBUG;
 $locker->semunlock();
 print "1 Done semunlock\n" if $INTERNAL_DEBUG;
 
 print "2 Semlock\n" if $INTERNAL_DEBUG;
-print $locker->status_as_string, "\n";
+print $locker->status_as_string, "\n" if INTERNAL_DEBUG;
 $locker->semlock();
 print "2 Done semlock\n" if $INTERNAL_DEBUG;
 
