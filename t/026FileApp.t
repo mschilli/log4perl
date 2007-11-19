@@ -32,6 +32,7 @@ BEGIN {plan tests => 15}
 END { unlink $testfile;
       unlink "${testfile}_1";
       unlink "${testfile}_2";
+      unlink "${testfile}_3";
     }
 
 ####################################################
@@ -254,22 +255,21 @@ ok($content, "INFO - File1\nINFO - File1\n");
 #########################################################
 # Testing create_at_logtime
 #########################################################
-unlink "${testfile}_1";
 $data = qq(
 log4perl.category         = DEBUG, Logfile
 log4perl.appender.Logfile          = Log::Log4perl::Appender::File
-log4perl.appender.Logfile.filename = ${testfile}_1
+log4perl.appender.Logfile.filename = ${testfile}_3
 log4perl.appender.Logfile.create_at_logtime = 1
 log4perl.appender.Logfile.layout   = Log::Log4perl::Layout::SimpleLayout
 );
 
 Log::Log4perl->init(\$data);
-ok(! -f "${testfile}_1");
+ok(! -f "${testfile}_3");
 
 $log = Log::Log4perl::get_logger("");
 $log->info("File1");
 
-open FILE, "<${testfile}_1" or die "Cannot open ${testfile}_1";
+open FILE, "<${testfile}_3" or die "Cannot open ${testfile}_3";
 $content = join '', <FILE>;
 close FILE;
 

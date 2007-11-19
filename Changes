@@ -9,6 +9,7 @@
     *   (ms) Rewrote the Synchronized appender to use semaphores exclusivly
              (got rid of IPC::Shareable).
     *   (ms) Added Log::Log4perl::Util::Semaphore for easy semop handling
+    *   (ms) Fixed t/026FileApp.t to work on MSWin32.
 
 1.13 (2007/10/11)
     *   (ms) Another doc fix by Craig
