@@ -1447,20 +1447,41 @@ and a false value if not.
 =head2 How can I synchronize access to an appender?
 
 If you're using the same instance of an appender in multiple processes, 
-each passing on messages to it in parallel, you might end up with 
-overlapping log entries.
+and each process is passing on messages to the appender in parallel,
+you might end up with overlapping log entries.
 
-Imagine a file appender that you create in the main program, and which
-will then be shared between the parent and a forked child process. When
-it comes to logging, Log::Log4perl won't synchronize access to it.
-Depending on your operating system's flush mechanism, buffer size and the size
-of your messages, there's a small chance of an overlap.
+Typical scenarios include a file appender that you create in the main 
+program, and which will then be shared between the parent and a 
+forked child process. Or two separate processes, each initializing a
+Log4perl file appender on the same logfile.
 
-The easiest way to prevent overlapping messages in logfiles is setting the 
-file appender's C<syswrite> flag. This makes sure that 
+Log::Log4perl won't synchronize access to the shared logfile by
+default. Depending on your operating system's flush mechanism,
+buffer size and the size of your messages, there's a small chance of
+an overlap.
+
+The easiest way to prevent overlapping messages in logfiles written to
+by multiple processes is setting the 
+file appender's C<syswrite> flag along with a file write mode of C<"append">. 
+This makes sure that
 C<Log::Log4perl::Appender::File> uses C<syswrite()> (which is guaranteed
 to run uninterrupted) instead of C<print()> which might buffer
-the message or get interrupted by the OS while it is writing.
+the message or get interrupted by the OS while it is writing. And in
+C<"append"> mode, the OS kernel ensures that multiple processes share
+one end-of-file marker, ensuring that each process writes to the I<real> 
+end of the file. (The value of C<"append"> 
+for the C<mode> parameter is the default setting in Log4perl's file 
+appender so you don't have to set it explicitely.)
+
+      # Guarantees atomic writes
+
+    log4perl.category.Bar.Twix          = WARN, Logfile
+
+    log4perl.appender.Logfile           = Log::Log4perl::Appender::File
+    log4perl.appender.Logfile.mode      = append
+    log4perl.appender.Logfile.syswrite  = 1
+    log4perl.appender.Logfile.filename  = test.log
+    log4perl.appender.Logfile.layout    = SimpleLayout
 
 Another guaranteed way of having messages separated with any kind of
 appender is putting a Log::Log4perl::Appender::Synchronized composite
