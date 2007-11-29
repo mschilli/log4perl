@@ -650,7 +650,7 @@ and I<INFO> messages are suppressed.
 
 =head2 Log Levels
 
-There are five predefined log levels: C<FATAL>, C<ERROR>, C<WARN>, C<INFO>,
+There are six predefined log levels: C<FATAL>, C<ERROR>, C<WARN>, C<INFO>,
 C<DEBUG>, and C<TRACE> (in descending priority). Your configured logging level
 has to at least match the priority of the logging message.
 
