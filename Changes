@@ -2,6 +2,9 @@
  Revision history for Log::Log4perl
 ##################################################
 
+    *  (kg)  Added 'defer_connection' to Socket appender so it's more useful
+             under Apache.
+
 1.14 (2007/11/18)
     *   (ms) Fixed test suite bug which surfaced in Darwin because temporary
              files contain '++' which freaked out the sloppy regex match.
