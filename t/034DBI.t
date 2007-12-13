@@ -18,7 +18,7 @@ BEGIN {
     if ($@) {
         plan skip_all => "DBD::CSV or SQL::Statement 1.005 not installed, skipping tests\n";
     }else{
-        plan tests => 15;
+        plan tests => 32;
     }
 }
 
@@ -131,12 +131,15 @@ EOL
 }
 
 
-
+# setting is WARN so the debug message should not go through
 $logger->debug('debug message',99,'foo','bar');
+$logger->warn('warning message missing two params',99);
+$logger->warn('another warning to kick the buffer',99);
 
 my $sth = $dbh->prepare('select * from log4perltest'); 
 $sth->execute;
 
+#first two rows are repeats from the last test
 my $row = $sth->fetchrow_arrayref;
 is($row->[0], 'FATAL');
 is($row->[1], 'fatal message');
@@ -152,8 +155,29 @@ is($row->[1], 'warning message');
 is($row->[3], '3456');
 is($row->[4], 'groceries.beer');
 is($row->[5], 'main');
+is($row->[6], 'foo');
+is($row->[7], 'bar');
 
-#$dbh->do('DROP TABLE log4perltest');
+#these two rows should have undef for the final two params
+$row = $sth->fetchrow_arrayref;
+is($row->[0], 'WARN');
+is($row->[1], 'warning message missing two params');
+is($row->[3], '99');
+is($row->[4], 'groceries.beer');
+is($row->[5], 'main');
+is($row->[7], undef);
+is($row->[6], undef);
+
+$row = $sth->fetchrow_arrayref;
+is($row->[0], 'WARN');
+is($row->[1], 'another warning to kick the buffer');
+is($row->[3], '99');
+is($row->[4], 'groceries.beer');
+is($row->[5], 'main');
+is($row->[7], undef);
+is($row->[6], undef);
+#that should be all
+ok(!$sth->fetchrow_arrayref);
 
 $dbh->disconnect;
 
