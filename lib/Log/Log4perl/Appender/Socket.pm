@@ -27,13 +27,14 @@ sub new {
     unless ($self->{defer_connection}){
         unless($self->connect(@options)) {
             if($self->{silent_recovery}) {
-                warn "Connect to $self->{PeerAddr}:$self->{PeerPort} failed: $!";
-                return $self;
+               warn "Connect to $self->{PeerAddr}:$self->{PeerPort} failed: $!";
+               return $self;
             }
             die "Connect to $self->{PeerAddr}:$self->{PeerPort} failed: $!";
         }
 
-        $self->{socket}->autoflush(1); #this has been the default behavior since 1997
+        $self->{socket}->autoflush(1); 
+        #autoflush has been the default behavior since 1997
     }
 
     return $self;
