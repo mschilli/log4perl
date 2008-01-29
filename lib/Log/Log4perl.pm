@@ -369,6 +369,11 @@ sub appender_thresholds_adjust {  # Readjust appender thresholds
     shift if $_[0] eq __PACKAGE__;
     my($delta, $appenders) = @_;
 
+    if($delta == 0) {
+          # Nothing to do, no delta given.
+        return 1;
+    }
+
     if(defined $appenders) {
             # Map names to objects
         $appenders = [map { 
