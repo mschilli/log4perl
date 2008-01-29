@@ -992,7 +992,9 @@ sub error_warn {
 ##################################################
   my $self = shift;
   if ($self->is_error()) {
+    $Log::Log4perl::caller_depth++;
     $self->error(@_);
+    $Log::Log4perl::caller_depth--;
     $self->and_warn(@_);
   }
 }
