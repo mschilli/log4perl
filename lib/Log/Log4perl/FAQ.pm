@@ -540,7 +540,7 @@ package:
     sub l4p_wrapper {
         my($prio, @message) = @_;
         $Log::Log4perl::caller_depth += 2;
-        get_logger(caller(1))->log($prio, @message);
+        get_logger(scalar caller(1))->log($prio, @message);
         $Log::Log4perl::caller_depth -= 2;
     }
 

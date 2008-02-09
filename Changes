@@ -9,6 +9,8 @@
              under Apache.
     *   (ms) [rt.cpan.org #32738] fixed caller_depth for error_warn()
              (reported by Felix Antonius Wilhelm Ostmann)
+    *   (ms) [rt.cpan.org #32942] fixed get_logger() for subclassed Log4perl
+             (reported by Felix Antonius Wilhelm Ostmann)
 
 1.14 (2007/11/18)
     *   (ms) Fixed test suite bug which surfaced in Darwin because temporary
