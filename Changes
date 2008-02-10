@@ -2,7 +2,7 @@
  Revision history for Log::Log4perl
 ##################################################
 
-1.15 (not yet released)
+1.15 (2008/02/10)
     *   (ms) appender_thresholds_adjust() with a parameter of 0 now
              does nothing (requested by Oliver Koch).
     *   (kg) Added 'defer_connection' to Socket appender so it's more useful
