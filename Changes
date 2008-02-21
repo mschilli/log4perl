@@ -2,6 +2,12 @@
  Revision history for Log::Log4perl
 ##################################################
 
+1.16 (not yet released)
+    *   (ms) Changed appender destruction during cleanup to show warning
+             messages thrown by destructors. Previously L4p ignored these
+             messages which caused failed DB flushes to go unnoticed with
+             the DB appender.
+
 1.15 (2008/02/10)
     *   (ms) appender_thresholds_adjust() with a parameter of 0 now
              does nothing (requested by Oliver Koch).
