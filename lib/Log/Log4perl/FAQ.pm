@@ -2426,6 +2426,67 @@ handle this error well and spits out a slew of confusing warning
 messages. But now you know, just use the correct module name and
 you'll be fine.
 
+=head2 Log4perl complains that no initialization happened during shutdown!
+
+If you're using Log4perl log commands in DESTROY methods of your objects,
+you might see confusing messages like
+
+    Log4perl: Seems like no initialization happened. Forgot to call init()?
+    Use of uninitialized value in subroutine entry at
+    /home/y/lib/perl5/site_perl/5.6.1/Log/Log4perl.pm line 134 during global
+    destruction. (in cleanup) Undefined subroutine &main:: called at
+    /home/y/lib/perl5/site_perl/5.6.1/Log/Log4perl.pm line 134 during global
+    destruction.
+
+when the program shuts down. What's going on? 
+
+This phenomenon happens if you have circular references in your objects, 
+which perl can't clean up when an object goes out of scope but waits
+until global destruction instead. At this time, however, Log4perl has
+already shut down, so you can't use it anymore.
+
+For example, here's a simple class which uses a logger in its DESTROY
+method:
+
+    package A;
+    use Log::Log4perl qw(:easy);
+    sub new { bless {}, shift }
+    sub DESTROY { DEBUG "Waaah!"; }
+
+Now, if the main program creates a self-referencing object, like in
+
+    package main;
+    use Log::Log4perl qw(:easy);
+    Log::Log4perl->easy_init($DEBUG);
+
+    my $a = A->new();
+    $a->{selfref} = $a;
+
+then you'll see the error message shown above during global destruction.
+How to tackle this problem?
+
+First, you should clean up your circular references before global 
+destruction. They will not only cause objects to be destroyed in an order
+that's hard to predict, but also eat up memory until the program shuts
+down.
+
+So, the program above could easily be fixed by putting
+
+    $a->{selfref} = undef;
+
+at the end or in an END handler. If that's hard to do, use weak references:
+
+    package main;
+    use Scalar::Util qw(weaken);
+    use Log::Log4perl qw(:easy);
+    Log::Log4perl->easy_init($DEBUG);
+
+    my $a = A->new();
+    $a->{selfref} = weaken $a;
+
+This allows perl to clean up the circular reference when the object 
+goes out of scope, and doesn't wait until global destruction.
+
 =cut
 
 =head1 SEE ALSO
