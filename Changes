@@ -9,6 +9,7 @@
              the DB appender.
     *   (ms) Added explanation for Log4perl messages during global 
              destruction to FAQ.
+    *   (ms) Corrected 'Trapper' listing in FAQ, thanks to Christian Reiber.
 
 1.15 (2008/02/10)
     *   (ms) appender_thresholds_adjust() with a parameter of 0 now

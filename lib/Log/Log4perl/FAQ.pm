@@ -1761,7 +1761,7 @@ module along with regular Log::Log4perl initialization:
          layout => "%d %M: %m%n",
         });
 
-    tie *STDERR, Trapper;
+    tie *STDERR, "Trapper";
     
 Make sure not to use STDERR as Log::Log4perl's file appender
 here (which would be the default in C<:easy> mode), because it would 
