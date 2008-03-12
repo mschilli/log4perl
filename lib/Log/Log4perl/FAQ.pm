@@ -1746,6 +1746,8 @@ a trapper module like
         $Log::Log4perl::caller_depth--;
     }
 
+    1;
+
 and a C<tie> command in the main program to tie STDERR to the trapper
 module along with regular Log::Log4perl initialization:
 
