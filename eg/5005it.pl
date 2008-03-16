@@ -48,6 +48,10 @@ sub process_file {
         # 5.00503 can't handle constants that start with a _
     $data =~ s/_INTERNAL_DEBUG/INTERNAL_DEBUG/g;
 
+        # Anything before 5.6.0 doesn't have the two argument binmode.
+        # Convert to one arg version by discarding second arg.
+    $data =~ s{ binmode \s* \(? (.*?) , .* \)? \s* ; }{ "binmode $1 ;" }gex;
+
     open FILE, ">$file" or die "Cannot open $file";
     print FILE $data;
     close FILE;
