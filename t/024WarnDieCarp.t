@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+
 # $Id: 024WarnDieCarp.t,v 1.1 2002/08/29 05:33:28 mschilli Exp $
 
 # Check the various logFOO for FOO in {die, warn, Carp*}
@@ -142,12 +143,13 @@ EOT
 
 my $logger = get_logger("Twix::Bar");
 
+my $line_number = __LINE__ + 1;
 eval { $logger->logdie("Log and die!"); };
 
 my $app0 = Log::Log4perl::Appender::TestBuffer->by_name("A1");
 # print "Buffer: ", $app0->buffer(), "\n";
 
-like($app0->buffer(), qr/024WarnDieCarp.t-145: Log and die!/,
+like($app0->buffer(), qr/024WarnDieCarp.t-$line_number: Log and die!/,
    "%F-%L adjustment");
 
 ######################################################################
@@ -157,26 +159,31 @@ like($app0->buffer(), qr/024WarnDieCarp.t-145: Log and die!/,
 $app0->buffer("");
 
 package Weirdo;
+our $foo_line;
+our $bar_line;
+
 use Log::Log4perl qw(get_logger);
 sub foo {
     my $logger = get_logger("Twix::Bar");
+    $foo_line = __LINE__ + 1;
     $logger->logcroak("Inferno!");
 }
 sub bar {
     my $logger = get_logger("Twix::Bar");
+    $bar_line = __LINE__ + 1;
     $logger->logdie("Inferno!");
 }
 
 package main;
 eval { Weirdo::foo(); };
 
-like($app0->buffer(), qr/171/,
+like($app0->buffer(), qr/$Weirdo::foo_line/,
    "Check logcroak/Carp");
 
 $app0->buffer("");
 eval { Weirdo::bar(); };
 
-like($app0->buffer(), qr/167/,
+like($app0->buffer(), qr/$Weirdo::bar_line/,
    "Check logdie");
 
 ######################################################################
@@ -186,9 +193,11 @@ like($app0->buffer(), qr/167/,
 $app0->buffer("");
 
 package Foo;
+our $foo_line;
 use Log::Log4perl qw(get_logger);
 sub foo {
     my $logger = get_logger("Twix::Bar");
+    $foo_line = __LINE__ + 1;
     $logger->logcarp("Inferno!");
 }
 
@@ -204,7 +213,7 @@ SKIP: {
     use Carp; 
     skip "Detected buggy Carp.pm (upgrade to perl-5.8.*)", 1 unless 
         defined $Carp::VERSION;
-    like($app0->buffer(), qr/197/,
+    like($app0->buffer(), qr/$Foo::foo_line/,
        "Check logcarp");
 }
 
