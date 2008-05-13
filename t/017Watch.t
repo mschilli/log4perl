@@ -181,7 +181,7 @@ open (LOG, $testfile) or die "can't open $testfile $!";
 is(scalar <LOG>, "INFO - test1\n", "Before recreate");
 close LOG;
 
-trunc($testfile);
+unlink $testfile;
 $logger->info("test2");
 open (LOG, $testfile) or die "can't open $testfile $!";
 is(scalar <LOG>, "INFO - test2\n", "After recreate");

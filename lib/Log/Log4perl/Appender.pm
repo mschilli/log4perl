@@ -432,7 +432,7 @@ as log messages. If a statement like
 
     $logger->debug($ip, $user, "signed in");
 
-causes an off-the-shelf C<Log::Log4perl::Screen> 
+causes an off-the-shelf C<Log::Log4perl::Appender::Screen> 
 appender to fire, the appender will 
 just concatenate the three message chunks passed to it
 in order to form a single string.

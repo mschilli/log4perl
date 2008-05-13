@@ -119,9 +119,9 @@ sub file_open {
     if($self->{recreate}) {
         $self->{watcher} = Log::Log4perl::Config::Watch->new(
             file           => $self->{filename},
-            ($self->{recreate_check_interval} ?
+            (defined $self->{recreate_check_interval} ?
               (check_interval => $self->{recreate_check_interval}) : ()),
-            ($self->{recreate_check_signal} ?
+            (defined $self->{recreate_check_signal} ?
               (signal => $self->{recreate_check_signal}) : ()),
         );
     }
@@ -381,7 +381,7 @@ This obviously means that the appender will continue writing to
 a moved file until the next check occurs, in the worst case
 this will happen C<recreate_check_interval> seconds after the file
 has been moved or deleted. If this is undesirable,
-setting C<recreate_check_interval> to 0 will have the appender
+setting C<recreate_check_interval> to 0 will have the
 appender check the file with I<every> call to C<log()>.
 
 =item recreate_check_signal
