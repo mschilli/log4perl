@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/local/bin/perl
 ###########################################
 # Build ppm balls for Log4perl and all of 
 # its dependencies
