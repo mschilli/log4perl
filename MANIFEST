@@ -124,6 +124,7 @@ t/051Extra.t
 t/052Utf8.t
 t/053Resurrect.t
 t/054Subclass.t
+t/055AppDestroy.t
 t/compare.pl
 t/deeper1.expected
 t/deeper6.expected
