@@ -2,7 +2,7 @@
  Revision history for Log::Log4perl
 ##################################################
 
-1.16 (not yet released)
+1.16 (2008/05/15)
     *   (ms) Changed appender destruction during cleanup to show warning
              messages thrown by destructors. Previously L4p ignored these
              messages which caused failed DB flushes to go unnoticed with
@@ -19,6 +19,9 @@
              (http://rt.cpan.org/Public/Bug/Display.html?id=35370)
     *   (ms) Fixed recreate_check_interval = 0 bug reported by 
              Bill Moseley.
+    *   (ms) Added 'header_text' parameter to the file appender to 
+             have it write a header every time it opens (or re-opens)
+             a new log file (suggested by Steven Lembark).
 
 1.15 (2008/02/10)
     *   (ms) appender_thresholds_adjust() with a parameter of 0 now

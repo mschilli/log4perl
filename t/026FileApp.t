@@ -27,7 +27,7 @@ unless (-e "$WORK_DIR"){
 
 my $testfile = File::Spec->catfile($WORK_DIR, "test26.log");
 
-BEGIN {plan tests => 15}
+BEGIN {plan tests => 16}
 
 END { unlink $testfile;
       unlink "${testfile}_1";
@@ -274,3 +274,24 @@ $content = join '', <FILE>;
 close FILE;
 
 ok($content, "INFO - File1\n");
+
+unlink "${testfile}_3";
+
+#########################################################
+# Print a header into a newly opened file
+#########################################################
+$data = qq(
+log4perl.category         = DEBUG, Logfile
+log4perl.appender.Logfile          = Log::Log4perl::Appender::File
+log4perl.appender.Logfile.filename = ${testfile}_3
+log4perl.appender.Logfile.header_text = This is a nice header.
+log4perl.appender.Logfile.layout   = Log::Log4perl::Layout::SimpleLayout
+);
+
+Log::Log4perl->init(\$data);
+open FILE, "<${testfile}_3" or die "Cannot open ${testfile}_3";
+$content = join '', <FILE>;
+close FILE;
+
+ok($content, "This is a nice header.\n", "header_text");
+

@@ -30,6 +30,7 @@ sub new {
         recreate_check_signal   => undef,
         recreate_pid_write      => undef,
         create_at_logtime       => 0,
+        header_text             => undef,
         @options,
     };
 
@@ -142,6 +143,14 @@ sub file_open {
 
     if (defined $self->{utf8}) {
         binmode $self->{fh}, ":utf8";
+    }
+
+    if(defined $self->{header_text}) {
+        if( $self->{header_text} !~ /\n\Z/ ) {
+            $self->{header_text} .= "\n";
+        }
+        my $fh = $self->{fh};
+        print $fh $self->{header_text};
     }
 }
 
@@ -417,6 +426,13 @@ user although it is defined in the configuration file. If you set
 C<create_at_logtime> to a true value, the file appender will try to create
 the file at log time. Note that this setting lets permission problems
 sit undetected until log time, which might be undesirable.
+
+=item header_text
+
+If you want Log4perl to print a header into every newly opened
+(or re-opened) logfile, set C<header_text> to either a string
+or a subroutine returning a string. If the message doesn't have a newline,
+a newline at the end of the header will be provided.
 
 =back
 
