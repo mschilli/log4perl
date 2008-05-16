@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/local/bin/perl
 ###########################################
 # cvskwexp - check if we have $Log... instances 
 # Mike Schilli, 2004 (m@perlmeister.com)

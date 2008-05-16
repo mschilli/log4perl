@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/local/bin/perl
 ######################################################################
 # adm/sfupd -- 2003, Mike Schilli <m@perlmeister.com>
 ######################################################################
@@ -8,7 +8,7 @@ use strict;
 use warnings;
 
 my  $VERSION = "0.01";
-our $CVSVERSION = '$Revision: 1.6 $';
+our $CVSVERSION = '$Revision: 1.7 $';
 
 use Net::Sourceforge;
 #use Log::Log4perl qw(:easy);

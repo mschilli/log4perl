@@ -1,4 +1,4 @@
-#!/usr/bin/perl -p -i
+#!/usr/local/bin/perl -p -i
 ###########################################
 # fixhtml - compensate for pod2html bugs
 # Mike Schilli, 2004 (m@perlmeister.com)

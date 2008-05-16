@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/local/bin/perl
 ###########################################
 # urlchk -- check all URLs in the docs
 # Mike Schilli, 2003 (m@perlmeister.com)
