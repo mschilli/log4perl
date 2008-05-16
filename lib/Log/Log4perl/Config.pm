@@ -20,18 +20,6 @@ our $CONFIG_FILE_READS       = 0;
 our $CONFIG_INTEGRITY_CHECK  = 1;
 our $CONFIG_INTEGRITY_ERROR  = undef;
 
-# How to map lib4j levels to Log::Dispatch levels
-my @LEVEL_MAP_A = qw(
- DEBUG  debug
- INFO   info
- INFO   notice
- WARN   warning
- ERROR  error
- FATAL  critical
- FATAL  alert
- FATAL  emergency
-);
-
 our $WATCHER;
 our $DEFAULT_WATCH_DELAY = 60; # seconds
 our $OLD_CONFIG;
