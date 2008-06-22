@@ -17,7 +17,7 @@ BEGIN {
     if ($] < 5.006) {
         plan skip_all => "Only with perl >= 5.006";
     } else {
-        plan tests => 32;
+        plan tests => 29;
     }
 }
 
@@ -163,7 +163,7 @@ $log = join('',@log);
 is($log, "INFO - info message\nDEBUG animal.dog - 2nd debug message\nINFO  animal.dog - 2nd info message\nINFO  animal.dog - 2nd info message again\nINFO - 3rd info message\n", "after reload");
 
 SKIP: {
-  skip "Signal handling not supported on Win32", 5 if $^O eq "MSWin32";
+  skip "Signal handling not supported on Win32", 2 if $^O eq "MSWin32";
    # ***************************************************************
    # Check the 'recreate' feature
    
