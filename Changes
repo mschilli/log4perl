@@ -2,6 +2,9 @@
  Revision history for Log::Log4perl
 ##################################################
 
+1.17 (not yet released)
+    *   (ms) Fixed test suite to run on Strawberry Perl on Win32.
+
 1.16 (2008/05/15)
     *   (ms) Changed appender destruction during cleanup to show warning
              messages thrown by destructors. Previously L4p ignored these

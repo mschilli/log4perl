@@ -29,11 +29,19 @@ my $testfile = File::Spec->catfile($WORK_DIR, "test26.log");
 
 BEGIN {plan tests => 16}
 
-END { unlink $testfile;
-      unlink "${testfile}_1";
-      unlink "${testfile}_2";
-      unlink "${testfile}_3";
+END { 
+    unlink_testfiles();
     }
+
+sub unlink_testfiles {
+    unlink $testfile;
+    unlink "${testfile}_1";
+    unlink "${testfile}_2";
+    unlink "${testfile}_3";
+    unlink "${testfile}_4";
+}
+
+unlink_testfiles();
 
 ####################################################
 #  First, preset the log file with some content
@@ -255,6 +263,8 @@ ok($content, "INFO - File1\nINFO - File1\n");
 #########################################################
 # Testing create_at_logtime
 #########################################################
+unlink "${testfile}_3"; # delete leftovers from previous tests
+
 $data = qq(
 log4perl.category         = DEBUG, Logfile
 log4perl.appender.Logfile          = Log::Log4perl::Appender::File
@@ -283,13 +293,13 @@ unlink "${testfile}_3";
 $data = qq(
 log4perl.category         = DEBUG, Logfile
 log4perl.appender.Logfile          = Log::Log4perl::Appender::File
-log4perl.appender.Logfile.filename = ${testfile}_3
+log4perl.appender.Logfile.filename = ${testfile}_4
 log4perl.appender.Logfile.header_text = This is a nice header.
 log4perl.appender.Logfile.layout   = Log::Log4perl::Layout::SimpleLayout
 );
 
 Log::Log4perl->init(\$data);
-open FILE, "<${testfile}_3" or die "Cannot open ${testfile}_3";
+open FILE, "<${testfile}_4" or die "Cannot open ${testfile}_4";
 $content = join '', <FILE>;
 close FILE;
 
