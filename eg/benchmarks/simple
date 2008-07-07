@@ -1,0 +1,50 @@
+#!/usr/local/bin/perl -w
+###########################################
+# Log4perl Benchmarks
+# Mike Schilli, 2008 (m@perlmeister.com)
+###########################################
+use strict;
+use Benchmark qw(timeit timestr);
+use Log::Log4perl qw(:easy);
+use Data::Dumper;
+
+my $nof_tests = 100000;
+
+test_init("DEBUG");
+run("DEBUG-debug", \&debug_logger);
+
+test_init("ERROR");
+run("ERROR-debug", \&debug_logger);
+
+###########################################
+sub run {
+###########################################
+    my($name, $sub) = @_;
+
+    my $t = timeit(1, $sub);
+    print "$name: ", $nof_tests/$t->[1], " per sec\n";
+}
+
+###########################################
+sub test_init {
+###########################################
+    my($level) = @_;
+
+    my $conf = qq{
+        log4perl.logger = $level, testapp
+        log4perl.appender.testapp       = Log::Log4perl::Appender::TestBuffer
+        log4perl.appender.testapp.layout= SimpleLayout
+    };
+
+    Log::Log4perl->init( \$conf );
+}
+
+###########################################
+sub debug_logger {
+###########################################
+    my $logger = get_logger("");
+
+    for(1..$nof_tests) {
+        $logger->debug( "message" );
+    }
+}
