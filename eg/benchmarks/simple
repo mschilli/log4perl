@@ -16,13 +16,19 @@ run("DEBUG-debug", \&debug_logger);
 test_init("ERROR");
 run("ERROR-debug", \&debug_logger);
 
+test_init("DEBUG");
+run("DEBUG-debug (subcat)", \&subcat_logger);
+
+test_init("ERROR");
+run("ERROR-debug (subcat)", \&subcat_logger);
+
 ###########################################
 sub run {
 ###########################################
     my($name, $sub) = @_;
 
     my $t = timeit(1, $sub);
-    print "$name: ", $nof_tests/$t->[1], " per sec\n";
+    printf "$name: %.1f per sec\n", $nof_tests/$t->[1];
 }
 
 ###########################################
@@ -43,6 +49,16 @@ sub test_init {
 sub debug_logger {
 ###########################################
     my $logger = get_logger("");
+
+    for(1..$nof_tests) {
+        $logger->debug( "message" );
+    }
+}
+
+###########################################
+sub subcat_logger {
+###########################################
+    my $logger = get_logger("a.b.c.d.e.f.g.h.i.j.k");
 
     for(1..$nof_tests) {
         $logger->debug( "message" );
