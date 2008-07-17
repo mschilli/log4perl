@@ -4,6 +4,8 @@
 
 1.17 (not yet released)
     *   (ms) Fixed test suite to run on Strawberry Perl on Win32.
+    *   (ms) Added 'l4p' as a valid prefix in configuration files (equal
+             to 'log4j' and 'log4perl' now).
 
 1.16 (2008/05/15)
     *   (ms) Changed appender destruction during cleanup to show warning
