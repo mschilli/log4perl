@@ -2,7 +2,7 @@
  Revision history for Log::Log4perl
 ##################################################
 
-1.17 (not yet released)
+1.17 (2008/07/19)
     *   (ms) Fixed test suite to run on Strawberry Perl on Win32.
     *   (ms) Added 'l4p' as a valid prefix in configuration files (equal
              to 'log4j' and 'log4perl' now).
