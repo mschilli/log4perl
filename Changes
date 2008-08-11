@@ -2,6 +2,10 @@
  Revision history for Log::Log4perl
 ##################################################
 
+1.18 (not yet released)
+    *   (ms) Added explanation that categories and loggers are the same
+             thing (thanks to Rabbit).
+
 1.17 (2008/07/19)
     *   (ms) Fixed test suite to run on Strawberry Perl on Win32.
     *   (ms) Added 'l4p' as a valid prefix in configuration files (equal

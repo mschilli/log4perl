@@ -16,7 +16,7 @@ use Log::Log4perl::Appender;
 
 use constant _INTERNAL_DEBUG => 1;
 
-our $VERSION = '1.17';
+our $VERSION = '1.18';
 
    # set this to '1' if you're using a wrapper
    # around Log::Log4perl
@@ -1133,6 +1133,8 @@ value of the filter function.
 
 =head1 Categories
 
+B<Categories are also called "Loggers" in Log4perl, both refer
+to the the same thing and these terms are used interchangeably.>
 C<Log::Log4perl> uses I<categories> to determine if a log statement in
 a component should be executed or suppressed at the current logging level.
 Most of the time, these categories are just the classes the log statements
