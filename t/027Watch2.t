@@ -15,7 +15,7 @@ BEGIN {
     if ($] < 5.006) {
         plan skip_all => "Only with perl >= 5.006";
     } else {
-        plan tests => 19;
+        plan tests => 20;
     }
 }
 
@@ -131,49 +131,75 @@ NEW:
 # filename/linenumber were referring to 'eval', not the actual file
 # name/line number of the message.
 
+my $counter = 0;
+my $reload_permitted = 1;
 conf_file_write();
-Log::Log4perl->init_and_watch($testconf, 1);
+Log::Log4perl->init_and_watch($testconf, 1, { 
+    callback => sub { 
+        $counter++;
+#print "Counter incremented to $counter\n";
+        return $reload_permitted;
+    },
+});
 
 
+my $line_ref = __LINE__ + 1;
 DEBUG("first");
   my $buf = Log::Log4perl::Appender::TestBuffer->by_name("Testbuffer");
-  like($buf->buffer(), qr/027Watch2.t 138> first/, 
-       "init-and-watch caller level");
+  like($buf->buffer(), qr/027Watch2.t $line_ref> first/, 
+       "init-and-watch caller level first");
   $buf->buffer("");
 
-conf_file_write();
+print "Sleeping 1 second\n";
 sleep(1);
+conf_file_write();
+$line_ref = __LINE__ + 1;
 DEBUG("second");
   $buf = Log::Log4perl::Appender::TestBuffer->by_name("Testbuffer");
-  like($buf->buffer(), qr/027Watch2.t 146> second/,
-       "init-and-watch caller level");
+  like($buf->buffer(), qr/027Watch2.t $line_ref> second/,
+       "init-and-watch caller level second");
   $buf->buffer("");
 
-conf_file_write();
-sleep(1);
+$reload_permitted = 0;
+print "Sleeping 2 seconds\n";
+sleep(2);
+conf_file_write("FATAL");
+$line_ref = __LINE__ + 1;
 DEBUG("third");
   $buf = Log::Log4perl::Appender::TestBuffer->by_name("Testbuffer");
-  like($buf->buffer(), qr/027Watch2.t 154> third/,
-       "init-and-watch caller level");
+  like($buf->buffer(), qr/027Watch2.t $line_ref> third/,
+       "init-and-watch caller level third");
   $buf->buffer("");
 
-DEBUG("fourth");
+$reload_permitted = 1;
+print "Sleeping 2 seconds\n";
+sleep(2);
+conf_file_write("ERROR");
+$line_ref = __LINE__ + 1;
+ERROR("third");
   $buf = Log::Log4perl::Appender::TestBuffer->by_name("Testbuffer");
-  like($buf->buffer(), qr/027Watch2.t 160> fourth/,
-       "init-and-watch caller level");
+  like($buf->buffer(), qr/027Watch2.t $line_ref> third/,
+       "init-and-watch caller level third");
   $buf->buffer("");
+
+ok($counter >= 1, "Callback counter check");
 
 ###########################################
 sub conf_file_write {
 ###########################################
+    my($level) = @_;
+
+    $level = "DEBUG" unless defined $level;
+
     open FILE, ">$testconf" or die $!;
     print FILE <<EOT;
-log4perl.category.main = DEBUG, Testbuffer
+log4perl.category.main = $level, Testbuffer
 log4perl.appender.Testbuffer        = Log::Log4perl::Appender::TestBuffer
 log4perl.appender.Testbuffer.layout = Log::Log4perl::Layout::PatternLayout
 log4perl.appender.Testbuffer.layout.ConversionPattern = %d %F{1} %L> %m %n
 EOT
     close FILE;
+#print "Config written\n";
 }
 
 unlink $testconf;

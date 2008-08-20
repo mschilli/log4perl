@@ -22,6 +22,7 @@ our $CONFIG_INTEGRITY_ERROR  = undef;
 
 our $WATCHER;
 our $DEFAULT_WATCH_DELAY = 60; # seconds
+our $OPTS = {};
 our $OLD_CONFIG;
 our $LOGGERS_DEFINED;
 
@@ -36,9 +37,15 @@ sub init {
 }
 
 ###########################################
+sub watcher {
+###########################################
+    return $WATCHER;
+}
+
+###########################################
 sub init_and_watch {
 ###########################################
-    my ($class, $config, $delay) = @_;
+    my ($class, $config, $delay, $opts) = @_;
         # delay can be a signal name - in this case we're gonna
         # set up a signal handler.
 
@@ -76,6 +83,11 @@ sub init_and_watch {
                           check_interval => $delay,
                           l4p_internal   => 1,
                    );
+    }
+
+    if(defined $opts) {
+        die "Parameter $opts needs to be a hash ref" if ref($opts) ne "HASH";
+        $OPTS = $opts;
     }
 
     eval { _init($class, $config); };

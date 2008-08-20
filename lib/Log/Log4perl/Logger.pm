@@ -297,7 +297,7 @@ sub generate_coderef {
       foreach my \$a (\@\$appenders) {   #note the closure here
           my (\$appender_name, \$appender) = \@\$a;
 
-          print("  Sending message '<\$message>' (\$level) " .
+          print("  Sending message '<\$message->[0]>' (\$level) " .
                 "to \$appender_name\n") if _INTERNAL_DEBUG;
                 
           \$appender->log(
@@ -394,7 +394,15 @@ sub generate_watch_code {
 
     return <<EOL;
         print "exe_watch_code:\n" if _INTERNAL_DEBUG;
-                       
+
+       if(_INTERNAL_DEBUG) {
+           print "Next check: ",
+             "\$Log::Log4perl::Config::Watch::NEXT_CHECK_TIME ",
+             " Now: ", time(), " Mod: ",
+             (stat(\$Log::Log4perl::Config::WATCHER->file()))[9],
+             "\n";
+       }
+
         # more closures here
         if($cond) {
             if(!defined \$logger) {
@@ -402,7 +410,19 @@ sub generate_watch_code {
                 \$level   = pop;
             }
            
-            Log::Log4perl->init_and_watch();
+            my \$init_permitted = 1;
+
+            if(exists \$Log::Log4perl::Config::OPTS->{ callback } ) {
+                print "Calling callback\n" if _INTERNAL_DEBUG;
+                \$init_permitted = 
+                    \$Log::Log4perl::Config::OPTS->{ callback }->( 
+                        Log::Log4perl::Config->watcher()->file() );
+                print "Callback returned \$init_permitted\n" if _INTERNAL_DEBUG;
+            }
+
+            if( \$init_permitted ) {
+                Log::Log4perl->init_and_watch();
+            }
                        
             my \$methodname = lc(\$level);
 
@@ -414,6 +434,10 @@ sub generate_watch_code {
             \$logger->\$methodname(\@_); # send the message
                                          # to the new configuration
             return;        #and return, we're done with this incarnation
+        } else {
+            if(_INTERNAL_DEBUG) {
+                print "Conditional returned false\n";
+            }
         }
 EOL
 }
@@ -428,7 +452,6 @@ sub generate_watch_conditional {
         return q{$Log::Log4perl::Config::Watch::SIGNAL_CAUGHT};
     }
 
-    # In this mode, we check if the config file has been modified
     return q{time() > $Log::Log4perl::Config::Watch::NEXT_CHECK_TIME 
               and $Log::Log4perl::Config::WATCHER->change_detected()};
   
