@@ -135,7 +135,7 @@ my $counter = 0;
 my $reload_permitted = 1;
 conf_file_write();
 Log::Log4perl->init_and_watch($testconf, 1, { 
-    callback => sub { 
+    preinit_callback => sub { 
         $counter++;
 #print "Counter incremented to $counter\n";
         return $reload_permitted;

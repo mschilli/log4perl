@@ -412,10 +412,10 @@ sub generate_watch_code {
            
             my \$init_permitted = 1;
 
-            if(exists \$Log::Log4perl::Config::OPTS->{ callback } ) {
-                print "Calling callback\n" if _INTERNAL_DEBUG;
+            if(exists \$Log::Log4perl::Config::OPTS->{ preinit_callback } ) {
+                print "Calling preinit_callback\n" if _INTERNAL_DEBUG;
                 \$init_permitted = 
-                    \$Log::Log4perl::Config::OPTS->{ callback }->( 
+                    \$Log::Log4perl::Config::OPTS->{ preinit_callback }->( 
                         Log::Log4perl::Config->watcher()->file() );
                 print "Callback returned \$init_permitted\n" if _INTERNAL_DEBUG;
             }

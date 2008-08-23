@@ -1531,15 +1531,16 @@ detected. This behaviour might change in the future.
 To allow the application to intercept and control a configuration reload
 in init_and_watch mode, a callback can be specified:
 
-    Log::Log4perl->init_and_watch($conf_file, 10, { callback => \&callback });
+    Log::Log4perl->init_and_watch($conf_file, 10, { 
+            preinit_callback => \&callback });
 
-If Log4perl determines that the configuration needs to be reloaded, it 
-will call the callback function without parameters. If the callback
-returns a true value, Log4perl will proceed and reload the configuration.
-If the callback returns a false value, Log4perl will keep the old
-configuration and skip reloading it until the next time around.
-Inside the callback, an application can run all kinds of checks, 
-including accessing the configuration file, which is available via
+If Log4perl determines that the configuration needs to be reloaded, it will
+call the C<preinit_callback> function without parameters. If the callback
+returns a true value, Log4perl will proceed and reload the configuration.  If
+the callback returns a false value, Log4perl will keep the old configuration
+and skip reloading it until the next time around.  Inside the callback, an
+application can run all kinds of checks, including accessing the configuration
+file, which is available via
 C<Log::Log4perl::Config-E<gt>watcher()-E<gt>file()>.
 
 =head2 Variable Substitution

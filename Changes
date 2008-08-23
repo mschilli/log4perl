@@ -6,7 +6,7 @@
     *   (ms) Added explanation that categories and loggers are the same
              thing (thanks to Rabbit).
     *   (ms) Fixed t/053Resurrect to work with 5.005_03
-    *   (ms) Added callback function for init_and_watch()
+    *   (ms) Added preinit_callback function for init_and_watch()
     *   (ms) Applied patch by Andy Grundman which speeds up is_LEVEL()
              calls by skipping unnecessary string concatenations 
              (http://rt.cpan.org/Ticket/Display.html?id=38537).
