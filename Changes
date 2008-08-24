@@ -10,6 +10,9 @@
     *   (ms) Applied patch by Andy Grundman which speeds up is_LEVEL()
              calls by skipping unnecessary string concatenations 
              (http://rt.cpan.org/Ticket/Display.html?id=38537).
+    *   (ms) Applied patch by Jae Gangemi addding a no_warning option to the
+             socket appender
+             (http://rt.cpan.org/Ticket/Display.html?id=34399).
 
 1.17 (2008/07/19)
     *   (ms) Fixed test suite to run on Strawberry Perl on Win32.

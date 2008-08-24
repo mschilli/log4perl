@@ -16,6 +16,7 @@ sub new {
     my $self = {
         name            => "unknown name",
         silent_recovery => 0,
+        no_warning      => 0,
         PeerAddr        => "localhost",
         Proto           => 'tcp',
         Timeout         => 5,
@@ -27,7 +28,9 @@ sub new {
     unless ($self->{defer_connection}){
         unless($self->connect(@options)) {
             if($self->{silent_recovery}) {
-               warn "Connect to $self->{PeerAddr}:$self->{PeerPort} failed: $!";
+                if( ! $self->{no_warning}) {
+                    warn "Connect to $self->{PeerAddr}:$self->{PeerPort} failed: $!";
+                }
                return $self;
             }
             die "Connect to $self->{PeerAddr}:$self->{PeerPort} failed: $!";
@@ -137,6 +140,8 @@ set to a true value, the behaviour is different: If the socket connection
 can't be established at initialization time, a single warning is issued.
 Every log attempt will then try to establish the connection and 
 discard the message silently if it fails.
+If you don't even want the warning, set the C<no_warning> option to
+a true value.
 
 Connecting at initialization time may not be the best option when
 running under Apache1 Apache2/prefork, because the parent process creates
