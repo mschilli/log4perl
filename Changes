@@ -2,7 +2,7 @@
  Revision history for Log::Log4perl
 ##################################################
 
-1.18 (not yet released)
+1.18 (2008/08/23)
     *   (ms) Added explanation that categories and loggers are the same
              thing (thanks to Rabbit).
     *   (ms) Fixed t/053Resurrect to work with 5.005_03
