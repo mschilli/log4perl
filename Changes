@@ -2,6 +2,9 @@
  Revision history for Log::Log4perl
 ##################################################
 
+TODO: -config sanity test
+      -config rollback
+
 1.18 (2008/08/23)
     *   (ms) Added explanation that categories and loggers are the same
              thing (thanks to Rabbit).
