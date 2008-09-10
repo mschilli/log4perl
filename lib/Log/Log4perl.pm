@@ -100,8 +100,6 @@ sub import {
 
     if(exists $tags{':levels'}) {
         # Export log levels ($DEBUG, $INFO etc.) from Log4perl::Level
-        my $caller_pkg = caller();
-
         for my $key (keys %Log::Log4perl::Level::PRIORITY) {
             my $name  = "$caller_pkg\::$key";
                # Need to split this up in two lines, or CVS will
@@ -354,12 +352,12 @@ sub get_logger {  # Get an instance (shortcut)
 
     if(@_ == 0) {
           # 1
-        $category = scalar caller();
+        $category = scalar caller($Log::Log4perl::caller_depth);
     } elsif(@_ == 1) {
           # 2, 3
         if($_[0] eq __PACKAGE__) {
               # 2
-            $category = scalar caller();
+            $category = scalar caller($Log::Log4perl::caller_depth);
         } else {
             $category = $_[0];
         }
@@ -2591,8 +2589,8 @@ our
     Ateeq Altaf, Cory Bennett, Jeremy Bopp, Hutton Davidson, Chris R.
     Donnelly, Matisse Enzer, Hugh Esco, James FitzGibbon, Carl Franks,
     Dennis Gregorovic, Andy Grundman, Paul Harrington, David Hull,
-    Robert Jacobson, Jeff Macdonald, Markus Peter, Brett Rann, Erik
-    Selberg, Aaron Straup Cope, Lars Thegler, David Viner, Mac Yang.
+    Robert Jacobson, Jeff Macdonald, Markus Peter, Brett Rann, Peter Rabbitson,
+    Erik Selberg, Aaron Straup Cope, Lars Thegler, David Viner, Mac Yang.
 
 =head1 COPYRIGHT AND LICENSE
 

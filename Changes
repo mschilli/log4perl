@@ -5,6 +5,10 @@
 TODO: -config sanity test
       -config rollback
 
+1.19 (2008/09/10)
+    *   (ms) Applied patch by Peter Rabbitson, which fixes the caller() 
+             level when calling get_logger() on a subclass of Log4perl.
+
 1.18 (2008/08/23)
     *   (ms) Added explanation that categories and loggers are the same
              thing (thanks to Rabbit).

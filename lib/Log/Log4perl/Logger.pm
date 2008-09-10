@@ -833,30 +833,20 @@ sub init_warn {
 # call me from a sub-func to spew the sub-func's caller
 #######################################################
 sub callerline {
-  # the below could all be just:
-  # my ($pack, $file, $line) = caller(2);
-  # but if we every bury this further, it'll break. So we do this
-  # little trick stolen and paraphrased from Carp/Heavy.pm
-  my($message) = @_;
+  my $message = join ('', @_);
 
-  my $i = 0;
-  my (undef, $localfile, undef) = caller($i++);
-  my ($pack, $file, $line);
-  do {
-    ($pack, $file, $line) = caller($i++);
-  } while ($file && $file eq $localfile);
+  my ($pack, $file, $line) = caller($Log::Log4perl::caller_depth + 1);
 
-  my $has_newline;
+  if (not chomp $message) {     # no newline
+    $message .= " at $file line $line";
 
-  $has_newline++ if chomp $message;
-
-  $message .= " at $file line $line" if !$has_newline;
-
-  # Someday, we'll use Threads. Really.
-  if (defined &Thread::tid) {
-    my $tid = Thread->self->tid;
-    $message .= " thread $tid" if $tid and !$has_newline;
+    # Someday, we'll use Threads. Really.
+    if (defined &Thread::tid) {
+      my $tid = Thread->self->tid;
+      $message .= " thread $tid" if $tid;
+    }
   }
+
   return ($message, "\n");
 }
 
@@ -864,15 +854,14 @@ sub callerline {
 sub and_warn {
 #######################################################
   my $self = shift;
-  my $msg = join("", @_[0 .. $#_]);
-  CORE::warn(callerline($self->warning_render(@_[0 .. $#_])));
+  CORE::warn(callerline($self->warning_render(@_)));
 }
 
 #######################################################
 sub and_die {
 #######################################################
   my $self = shift;
-  die(callerline($self->warning_render(@_[0 .. $#_])));
+  die(callerline($self->warning_render(@_)));
 }
 
 ##################################################
@@ -936,11 +925,11 @@ sub logcluck {
 
   if ($self->is_warn()) {
     my $message = Carp::longmess($msg);
-    local $Log::Log4perl::caller_depth = 
-          $Log::Log4perl::caller_depth + 1;
+    $Log::Log4perl::caller_depth++;
     foreach (split(/\n/, $message)) {
       $self->warn("$_\n");
     }
+    $Log::Log4perl::caller_depth--;
     Carp::cluck($msg);
   }
 }
@@ -955,11 +944,11 @@ sub logcarp {
 
   if ($self->is_warn()) {
     my $message = Carp::shortmess($msg);
-    local $Log::Log4perl::caller_depth = 
-          $Log::Log4perl::caller_depth + 1;
+    $Log::Log4perl::caller_depth++;
     foreach (split(/\n/, $message)) {
       $self->warn("$_\n");
     }
+    $Log::Log4perl::caller_depth--;
     Carp::carp($msg) if $Log::Log4perl::LOGDIE_MESSAGE_ON_STDERR;
   }
 }
@@ -974,13 +963,13 @@ sub logcroak {
   local $Carp::CarpLevel = $Carp::CarpLevel + 1;
   my $msg = $self->warning_render(@_);
 
-  my $message = Carp::shortmess($msg);
-  local $Log::Log4perl::caller_depth = 
-        $Log::Log4perl::caller_depth + 1;
   if ($self->is_fatal()) {
+    my $message = Carp::shortmess($msg);
+    $Log::Log4perl::caller_depth++;
     foreach (split(/\n/, $message)) {
       $self->fatal("$_\n");
     }
+    $Log::Log4perl::caller_depth--;
   }
 
   $Log::Log4perl::LOGDIE_MESSAGE_ON_STDERR ? 
@@ -993,16 +982,16 @@ sub logconfess {
 ##################################################
   my $self = shift;
 
-  my $msg = $self->warning_render(@_);
   local $Carp::CarpLevel = $Carp::CarpLevel + 1;
+  my $msg = $self->warning_render(@_);
 
-  my $message = Carp::longmess($msg);
-  local $Log::Log4perl::caller_depth = 
-        $Log::Log4perl::caller_depth + 1;
   if ($self->is_fatal()) {
+    my $message = Carp::longmess($msg);
+    $Log::Log4perl::caller_depth++;
     foreach (split(/\n/, $message)) {
       $self->fatal("$_\n");
     }
+    $Log::Log4perl::caller_depth--;
   }
 
   $Log::Log4perl::LOGDIE_MESSAGE_ON_STDERR ? 
