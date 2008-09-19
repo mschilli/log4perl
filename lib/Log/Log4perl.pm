@@ -753,6 +753,17 @@ just chain together to a single string. Therefore
 
 are identical.
 
+Note that even if one of the methods above returns true, it doesn't 
+necessarily mean that the message will actually get logged. 
+What is_debug() checks is that
+the logger used is configured to let a message of the given priority 
+(DEBUG) through. But after this check, Log4perl will eventually apply custom 
+filters and forward the message to one or more appenders. None of this
+gets checked by is_xxx(), for the simple reason that it's 
+impossible to know what a custom filter does with a message without
+having the actual message or what an appender does to a message without
+actually having it log it.
+
 =head2 Log and die or warn
 
 Often, when you croak / carp / warn / die, you want to log those messages.

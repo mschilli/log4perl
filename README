@@ -258,6 +258,16 @@ How to use it
 
     are identical.
 
+    Note that even if one of the methods above returns true, it doesn't
+    necessarily mean that the message will actually get logged. What
+    is_debug() checks is that the logger used is configured to let a message
+    of the given priority (DEBUG) through. But after this check, Log4perl
+    will eventually apply custom filters and forward the message to one or
+    more appenders. None of this gets checked by is_xxx(), for the simple
+    reason that it's impossible to know what a custom filter does with a
+    message without having the actual message or what an appender does to a
+    message without actually having it log it.
+
   Log and die or warn
     Often, when you croak / carp / warn / die, you want to log those
     messages. Rather than doing the following:
@@ -1968,8 +1978,8 @@ AUTHORS
         Ateeq Altaf, Cory Bennett, Jeremy Bopp, Hutton Davidson, Chris R.
         Donnelly, Matisse Enzer, Hugh Esco, James FitzGibbon, Carl Franks,
         Dennis Gregorovic, Andy Grundman, Paul Harrington, David Hull,
-        Robert Jacobson, Jeff Macdonald, Markus Peter, Brett Rann, Erik
-        Selberg, Aaron Straup Cope, Lars Thegler, David Viner, Mac Yang.
+        Robert Jacobson, Jeff Macdonald, Markus Peter, Brett Rann, Peter Rabbitson,
+        Erik Selberg, Aaron Straup Cope, Lars Thegler, David Viner, Mac Yang.
 
 COPYRIGHT AND LICENSE
     Copyright 2002-2008 by Mike Schilli <m@perlmeister.com> and Kevin Goess
