@@ -427,8 +427,9 @@ sub appender_by_name {  # Get an appender by name
 
     my($name) = @_;
 
-    if(exists $Log::Log4perl::Logger::APPENDER_BY_NAME{
-                $name}) {
+    if(defined $name and
+       exists $Log::Log4perl::Logger::APPENDER_BY_NAME{
+                 $name}) {
         return $Log::Log4perl::Logger::APPENDER_BY_NAME{
                  $name}->{appender};
     } else {

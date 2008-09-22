@@ -12,6 +12,9 @@ TODO: -config sanity test
              it doesn't necessarily mean that a message gets logged if
              they're returning true (requested by Conway Allen via 
              [rt.cpan.org #39085].
+    *   (ms) Applied patch by Lee Johnson to appender_by_name() to allow
+             for undefined appender names without issuing a warning,
+             which was occurring with Catalyst::Log4perl.
 
 1.18 (2008/08/23)
     *   (ms) Added explanation that categories and loggers are the same
