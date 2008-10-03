@@ -1838,7 +1838,7 @@ You'd do such as follows:
 And that's it! create_custom_level() creates the following functions /
 variables for level FOO:
 
-    $FOO_INT        # integer to use in toLevel()
+    $FOO_INT        # integer to use in L4p::Level::to_level()
     $logger->foo()  # log function to log if level = FOO
     $logger->is_foo()   # true if current level is >= FOO
 

@@ -15,6 +15,8 @@ TODO: -config sanity test
     *   (ms) Applied patch by Lee Johnson to appender_by_name() to allow
              for undefined appender names without issuing a warning,
              which was occurring with Catalyst::Log4perl.
+    *   (ms) Added docs on numerical levels and level strings in 
+             Log::Log4perl::Level.
 
 1.18 (2008/08/23)
     *   (ms) Added explanation that categories and loggers are the same

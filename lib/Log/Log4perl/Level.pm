@@ -282,7 +282,31 @@ it can be provided with the C<use> command:
 After this C<$MyNameSpace::ERROR>, C<$MyNameSpace::INFO> etc. 
 will be defined accordingly.
 
-=head1 SEE ALSO
+=head2 Numeric levels and Strings
+
+Level variables like $DEBUG or $WARN have numeric values that are 
+internal to Log4perl. Transform them to strings that can be used
+in a Log4perl configuration file, use the c<to_level()> function
+provided by Log::Log4perl::Level:
+
+    use Log::Log4perl qw(:easy);
+    use Log::Log4perl::Level;
+
+        # prints "DEBUG"
+    print Log::Log4perl::Level::to_level( $DEBUG ), "\n";
+
+To perform the reverse transformation, which takes a string like
+"DEBUG" and converts it into a constant like C<$DEBUG>, use the
+to_priority() function:
+
+    use Log::Log4perl qw(:easy);
+    use Log::Log4perl::Level;
+
+    my $numval = Log::Log4perl::Level::to_priority( "DEBUG" );
+
+after which $numval could be used where a numerical value is required:
+
+    Log::Log4perl->easy_init( $numval );
 
 =head1 AUTHOR
 
@@ -290,7 +314,7 @@ Mike Schilli, E<lt>m@perlmeister.comE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2002 by Mike Schilli
+Copyright 2002-2008 by Mike Schilli
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
