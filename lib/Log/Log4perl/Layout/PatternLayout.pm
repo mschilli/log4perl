@@ -515,9 +515,9 @@ with content after them:
     %F{2}  Display filename and last path component (dir/test.log)
     %F{3}  Display filename and last two path components (d1/d2/test.log)
 
-    %m     Display fully qualified method/function name
-    %m{1}  Just display method name (foo)
-    %m{2}  Display method name and last path component (main::foo)
+    %M     Display fully qualified method/function name
+    %M{1}  Just display method name (foo)
+    %M{2}  Display method name and last path component (main::foo)
 
 In this way, you're able to shrink the displayed category or
 limit file/path components to save space in your logs.
