@@ -1,0 +1,341 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
+
+<head>
+    <title>log4perl - log4j for Perl</title>
+    <style type="text/css">
+    <!--
+    body, td, li, ul, b, p, br {
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    //-->
+    </style>
+</head>
+
+
+<body bgcolor="#ffffff" text="#000000">
+
+<TABLE WIDTH=100%><TR>
+<TD>
+<font size="+2">
+    The <a href="http://perlmeister.com/devel/#log"><font color="black">log4perl</font></a> project -- <tt>log4j</tt> for Perl
+</font>
+</TD>
+<TD ALIGN=right VALIGN=TOP><img src=/images/log4perl8.jpg></TD>
+</TABLE>
+
+
+<hr noshade="noshade" />
+
+<table cellpadding="5">
+<tr>
+    <!-- Left cell -->
+    <td valign="top">
+        
+    Welcome to the log4perl project page. <TT>Log::Log4perl</TT> is a Perl port of the 
+    widely popular <TT>log4j</TT> logging package.
+
+<P>
+Logging beats a debugger if you want to know what's going on
+in your code during runtime. However, traditional logging packages
+are too static and generate a flood of log messages in your log files
+that won't help you.
+
+<P>
+<TT>Log::Log4perl</TT> is different. It allows you to control the amount of
+logging messages generated very effectively. You can bump up the logging
+level of certain components in your software, using powerful 
+inheritance techniques. You can redirect the additional logging
+messages to an entirely different output (append to a file, send by email 
+etc.) -- and everything without modifying a single line of source code.
+
+<UL>
+<LI>Get started with the
+<A HREF=http://www.perl.com/pub/a/2002/09/11/log4perl.html>tutorial</A>.
+<LI>Check the <A HREF=/releases/Log-Log4perl/docs/html/Log/Log4perl.html>documentation</A>.
+<LI>Get the latest distribution from CVS:<BR>
+<TT>
+<font color=green size=-2>
+&nbsp;&nbsp;cvs -d:pserver:anonymous@log4perl.cvs.sourceforge.net:/cvsroot/log4perl co Log-Log4perl<BR>
+</font>
+</TT>
+</LI>
+
+<LI>Browse the <A HREF=http://sourceforge.net/mailarchive/forum.php?forum_name=log4perl-devel>log4perl-devel mailing list</A> archive (2002-...)
+<LI>Search a <A HREF="http://www.mail-archive.com/log4perl-devel@lists.sourceforge.net/">better indexed archive</A> of newer messages (2007-...)
+<LI>Go to the <A HREF=http://sourceforge.net/projects/log4perl/>sourceforge project page</A>
+</UL>
+
+<H3> Further reading</H3>
+<UL>
+<LI><A HREF=http://www.catalystframework.org/calendar/2006/11>Using Catalyst with Log4perl</A>
+<LI><A HREF=http://lena.franken.de/perl_hier/log4perl.html>Horshack's Log4perl Page</A>
+<LI>
+<LI>Here's the guide for the original log4j library:
+<A HREF="http://jakarta.apache.org/log4j/docs/manual.html">Short introduction to log4j</A>
+<LI>Also, check out the
+<A HREF="http://jakarta.apache.org/log4j/docs/index.html">log4j Homepage</A>
+<LI>And here's another article:
+<A HREF="http://www.vipan.com/htdocs/log4jhelp.html">Don't Use System.out.println! Use log4j</A>
+</UL>
+
+<H3>CPAN Modules already using Log::Log4perl</H3>
+
+<TABLE>
+<TR><A HREF="http://search.cpan.org/dist/App-Daemon">App-Daemon</A></TR>
+<TR><A HREF="http://search.cpan.org/dist/Archive-Tar-Wrapper">Archive-Tar-Wrapper</A></TR>
+<TR><A HREF="http://search.cpan.org/dist/Authen-PAAS">Authen-PAAS</A></TR>
+<TR><A HREF="http://search.cpan.org/dist/CPAN-Unwind">CPAN-Unwind</A></TR>
+<TR><A HREF="http://search.cpan.org/dist/Cache-Historical">Cache-Historical</A></TR>
+<TR><A HREF="http://search.cpan.org/dist/Catalyst-Log-Log4perl">Catalyst-Log-Log4perl</A></TR>
+<TR><A HREF="http://search.cpan.org/dist/Config-Patch">Config-Patch</A></TR>
+<TR><A HREF="http://search.cpan.org/dist/Data-Throttler">Data-Throttler</A></TR>
+<TR><A HREF="http://search.cpan.org/dist/File-Comments">File-Comments</A></TR>
+<TR><A HREF="http://search.cpan.org/dist/Gaim-Log-Mailer">Gaim-Log-Mailer</A></TR>
+<TR><A HREF="http://search.cpan.org/dist/Gaim-Log-Parser">Gaim-Log-Parser</A></TR>
+<TR><A HREF="http://search.cpan.org/dist/IPC-Cmd-Cached">IPC-Cmd-Cached</A></TR>
+<TR><A HREF="http://search.cpan.org/dist/JavaScript-SpiderMonkey">JavaScript-SpiderMonkey</A></TR>
+<TR><A HREF="http://search.cpan.org/dist/Jifty">Jifty</A></TR>
+<TR><A HREF="http://search.cpan.org/dist/Log-Dispatch-File-Rolling">Log-Dispatch-File-Rolling</A></TR>
+<TR><A HREF="http://search.cpan.org/dist/Log-Dispatch-FileRotate">Log-Dispatch-FileRotate</A></TR>
+<TR><A HREF="http://search.cpan.org/dist/Log-Log4perl-Layout-XMLLayout">Log-Log4perl-Layout-XMLLayout</A></TR>
+<TR><A HREF="http://search.cpan.org/dist/Log-Statistics">Log-Statistics</A></TR>
+<TR><A HREF="http://search.cpan.org/dist/Mail-DWIM">Mail-DWIM</A></TR>
+<TR><A HREF="http://search.cpan.org/dist/Module-Rename">Module-Rename</A></TR>
+<TR><A HREF="http://search.cpan.org/dist/Nagios-Clientstatus">Nagios-Clientstatus</A></TR>
+<TR><A HREF="http://search.cpan.org/dist/Net-Amazon">Net-Amazon</A></TR>
+<TR><A HREF="http://search.cpan.org/dist/Perl-Configure">Perl-Configure</A></TR>
+<TR><A HREF="http://search.cpan.org/dist/Process-MaxSize">Process-MaxSize</A></TR>
+<TR><A HREF="http://search.cpan.org/dist/RRDTool-OO">RRDTool-OO</A></TR>
+<TR><A HREF="http://search.cpan.org/dist/Rose-DBx-Object-InternalPager">Rose-DBx-Object-InternalPager</A></TR>
+<TR><A HREF="http://search.cpan.org/dist/SQL-Translator">SQL-Translator</A></TR>
+<TR><A HREF="http://search.cpan.org/dist/Sysadm-Install">Sysadm-Install</A></TR>
+<TR><A HREF="http://search.cpan.org/dist/Text-Language-Guess">Text-Language-Guess</A></TR>
+<TR><A HREF="http://search.cpan.org/dist/Text-Scan-License">Text-Scan-License</A></TR>
+<TR><A HREF="http://search.cpan.org/dist/Text-TermExtract">Text-TermExtract</A></TR>
+<TR><A HREF="http://search.cpan.org/dist/Trash-Park">Trash-Park</A></TR>
+<TR><A HREF="http://search.cpan.org/dist/WebService-ReviewBoard">WebService-ReviewBoard</A></TR>
+<TR><A HREF="http://search.cpan.org/dist/Workflow">Workflow</A></TR>
+<TR><A HREF="http://search.cpan.org/dist/XML-RSS-FromHTML-Simple">XML-RSS-FromHTML-Simple</A></TR>
+</TABLE>
+
+</td>
+    <!-- Right cell with changes -->
+    <td valign="top" bgcolor="lightyellow" width="40%">
+<FONT SIZE=+1 COLOR='#fc464f'><B>News:</B></FONT><P>
+
+<FONT SIZE=-1><B>July 2008:</B></FONT><BR>
+<a href="http://en.oreilly.com/oscon2008/public/schedule/detail/2470"><img src="http://conferences.oreillynet.com/banners/oscon/speaker/oscon2008_banner_speaker_210x60.gif" width="210" height="60"  border="0"  alt="OSCON 2008" title="OSCON 2008"  />
+</a>
+<BR><A HREF="/l4p.ppt">Slides</A> for Mike's talk at OSCON 2008.
+
+<br>
+<br>
+<!--NEWS-->
+<FONT SIZE=-1><B>08/23/2008:</B></FONT><BR>
+<FONT COLOR='#8dbf85'><B>Released</B></FONT> version <A HREF=/releases/Log-Log4perl-1.18.tar.gz>1.18</A><BR>
+<!--/NEWS-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+<BR>
+<FONT SIZE=-1><B>06/25/2007:</B><BR>
+<b>Talk at YAPC 2007 (Houston, TX): <BR>
+<A HREF=http://perlmeister.com/log4perl_yapc.html>Smart Logging with Log4perl</A></FONT>.
+
+<TABLE><TR><TD>
+<FONT SIZE=-1><B>Get your Log::Log4perl T-Shirt:</B></FONT>
+</TD></TR></TR><TD>
+<A HREF=http://cafepress.com/log4perl>
+<IMG SRC="/images/tshirt3.jpg"></A>
+</TD></TR></TABLE>
+
+<BR>
+<FONT SIZE=-1><B>09/12/2002:</B></FONT><BR>
+<TABLE><TR><TD>
+<A HREF=http://www.perl.com/pub/a/2002/09/11/log4perl.html>
+<IMG SRC="/images/log4perlz.jpg" BORDER=0></A>
+</TD><TD>
+<A HREF=http://www.perl.com/pub/a/2002/09/11/log4perl.html>Retire your debugger, log smartly with Log::Log4perl!</A> -- Mike's article on logging with Log::Log4perl on perl.com. <A HREF=http://www.perlmeister.com/errata/log4perl/errata.html>Errata</A> for this article.
+</TD></TR></TABLE>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<hr noshade="noshade" />
+<FONT SIZE=+1 COLOR='#fc464f'><B>Documentation:</B></FONT><P>
+<B><A HREF=/releases/Log-Log4perl/docs/html/Log/Log4perl.html>Manual</A></B><BR>
+<B><A HREF=/releases/Log-Log4perl/docs/html/Log/Log4perl/FAQ.html>Frequently Asked Questions</A></B><BR>
+<B><A HREF=/releases/Log-Log4perl/Changes>Changes</A></B>
+<hr noshade="noshade" />
+<FONT SIZE=+1 COLOR='#fc464f'><B>Download:</B></FONT><P>
+
+<FONT SIZE=-1><B>CPAN:</B></FONT><BR>
+<A HREF="http://search.cpan.org/~mschilli/Log-Log4perl/">Log-Log4perl</A><BR><BR>
+
+<!--STABLE-->
+<FONT SIZE=-1><B>Stable Release (08/23/2008)</B></FONT>
+<B><A HREF=/releases/Log-Log4perl-1.18.tar.gz>Log-Log4perl-1.18.tar.gz</A></B>
+<!--/STABLE-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<BR>
+<BR>
+<!--DEV-->
+<!--/DEV-->
+
+<P>
+<FONT SIZE=-1><B>Installation on Unix:</B></FONT><BR>
+<FONT SIZE=-3>
+It's a regular Perl module installation procedure, 
+use the CPAN shell for convenience:
+<TT><FONT COLOR=orange> 
+perl -MCPAN -e'install Log::Log4perl'
+</FONT>
+</TT>
+</FONT>
+
+<P>
+<FONT SIZE=-1><B>Installation on Win32:</B></FONT><BR>
+<FONT SIZE=-3>
+We're providing a PPM package:
+<A HREF="http://log4perl.sourceforge.net/releases/Log-Log4perl/docs/html/Log/Log4perl/FAQ.html#f7dc3">Windows installation instructions</A>.
+</FONT>
+
+<BR><BR>
+
+<hr noshade="noshade" />
+<FONT SIZE=+1 COLOR='#fc464f'><B>Contact:</B></FONT><P>
+<FONT SIZE=-1>Please send bugs reports or 
+requests for enhancements to the authors via 
+our mailing list:
+<A HREF=mailto:log4perl-devel@lists.sourceforge.net>log4perl-devel@lists.sourceforge.net</A>
+</FONT>
+<P>
+
+<FONT SIZE=-1>
+<A HREF=http://lists.sourceforge.net/lists/listinfo/log4perl-devel>Subscribe</A> to the mailing list. Or, browse the <A HREF=http://sourceforge.net/mailarchive/forum.php?forum_name=log4perl-devel>log4perl-devel mailing list</A> archive.
+Or, use a <A HREF="http://www.mail-archive.com/log4perl-devel@lists.sourceforge.net/">better indexed archive</A> of newer messages (2007-...).
+</FONT>
+
+</tD>
+    <!-- Right cell with changes -->
+</tr>
+</table>
+
+<hr noshade="noshade" />
+
+<TABLE WIDTH=100%><TR>
+<TD>
+<B>
+Mike Schilli &lt;<A HREF="mailto:log4perl@perlmeister.com">log4perl@perlmeister.com</A>&gt;<BR>
+Kevin Goess &lt;<A HREF="mailto:cpan@goess.org">cpan@goess.org</A>&gt;
+</B>
+</TD>
+<TD ALIGN=right>
+<A href="http://sourceforge.net"> <IMG
+                              src="http://sourceforge.net/sflogo.php?group_id=56939&amp;type=5"
+                              width="210" height="62" border="0" alt="SourceForge Logo"></A>
+</TD>
+</TR>
+</TABLE>
+</body>
+
+</html>
+
