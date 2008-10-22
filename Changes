@@ -2,10 +2,7 @@
  Revision history for Log::Log4perl
 ##################################################
 
-TODO: -config sanity test
-      -config rollback
-
-1.19 (not yet released)
+1.19 (2008/10/22)
     *   (ms) Applied patch by Peter Rabbitson, which fixes the caller() 
              level when calling get_logger() on a subclass of Log4perl.
     *   (ms) Added documentation on is_xxx() methods and clarified that
@@ -17,6 +14,8 @@ TODO: -config sanity test
              which was occurring with Catalyst::Log4perl.
     *   (ms) Added docs on numerical levels and level strings in 
              Log::Log4perl::Level.
+    *   (ms) Applied patch by Anthony Foiani for support of literal 
+             text in DateFormat format strings.
 
 1.18 (2008/08/23)
     *   (ms) Added explanation that categories and loggers are the same
