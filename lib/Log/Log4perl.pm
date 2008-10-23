@@ -2599,10 +2599,11 @@ our
 
     Contributors (in alphabetical order):
     Ateeq Altaf, Cory Bennett, Jeremy Bopp, Hutton Davidson, Chris R.
-    Donnelly, Matisse Enzer, Hugh Esco, James FitzGibbon, Carl Franks,
-    Dennis Gregorovic, Andy Grundman, Paul Harrington, David Hull,
-    Robert Jacobson, Jeff Macdonald, Markus Peter, Brett Rann, Peter Rabbitson,
-    Erik Selberg, Aaron Straup Cope, Lars Thegler, David Viner, Mac Yang.
+    Donnelly, Matisse Enzer, Hugh Esco, Anthony Foiani, James
+    FitzGibbon, Carl Franks, Dennis Gregorovic, Andy Grundman, Paul
+    Harrington, David Hull, Robert Jacobson, Jeff Macdonald, Markus
+    Peter, Brett Rann, Peter Rabbitson, Erik Selberg, Aaron Straup
+    Cope, Lars Thegler, David Viner, Mac Yang.
 
 =head1 COPYRIGHT AND LICENSE
 

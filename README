@@ -1277,7 +1277,7 @@ Cool Tricks
     And that's it! create_custom_level() creates the following functions /
     variables for level FOO:
 
-        $FOO_INT        # integer to use in toLevel()
+        $FOO_INT        # integer to use in L4p::Level::to_level()
         $logger->foo()  # log function to log if level = FOO
         $logger->is_foo()   # true if current level is >= FOO
 
@@ -1976,10 +1976,11 @@ AUTHORS
 
         Contributors (in alphabetical order):
         Ateeq Altaf, Cory Bennett, Jeremy Bopp, Hutton Davidson, Chris R.
-        Donnelly, Matisse Enzer, Hugh Esco, James FitzGibbon, Carl Franks,
-        Dennis Gregorovic, Andy Grundman, Paul Harrington, David Hull,
-        Robert Jacobson, Jeff Macdonald, Markus Peter, Brett Rann, Peter Rabbitson,
-        Erik Selberg, Aaron Straup Cope, Lars Thegler, David Viner, Mac Yang.
+        Donnelly, Matisse Enzer, Hugh Esco, Anthony Foiani, James
+        FitzGibbon, Carl Franks, Dennis Gregorovic, Andy Grundman, Paul
+        Harrington, David Hull, Robert Jacobson, Jeff Macdonald, Markus
+        Peter, Brett Rann, Peter Rabbitson, Erik Selberg, Aaron Straup
+        Cope, Lars Thegler, David Viner, Mac Yang.
 
 COPYRIGHT AND LICENSE
     Copyright 2002-2008 by Mike Schilli <m@perlmeister.com> and Kevin Goess
