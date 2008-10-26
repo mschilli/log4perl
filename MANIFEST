@@ -65,6 +65,7 @@ lib/Log/Log4perl/Resurrector.pm
 lib/Log/Log4perl/Util.pm
 lib/Log/Log4perl/Util/Semaphore.pm
 LICENSE
+Log-Log4perl-1.18.tar.gz
 Makefile.PL
 MANIFEST			This list of files
 MANIFEST.SKIP
