@@ -1,8 +1,10 @@
 #!/usr/bin/perl
 
-my $IDX = "/home/groups/l/lo/log4perl/htdocs/index.html";
+my $IDX = "adm/sourceforge/www/index.html";
 
 my ($version, $devprod) = @ARGV;
+
+$version =~ s/.*(\d+[\.\d]+).*/$1/;
 
 die "usage: $0 version" unless $version =~ /^[\d.]+\w+$/;
 
