@@ -2209,7 +2209,7 @@ The previously mentioned method C<appender_by_name()> returns a
 referrence to the I<real> appender object. If you want access to the
 wrapper class (e.g. if you want to modify the appender's threshold),
 use the hash C<$Log::Log4perl::Logger::APPENDER_BY_NAME{...}> instead,
-which holds references all appender wrapper objects.
+which holds references to all appender wrapper objects.
 
 =head2 Modify appender thresholds
 
