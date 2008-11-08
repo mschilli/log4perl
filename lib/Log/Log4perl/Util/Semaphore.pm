@@ -2,7 +2,7 @@
 package Log::Log4perl::Util::Semaphore;
 #//////////////////////////////////////////
 use IPC::SysV qw(IPC_RMID IPC_CREAT IPC_EXCL SEM_UNDO IPC_NOWAIT 
-                 IPC_SET IPC_STAT);
+                 IPC_SET IPC_STAT SETVAL);
 use IPC::Semaphore;
 use strict;
 use warnings;
@@ -133,16 +133,18 @@ sub semunlock {
 ###########################################
     my($self) = @_;
 
-    my $operation = pack("s!*", 
-                          # decrement by 1
-                         0, -1, (IPC_NOWAIT)
-                        );
-
+#    my $operation = pack("s!*", 
+#                          # decrement by 1
+#                         0, -1, SEM_UNDO
+#                        );
+#
     print "Unlocking semaphore '$self->{key}'\n" if INTERNAL_DEBUG;
 
-      # ignore errors, as they might result from trying to unlock an
-      # already unlocked semaphor.
-    semop($self->{id}, $operation);
+#      # ignore errors, as they might result from trying to unlock an
+#      # already unlocked semaphor.
+#    semop($self->{id}, $operation);
+
+    semctl $self->{id}, 0, SETVAL, 0;
 }
 
 ###########################################
