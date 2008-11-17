@@ -2493,7 +2493,7 @@ goes out of scope, and doesn't wait until global destruction.
 
 POE is a framework for creating multitasked applications running in a
 single process and a single thread. POE's threads equivalents are
-'sessions' and since they run semi-simultaneously, you can't use
+'sessions' and since they run quasi-simultaneously, you can't use
 Log4perl's global NDC/MDC to hold session-specific data.
 
 However, POE already maintains a data store for every session. It is called
