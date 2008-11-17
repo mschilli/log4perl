@@ -2531,7 +2531,7 @@ custom cspec and reference it with the newly defined pattern in the layout:
     POE::Kernel->run();
     exit;
 
-The code snippet above, defines a new layout placeholder (called
+The code snippet above defines a new layout placeholder (called
 'cspec' in Log4perl) %U which calls a subroutine, retrieves the active
 session, gets its heap and looks up the entry specified ('user').
 
