@@ -2492,7 +2492,7 @@ goes out of scope, and doesn't wait until global destruction.
 =head2 How can I access POE heap values from Log4perl's layout?
 
 POE is a framework for creating multitasked applications running in a
-single process and a single thread. POE's thread equivalent are
+single process and a single thread. POE's threads equivalents are
 'sessions' and since they run semi-simultaneously, you can't use
 Log4perl's global NDC/MDC to hold session-specific data.
 
