@@ -249,4 +249,32 @@ my $somebuffer = Log::Log4perl::Appender::TestBuffer->by_name("appndr");
 
 like($somebuffer->buffer(), qr/033UsrCspec.t blah/);
 
-BEGIN { plan tests => 15, }
+################################################################
+# cspecs with parameters in curlies
+################################################################
+Log::Log4perl::Config::allow_code(1);
+Log::Log4perl::Appender::TestBuffer->reset();
+
+our %hash = (foo => "bar", quack => "schmack");
+
+use Data::Dumper;
+$config = <<'EOL';
+log4perl.category.some = DEBUG, appndr
+
+    # This should be evaluated at config parse time
+log4perl.appender.appndr = Log::Log4perl::Appender::TestBuffer
+log4perl.appender.appndr.layout = Log::Log4perl::Layout::PatternLayout
+log4perl.appender.appndr.layout.ConversionPattern = %K{foo} %m %K{quack}%n
+log4perl.appender.appndr.layout.cspec.K = sub { $main::hash{$_[0]->{curlies} } }
+EOL
+
+Log::Log4perl::init(\$config);
+
+$some = Log::Log4perl::get_logger('some');
+$some->debug("blah");
+
+$somebuffer = Log::Log4perl::Appender::TestBuffer->by_name("appndr");
+
+is($somebuffer->buffer(), "bar blah schmack\n");
+
+BEGIN { plan tests => 16, }

@@ -7,6 +7,7 @@
              Synchronized appender to prevent "Numerical result out of 
              range" problem caused by an unbalanced SEM_UNDO when
              incrementing it. Reported by John Little.
+    *   (ms) Added parameters in curly braces to cspecs in PatternLayout.
  
 1.19 (2008/10/22)
     *   (ms) Applied patch by Peter Rabbitson, which fixes the caller() 

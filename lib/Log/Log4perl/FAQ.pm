@@ -2489,6 +2489,63 @@ at the end or in an END handler. If that's hard to do, use weak references:
 This allows perl to clean up the circular reference when the object 
 goes out of scope, and doesn't wait until global destruction.
 
+=head2 How can I access POE heap values from Log4perl's layout?
+
+POE is a framework for creating multitasked applications running in a
+single process and a single thread. POE's thread equivalent are
+'sessions' and since they run semi-simultaneously, you can't use
+Log4perl's global NDC/MDC to hold session-specific data.
+
+However, POE already maintains a data store for every session. It is called
+'heap' and is just a hash storing session-specific data in key-value pairs.
+To access this per-session heap data from a Log4perl layout, define a
+custom cspec and reference it with the newly defined pattern in the layout:
+
+    use strict;
+    use POE;
+    use Log::Log4perl qw(:easy);
+
+    Log::Log4perl->init( \ q{
+        log4perl.logger = DEBUG, Screen
+        log4perl.appender.Screen = Log::Log4perl::Appender::Screen
+        log4perl.appender.Screen.layout = PatternLayout
+        log4perl.appender.Screen.layout.ConversionPattern = %U %m%n
+        log4perl.PatternLayout.cspec.U = \
+            sub { POE::Kernel->get_active_session->get_heap()->{ user } }
+    } );
+
+    for (qw( Huey Lewey Dewey )) {
+        POE::Session->create(
+            inline_states => {
+                _start    => sub {
+                    $_[HEAP]->{user} = $_;
+                    POE::Kernel->yield('hello');
+                },
+                hello     => sub {
+                    DEBUG "I'm here now";
+                }
+            }
+        );
+    }
+
+    POE::Kernel->run();
+    exit;
+
+The code snippet above, defines a new layout placeholder (called
+'cspec' in Log4perl) %U which calls a subroutine, retrieves the active
+session, gets its heap and looks up the entry specified ('user').
+
+Starting with Log::Log4perl 1.20, cspecs also support parameters in 
+curly braces, so you can say
+
+    log4perl.appender.Screen.layout.ConversionPattern = %U{user} %U{id} %m%n
+    log4perl.PatternLayout.cspec.U = \
+            sub { POE::Kernel->get_active_session-> \
+                  get_heap()->{ $_[0]->{curlies} } }
+
+and print the POE session heap entries 'user' and 'id' with every logged
+message. For more details on cpecs, read the PatternLayout manual.
+
 =cut
 
 =head1 SEE ALSO

@@ -254,17 +254,20 @@ sub render {
         # As long as they're not implemented yet ..
     $info{t} = "N/A";
 
-    foreach my $cspec (keys %{$self->{USER_DEFINED_CSPECS}}){
-        next unless $self->{info_needed}->{$cspec};
-        $info{$cspec} = $self->{USER_DEFINED_CSPECS}->{$cspec}->($self, 
-                              $message, $category, $priority, $caller_level+1);
-    }
-
         # Iterate over all info fields on the stack
     for my $e (@{$self->{stack}}) {
         my($op, $curlies) = @$e;
-        if(exists $info{$op}) {
-            my $result = $info{$op};
+
+        my $result;
+
+        if(exists $self->{USER_DEFINED_CSPECS}->{$op}) {
+            next unless $self->{info_needed}->{$op};
+            $self->{curlies} = $curlies;
+            $result = $self->{USER_DEFINED_CSPECS}->{$op}->($self, 
+                              $message, $category, $priority, 
+                              $caller_level+1);
+        } elsif(exists $info{$op}) {
+            $result = $info{$op};
             if($curlies) {
                 $result = $self->curly_action($op, $curlies, $info{$op});
             } else {
@@ -273,12 +276,13 @@ sub render {
                     $result = $info{$op}->format($self->{time_function}->());
                 }
             }
-            $result = "[undef]" unless defined $result;
-            push @results, $result;
         } else {
             warn "Format %'$op' not implemented (yet)";
-            push @results, "FORMAT-ERROR";
+            $result = "FORMAT-ERROR";
         }
+
+        $result = "[undef]" unless defined $result;
+        push @results, $result;
     }
 
     #print STDERR "sprintf $self->{printformat}--$results[0]--\n";
@@ -617,6 +621,24 @@ Please note that the subroutines you're defining in this way are going
 to be run in the C<main> namespace, so be sure to fully qualify functions
 and variables if they're located in different packages.
 
+With Log4perl 1.20 and better, cspecs can be written with parameters in
+curly braces. Writing something like
+
+    log4perl.appender.Screen.layout.ConversionPattern = %U{user} %U{id} %m%n
+
+will cause the cspec function defined for %U to be called twice, once
+with the parameter 'user' and then again with the parameter 'id', 
+and the placeholders in the cspec string will be replaced with
+the respective return values.
+
+The parameter value is available in the 'curlies' entry of the first
+parameter passed to the subroutine (the layout object reference). 
+So, if you wanted to map %U{xxx} to entries in the POE session hash, 
+you'd write something like:
+
+   log4perl.PatternLayout.cspec.U = sub { \
+     POE::Kernel->get_active_session->get_heap()->{ $_[0]->{curlies} } }
+                                          
 B<SECURITY NOTE>
   
 This feature means arbitrary perl code can be embedded in the config file. 
