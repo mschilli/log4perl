@@ -1,5 +1,5 @@
 ######################################################################
-    Log::Log4perl 1.19
+    Log::Log4perl 1.20
 ######################################################################
 
 NAME
@@ -1632,7 +1632,7 @@ Cool Tricks
     referrence to the *real* appender object. If you want access to the
     wrapper class (e.g. if you want to modify the appender's threshold), use
     the hash $Log::Log4perl::Logger::APPENDER_BY_NAME{...} instead, which
-    holds references all appender wrapper objects.
+    holds references to all appender wrapper objects.
 
   Modify appender thresholds
     To conveniently adjust appender thresholds (e.g. because a script uses
@@ -1849,7 +1849,9 @@ Dirty Tricks
         transforms its "debug/conn" messages into "debug()" calls of loggers
         of the category "LWP::UserAgent". Similarily, "LWP::UserAgent"'s
         "trace" messages are turned into "Log::Log4perl"'s "info()" method
-        calls.
+        calls. Note that this only works for LWP::UserAgent versions <
+        5.822, because this (and probably later) versions miss debugging
+        functions entirely.
 
     Suppressing 'duplicate' LOGDIE messages
         If a script with a simple Log4perl configuration uses logdie() to
