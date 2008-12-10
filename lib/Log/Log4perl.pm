@@ -2449,7 +2449,9 @@ A call to C<Log::Log4perl-E<gt>infiltrate_lwp()> does exactly this.
 In a very rude way, it pulls the rug from under LWP::UserAgent and transforms
 its C<debug/conn> messages into C<debug()> calls of loggers of the category
 C<"LWP::UserAgent">. Similarily, C<LWP::UserAgent>'s C<trace> messages 
-are turned into C<Log::Log4perl>'s C<info()> method calls.
+are turned into C<Log::Log4perl>'s C<info()> method calls. Note that this
+only works for LWP::UserAgent versions E<lt> 5.822, because this (and
+probably later) versions miss debugging functions entirely.
 
 =item Suppressing 'duplicate' LOGDIE messages
 

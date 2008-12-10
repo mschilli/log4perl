@@ -8,6 +8,10 @@
              range" problem caused by an unbalanced SEM_UNDO when
              incrementing it. Reported by John Little.
     *   (ms) Added parameters in curly braces to cspecs in PatternLayout.
+    *   (ms) As explained in  http://rt.cpan.org/Ticket/Display.html?id=41505
+             the latest LWP release (5.822) got rid of all of its internal
+             debugging functions, making infiltrate_lwp() and its test
+             case useless. Disabling it for LWP>=5.822.
  
 1.19 (2008/10/22)
     *   (ms) Applied patch by Peter Rabbitson, which fixes the caller() 
