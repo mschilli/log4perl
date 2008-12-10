@@ -2,7 +2,7 @@
  Revision history for Log::Log4perl
 ##################################################
 
-1.20 (not yet released)
+1.20 (2008/12/09)
     *   (ms) Using semctl to reset the value of the semaphore in the 
              Synchronized appender to prevent "Numerical result out of 
              range" problem caused by an unbalanced SEM_UNDO when
