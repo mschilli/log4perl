@@ -38,7 +38,7 @@ Log::Log4perl::Appender::TestArrayBuffer - Subclass of Appender::TestBuffer
   );
 
       # Append to the buffer
-  $appender->log_message( 
+  $appender->log( 
       level =  > 'alert', 
       message => ['first', 'second', 'third'],
   );
