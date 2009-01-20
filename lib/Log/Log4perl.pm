@@ -16,7 +16,7 @@ use Log::Log4perl::Appender;
 
 use constant _INTERNAL_DEBUG => 1;
 
-our $VERSION = '1.20';
+our $VERSION = '1.21';
 
    # set this to '1' if you're using a wrapper
    # around Log::Log4perl
@@ -661,7 +661,7 @@ specify anything about C<My::MegaPackage>.
 And yet, we've defined a logger of the category 
 C<My::MegaPackage>.
 In this case, C<Log::Log4perl> will walk up the class hierarchy
-(C<My> and then the we're at the root) to figure out if a log level is
+(C<My> and then we're at the root) to figure out if a log level is
 defined somewhere. In the case above, the log level at the root
 (root I<always> defines a log level, but not necessarily an appender)
 defines that 
@@ -1114,8 +1114,8 @@ In this case, use this instead:
         }
     }
 
-If you're afraid that the way you're generating the parameters to the
-of the logging function is fairly expensive, use closures:
+If you're afraid that generating the parameters to the
+logging function is fairly expensive, use closures:
 
         # Passed as subroutine ref
     use Data::Dumper;

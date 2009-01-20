@@ -1,5 +1,5 @@
 ######################################################################
-    Log::Log4perl 1.20
+    Log::Log4perl 1.21
 ######################################################################
 
 NAME
@@ -169,12 +169,11 @@ How to use it
     ones to suppress? "Log::Log4perl" works with inheritance: The config
     file above didn't specify anything about "My::MegaPackage". And yet,
     we've defined a logger of the category "My::MegaPackage". In this case,
-    "Log::Log4perl" will walk up the class hierarchy ("My" and then the
-    we're at the root) to figure out if a log level is defined somewhere. In
-    the case above, the log level at the root (root *always* defines a log
-    level, but not necessarily an appender) defines that the log level is
-    supposed to be "ERROR" -- meaning that *DEBUG* and *INFO* messages are
-    suppressed.
+    "Log::Log4perl" will walk up the class hierarchy ("My" and then we're at
+    the root) to figure out if a log level is defined somewhere. In the case
+    above, the log level at the root (root *always* defines a log level, but
+    not necessarily an appender) defines that the log level is supposed to
+    be "ERROR" -- meaning that *DEBUG* and *INFO* messages are suppressed.
 
   Log Levels
     There are six predefined log levels: "FATAL", "ERROR", "WARN", "INFO",
@@ -603,8 +602,8 @@ How to use it
             }
         }
 
-    If you're afraid that the way you're generating the parameters to the of
-    the logging function is fairly expensive, use closures:
+    If you're afraid that generating the parameters to the logging function
+    is fairly expensive, use closures:
 
             # Passed as subroutine ref
         use Data::Dumper;
