@@ -20,7 +20,10 @@ our $VERSION = '1.21';
 
    # set this to '1' if you're using a wrapper
    # around Log::Log4perl
-our $caller_depth = 0;
+our $caller_depth       = 0;
+   # In a cspec, call caller( $Log::Log4perl::cspec_caller_depth )
+   # to get to the calling package
+our $cspec_caller_depth = 4;
 
     #this is a mapping of convenience names to opcode masks used in
     #$ALLOWED_CODE_OPS_IN_CONFIG_FILE below
@@ -1080,6 +1083,11 @@ format, check out the original C<log4j> website under
 
     http://jakarta.apache.org/log4j/docs/api/org/apache/log4j/SimpleLayout.html
     http://jakarta.apache.org/log4j/docs/api/org/apache/log4j/PatternLayout.html
+
+If you need to access the calling code from a cspec service function
+you need to go $Log::Log4perl::cspec_caller_depth levels up, i.e.
+caller( $Log::Log4perl::cspec_caller_depth ) in a cspec service
+function will return the name of the calling package in scalar context.
 
 =head2 Penalties
 

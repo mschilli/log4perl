@@ -277,4 +277,30 @@ $somebuffer = Log::Log4perl::Appender::TestBuffer->by_name("appndr");
 
 is($somebuffer->buffer(), "bar blah schmack\n");
 
-BEGIN { plan tests => 16, }
+################################################################
+# Get the calling package from a cspec
+################################################################
+Log::Log4perl::Config::allow_code(1);
+Log::Log4perl::Appender::TestBuffer->reset();
+
+$config = <<'EOL';
+log4perl.category.some = DEBUG, appndr
+
+    # This should be evaluated at config parse time
+log4perl.appender.appndr = Log::Log4perl::Appender::TestBuffer
+log4perl.appender.appndr.layout = Log::Log4perl::Layout::PatternLayout
+log4perl.appender.appndr.layout.ConversionPattern = %K %m%n
+log4perl.appender.appndr.layout.cspec.K = \
+    sub { scalar caller( $Log::Log4perl::cspec_caller_depth )}
+EOL
+
+Log::Log4perl::init(\$config);
+
+$some = Log::Log4perl::get_logger('some');
+$some->debug("blah");
+
+$somebuffer = Log::Log4perl::Appender::TestBuffer->by_name("appndr");
+
+is($somebuffer->buffer(), "main blah\n");
+
+BEGIN { plan tests => 17, }
