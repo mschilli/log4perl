@@ -5,9 +5,6 @@
 1.21 (not yet released)
     *   (ms) Documentation typos fixed, reported by Breno G. de Oliveira
              [rt.cpan.org #42428].
-    *   (ms) Added constant $Log::Log4perl::cspec_caller_depth to allow
-             cspec utility functions to determine the caller (question by
-             Darren Ball)
 
 1.20 (2008/12/09)
     *   (ms) Using semctl to reset the value of the semaphore in the 

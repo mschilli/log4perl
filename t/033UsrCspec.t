@@ -291,7 +291,7 @@ log4perl.appender.appndr = Log::Log4perl::Appender::TestBuffer
 log4perl.appender.appndr.layout = Log::Log4perl::Layout::PatternLayout
 log4perl.appender.appndr.layout.ConversionPattern = %K %m%n
 log4perl.appender.appndr.layout.cspec.K = \
-    sub { scalar caller( $Log::Log4perl::cspec_caller_depth )}
+    sub { scalar caller( $_[4] )}
 EOL
 
 Log::Log4perl::init(\$config);
