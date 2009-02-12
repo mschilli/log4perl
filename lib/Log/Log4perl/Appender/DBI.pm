@@ -140,9 +140,15 @@ sub query_execute {
                 #                  "on $self->{SQL}\n@qmarks";
                 #warn "Exe: failed: $DBI::errstr"; # TODO
                 if($attempt == $self->{reconnect_attempts}) {
-                    croak "Log4perl: DBI appender failed to reconnect to database " .
-                          "after $self->{reconnect_attempts} attempt" .
-                          ($self->{reconnect_attempts} == 1 ? "" : "s");
+                    croak "Log4perl: DBI appender failed to " .
+                          ($self->{reconnect_attempts} == 1 ? "" : "re") .
+                          "connect " .
+                          "to database after " .
+                          "$self->{reconnect_attempts} attempt" .
+                          ($self->{reconnect_attempts} == 1 ? "" : "s") .
+                          " (last error error was [" .
+                          $self->{dbh}->errstr() . 
+                          "])";
                 }
             if(! $self->{dbh}->ping()) {
                 # Ping failed, try to reconnect
