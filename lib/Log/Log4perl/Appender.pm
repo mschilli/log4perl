@@ -253,6 +253,10 @@ sub AUTOLOAD {
 
     $AUTOLOAD =~ s/.*:://;
 
+    if(! defined $self->{appender}) {
+        die "Can't locate object method $AUTOLOAD() in ", __PACKAGE__;
+    }
+
     return $self->{appender}->$AUTOLOAD(@_);
 }
 
