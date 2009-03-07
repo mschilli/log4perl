@@ -4,6 +4,7 @@ package Log::Log4perl::Util::Semaphore;
 use IPC::SysV qw(IPC_RMID IPC_CREAT IPC_EXCL SEM_UNDO IPC_NOWAIT 
                  IPC_SET IPC_STAT SETVAL);
 use IPC::Semaphore;
+use POSIX qw(EEXIST);
 use strict;
 use warnings;
 use constant INTERNAL_DEBUG => 0;
@@ -57,7 +58,7 @@ sub init {
                   );
    
    if(! defined $self->{id} and
-      $! =~ /exists/) {
+      $! == EEXIST) {
        print "Semaphore '$self->{key}' already exists\n" if INTERNAL_DEBUG;
        $self->{id} = semget( $self->{ikey}, 1, 0 )
            or die "semget($self->{ikey}) failed: $!";

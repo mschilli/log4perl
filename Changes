@@ -6,6 +6,9 @@
     *   (ms) Documentation typos fixed, reported by Breno G. de Oliveira
              [rt.cpan.org #42428].
     *   (ms) Fixed DBI appender error message, bug reported by DavidZ.
+    *   (ms) Fixed [rt.cpan.org #43740] reported by Martin Koehler. Now using 
+             proper POSIX return code EEXISTS instead of error message 
+             depending on English locale.
 
 1.20 (2008/12/09)
     *   (ms) Using semctl to reset the value of the semaphore in the 
