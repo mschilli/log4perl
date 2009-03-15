@@ -15,4 +15,4 @@ ldap/log4perl.schema
 ldap/migrate.pl
 lib/Log/Log4perl/Config/LDAPConfigurator.pm
 t/047-ldap.t
-
+.git
