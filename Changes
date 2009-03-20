@@ -2,6 +2,10 @@
  Revision history for Log::Log4perl
 ##################################################
 
+1.22 (not yet released)
+    *   (ms) is_xxx() returned true prior to L4p initialization. Fixed it
+             and adapted test suite.
+
 1.21 (2009/03/16)
     *   (ms) Documentation typos fixed, reported by Breno G. de Oliveira
              [rt.cpan.org #42428].

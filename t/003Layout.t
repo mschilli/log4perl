@@ -25,6 +25,7 @@ my $app = Log::Log4perl::Appender->new(
 ok(1); # If we made it this far, we/re ok.
 
 my $logger = Log::Log4perl->get_logger("abc.def.ghi");
+$logger->level($DEBUG);
 $logger->add_appender($app);
 my $layout = Log::Log4perl::Layout::PatternLayout->new(
     "bugo %% %c{2} %-17F{2} %L hugo");
@@ -33,7 +34,7 @@ $logger->debug("That's the message");
 
 is($app->buffer(), "bugo % def.ghi " . 
                    File::Spec->catfile(qw(t 003Layout.t)) .
-                   "     32 hugo"); 
+                   "     33 hugo"); 
 
 ############################################################
 # Log the message
@@ -125,7 +126,7 @@ $layout = Log::Log4perl::Layout::PatternLayout->new("%F-%L %m");
 $app->layout($layout);
 $logger->debug("That's the message");
 
-like($app->buffer(), qr/003Layout.t-126 That's the message/); 
+like($app->buffer(), qr/003Layout.t-127 That's the message/); 
 
 ############################################################
 # Don't append a newline if the message already contains one

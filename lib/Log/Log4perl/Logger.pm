@@ -95,7 +95,7 @@ sub DESTROY {
 ##################################################
 sub reset {
 ##################################################
-    $ROOT_LOGGER        = __PACKAGE__->_new("", $DEBUG);
+    $ROOT_LOGGER        = __PACKAGE__->_new("", $OFF);
 #    $LOGGERS_BY_NAME    = {};  #leave this alone, it's used by 
                                 #reset_all_output_methods when 
                                 #the config changes
@@ -231,12 +231,12 @@ sub set_output_methods {
                   if _INTERNAL_DEBUG;
             $self->{$levelname}      = $coderef;
             $self->{"is_$levelname"} = generate_is_xxx_coderef("1");
-            #$self->{"is_$levelname"} = sub { 1 };
+            print "Setting is_$levelname to 1\n" if _INTERNAL_DEBUG;
         }else{
             print "  ($priority{$levelname} > $level)\n" if _INTERNAL_DEBUG;
             $self->{$levelname}      = $noop;
             $self->{"is_$levelname"} = generate_is_xxx_coderef("0");
-            #$self->{"is_$levelname"} = sub { 0 };
+            print "Setting is_$levelname to 0\n" if _INTERNAL_DEBUG;
         }
 
         print("  Setting [$self] $self->{category}.$levelname to ",

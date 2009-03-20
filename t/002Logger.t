@@ -10,13 +10,19 @@ use strict;
 
 #########################
 # used Test::Simple to help debug the test script
-use Test::More tests => 70;
+use Test::More tests => 73;
 
 use Log::Log4perl;
 use Log::Log4perl::Level;
 use Log::Log4perl::Util;
 
 ok(1); # If we made it this far, we're ok.
+
+# Check unintialized case
+my $logger = Log::Log4perl::get_logger("");
+is $logger->is_trace, 0, "is_trace false when L4p is uninitialized";
+is $logger->is_debug, 0, "is_debug false when L4p is uninitialized";
+is $logger->is_error, 0, "is_error false when L4p is uninitialized";
 
 my $log0 = Log::Log4perl->get_logger("abc.def");
 my $log1 = Log::Log4perl->get_logger("abc.def");
@@ -376,7 +382,7 @@ use Log::Log4perl::Appender::File;
 my $app_screen = Log::Log4perl::Appender::Screen->new();
 
 my $tmpfile = Log::Log4perl::Util::tmpfile_name();
-END { unlink $tmpfile };
+END { unlink $tmpfile if defined $tmpfile };
 
 my $app_file = Log::Log4perl::Appender::File->new(
     filename => $tmpfile

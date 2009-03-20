@@ -119,7 +119,7 @@ Log::Log4perl::Layout::PatternLayout::add_global_cspec('Z', sub {'zzzzzzzz'}); #
 my $app = Log::Log4perl::Appender->new(
     "Log::Log4perl::Appender::TestBuffer");
 
-my $logger = Log::Log4perl->get_logger("abc.def.ghi");
+my $logger = Log::Log4perl->get_logger("plant");
 $logger->add_appender($app);
 my $layout = Log::Log4perl::Layout::PatternLayout->new(
     "%m %Z");

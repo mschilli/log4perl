@@ -14,9 +14,7 @@ use Log::Log4perl::Level;
 use Log::Log4perl::Config;
 use Log::Log4perl::Appender;
 
-use constant _INTERNAL_DEBUG => 1;
-
-our $VERSION = '1.21';
+our $VERSION = '1.22';
 
    # set this to '1' if you're using a wrapper
    # around Log::Log4perl
@@ -725,6 +723,7 @@ Also available are a series of more Java-esque functions which return
 the same values. These are of the format C<isI<Level>Enabled()>,
 so C<$logger-E<gt>isDebugEnabled()> is synonymous to 
 C<$logger-E<gt>is_debug()>.
+
 
 These level checking functions
 will come in handy later, when we want to block unnecessary
