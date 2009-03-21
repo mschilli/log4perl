@@ -1,0 +1,3 @@
+
+git-update-server-info
+rsync -az .git/* walsh.dreamhost.com:perlmeister.com/log4perl.git
