@@ -3,6 +3,10 @@
 ##################################################
 
 1.22 (not yet released)
+TODO: 
+* Expose create_appender_instance() or similar to API to make
+  composite appenders work with API configuration.
+
     *   (ms) is_xxx() returned true prior to L4p initialization. Fixed it
              and adapted test suite.
 
