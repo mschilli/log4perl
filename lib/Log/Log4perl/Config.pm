@@ -499,9 +499,9 @@ sub get_appender_by_name {
 ###########################################
     my($data, $name, $appenders_created) = @_;
 
-    if ($appenders_created->{$name}) {
+    if (exists $appenders_created->{$name}) {
         return $appenders_created->{$name};
-    }else{
+    } else {
         return $data->{appender}->{$name}->{value};
     }
 }
