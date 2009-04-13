@@ -45,7 +45,7 @@ sub new {
 
         # Run our post_init method in the configurator after
         # all appenders have been defined to make sure the
-        # appender we're syncronizing really exists
+        # appender we're synchronizing really exists
     push @{$options{l4p_post_config_subs}}, sub { $self->post_init() };
 
     bless $self, $class;
