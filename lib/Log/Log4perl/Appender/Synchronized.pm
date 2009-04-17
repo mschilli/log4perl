@@ -212,14 +212,14 @@ serialization of output written to different files.
 
 To configure the underlying Log::Log4perl::Util::Semaphore module in 
 a different way than with the default settings provided by 
-Log::Log4perl::Appender::Synchronized, use the options parameter:
+Log::Log4perl::Appender::Synchronized, use the following parameters:
 
     log4perl.appender.Syncer1.destroy  = 1
     log4perl.appender.Syncer1.mode     = sub { 0775 }
     log4perl.appender.Syncer1.uid      = hugo
     log4perl.appender.Syncer1.gid      = 100
 
-Valid keys are 
+Valid options are 
 C<destroy> (Remove the semaphore on exit), 
 C<mode> (permissions on the semaphore), 
 C<uid> (uid or user name the semaphore is owned by), 
@@ -232,7 +232,9 @@ in decimal.
 
 Changing ownership or group settings for a semaphore will obviously only
 work if the current user ID owns the semaphore already or if the current
-user is C<root>.
+user is C<root>. The C<destroy> option causes the current process to 
+destroy the semaphore on exit. Spawned children of the process won't
+inherit this behavior.
 
 =head2 Semaphore user and group IDs with mod_perl
 

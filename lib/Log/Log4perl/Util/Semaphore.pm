@@ -22,6 +22,7 @@ sub new {
         destroy       => undef,
         semop_wait    => .1,
         semop_retries => 1,
+	creator       => $$,
         %options,
     };
 
@@ -164,7 +165,7 @@ sub DESTROY {
 ###########################################
     my($self) = @_;
 
-    if($self->{destroy}) {
+    if($self->{destroy} && $$==$self->{creator}) {
         $self->remove();
     }
 }
