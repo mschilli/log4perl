@@ -27,7 +27,7 @@ unless (-e "$WORK_DIR"){
 
 my $testfile = File::Spec->catfile($WORK_DIR, "test26.log");
 
-BEGIN {plan tests => 16}
+BEGIN {plan tests => 20}
 
 END { 
     unlink_testfiles();
@@ -259,6 +259,90 @@ $content = join '', <FILE>;
 close FILE;
 
 ok($content, "INFO - File1\nINFO - File1\n");
+
+#########################################################
+# Testing syswrite and recreate
+#########################################################
+$data = <<EOT;
+log4perl.category = INFO, FileAppndr1
+log4perl.appender.FileAppndr1          = Log::Log4perl::Appender::File
+log4perl.appender.FileAppndr1.filename = ${testfile}_1
+log4perl.appender.FileAppndr1.syswrite = 1
+log4perl.appender.FileAppndr1.recreate = 1
+log4perl.appender.FileAppndr1.recreate_check_interval = 0
+log4perl.appender.FileAppndr1.mode     = write
+log4perl.appender.FileAppndr1.layout   = Log::Log4perl::Layout::SimpleLayout
+EOT
+
+Log::Log4perl::init(\$data);
+$log = Log::Log4perl::get_logger("");
+$log->info("File1");
+
+unlink "${testfile}_1";
+
+$log->info("File1-1");
+
+open FILE, "<${testfile}_1" or die "Cannot open ${testfile}_1";
+$content = join '', <FILE>;
+close FILE;
+
+ok($content, "INFO - File1-1\n");
+
+#########################################################
+# Testing syswrite and recreate without check_interval
+#########################################################
+$data = <<EOT;
+log4perl.category = INFO, FileAppndr1
+log4perl.appender.FileAppndr1          = Log::Log4perl::Appender::File
+log4perl.appender.FileAppndr1.filename = ${testfile}_1
+log4perl.appender.FileAppndr1.syswrite = 1
+log4perl.appender.FileAppndr1.recreate = 1
+log4perl.appender.FileAppndr1.mode     = write
+log4perl.appender.FileAppndr1.layout   = Log::Log4perl::Layout::SimpleLayout
+EOT
+
+Log::Log4perl::init(\$data);
+$log = Log::Log4perl::get_logger("");
+$log->info("File1");
+
+unlink "${testfile}_1";
+
+eval { $log->info("File1-1"); };
+
+ok($@, "", "no error on moved file/syswrite");
+
+SKIP: {
+  skip "File recreation not supported on Win32", 2 if $^O eq "MSWin32";
+
+#########################################################
+# Testing syswrite and recreate_check_signal
+#########################################################
+$data = <<EOT;
+log4perl.category = INFO, FileAppndr1
+log4perl.appender.FileAppndr1          = Log::Log4perl::Appender::File
+log4perl.appender.FileAppndr1.filename = ${testfile}_1
+log4perl.appender.FileAppndr1.syswrite = 1
+log4perl.appender.FileAppndr1.recreate = 1
+log4perl.appender.FileAppndr1.recreate_check_signal = USR1
+log4perl.appender.FileAppndr1.mode     = write
+log4perl.appender.FileAppndr1.layout   = Log::Log4perl::Layout::SimpleLayout
+EOT
+
+Log::Log4perl::init(\$data);
+$log = Log::Log4perl::get_logger("");
+$log->info("File1");
+
+unlink "${testfile}_1";
+
+ok(kill('USR1', $$), 1, "sending signal");
+$log->info("File1");
+
+open FILE, "<${testfile}_1" or die "Cannot open ${testfile}_1";
+$content = join '', <FILE>;
+close FILE;
+
+ok($content, "INFO - File1\n");
+};
 
 #########################################################
 # Testing create_at_logtime

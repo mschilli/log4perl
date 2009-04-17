@@ -9,6 +9,7 @@ TODO:
 
     *   (ms) is_xxx() returned true prior to L4p initialization. Fixed it
              and adapted test suite.
+    *   (ms) Added test cases on syswrite in recreate mode
 
 1.21 (2009/03/16)
     *   (ms) Documentation typos fixed, reported by Breno G. de Oliveira
