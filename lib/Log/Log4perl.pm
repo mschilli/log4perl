@@ -375,6 +375,20 @@ sub appenders {  # Get a hashref of all defined appender wrappers
 }
 
 ##################################################
+sub add_appender { # Add an appender to the system, but don't assign
+	           # it to a logger yet
+##################################################
+    my($class, $appender) = @_;
+
+    my $name = $appender->name();
+    die "Mandatory parameter 'name' missing in appender" unless defined $name;
+
+      # Make it known by name in the Log4perl universe
+      # (so that composite appenders can find it)
+    Log::Log4perl->appenders()->{ $name } = $appender;
+}
+
+##################################################
 sub appender_thresholds_adjust {  # Readjust appender thresholds
 ##################################################
         # If someone calls L4p-> and not L4p::

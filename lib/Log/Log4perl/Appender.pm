@@ -572,7 +572,12 @@ then Log4perl will set the appender's C<appender> attribute to the
 I<name> of the appender to finally relay messages to. After the
 Log4perl configuration file has been processed, Log4perl will remember to 
 call the composite appender's post_init() method, which will grab
-the relay appender instance and set it in its C<app> attribute.
+the relay appender instance referred to by the name (Logfile) 
+and set it in its C<app> attribute. This is exactly what the
+code snippet above does.
+
+But if you initialize Log4perl by its API, you need to remember to
+perform these steps. Here's the lineup:
 
     use Log::Log4perl qw(get_logger :levels);
     
