@@ -17,11 +17,11 @@ BEGIN {
                                                # early Perl versions dont
                                                # have it.
     }else{
-        plan tests => 14;
+        plan tests => 15;
     }
 }
 
-use Log::Log4perl qw(get_logger);
+use Log::Log4perl qw(get_logger :levels);
 use Log::Log4perl::Level;
 use Log::Log4perl::Appender::TestBuffer;
 
@@ -208,3 +208,32 @@ $conf = qq(
 Log::Log4perl->init(\$conf);
 ok(1);
 
+### API initialization
+#
+Log::Log4perl->reset();
+my $bufApp = Log::Log4perl::Appender->new(
+		'Log::Log4perl::Appender::TestBuffer',
+		name     => 'MyBuffer',
+		);
+$bufApp->layout(
+		Log::Log4perl::Layout::PatternLayout::Multiline->new(
+			'%m%n')
+		);
+# Make the appender known to the system (without assigning it to
+# any logger
+Log::Log4perl->add_appender( $bufApp );
+
+my $limitApp = Log::Log4perl::Appender->new(
+	'Log::Log4perl::Appender::Limit',
+	name       => 'MyLimit',
+	appender   => 'MyBuffer',
+	key        => 'nem',
+	);
+$limitApp->post_init();
+$limitApp->composite(1);
+
+$buffer = Log::Log4perl::Appender::TestBuffer->by_name("MyBuffer");
+get_logger("")->add_appender($limitApp);
+get_logger("")->level($DEBUG);
+get_logger("wonk")->debug("waah!");
+is($buffer->buffer(), "waah!\n", "composite api init");
