@@ -369,7 +369,7 @@ sub get_logger {  # Get an instance (shortcut)
 }
 
 ##################################################
-sub appenders {  # Get all defined appenders hashref
+sub appenders {  # Get a hashref of all defined appender wrappers
 ##################################################
     return \%Log::Log4perl::Logger::APPENDER_BY_NAME;
 }
@@ -418,7 +418,7 @@ sub appender_thresholds_adjust {  # Readjust appender thresholds
 }
 
 ##################################################
-sub appender_by_name {  # Get an appender by name
+sub appender_by_name {  # Get a (real) appender by name
 ##################################################
         # If someone calls L4p->appender_by_name and not L4p::appender_by_name
     shift if $_[0] eq __PACKAGE__;
@@ -2205,7 +2205,7 @@ C<Log::Dispatch::FileRotate> don't support all of Log::Log4perl's
 appender control mechanisms (like appender thresholds).
 
 The previously mentioned method C<appender_by_name()> returns a
-referrence to the I<real> appender object. If you want access to the
+reference to the I<real> appender object. If you want access to the
 wrapper class (e.g. if you want to modify the appender's threshold),
 use the hash C<$Log::Log4perl::Logger::APPENDER_BY_NAME{...}> instead,
 which holds references to all appender wrapper objects.
