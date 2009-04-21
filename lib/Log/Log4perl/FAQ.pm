@@ -2546,6 +2546,41 @@ curly braces, so you can say
 and print the POE session heap entries 'user' and 'id' with every logged
 message. For more details on cpecs, read the PatternLayout manual.
 
+=head2 I want to print something unconditionally!
+
+Sometimes it's a script that's supposed to log messages regardless if
+Log4perl has been initialized or not. Or there's a logging statement that's
+not going to be suppressed under any circumstances -- many people want to
+have the final word, make the executive decision, because it seems like
+the only logical choice.
+
+But think about it:
+First off, if a messages is supposed to be printed, where is it supposed
+to end up at? STDOUT? STDERR? And are you sure you want to set in stone
+that this message needs to be printed, while someone else might
+find it annoying and wants to get rid of it?
+
+The truth is, there's always going to be someone who wants to log a 
+messages at all cost, but also another person who wants to suppress it
+with equal vigilance. There's no good way to serve these two conflicting 
+desires, someone will always want to win at the cost of leaving 
+the other party dissappointed.
+
+So, the best Log4perl offers is the ALWAYS level for a message that even
+fires if the system log level is set to $OFF:
+
+    use Log::Log4perl qw(:easy);
+
+    Log::Log4perl->easy_init( $OFF );
+    ALWAYS "This gets logged always. Well, almost always";
+
+The logger won't fire, though, if Log4perl hasn't been initialized or
+if someone defines a custom log hurdle that's higher than $OFF. 
+
+Bottom line: Leave the setting of the logging level to the initial Perl 
+script -- let their owners decided what they want, no matter how tempting
+it may be to decide it for them.
+
 =cut
 
 =head1 SEE ALSO
