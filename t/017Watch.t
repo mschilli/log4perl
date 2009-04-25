@@ -31,15 +31,16 @@ unless (-e "$WORK_DIR"){
 }
 
 my $testfile = File::Spec->catfile($WORK_DIR, "test17.log");
+my $testconf = File::Spec->catfile($WORK_DIR, "test17.conf");
 
 END { 
     unlink $testfile if (-e $testfile);
+    unlink $testconf if (-e $testconf);
+    rmdir $WORK_DIR;
 }
 
 trunc($testfile);
-
-my $testconf = File::Spec->catfile($WORK_DIR, "test17.conf");
-trunc($testfile);
+trunc($testconf);
 
 my $conf1 = <<EOL;
 log4j.category.animal.dog   = INFO, myAppender
