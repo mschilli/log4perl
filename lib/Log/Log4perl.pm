@@ -2586,7 +2586,7 @@ http://www.vipan.com/htdocs/log4jhelp.html
 
 =item [4]
 
-The Log::Log4perl project home page: http://log4perl.sourceforge.net
+The Log::Log4perl project home page: http://log4perl.com
 
 =back
 
@@ -2602,7 +2602,11 @@ L<Log::Log4perl::NDC|Log::Log4perl::NDC>,
 
 =head1 AUTHORS
 
-Please send bug reports or requests for enhancements to the authors via 
+Please contribute patches to the project page on Github:
+
+    http://github.com/mschilli/log4perl
+
+Bug reports or requests for enhancements to the authors via 
 our
 
     MAILING LIST (questions, bug reports, suggestions/patches): 
@@ -2622,7 +2626,7 @@ our
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2002-2008 by Mike Schilli E<lt>m@perlmeister.comE<gt> and Kevin Goess
+Copyright 2002-2009 by Mike Schilli E<lt>m@perlmeister.comE<gt> and Kevin Goess
 E<lt>cpan@goess.orgE<gt>.
 
 This library is free software; you can redistribute it and/or modify
