@@ -491,6 +491,11 @@ and L<Log::Log4perl/"Mapped Diagnostic Context (MDC)">.
 The granularity of time values is milliseconds if Time::HiRes is available.
 If not, only full seconds are used.
 
+Every once in a while, someone uses the "%m%n" pattern and additionally
+provides an extra newline in the log message (e.g. C<-E<gt>log("message\n").
+To avoid printing an extra newline in this case, the PatternLayout will
+chomp the message in this case, printing only one newline.
+
 =head2 Quantify placeholders
 
 All placeholders can be extended with formatting instructions,
