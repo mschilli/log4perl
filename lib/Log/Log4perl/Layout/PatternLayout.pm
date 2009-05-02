@@ -312,6 +312,10 @@ sub curly_action {
         $data = $curlies->format($self->{time_function}->());
     } elsif($ops eq "M") {
         $data = shrink_category($data, $curlies);
+    } elsif($ops eq "m") {
+        if($curlies eq "chomp") {
+            chomp $data;
+        }
     } elsif($ops eq "F") {
         my @parts = File::Spec->splitdir($data);
             # Limit it to max curlies entries
@@ -481,6 +485,7 @@ replaced by the logging engine when it's time to log the message:
        parentheses.
     %L Line number within the file where the log statement was issued
     %m The message to be logged
+    %m{chomp} The message to be logged, stripped off a trailing newline
     %M Method or function where the logging request was issued
     %n Newline (OS-independent)
     %p Priority of the logging event
@@ -710,6 +715,27 @@ In a Log4perl configuration file, the feature can be turned off like this:
     log4perl.appender.App.layout.message_chomp_before_newline = 0
 
 =back
+
+=head2 Getting rid of newlines
+
+If your code contains logging statements like 
+
+      # WRONG, don't do that!
+    $logger->debug("Some message\n");
+
+then it's usually best to strip the newlines from these calls. As explained
+in L<Log::Log4perl/Logging newlines>, logging statements should never contain
+newlines, but rely on appender layouts to add necessary newlines instead.
+
+If changing the code is not an option, use the special PatternLayout 
+placeholder %m{chomp} to refer to the message excluding a trailing 
+newline:
+
+    log4perl.appender.App.layout.ConversionPattern = %d %m{chomp}%n
+
+This will add a single newline to every message, regardless if it
+complies with the Log4perl newline guidelines or not (thanks to 
+Tim Bunce for this idea).
 
 =head1 SEE ALSO
 

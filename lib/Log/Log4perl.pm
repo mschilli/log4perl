@@ -929,6 +929,37 @@ This will cause only messages originating from
 this specific category logger to be logged in the defined format
 and locations.
 
+=head2 Logging newlines
+
+There's some controversy between different logging systems as to when and 
+where newlines are supposed to be added to logged messages.
+
+The Log4perl way is that a logging statement I<should not> 
+contain a newline:
+
+    $logger->info("Some message");
+    $logger->info("Another message");
+
+If this is supposed to end up in a log file like
+
+    Some message
+    Another message
+
+then an appropriate appender layout like "%m%n" will take care of adding
+a newline at the end of each message to make sure every message is 
+printed on its own line.
+
+Other logging systems, Log::Dispatch in particular, recommend adding the
+newline to the log statement. This doesn't work well, however, if you, say,
+replace your file appender by a database appender, and all of a sudden
+those newlines scattered around the code don't make sense anymore.
+
+Assigning matching layouts to different appenders and leaving newlines
+out of the code solves this problem. If you inherited code that has logging
+statements with newlines and want to make it work with Log4perl, read
+the L<Log::Log4perl::Layout::PatternLayout> documentation on how to 
+accomplish that.
+
 =head2 Configuration files
 
 As shown above, you can define C<Log::Log4perl> loggers both from within
@@ -1111,7 +1142,7 @@ You can save serious time if you're logging something like
 
         # Expensive in non-debug mode!
     for (@super_long_array) {
-        $logger->debug("Element: $_\n");
+        $logger->debug("Element: $_");
     }
 
 and C<@super_long_array> is fairly big, so looping through it is pretty
@@ -1123,7 +1154,7 @@ In this case, use this instead:
         # Cheap in non-debug mode!
     if($logger->is_debug()) {
         for (@super_long_array) {
-            $logger->debug("Element: $_\n");
+            $logger->debug("Element: $_");
         }
     }
 
