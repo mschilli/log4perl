@@ -68,10 +68,6 @@ sub new {
     my $options       = ref $_[0] eq "HASH" ? shift : {};
     my $layout_string = @_ ? shift : '%m%n';
     
-    if(exists $options->{ConversionPattern}->{value}) {
-        $layout_string = $options->{ConversionPattern}->{value};
-    }
-
     my $self = {
         time_function         => \&current_time,
         format                => undef,
@@ -80,6 +76,17 @@ sub new {
         CSPECS                => $CSPECS,
         dontCollapseArrayRefs => $options->{dontCollapseArrayRefs}{value},
     };
+
+    if(exists $options->{ConversionPattern}->{value}) {
+        $layout_string = $options->{ConversionPattern}->{value};
+    }
+
+    if(exists $options->{message_chomp_before_newline}) {
+        $self->{message_chomp_before_newline} = 
+          $options->{message_chomp_before_newline}->{value};
+    } else {
+        $self->{message_chomp_before_newline} = 1;
+    }
 
     if(exists $options->{time_function}) {
         $self->{time_function} = $options->{time_function};
@@ -113,7 +120,7 @@ sub define {
         # If the message contains a %m followed by a newline,
         # make a note of that so that we can cut a superfluous 
         # \n off the message later on
-    if($format =~ /%m%n/) {
+    if($self->{message_chomp_before_newline} and $format =~ /%m%n/) {
         $self->{message_chompable} = 1;
     } else {
         $self->{message_chompable} = 0;
@@ -491,10 +498,13 @@ and L<Log::Log4perl/"Mapped Diagnostic Context (MDC)">.
 The granularity of time values is milliseconds if Time::HiRes is available.
 If not, only full seconds are used.
 
-Every once in a while, someone uses the "%m%n" pattern and additionally
-provides an extra newline in the log message (e.g. C<-E<gt>log("message\n").
-To avoid printing an extra newline in this case, the PatternLayout will
-chomp the message in this case, printing only one newline.
+Every once in a while, someone uses the "%m%n" pattern and
+additionally provides an extra newline in the log message (e.g.
+C<-E<gt>log("message\n")>. To avoid printing an extra newline in
+this case, the PatternLayout will chomp the message, printing only
+one newline. This option can be controlled by PatternLayout's
+C<message_chomp_before_newline> option. See L<Advanced options>
+for details.
 
 =head2 Quantify placeholders
 
@@ -678,6 +688,26 @@ Takes a reference to a function returning the time for the time/date
 fields, either in seconds
 since the epoch or as a reference to an array, carrying seconds and 
 microseconds, just like C<Time::HiRes::gettimeofday> does.
+
+=item message_chomp_before_newline
+
+If a layout contains the pattern "%m%n" and the message ends with a newline,
+PatternLayout will chomp the message, to prevent printing two newlines. 
+If this is not desired, and you want two newlines in this case, 
+the feature can be turned off by setting the
+C<message_chomp_before_newline> option to a false value:
+
+  my $layout = Log::Log4perl::Layout::PatternLayout->new(
+      { message_chomp_before_newline => 0
+      }, 
+      "%d (%F:%L)> %m%n");
+
+In a Log4perl configuration file, the feature can be turned off like this:
+
+    log4perl.appender.App.layout   = PatternLayout
+    log4perl.appender.App.layout.ConversionPattern = %d %m%n
+      # Yes, I want two newlines
+    log4perl.appender.App.layout.message_chomp_before_newline = 0
 
 =back
 
