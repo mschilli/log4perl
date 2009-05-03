@@ -672,13 +672,15 @@ C<Log::Log4perl> works with inheritance: The config file above didn't
 specify anything about C<My::MegaPackage>. 
 And yet, we've defined a logger of the category 
 C<My::MegaPackage>.
-In this case, C<Log::Log4perl> will walk up the class hierarchy
+In this case, C<Log::Log4perl> will walk up the namespace hierarchy
 (C<My> and then we're at the root) to figure out if a log level is
 defined somewhere. In the case above, the log level at the root
 (root I<always> defines a log level, but not necessarily an appender)
 defines that 
 the log level is supposed to be C<ERROR> -- meaning that I<DEBUG>
-and I<INFO> messages are suppressed.
+and I<INFO> messages are suppressed. Note that this 'inheritance' is
+unrelated to Perl's class inheritance, it is merely related to the
+logger namespace.
 
 =head2 Log Levels
 
