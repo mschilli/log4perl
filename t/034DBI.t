@@ -11,19 +11,22 @@ use strict;
 
 BEGIN {
     eval {
+        require DBI;
         require DBD::CSV;
         require SQL::Statement;
-        #die "" if $SQL::Statement::VERSION < 1.005;
+        die if $DBI::VERSION < 1.607;
+        die if $DBD::CSV::VERSION < 0.22;
+        die if $SQL::Statement::VERSION < 1.20;
     };
     if ($@) {
-        plan skip_all => "DBD::CSV or SQL::Statement 1.005 not installed, skipping tests\n";
+        plan skip_all => "DBI 1.607 or DBD::CSV 0.22 or SQL::Statement 1.20 not installed, skipping tests\n";
     }else{
         plan tests => 32;
     }
 }
 
 require DBI;
-my $dbh = DBI->connect('DBI:CSV:f_dir=t/tmp','testuser','testpw',{ PrintError => 1 });
+my $dbh = DBI->connect('DBI:CSV:f_dir=t/tmp','testuser','testpw',{ RaiseError => 1, PrintError => 1 });
 
 $dbh->do('DROP TABLE log4perltest') if -e 't/tmp/log4perltest';
 
