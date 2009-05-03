@@ -2,7 +2,7 @@
  Revision history for Log::Log4perl
 ##################################################
 
-1.22 (not yet released)
+1.22 (2009/05/02)
     *   (ms) is_xxx() returned true prior to L4p initialization. Fixed it
              and adapted test suite.
     *   (ms) Added test cases on syswrite in recreate mode
