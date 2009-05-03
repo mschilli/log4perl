@@ -17,32 +17,32 @@ SYNOPSIS
             # ... or standard mode for more features:
 
         Log::Log4perl::init('/etc/log4perl.conf');
-        
-    --or--
-        
-        # Check config every 10 secs
+    
+        --or--
+    
+            # Check config every 10 secs
         Log::Log4perl::init_and_watch('/etc/log4perl.conf',10);
 
         --then--
-        
-    $logger = Log::Log4perl->get_logger('house.bedrm.desk.topdrwr');
-        
-    $logger->debug('this is a debug message');
+    
+        $logger = Log::Log4perl->get_logger('house.bedrm.desk.topdrwr');
+    
+        $logger->debug('this is a debug message');
         $logger->info('this is an info message');
         $logger->warn('etc');
         $logger->error('..');
         $logger->fatal('..');
-        
-    #####/etc/log4perl.conf###############################
+    
+        #####/etc/log4perl.conf###############################
         log4perl.logger.house              = WARN,  FileAppndr1
         log4perl.logger.house.bedroom.desk = DEBUG, FileAppndr1
-        
-    log4perl.appender.FileAppndr1      = Log::Log4perl::Appender::File
+    
+        log4perl.appender.FileAppndr1      = Log::Log4perl::Appender::File
         log4perl.appender.FileAppndr1.filename = desk.log 
         log4perl.appender.FileAppndr1.layout   = \
                                 Log::Log4perl::Layout::SimpleLayout
         ######################################################
-
+       
 ABSTRACT
         Log::Log4perl provides a powerful logging API for your application
 
@@ -103,12 +103,12 @@ How to use it
         # file appender in Perl.
         ############################################################
         log4perl.rootLogger=ERROR, LOGFILE
-        
-    log4perl.appender.LOGFILE=Log::Log4perl::Appender::File
+    
+        log4perl.appender.LOGFILE=Log::Log4perl::Appender::File
         log4perl.appender.LOGFILE.filename=/var/log/myerrs.log
         log4perl.appender.LOGFILE.mode=append
-        
-    log4perl.appender.LOGFILE.layout=PatternLayout
+    
+        log4perl.appender.LOGFILE.layout=PatternLayout
         log4perl.appender.LOGFILE.layout.ConversionPattern=[%r] %F %L %c - %m%n
 
     These lines define your standard logger that's appending severe errors
@@ -169,11 +169,13 @@ How to use it
     ones to suppress? "Log::Log4perl" works with inheritance: The config
     file above didn't specify anything about "My::MegaPackage". And yet,
     we've defined a logger of the category "My::MegaPackage". In this case,
-    "Log::Log4perl" will walk up the class hierarchy ("My" and then we're at
-    the root) to figure out if a log level is defined somewhere. In the case
-    above, the log level at the root (root *always* defines a log level, but
-    not necessarily an appender) defines that the log level is supposed to
-    be "ERROR" -- meaning that *DEBUG* and *INFO* messages are suppressed.
+    "Log::Log4perl" will walk up the namespace hierarchy ("My" and then
+    we're at the root) to figure out if a log level is defined somewhere. In
+    the case above, the log level at the root (root *always* defines a log
+    level, but not necessarily an appender) defines that the log level is
+    supposed to be "ERROR" -- meaning that *DEBUG* and *INFO* messages are
+    suppressed. Note that this 'inheritance' is unrelated to Perl's class
+    inheritance, it is merely related to the logger namespace.
 
   Log Levels
     There are six predefined log levels: "FATAL", "ERROR", "WARN", "INFO",
@@ -411,6 +413,37 @@ How to use it
     specific category logger to be logged in the defined format and
     locations.
 
+  Logging newlines
+    There's some controversy between different logging systems as to when
+    and where newlines are supposed to be added to logged messages.
+
+    The Log4perl way is that a logging statement *should not* contain a
+    newline:
+
+        $logger->info("Some message");
+        $logger->info("Another message");
+
+    If this is supposed to end up in a log file like
+
+        Some message
+        Another message
+
+    then an appropriate appender layout like "%m%n" will take care of adding
+    a newline at the end of each message to make sure every message is
+    printed on its own line.
+
+    Other logging systems, Log::Dispatch in particular, recommend adding the
+    newline to the log statement. This doesn't work well, however, if you,
+    say, replace your file appender by a database appender, and all of a
+    sudden those newlines scattered around the code don't make sense
+    anymore.
+
+    Assigning matching layouts to different appenders and leaving newlines
+    out of the code solves this problem. If you inherited code that has
+    logging statements with newlines and want to make it work with Log4perl,
+    read the Log::Log4perl::Layout::PatternLayout documentation on how to
+    accomplish that.
+
   Configuration files
     As shown above, you can define "Log::Log4perl" loggers both from within
     your Perl code or from configuration files. The latter have the
@@ -587,7 +620,7 @@ How to use it
 
             # Expensive in non-debug mode!
         for (@super_long_array) {
-            $logger->debug("Element: $_\n");
+            $logger->debug("Element: $_");
         }
 
     and @super_long_array is fairly big, so looping through it is pretty
@@ -598,7 +631,7 @@ How to use it
             # Cheap in non-debug mode!
         if($logger->is_debug()) {
             for (@super_long_array) {
-                $logger->debug("Element: $_\n");
+                $logger->debug("Element: $_");
             }
         }
 
@@ -643,8 +676,8 @@ Categories
             $logger->debug("Creating a new Twix bar");
             bless {}, shift;
         }
-     
-    # ...
+ 
+        # ...
 
         package Candy::Snickers;
 
@@ -1026,8 +1059,8 @@ Cool Tricks
 
         layout_class   = Log::Log4perl::Layout::PatternLayout
         layout_pattern = %d %F{1} %L> %m %n
-        
-    log4perl.category.Bar.Twix = WARN, Logfile, Screen
+    
+        log4perl.category.Bar.Twix = WARN, Logfile, Screen
 
         log4perl.appender.Logfile  = Log::Log4perl::Appender::File
         log4perl.appender.Logfile.filename = test.log
@@ -1105,7 +1138,7 @@ Cool Tricks
     specified as described in Opcode:
 
      Log::Log4perl::Config->allowed_code_ops(':subprocess');
-
+ 
     This example would allow Perl operations like backticks, system, fork,
     and waitpid to be executed in the compartment. Of course, you probably
     don't want to use this mask -- it would allow exactly what the Safe
@@ -1128,7 +1161,7 @@ Cool Tricks
 
      safe        = [ ':browse' ]
      restrictive = [ ':default' ]
-
+ 
     For convenience, if Log::Log4perl::Config->allow_code() is called with a
     value which is a key of the map previously defined with
     Log::Log4perl::Config->allowed_code_ops_convenience_map(), then the
@@ -1136,16 +1169,16 @@ Cool Tricks
     this is confusing, consider the following:
 
      use Log::Log4perl;
-     
- my $config = <<'END';
+ 
+     my $config = <<'END';
       log4perl.logger = INFO, Main
       log4perl.appender.Main = Log::Log4perl::Appender::File
       log4perl.appender.Main.filename = \
           sub { "example" . getpwuid($<) . ".log" }
       log4perl.appender.Main.layout = Log::Log4perl::Layout::SimpleLayout
      END
-     
- $Log::Log4perl::Config->allow_code('restrictive');
+ 
+     $Log::Log4perl::Config->allow_code('restrictive');
      Log::Log4perl->init( \$config );       # will fail
      $Log::Log4perl::Config->allow_code('safe');
      Log::Log4perl->init( \$config );       # will succeed
@@ -1250,8 +1283,8 @@ Cool Tricks
     as such:
 
         my $v = 0; # default level of verbosity.
-        
-    GetOptions("v+" => \$v, ...);
+    
+        GetOptions("v+" => \$v, ...);
 
         $logger->more_logging($v);  # inc logging level once for each -v in ARGV
 
@@ -1538,7 +1571,7 @@ Cool Tricks
 
     will log something like
 
-       adsl-63.dsl.snf.pacbell.net: Content delivered
+       adsl-63.dsl.snf.pacbell.net: Content delivered 
 
     later on in the program.
 
@@ -1627,11 +1660,11 @@ Cool Tricks
     "Log::Dispatch::FileRotate" don't support all of Log::Log4perl's
     appender control mechanisms (like appender thresholds).
 
-    The previously mentioned method "appender_by_name()" returns a
-    referrence to the *real* appender object. If you want access to the
-    wrapper class (e.g. if you want to modify the appender's threshold), use
-    the hash $Log::Log4perl::Logger::APPENDER_BY_NAME{...} instead, which
-    holds references to all appender wrapper objects.
+    The previously mentioned method "appender_by_name()" returns a reference
+    to the *real* appender object. If you want access to the wrapper class
+    (e.g. if you want to modify the appender's threshold), use the hash
+    $Log::Log4perl::Logger::APPENDER_BY_NAME{...} instead, which holds
+    references to all appender wrapper objects.
 
   Modify appender thresholds
     To conveniently adjust appender thresholds (e.g. because a script uses
@@ -1858,8 +1891,8 @@ Dirty Tricks
 
             use Log::Log4perl qw(:easy) ;
             Log::Log4perl->easy_init($DEBUG);
-            
-    shaky_function() or LOGDIE "It failed!";
+    
+            shaky_function() or LOGDIE "It failed!";
 
         there's a cosmetic problem: The message gets printed twice:
 
@@ -1880,8 +1913,8 @@ EXAMPLE
     A simple example to cut-and-paste and get started:
 
         use Log::Log4perl qw(get_logger);
-        
-    my $conf = q(
+    
+        my $conf = q(
         log4perl.category.Bar.Twix         = WARN, Logfile
         log4perl.appender.Logfile          = Log::Log4perl::Appender::File
         log4perl.appender.Logfile.filename = test.log
@@ -1889,15 +1922,15 @@ EXAMPLE
             Log::Log4perl::Layout::PatternLayout
         log4perl.appender.Logfile.layout.ConversionPattern = %d %F{1} %L> %m %n
         );
-        
-    Log::Log4perl::init(\$conf);
-        
-    my $logger = get_logger("Bar::Twix");
+    
+        Log::Log4perl::init(\$conf);
+    
+        my $logger = get_logger("Bar::Twix");
         $logger->error("Blah");
 
     This will log something like
 
-        2002/09/19 23:48:15 t1 25> Blah
+        2002/09/19 23:48:15 t1 25> Blah 
 
     to the log file "test.log", which Log4perl will append to or create it
     if it doesn't exist already.
@@ -1956,7 +1989,7 @@ REFERENCES
     [3] Vipan Singla, "Don't Use System.out.println! Use Log4j.",
         http://www.vipan.com/htdocs/log4jhelp.html
 
-    [4] The Log::Log4perl project home page: http://log4perl.sourceforge.net
+    [4] The Log::Log4perl project home page: http://log4perl.com
 
 SEE ALSO
     Log::Log4perl::Config, Log::Log4perl::Appender,
@@ -1965,8 +1998,11 @@ SEE ALSO
     Log::Log4perl::JavaMap Log::Log4perl::NDC,
 
 AUTHORS
-    Please send bug reports or requests for enhancements to the authors via
-    our
+    Please contribute patches to the project page on Github:
+
+        http://github.com/mschilli/log4perl
+
+    Bug reports or requests for enhancements to the authors via our
 
         MAILING LIST (questions, bug reports, suggestions/patches): 
         log4perl-devel@lists.sourceforge.net
@@ -1976,15 +2012,15 @@ AUTHORS
         Kevin Goess <cpan@goess.org>
 
         Contributors (in alphabetical order):
-        Ateeq Altaf, Cory Bennett, Jeremy Bopp, Hutton Davidson, Chris R.
-        Donnelly, Matisse Enzer, Hugh Esco, Anthony Foiani, James
-        FitzGibbon, Carl Franks, Dennis Gregorovic, Andy Grundman, Paul
-        Harrington, David Hull, Robert Jacobson, Jeff Macdonald, Markus
-        Peter, Brett Rann, Peter Rabbitson, Erik Selberg, Aaron Straup
-        Cope, Lars Thegler, David Viner, Mac Yang.
+        Ateeq Altaf, Cory Bennett, Jens Berthold, Jeremy Bopp, Hutton
+        Davidson, Chris R. Donnelly, Matisse Enzer, Hugh Esco, Anthony
+        Foiani, James FitzGibbon, Carl Franks, Dennis Gregorovic, Andy
+        Grundman, Paul Harrington, David Hull, Robert Jacobson, Jeff
+        Macdonald, Markus Peter, Brett Rann, Peter Rabbitson, Erik
+        Selberg, Aaron Straup Cope, Lars Thegler, David Viner, Mac Yang.
 
 COPYRIGHT AND LICENSE
-    Copyright 2002-2008 by Mike Schilli <m@perlmeister.com> and Kevin Goess
+    Copyright 2002-2009 by Mike Schilli <m@perlmeister.com> and Kevin Goess
     <cpan@goess.org>.
 
     This library is free software; you can redistribute it and/or modify it

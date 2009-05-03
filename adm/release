@@ -42,7 +42,8 @@ my $ball = ModDevUtils::tarball_name();
 
 my $target = "mschilli,log4perl\@web.sourceforge.net:htdocs";
 
-system("scp $ball $target/releases/$ball");
+# now on CPAN
+# system("scp $ball $target/releases/$ball");
 
     # Win32 package
 print "Building Win32 ppm distribution ...\n";
@@ -56,27 +57,3 @@ system("adm/sourceforge/updindex $ball");
 system("scp adm/sourceforge/www/index.html $target");
 
 __END__
-
-ppm/Log-Log4perl.ppd                    ppm/Log-Log4perl.ppd.old                
-ppm/Log-Log4perl.tar.gz                 ppm/Log-Log4perl.tar.gz.old             
-
-print "Copying $ball to log4perl.sourceforge.net ...\n";
-system("scp $ball log4perl.sourceforge.net:");
-print "Releasing it on sourceforge.net ...\n";
-
-if(defined $devprod and $devprod eq "dev") {
-    print "Running ssh log4perl.sourceforge.net bin/rel $ball $devprod\n";
-    system("ssh log4perl.sourceforge.net bin/rel $ball $devprod\n");
-    print "No Win32 package is being prepared for development releases\n";
-} else {
-    print "Running ssh log4perl.sourceforge.net bin/rel\n";
-    system("ssh log4perl.sourceforge.net bin/rel $ball\n");
-    # Win32 package
-    print "Building Win32 ppm distribution ...\n";
-    system("cd adm; ./mkppm; tar zcfv ppm.tgz ppm");
-
-    print "Copying ppm to log4perl.sourceforge.net ...\n";
-    system("scp adm/ppm.tgz log4perl.sourceforge.net:");
-    print "Releasing it on sourceforge.net ...\n";
-    system("ssh log4perl.sourceforge.net bin/relppm\n");
-}

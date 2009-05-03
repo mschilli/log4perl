@@ -1,12 +1,14 @@
 #!/usr/bin/perl
 
-my $IDX = "adm/sourceforge/www/index.html";
+my $IDX = "index.html";
 
 my ($version, $devprod) = @ARGV;
 
 $version =~ s/.*?(\d+[\.\d]+)\..*/$1/;
 
 die "usage: $0 version" unless $version =~ /^[\d.]+\w+$/;
+
+system "git checkout gh-pages" and die $!;
 
 open FILE, "<$IDX" or die "Cannot open $IDX";
 my $data = join '', <FILE>;
@@ -24,13 +26,21 @@ if(defined $devprod and $devprod =~ /(dev)|(alpha)|(beta)/) {
     $data =~ s@<!--DEV-->.*?<!--/DEV-->@<!--DEV-->\n<!--/DEV-->@s;
 }
 
+open FILE, ">$IDX" or die "Cannot open $IDX";
+print FILE $data;
+close FILE;
+
+system "git commit -a -mversion-bump" and die $!;
+system "git push origin gh-pages" and die $!;
+system "git checkout master" and die $!;
+
 ##################################################
 sub repnews {
 ##################################################
     return <<EOT
 <!--NEWS-->
 <FONT SIZE=-1><B>$date:</B></FONT><BR>
-<FONT COLOR='#8dbf85'><B>Released</B></FONT> version <A HREF=/releases/Log-Log4perl-$version.tar.gz>$version</A><BR>
+<FONT COLOR='#8dbf85'><B>Released</B></FONT> version <A HREF=http://search.cpan.org/CPAN/authors/id/M/MS/MSCHILLI/Log-Log4perl-$version.tar.gz>$version</A><BR>
 <!--/NEWS-->
 EOT
 }
@@ -41,7 +51,7 @@ sub repstable {
     return <<EOT
 <!--STABLE-->
 <FONT SIZE=-1><B>Stable Release ($date)</B></FONT>
-<B><A HREF=/releases/Log-Log4perl-$version.tar.gz>Log-Log4perl-$version.tar.gz</A></B>
+<B><A HREF=http://search.cpan.org/CPAN/authors/id/M/MS/MSCHILLI/Log-Log4perl-$version.tar.gz>Log-Log4perl-$version.tar.gz</A></B>
 <!--/STABLE-->
 EOT
 }
@@ -52,14 +62,10 @@ sub repdev {
     return <<EOT
 <!--DEV-->
 <FONT SIZE=-1><B>Development Release ($date)</B></FONT>
-<B><A HREF=/releases/Log-Log4perl-$version.tar.gz>Log-Log4perl-$version.tar.gz</A></B>
+<B><A HREF=http://search.cpan.org/CPAN/authors/id/M/MS/MSCHILLI/Log-Log4perl-$version.tar.gz>Log-Log4perl-$version.tar.gz</A></B>
 <!--/DEV-->
 EOT
 }
-
-open FILE, ">$IDX" or die "Cannot open $IDX";
-print FILE $data;
-close FILE;
 
 __END__
 cp $1 /home/groups/l/lo/log4perl/htdocs/releases
