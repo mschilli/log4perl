@@ -135,7 +135,18 @@ sub query_execute {
     for my $attempt (0..$self->{reconnect_attempts}) {
         #warn "Exe: @qmarks"; # TODO
         if(! $sth->execute(@qmarks)) {
-                # Exe failed
+
+                # Exe failed -- was it because we lost the DB
+                # connection?
+                if($self->{dbh}->ping()) {
+                    # No, the connection is ok, we failed because there's
+                    # something wrong with the execute(): Bad SQL or 
+                    # missing parameters or some such). Abort.
+                    croak "Log4perl: DBI appender error: '" .
+                          $self->{dbh}->errstr() . 
+                          "'";
+                }
+
                 # warn "Log4perl: DBI->execute failed $DBI::errstr, \n".
                 #                  "on $self->{SQL}\n@qmarks";
                 #warn "Exe: failed: $DBI::errstr"; # TODO

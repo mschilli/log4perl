@@ -7,6 +7,8 @@
              out parameters in a bound execute(). This caused the test
              suite to fail (http://groups.google.com/group/perl.cpan.testers/browse_thread/thread/af1f5c875165c387). Fixed the test cases to pass the correct 
              number of parameters every time.
+    *   (ms) Better error message in the DBI appender on bad SQL, missing
+             bind parameters, or other execute() errors.
 
 1.22 (2009/05/02)
     *   (ms) is_xxx() returned true prior to L4p initialization. Fixed it
