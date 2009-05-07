@@ -25,6 +25,13 @@ BEGIN {
     }
 }
 
+END {
+    unlink "t/tmp/log4perltest";
+    rmdir "t/tmp";
+}
+
+mkdir "t/tmp" unless -d "t/tmp";
+
 require DBI;
 my $dbh = DBI->connect('DBI:CSV:f_dir=t/tmp','testuser','testpw',{ RaiseError => 1, PrintError => 1 });
 

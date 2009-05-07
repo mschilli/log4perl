@@ -9,6 +9,7 @@
              number of parameters every time.
     *   (ms) Better error message in the DBI appender on bad SQL, missing
              bind parameters, or other execute() errors.
+    *   (ms) Made DBI test suite more robust against preexisting conditions
 
 1.22 (2009/05/02)
     *   (ms) is_xxx() returned true prior to L4p initialization. Fixed it

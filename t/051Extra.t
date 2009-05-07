@@ -17,6 +17,13 @@ BEGIN {
     }
 }
 
+END {
+    unlink "t/tmp/easy";
+    rmdir "t/tmp";
+}
+
+mkdir "t/tmp" unless -d "t/tmp";
+
 use Log::Log4perl::Appender::TestBuffer;
 
 is($Log::Log4perl::LOGDIE_MESSAGE_ON_STDERR, 0, "internal variable set");
@@ -50,6 +57,8 @@ END   { unlink $TMP_FILE;
 
 my $buf = Log::Log4perl::Appender::TestBuffer->by_name("Screen");
 
+my $line_ref = 63;
+
 $buf->buffer("");
 LOGCARP("logcarp");
 
@@ -57,11 +66,12 @@ is(readstderr(), "", "No output to stderr");
 SKIP: { use Carp;
     skip "Detected buggy Carp.pm (upgrade to perl-5.8.*)", 3 unless 
         defined $Carp::VERSION;
-    like($buf->buffer(), qr/logcarp.*54/, "Appender output intact");
+    like($buf->buffer(), qr/logcarp.*$line_ref/, "Appender output intact");
+    $line_ref += 9;
     $buf->buffer("");
     LOGCARP("logcarp");
     is(readstderr(), "", "No output to stderr");
-    like($buf->buffer(), qr/logcarp.*62/, "Appender output intact");
+    like($buf->buffer(), qr/logcarp.*$line_ref/, "Appender output intact");
 }
 #########################################################################
 # Turn default behaviour back on
@@ -78,13 +88,15 @@ package main;
 
 Foo::foo();
 
-like(readstderr(), qr/logcarp.*79/, "Output to stderr");
-like($buf->buffer(), qr/logcarp.*79/, "Appender output intact");
+$line_ref += 17;
+like(readstderr(), qr/logcarp.*$line_ref/, "Output to stderr");
+like($buf->buffer(), qr/logcarp.*$line_ref/, "Appender output intact");
 
 $buf->buffer("");
 eval {
     LOGDIE("logdie");
 };
-like($@, qr/logdie.*86/, "Output to stderr");
+$line_ref += 8;
+like($@, qr/logdie.*$line_ref/, "Output to stderr");
 like($buf->buffer(), qr/logdie/, "Appender output intact");
 
