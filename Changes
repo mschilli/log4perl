@@ -12,6 +12,8 @@
     *   (ms) Made DBI test suite more robust against preexisting conditions
     *   (ms) Added force_next_check() for init_and_watch(), cleaned up
              Config::Watcher code.
+    *   (ms) Fixed test suite to run on Strawberry Perl on Win32 (reported
+             by kmx on https://rt.cpan.org/Ticket/Display.html?id=45983)
 
 1.22 (2009/05/02)
     *   (ms) is_xxx() returned true prior to L4p initialization. Fixed it
