@@ -1410,6 +1410,7 @@ Cool Tricks
 
         Log::Log4perl->easy_init( { level    => $DEBUG,
                                     file     => ">test.log",
+                                    utf8     => 1,
                                     category => "Bar::Twix",
                                     layout   => '%F{1}-%L-%M: %m%n' } );
 
@@ -1418,13 +1419,9 @@ Cool Tricks
     "Log::Log4perl::Appender::File" appenders to be created behind the
     scenes. Also the keywords "STDOUT" and "STDERR" (no ">" or ">>") are
     recognized, which will utilize and configure
-    "Log::Log4perl::Appender::Screen" appropriately.
-
-    If a file appender receives Unicode strings, use
-
-        file => ":utf8> test.log"
-
-    to establish a utf8 line discpline on the file, otherwise you'll get a
+    "Log::Log4perl::Appender::Screen" appropriately. The "utf8" flag, if set
+    to a true value, runs a "binmode" command on the file handle to
+    establish a utf8 line discpline on the file, otherwise you'll get a
     'wide character in print' warning message and probably not what you'd
     expect as output.
 
