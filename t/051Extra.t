@@ -47,7 +47,7 @@ $TMP_FILE = "tmp/easy" if ! -d "t";
 
 open STDERR, ">$TMP_FILE";
 select STDERR; $| = 1; #needed on win32
-open IN, "<$TMP_FILE" or die "Cannot open $TMP_FILE";
+open IN, "<$TMP_FILE" or die "Cannot open $TMP_FILE"; binmode IN, ":utf8";
 sub readstderr { return join("", <IN>); }
 
 END   { unlink $TMP_FILE;
@@ -99,4 +99,3 @@ eval {
 $line_ref += 8;
 like($@, qr/logdie.*$line_ref/, "Output to stderr");
 like($buf->buffer(), qr/logdie/, "Appender output intact");
-

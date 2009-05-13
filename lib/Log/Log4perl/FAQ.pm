@@ -1998,7 +1998,12 @@ set to utf-8 mode:
     file  => ":utf8> test.log" 
   } );
 
-If the complaining appender is a screen appender, C<binmode> does the trick:
+If the complaining appender is a screen appender, set its C<utf8> option:
+
+      log4perl.appender.Screen.stderr = 1
+      log4perl.appender.Screen.utf8   = 1
+
+Alternatively, C<binmode> does the trick:
 
       # Either STDOUT ...
     binmode(STDOUT, ":utf8);

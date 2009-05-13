@@ -14,6 +14,10 @@
              Config::Watcher code.
     *   (ms) Fixed test suite to run on Strawberry Perl on Win32 (reported
              by kmx on https://rt.cpan.org/Ticket/Display.html?id=45983)
+    *   (ms) Added 'utf8' option to screen appender and easy mode, some of
+             it suggested in 
+             http://rt.cpan.org/Public/Bug/Display.html?id=36673 by
+             Shantanu Bhadoria.
 
 1.22 (2009/05/02)
     *   (ms) is_xxx() returned true prior to L4p initialization. Fixed it
