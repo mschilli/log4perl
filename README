@@ -1,5 +1,5 @@
 ######################################################################
-    Log::Log4perl 1.22
+    Log::Log4perl 1.23
 ######################################################################
 
 NAME
@@ -1022,6 +1022,11 @@ Cool Tricks
     suppressed statements. For details, check out "Performance". For more
     info on the signal handler, look for "SIGNAL MODE" in
     Log::Log4perl::Config::Watch.
+
+    If you have a somewhat long delay set between physical config file
+    checks or don't want to use the signal associated with the config file
+    watcher, you can trigger a configuration reload at the next possible
+    time by calling "Log::Log4perl::Config->watcher->force_next_check()".
 
     One thing to watch out for: If the configuration file contains a syntax
     or other fatal error, a running application will stop with "die" if this

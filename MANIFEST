@@ -99,6 +99,7 @@ t/025CustLevels.t
 t/026FileApp.t
 t/027Watch2.t
 t/027Watch3.t
+t/027Watch4.t
 t/028Additivity.t
 t/029SysWide.t
 t/030LDLevel.t

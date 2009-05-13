@@ -2,7 +2,7 @@
  Revision history for Log::Log4perl
 ##################################################
 
-1.23 (not yet released)
+1.23 (2009/05/12)
     *   (ms) DBI-1.608 removed a DBD::File 'feature' that allowed leaving
              out parameters in a bound execute(). This caused the test
              suite to fail (http://groups.google.com/group/perl.cpan.testers/browse_thread/thread/af1f5c875165c387). Fixed the test cases to pass the correct 
