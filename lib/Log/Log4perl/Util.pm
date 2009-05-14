@@ -46,7 +46,7 @@ sub module_available {  # Check if a module is available
 sub tmpfile_name {  # File::Temp without the bells and whistles
 ##################################################
 
-    my $name = File::Spec->catdir(File::Spec->tmpdir(), 
+    my $name = File::Spec->catfile(File::Spec->tmpdir(), 
                               'l4p-tmpfile-' . 
                               "$$-" .
                               int(rand(9999999)));
