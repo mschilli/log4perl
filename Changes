@@ -2,6 +2,8 @@
  Revision history for Log::Log4perl
 ##################################################
 
+    TODO: Benchmark on eval_free branch
+
 1.24 (not yet released)
     *   (ms) Fixed bug with Log::Log4perl::Util::tmpfile_name which 
              surfaced on VMS, reported by Ben Humphreys.
