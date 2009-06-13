@@ -85,7 +85,8 @@ sub cleanup {
 ##################################################
 sub DESTROY {
 ##################################################
-    warn "Destroying logger $_[0]" if $Log::Log4perl::CHATTY_DESTROY_METHODS;
+    CORE::warn 
+        "Destroying logger $_[0]" if $Log::Log4perl::CHATTY_DESTROY_METHODS;
 
     for(keys %{$_[0]}) {
         delete $_[0]->{$_};
@@ -254,25 +255,16 @@ sub generate_coderef {
     print "generate_coderef: ", scalar @$appenders, 
           " appenders\n" if _INTERNAL_DEBUG;
 
-    my $coderef = '';
-    my $watch_delay_code = '';
+    my $watch_check_code = generate_watch_code("logger", 1);
 
-    # Doing this with eval strings to sacrifice init/reload time
-    # for runtime efficiency, so the conditional won't be included
-    # if it's not needed
+    return sub {
+      my $logger = shift;
+      my $level  = pop;
 
-    if (defined $Log::Log4perl::Config::WATCHER) {
-        $watch_delay_code = generate_watch_code();
-    }
-
-    my $code = <<EOL;
-    sub {
-      my (\$logger)  = shift;
-      my (\$level)   = pop;
-      my \$message;
-      my \$appenders_fired = 0;
+      my $message;
+      my $appenders_fired = 0;
       
-      # Evaluate all parameters that need to evaluated. Two kinds:
+      # Evaluate all parameters that need to be evaluated. Two kinds:
       #
       # (1) It's a hash like { filter => "filtername",
       #                        value  => "value" }
@@ -282,75 +274,70 @@ sub generate_coderef {
       #     => coderef()
       #
 
-      \$message   = [map { ref \$_ eq "HASH" && 
-                           exists \$_->{filter} && 
-                           ref \$_->{filter} eq 'CODE' ?
-                               \$_->{filter}->(\$_->{value}) :
-                           ref \$_ eq "CODE" ?
-                               \$_->() : \$_ 
-                          } \@_];                  
-      
-      print("coderef: \$logger->{category}\n") if _INTERNAL_DEBUG;
+      $message   = [map { ref $_ eq "HASH" && 
+                           exists $_->{filter} && 
+                           ref $_->{filter} eq 'CODE' ?
+                               $_->{filter}->($_->{value}) :
+                           ref $_ eq "CODE" ?
+                               $_->() : $_ 
+                          } @_];                  
 
-      $watch_delay_code;  #note interpolation here
-      
-      foreach my \$a (\@\$appenders) {   #note the closure here
-          my (\$appender_name, \$appender) = \@\$a;
+      print("coderef: $logger->{category}\n") if _INTERNAL_DEBUG;
 
-          print("  Sending message '<\$message->[0]>' (\$level) " .
-                "to \$appender_name\n") if _INTERNAL_DEBUG;
+      if(defined $Log::Log4perl::Config::WATCHER) {
+          return unless $watch_check_code->($logger, @_, $level);
+      }
+
+      foreach my $a (@$appenders) {   #note the closure here
+          my ($appender_name, $appender) = @$a;
+
+          print("  Sending message '<$message->[0]>' ($level) " .
+                "to $appender_name\n") if _INTERNAL_DEBUG;
                 
-          \$appender->log(
+          $appender->log(
               #these get passed through to Log::Dispatch
-              { name    => \$appender_name,
-                level   => \$Log::Log4perl::Level::L4P_TO_LD{
-                               \$level},   
-                message => \$message,
+              { name    => $appender_name,
+                level   => $Log::Log4perl::Level::L4P_TO_LD{
+                               $level},   
+                message => $message,
               },
               #these we need
-              \$logger->{category},
-              \$level,
-          ) and \$appenders_fired++;
+              $logger->{category},
+              $level,
+          ) and $appenders_fired++;
               # Only counting it if it returns a true value. Otherwise
               # the appender threshold might have suppressed it after all.
     
       } #end foreach appenders
     
-      return \$appenders_fired;
+      return $appenders_fired;
 
     }; #end coderef
-
-EOL
-
-    $coderef = eval $code or die "$@";
-
-    return $coderef;
 }
 
 ##################################################
 sub generate_noop_coderef {
 ##################################################
-    my $coderef = '';
-    my $watch_delay_code = '';
+    my $watch_delay_code;
 
-    if (defined $Log::Log4perl::Config::WATCHER) {
-        $watch_delay_code = generate_watch_code();
-        $watch_delay_code = <<EOL;
-        my \$logger;
-        my \$level;
-        $watch_delay_code
-EOL
+    # This might seem crazy at first, but even in a Log4perl noop, we
+    # need to check if the configuration changed in a init_and_watch 
+    # situation. Why? Say, an application is running in a loop that
+    # constantly tries to issue debug() messages, but they're suppressed by
+    # the current Log4perl configuration. If debug() (which is a noop
+    # here) wasn't watching the configuration for changes, it would never
+    # catch the case where someone bumps up the log level and expects
+    # the application to pick it up and start logging debug() statements.
+
+    my $watch_check_code = generate_watch_code("logger", 1);
+
+    my $coderef;
+
+    if(defined $Log::Log4perl::Config::WATCHER) {
+        $coderef = $watch_check_code;
+    } else {
+        $coderef = sub { undef };
     }
-
-    my $code = <<EOL;
-    \$coderef = sub {
-        print("noop: \n") if _INTERNAL_DEBUG;
-        $watch_delay_code
-        return undef;
-     };
-EOL
-
-    eval $code or die "$@";
 
     return $coderef;
 }
@@ -360,86 +347,88 @@ sub generate_is_xxx_coderef {
 ##################################################
     my($return_token) = @_;
 
-    my $coderef    = sub { $return_token };
-
-    if (defined $Log::Log4perl::Config::WATCHER) {
-
-        my $cond = generate_watch_conditional();
-
-        my $watch_code = <<EOL;
-        my(\$logger, \$subname) = \@_;
-        if($cond) {
-            Log::Log4perl->init_and_watch();
-            # Forward call to new configuration
-            return \$logger->\$subname();
-        }
-EOL
-
-        my $code = <<EOL;
-        \$coderef = sub { $watch_code return $return_token; };
-EOL
-
-        eval $code or die "$@";
-    }
-
-    return $coderef;
+    return generate_watch_code("checker", $return_token);
 }
 
 ##################################################
 sub generate_watch_code {
 ##################################################
+    my($type, $return_token) = @_;
+
     print "generate_watch_code:\n" if _INTERNAL_DEBUG;
+
+      # No watcher configured, return a no-op as watch code.
+    if(! defined $Log::Log4perl::Config::WATCHER) {
+        return sub { $return_token };
+    }
 
     my $cond = generate_watch_conditional();
 
-    return <<EOL;
+    return sub {
         print "exe_watch_code:\n" if _INTERNAL_DEBUG;
 
        if(_INTERNAL_DEBUG) {
            print "Next check: ",
-             "\$Log::Log4perl::Config::Watch::NEXT_CHECK_TIME ",
+             "$Log::Log4perl::Config::Watch::NEXT_CHECK_TIME ",
              " Now: ", time(), " Mod: ",
-             (stat(\$Log::Log4perl::Config::WATCHER->file()))[9],
+             (stat($Log::Log4perl::Config::WATCHER->file()))[9],
              "\n";
        }
 
-        # more closures here
-        if($cond) {
-            if(!defined \$logger) {
-                \$logger  = shift;
-                \$level   = pop;
-            }
-           
-            my \$init_permitted = 1;
+       if( $cond->() ) {
+           my $init_permitted = 1;
 
-            if(exists \$Log::Log4perl::Config::OPTS->{ preinit_callback } ) {
-                print "Calling preinit_callback\n" if _INTERNAL_DEBUG;
-                \$init_permitted = 
-                    \$Log::Log4perl::Config::OPTS->{ preinit_callback }->( 
-                        Log::Log4perl::Config->watcher()->file() );
-                print "Callback returned \$init_permitted\n" if _INTERNAL_DEBUG;
-            }
+           if(exists $Log::Log4perl::Config::OPTS->{ preinit_callback } ) {
+               print "Calling preinit_callback\n" if _INTERNAL_DEBUG;
+               $init_permitted = 
+               $Log::Log4perl::Config::OPTS->{ preinit_callback }->( 
+                   Log::Log4perl::Config->watcher()->file() );
+               print "Callback returned $init_permitted\n" if _INTERNAL_DEBUG;
+           }
 
-            if( \$init_permitted ) {
-                Log::Log4perl->init_and_watch();
-            }
-                       
-            my \$methodname = lc(\$level);
+           if( $init_permitted ) {
+               Log::Log4perl->init_and_watch();
+           } else {
+               # It was time to reinit, but init wasn't permitted.
+               # Return true, so that the logger continues as if
+               # it wasn't time to reinit.
+               return 1;
+           }
 
-                # Bump up the caller level by two, since
-                # we've artifically introduced additional levels.
-            local(\$Log::Log4perl::caller_depth);
-            \$Log::Log4perl::caller_depth += 2;
+           my $logger = shift;
+           my $level  = pop;
 
-            \$logger->\$methodname(\@_); # send the message
-                                         # to the new configuration
-            return;        #and return, we're done with this incarnation
-        } else {
-            if(_INTERNAL_DEBUG) {
-                print "Conditional returned false\n";
-            }
-        }
-EOL
+           # Forward call to new configuration
+           if($type eq "checker") {
+               return $logger->$level();
+
+           } elsif( $type eq "logger") {
+               my $methodname = lc($level);
+
+               # Bump up the caller level by three, since
+               # we've artifically introduced additional levels.
+               local($Log::Log4perl::caller_depth);
+               $Log::Log4perl::caller_depth += 3;
+
+               # Get a new logger for the same category (the old
+               # logger might be obsolete because of the re-init)
+               $logger = Log::Log4perl::get_logger( $logger->{category} );
+
+               $logger->$methodname(@_); # send the message
+               # to the new configuration
+               return undef;     # Return false, so the logger finishes
+               # prematurely and doesn't log the same 
+               # message again.
+           } else {
+               die "internal error: unknown type";
+           }
+       } else {
+           if(_INTERNAL_DEBUG) {
+               print "Conditional returned false\n";
+           }
+           return $return_token;
+       }
+   };
 }
 
 ##################################################
@@ -449,12 +438,16 @@ sub generate_watch_conditional {
     if(defined $Log::Log4perl::Config::Watch::SIGNAL_CAUGHT) {
         # In this mode, we just check for the variable indicating
         # that the signal has been caught
-        return q{$Log::Log4perl::Config::Watch::SIGNAL_CAUGHT};
+        return sub {
+            return $Log::Log4perl::Config::Watch::SIGNAL_CAUGHT;
+        };
     }
 
-    return q{time() > $Log::Log4perl::Config::Watch::NEXT_CHECK_TIME 
-              and $Log::Log4perl::Config::WATCHER->change_detected()};
-  
+    return sub {
+        return 
+            ( time() > $Log::Log4perl::Config::Watch::NEXT_CHECK_TIME and 
+              $Log::Log4perl::Config::WATCHER->change_detected() );
+    };
 }
 
 ##################################################

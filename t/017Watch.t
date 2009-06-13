@@ -17,7 +17,7 @@ BEGIN {
     if ($] < 5.006) {
         plan skip_all => "Only with perl >= 5.006";
     } else {
-        plan tests => 29;
+        plan tests => 30;
     }
 }
 
@@ -108,12 +108,16 @@ $logger = Log::Log4perl::get_logger('animal.dog');
 $logger->debug('2nd debug message');
 is($Log::Log4perl::Config::CONFIG_FILE_READS, 
    $how_many_reads + 1,
-   "re-read if config has changed");
+   "re-read if config has changed, even if no logger has fired");
 
 $logger->info('2nd info message');
 print "sleeping for 2 secs\n";
 sleep 2;
 $logger->info('2nd info message again');
+
+is($Log::Log4perl::Config::CONFIG_FILE_READS, 
+   $how_many_reads + 1,
+   "no re-read unless config has changed");
 
 open (LOG, $testfile) or die "can't open $testfile $!";
 my @log = <LOG>;

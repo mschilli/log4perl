@@ -51,10 +51,10 @@ sub test_init {
     };
 
     if($opts->{watch}) {
-        Log::Log4perl->init( \$conf );
-    } else {
         blurt $conf, $tmp_file;
         Log::Log4perl->init_and_watch( $tmp_file );
+    } else {
+        Log::Log4perl->init( \$conf );
     }
 }
 
