@@ -2,12 +2,18 @@
  Revision history for Log::Log4perl
 ##################################################
 
-1.24 (not yet released)
+1.24 (2009/07/08)
     *   (ms) Fixed bug with Log::Log4perl::Util::tmpfile_name which 
              surfaced on VMS, reported by Ben Humphreys.
     *   (ms) Fixed system-wide threshold to no longer lower appender 
              thresholds. Bug reported by Jean-Denis Muys.
     *   (ms) Added benchmark to determine impact of eval-free handlers
+    *   (ms) Merged with eval_free branch. Now there are no more 
+             eval("") statements left in the code, making it much easier 
+             to debug. Performance on init() is about the same, performance 
+             on init_and_watch() (noops and logged statements alike) is 
+             25% slower but still in the range of 400,000/sec on my 
+             1.80Ghz CPU.
 
 1.23 (2009/05/12)
     *   (ms) DBI-1.608 removed a DBD::File 'feature' that allowed leaving
