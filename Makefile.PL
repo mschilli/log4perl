@@ -47,6 +47,7 @@ WriteMakefile(
 	# Un-comment this if you add C files to link with later:
     # 'OBJECT'		=> '$(O_FILES)', # link all the C files too
     'clean'             => {FILES => "*.tar.gz *.ppd pod2htm*"},
+    EXE_FILES           => ["eg/l4p-tmpl"],
     META_MERGE          => {
         resources       => {
             repository  => 'http://github.com/mschilli/log4perl',

@@ -5,6 +5,8 @@
 1.25 (not yet released)
     *   (ms) Appender::File is now closing (or sysclosing) the file
              on file_close() instead of just undef'ing the handle.
+    *   (ms) Added l4p-tmpl helper script to help whipping up a new
+             log4perl configuration file.
 
 1.24 (2009/07/08)
     *   (ms) Fixed bug with Log::Log4perl::Util::tmpfile_name which 
