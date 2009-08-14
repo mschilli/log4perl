@@ -2,8 +2,10 @@
 use Test::More;
 use Log::Log4perl;
 use strict;
+use warnings;
 use Data::Dumper;
 use File::Spec;
+$SIG{__WARN__} = sub { die @_; };
 
 our $no_XMLDOM;
 
@@ -257,6 +259,27 @@ ok(Compare($varsubsdata, $xmldata)) ||
           }
         };
 
+$xmlconfig = <<EOL;
+<?xml version="1.0" encoding="utf-8"?> 
+<log4perl:configuration xmlns:log4perl="http://log4perl.sourceforge.net/" threshold="debug" oneMessagePerAppender="true"> 
+<appender name="AppGeneralScreen" class="Log::Log4perl::Appender::Screen"> 
+<filter-ref id="FilterRange" /> 
+<layout class="Log::Log4perl::Layout::SimpleLayout"/> 
+</appender> 
+<filter name="FilterRange" class="Log::Log4perl::Filter::LevelRange"> 
+<param name="LevelMin" value="INFO" /> 
+<param name="LevelMax" value="FATAL" /> 
+<param name="AcceptOnMatch" value="true" /> 
+</filter> 
+<root> 
+<priority value="WARN" /> 
+<appender-ref ref="AppGeneralScreen" /> 
+</root> 
+</log4perl:configuration> 
+EOL
 
-
-
+Log::Log4perl::init( \$xmlconfig ); 
+my $logger = Log::Log4perl->get_logger(); 
+ 
+$logger->info("Info"); 
+$logger->debug("Debug"); 
