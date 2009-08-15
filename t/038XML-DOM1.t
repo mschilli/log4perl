@@ -259,18 +259,13 @@ ok(Compare($varsubsdata, $xmldata)) ||
           }
         };
 
+#<param name="Threshold" value="error"/>
 $xmlconfig = <<EOL;
 <?xml version="1.0" encoding="utf-8"?> 
 <log4perl:configuration xmlns:log4perl="http://log4perl.sourceforge.net/" threshold="debug" oneMessagePerAppender="true"> 
 <appender name="AppGeneralScreen" class="Log::Log4perl::Appender::Screen"> 
-<filter-ref id="FilterRange" /> 
 <layout class="Log::Log4perl::Layout::SimpleLayout"/> 
 </appender> 
-<filter name="FilterRange" class="Log::Log4perl::Filter::LevelRange"> 
-<param name="LevelMin" value="INFO" /> 
-<param name="LevelMax" value="FATAL" /> 
-<param name="AcceptOnMatch" value="true" /> 
-</filter> 
 <root> 
 <priority value="WARN" /> 
 <appender-ref ref="AppGeneralScreen" /> 

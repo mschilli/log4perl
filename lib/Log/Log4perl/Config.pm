@@ -449,7 +449,8 @@ sub create_appender_instance {
         $appender->filter($filter);
     }
 
-    if($system_wide_threshold and
+    if(defined $system_wide_threshold and
+       defined $threshold and
        $
         Log::Log4perl::Level::PRIORITY{$system_wide_threshold} > 
        $
