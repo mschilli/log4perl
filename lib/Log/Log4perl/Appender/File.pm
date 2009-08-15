@@ -159,11 +159,8 @@ sub file_close {
 ##################################################
     my($self) = @_;
 
-    if($self->{syswrite}) {
-        sysclose $self->{fh}, "$self->{filename}" or
-            die "Can't sysclose $self->{filename} ($!)";
-    } else {
-        close $fh or
+    if(defined $self->{fh}) {
+        close $self->{fh} or
             die "Can't close $self->{filename} ($!)";
     }
 
