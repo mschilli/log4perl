@@ -393,15 +393,17 @@ sub add_appender { # Add an appender to the system, but don't assign
 }
 
 ##################################################
+# Return number of appenders changed
 sub appender_thresholds_adjust {  # Readjust appender thresholds
 ##################################################
         # If someone calls L4p-> and not L4p::
     shift if $_[0] eq __PACKAGE__;
     my($delta, $appenders) = @_;
+	my $retval = 0;
 
     if($delta == 0) {
           # Nothing to do, no delta given.
-        return 1;
+        return;
     }
 
     if(defined $appenders) {
@@ -431,8 +433,9 @@ sub appender_thresholds_adjust {  # Readjust appender thresholds
                              $old_thres, -$delta);
         }
 
-        $app->threshold($new_thres);
+        ++$retval if ($app->threshold($new_thres) == $new_thres);
     }
+	return $retval;
 }
 
 ##################################################

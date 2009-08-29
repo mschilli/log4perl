@@ -11,9 +11,13 @@ use Test::More;
 use Log::Log4perl qw(get_logger);
 use Log::Log4perl::Level;
 
-BEGIN { plan tests => 20 }
+BEGIN { plan tests => 24 }
 
 ok(1); # If we made it this far, we're ok.
+
+cmp_ok(Log::Log4perl->appender_thresholds_adjust(1), q{==}, 0,
+    q{Expect 0 appenders to be affected before first init since there are none}
+);
 
 my $log0 =  Log::Log4perl->get_logger("");
 my $log1 = Log::Log4perl->get_logger("abc.def");
@@ -186,7 +190,8 @@ $logger->error("Error");
 is($app0->buffer(), "WARN - Warning\nERROR - Error\n", "appender threshold");
 is($app1->buffer(), "ERROR - Error\n", "appender threshold");
 
-Log::Log4perl->appender_thresholds_adjust(-1);
+cmp_ok(Log::Log4perl->appender_thresholds_adjust(-1),
+    q{==}, 2, q{Expect 2 appenders to be affected});
 
 $app0->buffer("");
 $app1->buffer("");
@@ -205,13 +210,15 @@ $app0->buffer("");
 $app1->buffer("");
 
    # reset previous thresholds
-Log::Log4perl->appender_thresholds_adjust(1);
+cmp_ok(Log::Log4perl->appender_thresholds_adjust(1),
+    q{==}, 2, q{Expect 2 appenders to be affected});
 
 $app0->buffer("");
 $app1->buffer("");
 
    # rig just one threshold
-Log::Log4perl->appender_thresholds_adjust(-1, ['BUF0']);
+cmp_ok(Log::Log4perl->appender_thresholds_adjust(-1, ['BUF0']),
+    q{==}, 1, q{Expect 1 appender to be affected});
 
 $logger->more_logging();
 $logger->info("Info");

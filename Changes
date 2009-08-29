@@ -9,6 +9,8 @@
              log4perl configuration file.
     *   (ms) Fixed uninitialized warning on XML configuration files,
              reported by jbkilian on the sourceforge mailing list.
+    *   (ms) Applied patch [RT 43426] by AFF <aff@cpan.org> to have 
+             appender_thresholds_adjust return number of appenders changed.
 
 1.24 (2009/07/08)
     *   (ms) Fixed bug with Log::Log4perl::Util::tmpfile_name which 
