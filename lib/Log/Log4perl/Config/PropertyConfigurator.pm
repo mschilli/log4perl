@@ -99,7 +99,9 @@ sub parse {
                 push (@{$ptr->{value}}, $val);
             }else{
                 if(defined $ptr->{value}) {
-                    die "$key_org redefined";
+                    if(! $Log::Log4perl::Logger::NO_STRICT) {
+                        die "$key_org redefined";
+                    }
                 }
                 $ptr->{value} = $val;
             }

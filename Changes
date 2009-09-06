@@ -11,6 +11,9 @@
              reported by jbkilian on the sourceforge mailing list.
     *   (ms) Applied patch [RT 43426] by AFF <aff@cpan.org> to have 
              appender_thresholds_adjust return number of appenders changed.
+    *   (ms) [RT 34400] New :nostrict target which allows redefining a 
+             category within a Log4perl configuration file without error
+             or even a warning.
 
 1.24 (2009/07/08)
     *   (ms) Fixed bug with Log::Log4perl::Util::tmpfile_name which 
