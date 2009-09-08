@@ -26,9 +26,9 @@ sub module_available {  # Check if a module is available
             # trying to implement them as diligently as possible. For
             # details, check "perldoc -f require".
             if(ref $dir eq "CODE") {
-                return 1 if $dir->($dir, $relpath);
+                return 1 if $dir->($dir, $relpath_with_forward_slashes);
             } elsif(ref $dir eq "ARRAY") {
-                return 1 if $dir->[0]->($dir, $relpath);
+                return 1 if $dir->[0]->($dir, $relpath_with_forward_slashes);
             } elsif(ref $dir and 
                     ref $dir !~ /^(GLOB|SCALAR|HASH|REF|LVALUE)$/) {
                 return 1 if $dir->INC();
