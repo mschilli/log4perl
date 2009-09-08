@@ -20,8 +20,7 @@ our $PROGRAM_START_TIME;
 
 our %GLOBAL_USER_DEFINED_CSPECS = ();
 
-our $CSPECS = 'cCdFHIlLmMnpPrtTxX%';
-
+our $CSPECS = 'cCdFHIlLmMnpPrRtTxX%';
 
 BEGIN {
     # Check if we've got Time::HiRes. If not, don't make a big fuss,
@@ -75,6 +74,7 @@ sub new {
         stack                 => [],
         CSPECS                => $CSPECS,
         dontCollapseArrayRefs => $options->{dontCollapseArrayRefs}{value},
+        last_time             => undef,
     };
 
     if(exists $options->{ConversionPattern}->{value}) {
@@ -236,7 +236,7 @@ sub render {
     $info{P} = $$;
     $info{H} = $HOSTNAME;
 
-    if($self->{info_needed}->{r}) {
+    if($self->{info_needed}->{r} or $self->{info_needed}->{R}) {
         if($TIME_HIRES_AVAILABLE) {
             $info{r} = 
                 int((Time::HiRes::tv_interval ( $PROGRAM_START_TIME ))*1000);
@@ -247,6 +247,13 @@ sub render {
             }
             $info{r} = time() - $PROGRAM_START_TIME;
         }
+    }
+
+    if($self->{info_needed}->{R}) {
+        my $current_time = $info{r};
+        my $last_time = $self->{last_time} || $current_time;
+        $info{R} = $current_time - $last_time;
+        $self->{last_time} = $current_time;
     }
 
         # Stack trace wanted?
@@ -492,6 +499,8 @@ replaced by the logging engine when it's time to log the message:
     %P pid of the current process
     %r Number of milliseconds elapsed from program start to logging 
        event
+    %R Number of milliseconds elapsed from last logging event to
+       current logging event 
     %T A stack trace of functions called
     %x The topmost NDC (see below)
     %X{key} The entry 'key' of the MDC (see below)

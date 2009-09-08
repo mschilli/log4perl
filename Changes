@@ -16,6 +16,10 @@
              or even a warning.
     *   (ms) [RT 34401] Applied patch by Jae Gangemi, who fixed
              code references in @INC on Win32 systems. 
+    *   (ms) [RT 32259] Patternlayout now supports %R, which returns the
+             number of milliseconds elapsed from last logging event to
+             the current logging event (thanks to Emmanuel Rodriguez for
+             the patch).
 
 1.24 (2009/07/08)
     *   (ms) Fixed bug with Log::Log4perl::Util::tmpfile_name which 
