@@ -20,6 +20,8 @@
              number of milliseconds elapsed from last logging event to
              the current logging event (thanks to Emmanuel Rodriguez for
              the patch).
+    *   (ms) [RT 30899] Color configuration and attribute support 
+             added to ScreenColoredLevels appender by Jason Kohles.
 
 1.24 (2009/07/08)
     *   (ms) Fixed bug with Log::Log4perl::Util::tmpfile_name which 
