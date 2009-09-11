@@ -12,14 +12,26 @@ use Log::Log4perl::Level;
 ##################################################
 sub new {
 ##################################################
-    my($class, @options) = @_;
+    my($class, %options) = @_;
 
     my $self = {
-        name   => "unknown name",
-        stderr => 1,
-        color  => {},
-        @options,
+        name     => "unknown name",
+        stderr   => 1,
+        color    => {},
+        appender => undef,
+        %options,
     };
+
+    if($self->{appender}) {
+          # Pass back the appender to be limited as a dependency
+          # to the configuration file parser
+        push @{$options{l4p_depends_on}}, $self->{appender};
+
+          # Run our post_init method in the configurator after
+          # all appenders have been defined to make sure the
+          # appenders we're connecting to really exist.
+        push @{$options{l4p_post_config_subs}}, sub { $self->post_init() };
+    }
 
       # also accept lower/mixed case levels in config
     for my $level ( keys %{ $self->{color} } ) {
@@ -49,17 +61,55 @@ sub log {
 ##################################################
     my($self, %params) = @_;
 
-    my $msg = $params{ 'message' };
+    my $string_or_array = $params{ 'message' };
 
-    if ( my $color = $self->{ 'color' }->{ $params{ 'log4p_level' } } ) {
-        $msg = Term::ANSIColor::colored( $msg, $color );
+      # We might be called as a composite appender, in which case we
+      # get a ref to an array of message snippets instead of a readily
+      # warped message
+    my @msgs = ($string_or_array);
+    if(ref $string_or_array eq "ARRAY") {
+        @msgs = @$string_or_array;
+    }
+
+    for my $snip (@msgs) {
+        if ( my $color = $self->{ 'color' }->{ $params{ 'log4p_level' } } ) {
+          $snip = Term::ANSIColor::colored( $snip, $color );
+        }
     }
     
-    if($self->{stderr}) {
-        print STDERR $msg;
+    if($self->{app}) {
+        # It's used as a composite appender, forward formatted message
+        # to real appender
+        $params{message} = \@msgs;
+        $self->{app}->SUPER::log(\%params,
+                                 $params{log4p_category},
+                                 $params{log4p_level});
+    } elsif($self->{stderr}) {
+        print STDERR $msgs[0];
     } else {
-        print $msg;
+        print $msgs[0];
     }
+}
+
+###########################################
+sub post_init {
+###########################################
+    my($self) = @_;
+
+    if(! exists $self->{appender}) {
+        # No appender defined, not in composite mode
+        return 1;
+    }
+
+    my $appenders = Log::Log4perl->appenders();
+    my $appender = Log::Log4perl->appenders()->{$self->{appender}};
+
+    if(! defined $appender) {
+       die "Appender $self->{appender} not defined (yet) when " .
+           __PACKAGE__ . " needed it";
+    }
+
+    $self->{app} = $appender;
 }
 
 1;
@@ -180,6 +230,26 @@ for C<stderr> is 1, so messages will be logged to STDERR by default.
 The constructor can also take an optional parameter C<color>, whose
 value is a  hashref of color configuration options, any levels that
 are not included in the hashref will be set to their default values.
+
+=head2 Using ScreenColoredLevels in composite mode
+
+ScreenColoredLevels can be used as a preprocessor for other appenders,
+responsible for coloring text before it gets logged by other appenders.
+
+To enable this mode, define the other appender B<first>, so that
+ScreenColoredLevels can reference its name in its I<appender> attribute:
+
+        # Define the final appender first
+      log4perl.appender.File = Log::Log4perl::Appender::File
+      log4perl.appender.File.filename = test.log
+      log4perl.appender.File.layout = \
+          Log::Log4perl::Layout::SimpleLayout
+
+        # Now define ScreenColoredLevels appender referencing
+        # the final appender.
+      log4perl.appender.Colors = \
+          Log::Log4perl::Appender::ScreenColoredLevels
+      log4perl.appender.Colors.appender = File
 
 =head1 AUTHOR
 

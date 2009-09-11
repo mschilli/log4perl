@@ -1,0 +1,23 @@
+#!/usr/local/bin/perl -w
+use strict;
+
+use Log::Log4perl qw(:easy);
+
+my $conf = qq(
+
+      log4perl.category = DEBUG, Colors
+
+        # Define the final appender first
+      log4perl.appender.File = Log::Log4perl::Appender::File
+      log4perl.appender.File.filename = test.log
+      log4perl.appender.File.layout = Log::Log4perl::Layout::SimpleLayout
+        
+        # Now define ScreenColoredLevels appender referencing
+        # the final appender.
+      log4perl.appender.Colors = \\
+         Log::Log4perl::Appender::ScreenColoredLevels
+      log4perl.appender.Colors.appender = File 
+);
+
+Log::Log4perl->init(\$conf);
+WARN("This message will be sent immediately");
