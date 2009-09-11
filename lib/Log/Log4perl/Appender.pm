@@ -41,12 +41,35 @@ sub new {
            # the eval string just consists of valid perl code (e.g. an
            # appended ';' in $appenderclass variable). Fail if we see
            # anything in there that can't be class name.
-        die "'$appenderclass' not a valid class name " if $appenderclass =~ /[^:\w]/;
+        die "'$appenderclass' not a valid class name " if 
+            $appenderclass =~ /[^:\w]/;
 
-            # Check if the class/package is already in the namespace because
-            # something like Class::Prototyped injected it previously.
-        no strict 'refs';
-        if(!scalar(keys %{"$appenderclass\::"})) {
+        # Check if the class/package is already available because
+        # something like Class::Prototyped injected it previously.
+
+           # Can we use UNIVERSAL to check the appender's new() method?
+           # [RT 28987]
+        my $use_universal;
+        {
+          no strict 'refs';
+          if(scalar(keys %{"UNIVERSAL\::"})) {
+              $use_universal = 1;
+          }
+        }
+
+        my $module_loaded;
+
+        if($use_universal) {
+           if( UNIVERSAL::can($appenderclass, 'new') ) {
+               $module_loaded = 1;
+           }
+        } else {
+           if(scalar(keys %{"$appenderclass\::"})) {
+               $module_loaded = 1;
+           }
+        }
+
+        if( !$module_loaded ) {
             # Not available yet, try to pull it in.
             # see 'perldoc -f require' for why two evals
             eval "require $appenderclass";
