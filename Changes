@@ -924,48 +924,12 @@
 0.01  06/22/2002
     * Where it all began
 
-TODO (not assigned to anybody yet):
+TODO List:
 ##################################################
-    * objects passed via the config hash are stringified by Config.pm
-      (requires a significant change on how to init via a hash ref,
-       something like a HashConfigurator class)
-    * BasicConfigurator() vs. :easy, PropertyConfigurator()
-    * get_logger() thread safety (two try to create it at the same time)
-    * Thread safety with appenders, e.g. two threads calling the 
-      File::Dispatch appender's log method
-    * Thread safety with re-reading the conf file (watch)
-    * Object rendering
-    * log4j.logger.blah = INHERITED, app
-    * variable subst: a=b log4j.blah = ${a}
-    * log4j.renderer.blah = blah
-    * permission problems, init() creates the files, maybe read later by
-      different uid, no way to set umask?
-    * Custom filters
-
-TODO Kevin:
-##################################################
-    * use squirrel  http://www.perlmeister.com/scripts/squirrel?
-    * document oneMessagePerAppender as a bona-fide feature
-    * appender-by-name stuff?
-    * implement? #"log4j will render the content of the log message according to 
-            # user specified criteria. For example, if you frequently need 
-            # to log Oranges, an object type used in your current project, 
-            # then you can register an OrangeRenderer that will be invoked 
-            # whenever an orange needs to be logged. "
-         
-                
-TODO Mike:
-##################################################
-    * index.html on sourceforge should be part of CVS
-    * Release script should maintain old CPAN message on index.html
-    * Turning on DEBUG in Logger.pm results in broken test cases and
-      warnings
     * Layout.pm: '%t'
-    * README tests (Pod::Tests or something)
-    * Just had a wild idea: Could we possibly utilize the compiler
+    * Wild idea: Could we possibly utilize the compiler
       frontend to eliminate log statements that are not going to be
       triggered? This would be a HUGE performance increase!
-    * Write a bunch of useful appenders for Log::Dispatch like 
-      RollingLogFile
-
-##################################################
+    * get_logger() thread safety (two try to create it at the same time)
+    * Thread safety with re-reading the conf file (watch)
+    * log4j.logger.blah = INHERITED, app
