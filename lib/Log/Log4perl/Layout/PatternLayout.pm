@@ -11,46 +11,22 @@ use Log::Log4perl::Level;
 use Log::Log4perl::DateFormat;
 use Log::Log4perl::NDC;
 use Log::Log4perl::MDC;
+use Log::Log4perl::Util::TimeTracker;
 use File::Spec;
 
-our $TIME_HIRES_AVAILABLE;
 our $TIME_HIRES_AVAILABLE_WARNED = 0;
 our $HOSTNAME;
-our $PROGRAM_START_TIME;
 
 our %GLOBAL_USER_DEFINED_CSPECS = ();
 
 our $CSPECS = 'cCdFHIlLmMnpPrRtTxX%';
 
 BEGIN {
-    # Check if we've got Time::HiRes. If not, don't make a big fuss,
-    # just set a flag so we know later on that we can't have fine-grained
-    # time stamps
-    $TIME_HIRES_AVAILABLE = 0;
-    if(Log::Log4perl::Util::module_available("Time::HiRes")) {
-        require Time::HiRes;
-        $TIME_HIRES_AVAILABLE = 1;
-        $PROGRAM_START_TIME = [Time::HiRes::gettimeofday()];
-    } else {
-        $PROGRAM_START_TIME = time();
-    }
-
     # Check if we've got Sys::Hostname. If not, just punt.
     $HOSTNAME = "unknown.host";
     if(Log::Log4perl::Util::module_available("Sys::Hostname")) {
         require Sys::Hostname;
         $HOSTNAME = Sys::Hostname::hostname();
-    }
-}
-
-##################################################
-sub current_time {
-##################################################
-    # Return secs and optionally msecs if we have Time::HiRes
-    if($TIME_HIRES_AVAILABLE) {
-        return (Time::HiRes::gettimeofday());
-    } else {
-        return (time(), 0);
     }
 }
 
@@ -68,7 +44,6 @@ sub new {
     my $layout_string = @_ ? shift : '%m%n';
     
     my $self = {
-        time_function         => \&current_time,
         format                => undef,
         info_needed           => {},
         stack                 => [],
@@ -76,6 +51,10 @@ sub new {
         dontCollapseArrayRefs => $options->{dontCollapseArrayRefs}{value},
         last_time             => undef,
     };
+
+    $self->{timer} = Log::Log4perl::Util::TimeTracker->new(
+        time_function => $options->{time_function}
+    );
 
     if(exists $options->{ConversionPattern}->{value}) {
         $layout_string = $options->{ConversionPattern}->{value};
@@ -86,10 +65,6 @@ sub new {
           $options->{message_chomp_before_newline}->{value};
     } else {
         $self->{message_chomp_before_newline} = 1;
-    }
-
-    if(exists $options->{time_function}) {
-        $self->{time_function} = $options->{time_function};
     }
 
     bless $self, $class;
@@ -236,24 +211,21 @@ sub render {
     $info{P} = $$;
     $info{H} = $HOSTNAME;
 
+    my $current_time;
+
     if($self->{info_needed}->{r} or $self->{info_needed}->{R}) {
-        if($TIME_HIRES_AVAILABLE) {
-            $info{r} = 
-                int((Time::HiRes::tv_interval ( $PROGRAM_START_TIME ))*1000);
-        } else {
-            if(! $TIME_HIRES_AVAILABLE_WARNED) {
-                $TIME_HIRES_AVAILABLE_WARNED++;
-                # warn "Requested %r pattern without installed Time::HiRes\n";
-            }
-            $info{r} = time() - $PROGRAM_START_TIME;
+        if(!$TIME_HIRES_AVAILABLE_WARNED++ and 
+           !$self->{timer}->hires_available()) {
+            warn "Requested %r/%R pattern without installed Time::HiRes\n";
         }
+        $current_time = [$self->{timer}->gettimeofday()];
     }
 
+    if($self->{info_needed}->{r}) {
+        $info{r} = $self->{timer}->milliseconds( $current_time );
+    }
     if($self->{info_needed}->{R}) {
-        my $current_time = $info{r};
-        my $last_time = $self->{last_time} || $current_time;
-        $info{R} = $current_time - $last_time;
-        $self->{last_time} = $current_time;
+        $info{R} = $self->{timer}->delta_milliseconds( $current_time );
     }
 
         # Stack trace wanted?
@@ -287,7 +259,7 @@ sub render {
             } else {
                 # just for %d
                 if($op eq 'd') {
-                    $result = $info{$op}->format($self->{time_function}->());
+                    $result = $info{$op}->format($self->{timer}->gettimeofday());
                 }
             }
         } else {
@@ -316,7 +288,7 @@ sub curly_action {
     } elsif($ops eq "X") {
         $data = Log::Log4perl::MDC->get($curlies);
     } elsif($ops eq "d") {
-        $data = $curlies->format($self->{time_function}->());
+        $data = $curlies->format( $self->{timer}->gettimeofday() );
     } elsif($ops eq "M") {
         $data = shrink_category($data, $curlies);
     } elsif($ops eq "m") {
@@ -700,7 +672,7 @@ Here's a list of parameters:
 
 Takes a reference to a function returning the time for the time/date
 fields, either in seconds
-since the epoch or as a reference to an array, carrying seconds and 
+since the epoch or as an array, carrying seconds and 
 microseconds, just like C<Time::HiRes::gettimeofday> does.
 
 =item message_chomp_before_newline
