@@ -2,7 +2,7 @@
  Revision history for Log::Log4perl
 ##################################################
 
-1.25 (not yet released)
+1.25 (2009/09/27)
     *   (ms) Appender::File is now closing (or sysclosing) the file
              on file_close() instead of just undef'ing the handle.
     *   (ms) Added l4p-tmpl helper script to help whipping up a new
