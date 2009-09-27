@@ -74,6 +74,7 @@ README
 t/001Level.t
 t/002Logger.t
 t/003Layout.t
+t/003Layout-Rr.t
 t/004Config.t
 t/005Config-Perl.t
 t/006Config-Java.t
