@@ -1072,19 +1072,23 @@ replaced by the logging engine when it's time to log the message:
     %C Fully qualified package (or class) name of the caller
     %d Current date in yyyy/MM/dd hh:mm:ss format
     %F File where the logging event occurred
-    %H Hostname
+    %H Hostname (if Sys::Hostname is available)
     %l Fully qualified name of the calling method followed by the
        callers source the file name and line number between 
        parentheses.
     %L Line number within the file where the log statement was issued
     %m The message to be logged
+    %m{chomp} The message to be logged, stripped off a trailing newline
     %M Method or function where the logging request was issued
     %n Newline (OS-independent)
     %p Priority of the logging event
     %P pid of the current process
     %r Number of milliseconds elapsed from program start to logging 
        event
-    %x The elements of the NDC stack (see below)
+    %R Number of milliseconds elapsed from last logging event to
+       current logging event 
+    %T A stack trace of functions called
+    %x The topmost NDC (see below)
     %X{key} The entry 'key' of the MDC (see below)
     %% A literal percent (%) sign
 

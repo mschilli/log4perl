@@ -4,6 +4,9 @@
 
 1.26 (not yet released)
     *   (ms) [RT 50090] Added non-portable linebreaks to PatternLayout
+             (requested by Zdeněk Juran).
+    *   (ms) [RT 50094] Docfix for PatternLayout in main manpage (spotted
+             by Peter Rabbitson).
 
 1.25 (2009/09/27)
     *   (ms) Appender::File is now closing (or sysclosing) the file
