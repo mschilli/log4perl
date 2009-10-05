@@ -460,7 +460,7 @@ sub create_appender_instance {
             Log::Log4perl::Level::PRIORITY{$system_wide_threshold});
     }
 
-    if($data->{appender}->{$appname}->{threshold}) {
+    if(exists $data->{appender}->{$appname}->{threshold}) {
             die "threshold keyword needs to be uppercase";
     }
 

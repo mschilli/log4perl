@@ -7,6 +7,8 @@
              (requested by Zdeněk Juran).
     *   (ms) [RT 50094] Docfix for PatternLayout in main manpage (spotted
              by Peter Rabbitson).
+    *   (ms) [RT 28679] Added exists() to "Threshold" keyword uppercase 
+             check.
 
 1.25 (2009/09/27)
     *   (ms) Appender::File is now closing (or sysclosing) the file
