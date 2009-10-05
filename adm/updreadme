@@ -1,5 +1,4 @@
 #!/usr/bin/perl
-# Special version for Log4perl
 use warnings;
 use strict;
 
@@ -10,8 +9,5 @@ use ModDevUtils;
     no strict;
     *ModDevUtils::main_pm_file = sub { "lib/Log/Log4perl.pm" };
 }
-
-our $CVSVERSION = '$Revision: 1.5 $';
-our ($VERSION)  = ($CVSVERSION =~ /(\d+\.\d+)/);
 
 ModDevUtils::update_readme();
