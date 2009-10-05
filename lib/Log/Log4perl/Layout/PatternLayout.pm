@@ -82,6 +82,10 @@ sub new {
         $self->add_layout_cspec($f, $options->{cspec}{$f}{value});
     }
 
+    # non-portable line breaks
+    $layout_string =~ s/\\n/\n/g;
+    $layout_string =~ s/\\r/\r/g;
+
     $self->define($layout_string);
 
     return $self;
