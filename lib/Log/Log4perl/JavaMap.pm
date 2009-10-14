@@ -144,17 +144,16 @@ In  your Perl code, before you call Log::Log4perl::init(), do this:
 and you can use 'myorg.customAppender' in your config file with
 impunity.
 
-
-
-=head1 AUTHORS
-
-    Kevin Goess, <cpan@goess.org> 
-    Mike Schilli, <m@perlmeister.com>
-    
-    June, 2002
-
 =head1 SEE ALSO
 
 http://jakarta.apache.org/log4j/docs/
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright 2002-2009 by Mike Schilli E<lt>m@perlmeister.comE<gt> 
+and Kevin Goess E<lt>cpan@goess.orgE<gt>.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself. 
 
 =cut

@@ -57,6 +57,12 @@ instead. This layout class simply splits up the incoming message into
 several chunks split by line breaks and renders them with PatternLayout
 just as if it had arrived in separate chunks in the first place.
 
-=head1 AUTHOR
+=head1 COPYRIGHT AND LICENSE
 
-2007, Cory Bennett, Mike Schilli <cpan@perlmeister.com>
+Copyright 2002-2009 by Mike Schilli E<lt>m@perlmeister.comE<gt> 
+and Kevin Goess E<lt>cpan@goess.orgE<gt>.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself. 
+
+=cut

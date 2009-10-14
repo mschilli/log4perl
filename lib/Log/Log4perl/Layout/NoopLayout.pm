@@ -45,10 +45,12 @@ Log::Log4perl::Layout::NoopLayout - Pass-thru Layout
 This is a no-op layout, returns the logging message unaltered,
 useful for implementing the DBI logger.
 
-=head1 SEE ALSO
+=head1 COPYRIGHT AND LICENSE
 
-=head1 AUTHOR
+Copyright 2002-2009 by Mike Schilli E<lt>m@perlmeister.comE<gt> 
+and Kevin Goess E<lt>cpan@goess.orgE<gt>.
 
-Kevin Goess, <cpan@goess.org>  12/2002
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself. 
 
 =cut

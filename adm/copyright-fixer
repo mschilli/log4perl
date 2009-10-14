@@ -1,0 +1,29 @@
+#!/usr/local/bin/perl -w
+###########################################
+# copyright-fixer
+# Fix copyright notices in all files of the
+# distribution
+###########################################
+use strict;
+use Sysadm::Install qw(:all);
+use File::Find;
+
+my $copyright = join '', <DATA>;
+
+find(sub {
+    return if !-f $_;
+    my $data = slurp $_;
+    $data =~ s/^=head1 COPYRIGHT AND LICENSE.*?^=cut\s*\n/$copyright/ms;
+    blurt $data, $_;
+}, "lib", "eg", "adm");
+
+__DATA__
+=head1 COPYRIGHT AND LICENSE
+
+Copyright 2002-2009 by Mike Schilli E<lt>m@perlmeister.comE<gt> 
+and Kevin Goess E<lt>cpan@goess.orgE<gt>.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself. 
+
+=cut

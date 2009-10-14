@@ -26,13 +26,6 @@ Log::Log4perl::JavaMap::TestBuffer - wraps Log::Log4perl::Appender::TestBuffer
 
 Just for testing the Java mapping.
 
-=head1 AUTHORS
-
-    Mike Schilli, <m@perlmeister.com>
-    Kevin Goess, <cpan@goess.org> 
-    
-    June, 2002
-
 =head1 SEE ALSO
 
 http://jakarta.apache.org/log4j/docs/
@@ -40,5 +33,13 @@ http://jakarta.apache.org/log4j/docs/
 Log::Log4perl::Javamap
 
 Log::Dispatch::Screen
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright 2002-2009 by Mike Schilli E<lt>m@perlmeister.comE<gt> 
+and Kevin Goess E<lt>cpan@goess.orgE<gt>.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself. 
 
 =cut

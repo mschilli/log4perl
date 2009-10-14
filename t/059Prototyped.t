@@ -14,7 +14,7 @@ BEGIN {
 if( $CLASS_PROTOTYPE_PRESENT ) {
     plan tests => 1;
 } else {
-    plan skip_all, "only with Class::Prototype present";
+    plan skip_all, "only with Class::Prototyped present";
 }
 
 my $buffer =  "";
@@ -39,4 +39,4 @@ Log::Log4perl->init(\ q{
 });
 
 INFO "Boo!";
-is($buffer, "***Boo!\n", "message via Class::Prototype");
+is($buffer, "***Boo!\n", "message via Class::Prototyped");

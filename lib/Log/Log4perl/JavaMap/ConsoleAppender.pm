@@ -49,13 +49,6 @@ Possible config properties for Log::Dispatch::Screen are
 
     stderr (0 or 1)
 
-=head1 AUTHORS
-
-    Kevin Goess, <cpan@goess.org> 
-    Mike Schilli, <m@perlmeister.com>
-    
-    June, 2002
-
 =head1 SEE ALSO
 
 http://jakarta.apache.org/log4j/docs/

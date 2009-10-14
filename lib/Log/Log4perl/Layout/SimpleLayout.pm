@@ -61,8 +61,12 @@ for details.
 
 =head1 SEE ALSO
 
-=head1 AUTHOR
+=head1 COPYRIGHT AND LICENSE
 
-Kevin Goess, <cpan@goess.org>
+Copyright 2002-2009 by Mike Schilli E<lt>m@perlmeister.comE<gt> 
+and Kevin Goess E<lt>cpan@goess.orgE<gt>.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself. 
 
 =cut

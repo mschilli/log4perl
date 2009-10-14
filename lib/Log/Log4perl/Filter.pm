@@ -332,8 +332,12 @@ L<Log::Log4perl::Filter::LevelRange>,
 L<Log::Log4perl::Filter::StringRange>,
 L<Log::Log4perl::Filter::Boolean>
 
-=head1 AUTHOR
+=head1 COPYRIGHT AND LICENSE
 
-Mike Schilli, E<lt>log4perl@perlmeister.comE<gt>, 2003
+Copyright 2002-2009 by Mike Schilli E<lt>m@perlmeister.comE<gt> 
+and Kevin Goess E<lt>cpan@goess.orgE<gt>.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself. 
 
 =cut

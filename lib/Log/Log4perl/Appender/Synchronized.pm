@@ -256,12 +256,12 @@ Custom filters are also applied to the composite appender only.
 They are I<not> applied to the sub-appender. Same applies to appender
 thresholds. This behaviour might change in the future.
 
-=head1 LEGALESE
+=head1 COPYRIGHT AND LICENSE
 
-Copyright 2003 by Mike Schilli, all rights reserved.
-This program is free software, you can redistribute it and/or
-modify it under the same terms as Perl itself.
+Copyright 2002-2009 by Mike Schilli E<lt>m@perlmeister.comE<gt> 
+and Kevin Goess E<lt>cpan@goess.orgE<gt>.
 
-=head1 AUTHOR
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself. 
 
-2003, Mike Schilli <m@perlmeister.com>
+=cut

@@ -53,8 +53,12 @@ This is a test appender, and it is intentionally slow. It writes
 out one byte at a time to provoke sync errors. Don't use it, unless 
 for testing.
 
-=head1 AUTHOR
+=head1 COPYRIGHT AND LICENSE
 
-Mike Schilli <log4perl@perlmeister.com>, 2003
+Copyright 2002-2009 by Mike Schilli E<lt>m@perlmeister.comE<gt> 
+and Kevin Goess E<lt>cpan@goess.orgE<gt>.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself. 
 
 =cut

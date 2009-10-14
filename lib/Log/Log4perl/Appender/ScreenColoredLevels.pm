@@ -181,11 +181,12 @@ The constructor can also take an optional parameter C<color>, whose
 value is a  hashref of color configuration options, any levels that
 are not included in the hashref will be set to their default values.
 
-=head1 AUTHOR
+=head1 COPYRIGHT AND LICENSE
 
-Mike Schilli C<< <log4perl@perlmeister.com> >>, 2004
+Copyright 2002-2009 by Mike Schilli E<lt>m@perlmeister.comE<gt> 
+and Kevin Goess E<lt>cpan@goess.orgE<gt>.
 
-Color configuration and attribute support added 2007 by
-Jason Kohles C<< <email@jasonkohles.com> >>.
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself. 
 
 =cut

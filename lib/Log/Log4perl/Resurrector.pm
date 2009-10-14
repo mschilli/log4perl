@@ -151,13 +151,10 @@ Some of the techniques used in this module have been stolen from the
 C<Acme::Incorporated> CPAN module, written by I<chromatic>. Long
 live CPAN!
 
-=head1 AUTHORS
-
-Mike Schilli <m@perlmeister.com>
-
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2002-2007 by Mike Schilli E<lt>m@perlmeister.comE<gt>
+Copyright 2002-2009 by Mike Schilli E<lt>m@perlmeister.comE<gt> 
+and Kevin Goess E<lt>cpan@goess.orgE<gt>.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 

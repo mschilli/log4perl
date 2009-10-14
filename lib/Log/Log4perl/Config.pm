@@ -1102,10 +1102,6 @@ certainly override it:
 C<write> is the C<mode> that has C<Log::Log4perl::Appender::File>
 explicitely clobber the log file if it exists.
 
-=head1 AUTHOR
-
-Mike Schilli, E<lt>log4perl@perlmeister.comE<gt>
-
 =head1 SEE ALSO
 
 Log::Log4perl::Config::PropertyConfigurator
@@ -1113,5 +1109,13 @@ Log::Log4perl::Config::PropertyConfigurator
 Log::Log4perl::Config::DOMConfigurator
 
 Log::Log4perl::Config::LDAPConfigurator (coming soon!)
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright 2002-2009 by Mike Schilli E<lt>m@perlmeister.comE<gt> 
+and Kevin Goess E<lt>cpan@goess.orgE<gt>.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself. 
 
 =cut

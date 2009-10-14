@@ -228,12 +228,12 @@ of Log4perl.
 As a convenience, the C<uid> field accepts user names as well, which it 
 translates into the corresponding uid by running C<getpwnam>.
 
-=head1 LEGALESE
+=head1 COPYRIGHT AND LICENSE
 
-Copyright 2007 by Mike Schilli, all rights reserved.
-This program is free software, you can redistribute it and/or
-modify it under the same terms as Perl itself.
+Copyright 2002-2009 by Mike Schilli E<lt>m@perlmeister.comE<gt> 
+and Kevin Goess E<lt>cpan@goess.orgE<gt>.
 
-=head1 AUTHOR
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself. 
 
-2007, Mike Schilli <cpan@perlmeister.com>
+=cut

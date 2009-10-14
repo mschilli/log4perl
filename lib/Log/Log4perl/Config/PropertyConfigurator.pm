@@ -189,9 +189,12 @@ Log::Log4perl::Config::DOMConfigurator
 
 Log::Log4perl::Config::LDAPConfigurator (tbd!)
 
-=head1 AUTHOR
+=head1 COPYRIGHT AND LICENSE
 
-Kevin Goess, <cpan@goess.org> Jan-2003
-Mike Schilli, <cpan@perlmeister.com>, 2007
+Copyright 2002-2009 by Mike Schilli E<lt>m@perlmeister.comE<gt> 
+and Kevin Goess E<lt>cpan@goess.orgE<gt>.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself. 
 
 =cut

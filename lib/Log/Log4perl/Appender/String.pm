@@ -74,10 +74,12 @@ Log::Log4perl::Appender::String - Append to a string
 This is a simple appender used internally by C<Log::Log4perl>. It
 appends messages to a scalar instance variable.
 
-=head1 SEE ALSO
+=head1 COPYRIGHT AND LICENSE
 
-=head1 AUTHOR
+Copyright 2002-2009 by Mike Schilli E<lt>m@perlmeister.comE<gt> 
+and Kevin Goess E<lt>cpan@goess.orgE<gt>.
 
-2006, Mike Schilli, E<lt>m@perlmeister.comE<gt>
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself. 
 
 =cut

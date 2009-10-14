@@ -415,10 +415,12 @@ someone (and that could be you :) implements them:
 Also, C<Log::Log4perl::DateFormat> just knows about English week and
 month names, internationalization support has to be added.
 
-=head1 SEE ALSO
+=head1 COPYRIGHT AND LICENSE
 
-=head1 AUTHOR
+Copyright 2002-2009 by Mike Schilli E<lt>m@perlmeister.comE<gt> 
+and Kevin Goess E<lt>cpan@goess.orgE<gt>.
 
-    Mike Schilli, <log4perl@perlmeister.com>
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself. 
 
 =cut

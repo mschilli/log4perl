@@ -308,13 +308,10 @@ after which $numval could be used where a numerical value is required:
 
     Log::Log4perl->easy_init( $numval );
 
-=head1 AUTHOR
-
-Mike Schilli, E<lt>m@perlmeister.comE<gt>
-
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2002-2008 by Mike Schilli
+Copyright 2002-2009 by Mike Schilli E<lt>m@perlmeister.comE<gt> 
+and Kevin Goess E<lt>cpan@goess.orgE<gt>.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 

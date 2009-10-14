@@ -68,14 +68,10 @@ Log::Log4perl::Util - Internal utility functions
 
 Only internal functions here. Don't peek.
 
-=head1 AUTHORS
-
-Mike Schilli <m@perlmeister.com>
-
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2002-2004 by Mike Schilli E<lt>m@perlmeister.comE<gt> and Kevin Goess
-E<lt>cpan@goess.orgE<gt>.
+Copyright 2002-2009 by Mike Schilli E<lt>m@perlmeister.comE<gt> 
+and Kevin Goess E<lt>cpan@goess.orgE<gt>.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 

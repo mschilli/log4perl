@@ -598,14 +598,18 @@ CHANGING DB CONNECTIONS above.
 Note that C<Log::Log4perl::Appender::DBI> holds one connection open
 for every appender, which might be too many.
 
-=head1 AUTHOR
-
-Kevin Goess <cpan@goess.org> December, 2002
-
 =head1 SEE ALSO
 
 L<Log::Dispatch::DBI>
 
 L<Log::Log4perl::JavaMap::JDBCAppender>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright 2002-2009 by Mike Schilli E<lt>m@perlmeister.comE<gt> 
+and Kevin Goess E<lt>cpan@goess.orgE<gt>.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself. 
 
 =cut

@@ -56,11 +56,12 @@ use this class directly, but rather refer to
 L<Log::Log4perl::Layout::SimpleLayout> or 
 L<Log::Log4perl::Layout::PatternLayout>.
 
-=head1 SEE ALSO
+=head1 COPYRIGHT AND LICENSE
 
-=head1 AUTHOR
+Copyright 2002-2009 by Mike Schilli E<lt>m@perlmeister.comE<gt> 
+and Kevin Goess E<lt>cpan@goess.orgE<gt>.
 
-Kevin Goess, <cpan@goess.org>
-Mike Schilli, <m@perlmeister.com>
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself. 
 
 =cut
