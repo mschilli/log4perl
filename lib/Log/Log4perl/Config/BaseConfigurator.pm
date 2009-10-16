@@ -3,6 +3,10 @@ package Log::Log4perl::Config::BaseConfigurator;
 use warnings;
 use strict;
 
+*eval_if_perl      = \&Log::Log4perl::Config::eval_if_perl;
+*compile_if_perl   = \&Log::Log4perl::Config::compile_if_perl;
+*leaf_path_to_hash = \&Log::Log4perl::Config::leaf_path_to_hash;
+
 ################################################
 sub new {
 ################################################
@@ -51,6 +55,84 @@ sub parse {
     die __PACKAGE__ . "::parse() is a virtual method. " .
         "It must be implemented " .
         "in a derived class (currently: ", ref(shift), ")";
+}
+
+################################################
+sub parse_post_process {
+################################################
+    my($self, $data, $leaf_paths) = @_;
+    
+    #   [
+    #     'category',
+    #     'value',
+    #     'WARN, Logfile'
+    #   ],
+    #   [
+    #     'appender',
+    #     'Logfile',
+    #     'value',
+    #     'Log::Log4perl::Appender::File'
+    #   ],
+    #   [
+    #     'appender',
+    #     'Logfile',
+    #     'filename',
+    #     'value',
+    #     'test.log'
+    #   ],
+    #   [
+    #     'appender',
+    #     'Logfile',
+    #     'layout',
+    #     'value',
+    #     'Log::Log4perl::Layout::PatternLayout'
+    #   ],
+    #   [
+    #     'appender',
+    #     'Logfile',
+    #     'layout',
+    #     'ConversionPattern',
+    #     'value',
+    #     '%d %F{1} %L> %m %n'
+    #   ]
+
+    for my $path ( @{ Log::Log4perl::Config::leaf_paths( $data )} ) {
+
+        if(0) {
+        } elsif( 
+            $path->[0] eq "appender" and
+            $path->[2] eq "trigger"
+          ) {
+            my $ref = leaf_path_to_hash( $path, $data );
+            my $code = compile_if_perl( $$ref );
+            $$ref = $code if defined $code;
+        } elsif (
+            $path->[0] eq "appender" and
+            $path->[2] eq "filter"
+          ) {
+            # do nothing
+            # $path->[4] = compile_if_perl( $path->[4] );
+        } elsif (
+            $path->[0] eq "appender" and
+            $path->[2] eq "warp_message"
+          ) {
+            # do nothing
+            # $path->[4] = compile_if_perl( $path->[4] );
+        } elsif (
+            $path->[0] eq "appender" and
+            $path->[2] eq "layout" and
+            $path->[3] eq "cspec"
+          ) {
+            # do nothing
+            # $path->[6] = compile_if_perl( $path->[6] );
+        } else {
+            my $ref = leaf_path_to_hash( $path, $data );
+            my $code = compile_if_perl( $$ref );
+            $$ref = $code if defined $code;
+        }
+    }
+
+    return $data;
 }
 
 1;

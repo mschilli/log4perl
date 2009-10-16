@@ -553,6 +553,7 @@ sub config_read {
     die "Configuration not defined" unless defined $config;
 
     my @text;
+    my $parser;
 
     $CONFIG_FILE_READS++;  # Count for statistical purposes
 
@@ -643,12 +644,14 @@ sub config_read {
         require Log::Log4perl::Config::DOMConfigurator;
 
         XML::DOM->VERSION($Log::Log4perl::DOM_VERSION_REQUIRED);
-        my $parser = Log::Log4perl::Config::DOMConfigurator->new();
+        $parser = Log::Log4perl::Config::DOMConfigurator->new();
         $data = $parser->parse(\@text);
     } else {
-        my $parser = Log::Log4perl::Config::PropertyConfigurator->new();
+        $parser = Log::Log4perl::Config::PropertyConfigurator->new();
         $data = $parser->parse(\@text);
     }
+
+    $data = $parser->parse_post_process( $data, leaf_paths($data) );
 
     return $data;
 }
@@ -712,6 +715,20 @@ sub leaf_paths {
         }
     }
     return \@result;
+}
+
+###########################################
+sub leaf_path_to_hash {
+###########################################
+    my($leaf_path, $data) = @_;
+
+    my $ref = \$data;
+
+    for my $part ( @$leaf_path[0..$#$leaf_path-1] ) {
+        $ref = \$$ref->{ $part };
+    }
+
+    return $ref;
 }
 
 ###########################################
