@@ -59,13 +59,6 @@ sub parse {
             $val =~ s/\${(.*?)}/
                       Log::Log4perl::Config::var_subst($1, \%var_subst)/gex;
 
-            # for triggers, we want to compile them but not run them
-            # (is this worth putting into metadata somewhere?)
-            if ($key =~ /\.trigger$/ ){ 
-                $val = compile_if_perl($val)
-            }elsif ( $key !~ /\.(cspec\.)|warp_message|filter/){
-                $val = eval_if_perl($val)
-            }
             $key = unlog4j($key);
 
             my $how_deep = 0;

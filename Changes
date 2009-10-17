@@ -3,6 +3,13 @@
 ##################################################
 
 1.26 (not yet released)
+    *   (ms) [RT 50495] Perl code in the config file is now evaluated/
+             compiled after the configuration parser has done its work, 
+             opening up Perl subroutines to all configuration parsers, not
+             just PropertyConfigurator. Configuration subs for cspecs, 
+             filter, warp_message and appender triggers are sheltered. 
+             The previous, flawed implementation surfaced while using 
+             a 'trigger' category, reported by Olivier Bilodeau.
     *   (ms) [RT 50090] Added non-portable linebreaks to PatternLayout
              (requested by Zdeněk Juran).
     *   (ms) [RT 50094] Docfix for PatternLayout in main manpage (spotted
