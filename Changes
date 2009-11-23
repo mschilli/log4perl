@@ -16,6 +16,8 @@
              by Peter Rabbitson).
     *   (ms) [RT 28679] Added exists() to "Threshold" keyword uppercase 
              check.
+    *   (ms) Took out Class::Prototyped testcase after it got all weird
+             and introduced backward-incompatible changes.
 
 1.25 (2009/09/27)
     *   (ms) Appender::File is now closing (or sysclosing) the file
