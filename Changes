@@ -2,7 +2,7 @@
  Revision history for Log::Log4perl
 ##################################################
 
-1.26 (not yet released)
+1.26 (2009/11/22)
     *   (ms) [RT 50495] Perl code in the config file is now evaluated/
              compiled after the configuration parser has done its work, 
              opening up Perl subroutines to all configuration parsers, not
