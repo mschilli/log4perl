@@ -607,7 +607,7 @@ If you're an API kind of person, there's also this call:
     Log::Log4perl::Layout::PatternLayout::
                     add_global_cspec('Z', sub {'zzzzzzzz'}); #snooze?
 
-When the log messages is being put together, your anonymous sub 
+When the log message is being put together, your anonymous sub 
 will be called with these arguments:
 
     ($layout, $message, $category, $priority, $caller_level);
@@ -619,12 +619,11 @@ will be called with these arguments:
     caller_level: how many levels back up the call stack you have 
         to go to find the caller
 
-There are currently some issues around providing API access to an 
-appender-specific cspec, but let us know if this is something you want.
-
 Please note that the subroutines you're defining in this way are going
 to be run in the C<main> namespace, so be sure to fully qualify functions
-and variables if they're located in different packages.
+and variables if they're located in different packages. I<Also make sure
+these subroutines aren't using Log4perl, otherwise Log4perl will enter 
+an infinite recursion.>
 
 With Log4perl 1.20 and better, cspecs can be written with parameters in
 curly braces. Writing something like
