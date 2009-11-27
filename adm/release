@@ -17,6 +17,7 @@ use strict;
     # Available at http://perlmeister.com/scripts
 use lib "$ENV{HOME}/perl-modules";
 use ModDevUtils;
+use ExtUtils::Manifest;
 use Test::Pod;
 use Test::More;
 use File::Find;
@@ -37,6 +38,12 @@ runtests("$admdir/podok");
 }
 
 ModDevUtils::release(0) or exit 0;
+
+my @missing = ExtUtils::Manifest::manicheck();
+
+if(@missing) {
+    die "Manifest check failed, missing files: @missing";
+}
 
 my $ball = ModDevUtils::tarball_name();
 

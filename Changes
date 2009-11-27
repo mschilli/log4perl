@@ -4,6 +4,8 @@
 
 1.27 (not yet released)
    *    (ms) Made meta tag compatible with MakeMaker versions < 6.50
+        (ms) [RT 52083] Fixed manifest glitch from 1.26 (reported by
+             Lars Thegler).
 
 1.26 (2009/11/22)
     *   (ms) [RT 50495] Perl code in the config file is now evaluated/

@@ -10,6 +10,7 @@ CVS
 docs
 lib/Log/Dispatch
 MANIFEST.bak
+MANIFEST.old
 adm
 ldap/log4perl.schema
 ldap/migrate.pl
