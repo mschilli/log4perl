@@ -31,6 +31,15 @@ if($@) {
           "%r will use full seconds\n";
 }
 
+my $meta_merge = {
+    META_MERGE => {
+        resources => {
+            repository  => 'http://github.com/mschilli/log4perl',
+            MailingList => 'mailto:log4perl-devel@lists.sourceforge.net',
+        },
+    }
+};
+
 WriteMakefile(
     'NAME'		=> 'Log::Log4perl',
     'VERSION_FROM'	=> 'lib/Log/Log4perl.pm', # finds $VERSION
@@ -48,12 +57,7 @@ WriteMakefile(
     # 'OBJECT'		=> '$(O_FILES)', # link all the C files too
     'clean'             => {FILES => "*.tar.gz *.ppd pod2htm*"},
     EXE_FILES           => ["eg/l4p-tmpl"],
-    META_MERGE          => {
-        resources       => {
-            repository  => 'http://github.com/mschilli/log4perl',
-            MailingList => 'mailto:log4perl-devel@lists.sourceforge.net',
-        },
-    },
+    $ExtUtils::MakeMaker::VERSION >= 6.50 ? (%$meta_merge) : (),
     get_man3pods(), 
 );
 
