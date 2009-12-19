@@ -6,6 +6,13 @@
    *    (ms) Made meta tag compatible with MakeMaker versions < 6.50
         (ms) [RT 52083] Fixed manifest glitch from 1.26 (reported by
              Lars Thegler).
+   *    (ms) ***WARNING: This might break backward compatibility 
+                         with some wrapper classes. 
+             [RT 52913] Fixed category fetching in
+             wrapper classes (reported by Martin Evans). Wrapper classes
+             now need to call Log::Log4perl->wrapper_register to adapt
+             get_logger() category fetching. Detailed docs under 
+             "Using Log::Log4perl with wrapper functions and classes"
 
 1.26 (2009/11/22)
     *   (ms) [RT 50495] Perl code in the config file is now evaluated/

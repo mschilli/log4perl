@@ -27,6 +27,8 @@ our %ALLOWED_CODE_OPS = (
     'restrictive' => [ ':default' ],
 );
 
+our %WRAPPERS_REGISTERED = map { $_ => 1 } qw(Log::Log4perl);
+
     #set this to the opcodes which are allowed when
     #$ALLOW_CODE_IN_CONFIG_FILE is set to a true value
     #if undefined, there are no restrictions on code that can be
@@ -340,6 +342,14 @@ sub easy_init { # Initialize the root logger with a screen appender
 }
 
 ##################################################
+sub wrapper_register {  
+##################################################
+    my $wrapper = $_[-1];
+
+    $WRAPPERS_REGISTERED{ $wrapper } = 1;
+}
+
+##################################################
 sub get_logger {  # Get an instance (shortcut)
 ##################################################
     # get_logger() can be called in the following ways:
@@ -359,15 +369,19 @@ sub get_logger {  # Get an instance (shortcut)
 
     if(@_ == 0) {
           # 1
-        $category = scalar caller($Log::Log4perl::caller_depth);
+        my $level = 0;
+        do { $category = scalar caller($level++);
+        } while exists $WRAPPERS_REGISTERED{ $category };
+
     } elsif(@_ == 1) {
           # 2, 3
-        if($_[0] eq __PACKAGE__) {
-              # 2
-            $category = scalar caller($Log::Log4perl::caller_depth);
-        } else {
-            $category = $_[0];
+        $category = $_[0];
+
+        my $level = 0;
+        while(exists $WRAPPERS_REGISTERED{ $category }) { 
+            $category = scalar caller($level++);
         }
+
     } else {
           # 5, 6
         $category = $_[1];
@@ -2439,23 +2453,59 @@ designing a system with lots of subsystems which you need to control
 independantly, you'll love the features of C<Log::Log4perl>,
 which is equally easy to use.
 
-=head1 Using Log::Log4perl from wrapper classes
+=head1 Using Log::Log4perl with wrapper functions and classes
 
 If you don't use C<Log::Log4perl> as described above, 
-but from a wrapper class (like your own Logging class which in turn uses
-C<Log::Log4perl>),
-the pattern layout will generate wrong data for %F, %C, %L and the like.
-Reason for this is that C<Log::Log4perl>'s loggers assume a static
-caller depth to the application that's using them. If you're using
-one (or more) wrapper classes, C<Log::Log4perl> will indicate where
-your logger classes called the loggers, not where your application
-called your wrapper, which is probably what you want in this case.
+but from a wrapper function, the pattern layout will generate wrong data 
+for %F, %C, %L, and the like. Reason for this is that C<Log::Log4perl>'s 
+loggers assume a static caller depth to the application that's using them. 
+
+If you're using
+one (or more) wrapper functions, C<Log::Log4perl> will indicate where
+your logger function called the loggers, not where your application
+called your wrapper:
+
+    use Log::Log4perl qw(:easy);
+    Log::Log4perl->easy_init({ level => $DEBUG, 
+                               layout => "%M %m%n" });
+
+    sub mylog {
+        my($message) = @_;
+
+        DEBUG $message;
+    }
+
+    sub func {
+        mylog "Hello";
+    }
+
+    func();
+
+prints
+
+    main::mylog Hello
+
+but that's probably not what your application expects. Rather, you'd
+want
+
+    main::func Hello
+
+because the C<func> function called your logging function.
+
 But don't dispair, there's a solution: Just increase the value
 of C<$Log::Log4perl::caller_depth> (defaults to 0) by one for every
 wrapper that's in between your application and C<Log::Log4perl>,
-then C<Log::Log4perl> will compensate for the difference.
+then C<Log::Log4perl> will compensate for the difference:
 
-Also, note that if you're using a subclass of Log4perl, like
+    sub mylog {
+        my($message) = @_;
+
+        local $Log::Log4perl::caller_depth =
+              $Log::Log4perl::caller_depth + 1;
+        DEBUG $message;
+    }
+
+Also, note that if you're writing a subclass of Log4perl, like
 
     package MyL4pWrapper;
     use Log::Log4perl;
@@ -2465,21 +2515,31 @@ and you want to call get_logger() in your code, like
 
     use MyL4pWrapper;
 
-    sub some_function {
-        my $logger = MyL4pWrapper->get_logger(__PACKAGE__);
-        $logger->debug("Hey, there.");
+    sub get_logger {
+        my $logger = Log::Log4perl->get_logger();
     }
 
-you have to explicitly spell out the category, as in __PACKAGE__ above.
-You can't rely on 
+then the get_logger() call will get a logger for the C<MyL4pWrapper>
+category, not for the package calling the wrapper class as in
 
-      # Don't do that!
-    MyL4pWrapper->get_logger();
+    package UserPackage;
+    my $logger = MyL4pWrapper->get_logger();
 
-and assume that Log4perl will take the class of the current package
-as the category. (Reason behind this is that Log4perl will think you're
-calling C<get_logger("MyL4pWrapper")> and take "MyL4pWrapper" as the 
-category.)
+To have the above call to get_logger return a logger for the 
+"UserPackage" category, you need to tell Log4perl that "MyL4pWrapper"
+is a Log4perl wrapper class:
+
+    use MyL4pWrapper;
+    Log::Log4perl->wrapper_register(__PACKAGE__);
+
+    sub get_logger {
+          # Now gets a logger for the category of the calling package
+        my $logger = Log::Log4perl->get_logger();
+    }
+
+This feature works both for Log4perl-relaying classes like the wrapper
+described above, and for wrappers that inherit from Log4perl use Log4perl's
+get_logger function via inheritance, alike.
 
 =head1 Access to Internals
 
