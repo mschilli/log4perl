@@ -1434,7 +1434,10 @@ add the C<:nowarn> target to the module's C<use Log::Log4perl> call:
     use Log::Log4perl qw(get_logger :nowarn);
 
 This will have Log::Log4perl silently ignore all logging statements if
-no initialization has taken place. 
+no initialization has taken place. If, instead of using init(), you're 
+using Log4perl's API to define loggers and appenders, the same 
+notification happens if no call to add_appenders() is made, i.e. no
+appenders are defined.
 
 If the module wants to figure out if some other program part has 
 already initialized Log::Log4perl, it can do so by calling

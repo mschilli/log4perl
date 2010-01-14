@@ -13,6 +13,8 @@
              now need to call Log::Log4perl->wrapper_register to adapt
              get_logger() category fetching. Detailed docs under 
              "Using Log::Log4perl with wrapper functions and classes"
+   *    (ms) Added note to FAQ on 'no init happened' warnings for API 
+             initializations, as suggested by Malcolm Nooning.
 
 1.26 (2009/11/22)
     *   (ms) [RT 50495] Perl code in the config file is now evaluated/
