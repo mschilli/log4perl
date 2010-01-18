@@ -109,7 +109,6 @@ sub _init {
     $LOGGERS_DEFINED = 0;
 
     print "Calling _init\n" if _INTERNAL_DEBUG;
-    $Log::Log4perl::Logger::INITIALIZED = 1;
 
     #keep track so we don't create the same one twice
     my %appenders_created = ();
@@ -310,6 +309,8 @@ sub _init {
 
         # Successful init(), save config for later
     $OLD_CONFIG = $data;
+
+    $Log::Log4perl::Logger::INITIALIZED = 1;
 }
 
 ##################################################
