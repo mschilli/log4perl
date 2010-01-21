@@ -17,6 +17,9 @@
              initializations, as suggested by Malcolm Nooning.
    *    (ms) Applied patch by Christopher Mckay which sets
              Log4perl::Logger::INITIALIZED only if it's fully initialized.
+   *    (ms) Emmanuel Rodriguez suggested changing TestBuffer's reset() 
+             method to leave the logger population alone. Added clear()
+             to accomodate the need for a single buffer reset.
 
 1.26 (2009/11/22)
     *   (ms) [RT 50495] Perl code in the config file is now evaluated/
