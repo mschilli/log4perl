@@ -306,6 +306,8 @@ sub curly_action {
             splice @parts, 0, @parts - $curlies;
         }
         $data = File::Spec->catfile(@parts);
+    } elsif($ops eq "p") {
+        $data = substr $data, 0, $curlies;
     }
 
     return $data;
@@ -471,7 +473,7 @@ replaced by the logging engine when it's time to log the message:
     %m{chomp} The message to be logged, stripped off a trailing newline
     %M Method or function where the logging request was issued
     %n Newline (OS-independent)
-    %p Priority of the logging event
+    %p Priority of the logging event (%p{1} shows the first letter)
     %P pid of the current process
     %r Number of milliseconds elapsed from program start to logging 
        event

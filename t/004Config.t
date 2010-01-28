@@ -7,7 +7,7 @@
 # change 'tests => 1' to 'tests => last_test_to_print';
 #########################
 use Test::More;
-BEGIN { plan tests => 24 };
+BEGIN { plan tests => 26 };
 
 use Log::Log4perl;
 use Log::Log4perl::Appender::TestBuffer;
@@ -320,6 +320,27 @@ Log::Log4perl::Appender::TestBuffer->by_name("A1")->buffer("");
 SomePackage::somepackagefunc();
 is(Log::Log4perl::Appender::TestBuffer->by_name("A1")->buffer(), 
         "somepackagefuncGurgel", "%M{1} package");
+
+######################################################################
+# PatternLayout %p{1}
+######################################################################
+Log::Log4perl::Appender::TestBuffer->reset();
+
+Log::Log4perl->init(\ <<EOT);
+log4j.logger.foo=DEBUG, A1
+log4j.appender.A1=Log::Log4perl::Appender::TestBuffer
+log4j.appender.A1.layout=org.apache.log4j.PatternLayout
+log4j.appender.A1.layout.ConversionPattern=-%p{1}- %m
+EOT
+
+somefunc();
+is(Log::Log4perl::Appender::TestBuffer->by_name("A1")->buffer(),
+        "-D- Gurgel", "%p{1} main");
+
+Log::Log4perl::Appender::TestBuffer->by_name("A1")->buffer("");
+SomePackage::somepackagefunc();
+is(Log::Log4perl::Appender::TestBuffer->by_name("A1")->buffer(), 
+        "-D- Gurgel", "%p{1} package");
 
 ######################################################################
 # Test accessors
