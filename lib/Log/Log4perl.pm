@@ -14,7 +14,7 @@ use Log::Log4perl::Level;
 use Log::Log4perl::Config;
 use Log::Log4perl::Appender;
 
-our $VERSION = '1.26';
+our $VERSION = '1.27';
 
    # set this to '1' if you're using a wrapper
    # around Log::Log4perl

@@ -20,7 +20,6 @@ Log::Log4perl->easy_init({level   => $DEBUG,
                          });
 
 my $PPM_DIR  = "ppm";
-my $CPAN_DIR = "http://www.cpan.org/authors/id";
 my $TAR      = "/bin/tar";
 my $GZIP     = "/bin/gzip";
 
@@ -32,83 +31,7 @@ my ($log4perl_tarball) = <../Log-Log4perl-*.tar.gz>;
 LOGDIE("No tarball for Log4perl found") unless defined $log4perl_tarball;
 
 mkdir $PPM_DIR, 0755 or LOGDIE("Cannot mkdir $PPM_DIR");
-
-#doall("Log::Dispatch", "DROLSKY");
-#doall("Params::Validate", "DROLSKY");
-#doall("Log::Dispatch::FileRotate", "MARKPF");
 ppm_make("Log::Log4perl", $log4perl_tarball);
-
-###########################################
-sub doall {
-###########################################
-    my($module, $id) = @_;
-
-    my $tarball = fetch_tarball($module, $id);
-    ppm_make($module, $tarball);
-}
-
-###########################################
-sub fetch_tarball {
-###########################################
-    my($module, $id) = @_;
-
-    LOGDIE("invalid id: $id") unless $id =~ /(.)(.)(.*)/;
-
-    DEBUG("Making $module ($id)");
-
-    my $author_dir = "$CPAN_DIR/$1/$1$2/$1$2$3";
-
-    DEBUG("Searching in $author_dir");
-
-    (my $mod_dir = $module) =~ s/::/-/g;
-
-    my($tb) = <$mod_dir*.tar.gz>;
-    if(defined $tb and -f $tb) {
-        INFO("$tb already exists");
-        return $tb;
-    }
-
-    my $data = get $author_dir or LOGDIE("Cannot get $author_dir");
-    my $tarball  = undef;
-    my $max  = 0;
-
-    while($data =~ /($mod_dir-([\d.]+)\..*?)"/g) {
-        DEBUG("Found $1 on CPAN");
-        if($2 > $max) {
-            $tarball = $1;
-        }
-    }
-
-    LOGDIE("Cannot find latest version") unless defined $tarball;
-
-    my $file = basename($tarball);
-
-    INFO("Fetching $author_dir/$tarball");
-
-    my $rc = getstore("$author_dir/$tarball", $file) or 
-    LOGDIE("Cannot getstore $tarball");
-
-    LOGDIE("HTTP GET failed ($rc)") if $rc != 200;
-
-    DEBUG("$file stored ($rc)");
-
-    return $file;
-}
-
-###########################################
-sub repackage_tarball {
-###########################################
-    my($tarball) = @_;
- 
-    DEBUG("Repackaging $tarball");
-
-    if(-d "blib") {
-        rmtree "blib" or die "Cannot rmtree blib";
-    }
-
-    system("$TAR zxf $tarball; $TAR zcf $tarball blib");
-    rmtree "blib" or die "Cannot rmtree blib";
-}
 
 ###########################################
 sub ppm_make {
@@ -149,6 +72,7 @@ sub ppm_make {
     my $ppm = PPM::Make->new(os   => "", 
                              arch => "",
                              vs   => 1,
+                             no_remote_lookup => 1,
                             );
     $ppm->make_ppm();
 
