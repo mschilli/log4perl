@@ -153,7 +153,7 @@ sub log {
 # Relay this call to Log::Log4perl::Appender:* or
 # Log::Dispatch::*
 ##################################################
-    my ($self, $p, $category, $level) = @_;
+    my ($self, $p, $category, $level, $cache) = @_;
 
     # Check if the appender has a last-minute veto in form
     # of an "appender threshold"
@@ -209,12 +209,23 @@ sub log {
         ) if $self->layout();
     }
 
-    $self->{appender}->log(%$p, 
-                            #these are used by our Appender::DBI
-                            log4p_category => $category,
-                            log4p_level    => $level,
-                          );
+    my $args = [%$p, log4p_category => $category, log4p_level => $level];
+
+    if(defined $cache) {
+        $$cache = $args;
+    } else {
+        $self->{appender}->log(@$args);
+    }
+
     return 1;
+}
+
+###########################################
+sub log_cached {
+###########################################
+    my ($self, $cache) = @_;
+
+    $self->{appender}->log(@$cache);
 }
 
 ##################################################
@@ -627,13 +638,58 @@ perform these steps. Here's the lineup:
     $syncApp->post_init();
     $syncApp->composite(1);
 
-
       # The Synchronized appender is now ready, assign it to a logger
       # and start logging.
     get_logger("")->add_appender($syncApp);
 
     get_logger("")->level($DEBUG);
     get_logger("wonk")->debug("waah!");
+
+The composite appender's log() function will typically cache incoming 
+messages until a certain trigger condition is met and then forward a bulk
+of messages to the relay appender.
+
+Caching messages is surprisingly tricky, because you want them to look
+like they came from the code location they were originally issued from
+and not from the location that triggers the flush. Luckily, Log4perl
+offers a cache mechanism for messages, all you need to do is call the
+base class' log() function with an additional reference to a scalar,
+and then save its content to your composite appender's message buffer
+afterwards:
+
+    ###########################################
+    sub log {
+    ###########################################
+        my($self, %params) = @_;
+
+        # ... some logic to decide whether to cache or flush
+
+            # We need to cache.
+            # Ask the appender to save a cached message in $cache
+        $self->{relay_app}->SUPER::log(\%params,
+                             $params{log4p_category},
+                             $params{log4p_level}, \my $cache);
+
+            # Save it in the appender's message buffer
+        push @{ $self->{buffer} }, $cache;
+    }
+
+Later, when the time comes to flush the cached messages, a call to the relay
+appender's base class' log_cached() method with the cached message as 
+an argument will forward the correctly rendered messages:
+
+    ###########################################
+    sub log {
+    ###########################################
+        my($self, %params) = @_;
+
+        # ... some logic to decide whether to cache or flush
+
+            # Flush pending messages if we have any
+        for my $cache (@{$self->{buffer}}) {
+            $self->{relay_app}->SUPER::log_cached($cache);
+        }
+    }
 
 =head1 SEE ALSO
 

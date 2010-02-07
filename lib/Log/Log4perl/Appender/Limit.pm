@@ -57,6 +57,9 @@ sub log {
 ###########################################
     my($self, %params) = @_;
     
+    local $Log::Log4perl::caller_depth;
+    $Log::Log4perl::caller_depth += 2;
+
         # Check if message needs to be discarded
     my $discard = 0;
     if(defined $self->{max_until_discarded} and
@@ -79,13 +82,13 @@ sub log {
             # Message needs to be blocked for now.
         return if $discard;
 
-            # Save event time for later (if the appender renders the time)
-        $params{log4p_logtime} = 
-          $self->{app}->{layout}->{time_function}->() if exists
-          $self->{app}->{layout}->{time_function};
+            # Ask the appender to save a cached message in $cache
+        $self->{app}->SUPER::log(\%params,
+                             $params{log4p_category},
+                             $params{log4p_level}, \my $cache);
 
             # Save message and other parameters
-        push @{$self->{buffer}}, \%params if $self->{accumulate};
+        push @{$self->{buffer}}, $cache if $self->{accumulate};
 
         $self->save() if $self->{persistent};
 
@@ -95,8 +98,6 @@ sub log {
     # Relay all messages we got to the SUPER class, which needs to render the
     # messages according to the appender's layout, first.
 
-    $Log::Log4perl::caller_depth += 2;
-
         # Log pending messages if we have any
     $self->flush();
 
@@ -104,8 +105,6 @@ sub log {
     $self->{app}->SUPER::log(\%params,
                              $params{log4p_category},
                              $params{log4p_level});
-
-    $Log::Log4perl::caller_depth -= 2;
 
     $self->{sent_last} = time();
 
@@ -164,13 +163,7 @@ sub flush {
 
         # Log pending messages if we have any
     for(@{$self->{buffer}}) {
-            # Trick the renderer into using the original event time
-        local $self->{app}->{layout}->{time_function};
-        $self->{app}->{layout}->{time_function} = 
-                                    sub { $_->{log4p_logtime} };
-        $self->{app}->SUPER::log($_,
-                                 $_->{log4p_category},
-                                 $_->{log4p_level});
+        $self->{app}->SUPER::log_cached($_);
     }
 
         # Empty buffer

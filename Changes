@@ -22,6 +22,10 @@
              to accomodate the need for a single buffer reset.
    *    (ms) Xavier Caron added %p{1} to allow abbreviated priority
              strings in the pattern layout.
+   *    (ms) Redid composite appenders to address problems with incorrect
+             caller() data. L4p now supports a $cache parameter to be 
+             passed to the log() function, which stores the completely
+             rendered message and can be passed to log_cached() later on.
 
 1.26 (2009/11/22)
     *   (ms) [RT 50495] Perl code in the config file is now evaluated/

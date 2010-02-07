@@ -60,13 +60,13 @@ sub log {
        @{$self->{buffer}} == $self->{max_messages}) {
         shift @{$self->{buffer}};
     }
+        # Ask the appender to save a cached message in $cache
+    $self->{app}->SUPER::log(\%params,
+                         $params{log4p_category},
+                         $params{log4p_level}, \my $cache);
 
-        # Save event time for later
-    $params{log4p_logtime} = $self->{app}->{layout}->{time_function}->() if
-       exists $self->{app}->{layout}->{time_function};
-
-        # Save message and other parameters
-    push @{$self->{buffer}}, \%params;
+        # Save it in the appender's message buffer
+    push @{ $self->{buffer} }, $cache;
 
     $self->flush() if $self->{trigger}->($self, \%params);
 }
@@ -76,15 +76,9 @@ sub flush {
 ###########################################
     my($self) = @_;
 
-        # Log pending messages if we have any
-    for(@{$self->{buffer}}) {
-            # Trick the renderer into using the original event time
-        local $self->{app}->{layout}->{time_function};
-        $self->{app}->{layout}->{time_function} =
-                                    sub { $_->{log4p_logtime} };
-        $self->{app}->SUPER::log($_,
-                                 $_->{log4p_category},
-                                 $_->{log4p_level});
+        # Flush pending messages if we have any
+    for my $cache (@{$self->{buffer}}) {
+        $self->{app}->SUPER::log_cached($cache);
     }
 
         # Empty buffer
