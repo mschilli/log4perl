@@ -2,10 +2,7 @@
  Revision history for Log::Log4perl
 ##################################################
 
-1.27 (not yet released)
-   *    (ms) Made meta tag compatible with MakeMaker versions < 6.50
-        (ms) [RT 52083] Fixed manifest glitch from 1.26 (reported by
-             Lars Thegler).
+1.27 (2010/02/07)
    *    (ms) ***WARNING: This might break backward compatibility 
                          with some wrapper classes. 
              [RT 52913] Fixed category fetching in
@@ -13,6 +10,9 @@
              now need to call Log::Log4perl->wrapper_register to adapt
              get_logger() category fetching. Detailed docs under 
              "Using Log::Log4perl with wrapper functions and classes"
+   *    (ms) Made meta tag compatible with MakeMaker versions < 6.50
+        (ms) [RT 52083] Fixed manifest glitch from 1.26 (reported by
+             Lars Thegler).
    *    (ms) Added note to FAQ on 'no init happened' warnings for API 
              initializations, as suggested by Malcolm Nooning.
    *    (ms) Applied patch by Christopher Mckay which sets

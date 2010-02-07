@@ -1,5 +1,5 @@
 ######################################################################
-    Log::Log4perl 1.26
+    Log::Log4perl 1.27
 ######################################################################
 
 NAME
@@ -1823,21 +1823,57 @@ How about Log::Dispatch::Config?
     subsystems which you need to control independantly, you'll love the
     features of "Log::Log4perl", which is equally easy to use.
 
-Using Log::Log4perl from wrapper classes
+Using Log::Log4perl with wrapper functions and classes
     If you don't use "Log::Log4perl" as described above, but from a wrapper
-    class (like your own Logging class which in turn uses "Log::Log4perl"),
-    the pattern layout will generate wrong data for %F, %C, %L and the like.
-    Reason for this is that "Log::Log4perl"'s loggers assume a static caller
-    depth to the application that's using them. If you're using one (or
-    more) wrapper classes, "Log::Log4perl" will indicate where your logger
-    classes called the loggers, not where your application called your
-    wrapper, which is probably what you want in this case. But don't
-    dispair, there's a solution: Just increase the value of
+    function, the pattern layout will generate wrong data for %F, %C, %L,
+    and the like. Reason for this is that "Log::Log4perl"'s loggers assume a
+    static caller depth to the application that's using them.
+
+    If you're using one (or more) wrapper functions, "Log::Log4perl" will
+    indicate where your logger function called the loggers, not where your
+    application called your wrapper:
+
+        use Log::Log4perl qw(:easy);
+        Log::Log4perl->easy_init({ level => $DEBUG, 
+                                   layout => "%M %m%n" });
+
+        sub mylog {
+            my($message) = @_;
+
+            DEBUG $message;
+        }
+
+        sub func {
+            mylog "Hello";
+        }
+
+        func();
+
+    prints
+
+        main::mylog Hello
+
+    but that's probably not what your application expects. Rather, you'd
+    want
+
+        main::func Hello
+
+    because the "func" function called your logging function.
+
+    But don't dispair, there's a solution: Just increase the value of
     $Log::Log4perl::caller_depth (defaults to 0) by one for every wrapper
     that's in between your application and "Log::Log4perl", then
-    "Log::Log4perl" will compensate for the difference.
+    "Log::Log4perl" will compensate for the difference:
 
-    Also, note that if you're using a subclass of Log4perl, like
+        sub mylog {
+            my($message) = @_;
+
+            local $Log::Log4perl::caller_depth =
+                  $Log::Log4perl::caller_depth + 1;
+            DEBUG $message;
+        }
+
+    Also, note that if you're writing a subclass of Log4perl, like
 
         package MyL4pWrapper;
         use Log::Log4perl;
@@ -1847,21 +1883,31 @@ Using Log::Log4perl from wrapper classes
 
         use MyL4pWrapper;
 
-        sub some_function {
-            my $logger = MyL4pWrapper->get_logger(__PACKAGE__);
-            $logger->debug("Hey, there.");
+        sub get_logger {
+            my $logger = Log::Log4perl->get_logger();
         }
 
-    you have to explicitly spell out the category, as in __PACKAGE__ above.
-    You can't rely on
+    then the get_logger() call will get a logger for the "MyL4pWrapper"
+    category, not for the package calling the wrapper class as in
 
-          # Don't do that!
-        MyL4pWrapper->get_logger();
+        package UserPackage;
+        my $logger = MyL4pWrapper->get_logger();
 
-    and assume that Log4perl will take the class of the current package as
-    the category. (Reason behind this is that Log4perl will think you're
-    calling "get_logger("MyL4pWrapper")" and take "MyL4pWrapper" as the
-    category.)
+    To have the above call to get_logger return a logger for the
+    "UserPackage" category, you need to tell Log4perl that "MyL4pWrapper" is
+    a Log4perl wrapper class:
+
+        use MyL4pWrapper;
+        Log::Log4perl->wrapper_register(__PACKAGE__);
+
+        sub get_logger {
+              # Now gets a logger for the category of the calling package
+            my $logger = Log::Log4perl->get_logger();
+        }
+
+    This feature works both for Log4perl-relaying classes like the wrapper
+    described above, and for wrappers that inherit from Log4perl use
+    Log4perl's get_logger function via inheritance, alike.
 
 Access to Internals
     The following methods are only of use if you want to peek/poke in the
