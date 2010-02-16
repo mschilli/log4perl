@@ -776,8 +776,11 @@ sub create_log_level_methods {
   # -erik
 
   *{__PACKAGE__ . "::$lclevel"} = sub {
-        print "$lclevel: ($_[0]->{category}/$_[0]->{level}) [@_]\n" 
-            if _INTERNAL_DEBUG;
+        if(_INTERNAL_DEBUG) {
+            my $level_disp = (defined $_[0]->{level} ? $_[0]->{level} 
+                                                     : "[undef]");
+            print "$lclevel: ($_[0]->{category}/$level_disp) [@_]\n";
+        }
         init_warn() unless $INITIALIZED or $NON_INIT_WARNED;
         $_[0]->{$level}->(@_, $level) if defined $_[0]->{$level};
      };
