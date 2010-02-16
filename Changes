@@ -2,6 +2,9 @@
  Revision history for Log::Log4perl
 ##################################################
 
+1.28 (not yet released)
+   *    (ms) Fixed caller stack with Buffer composite appender
+
 1.27 (2010/02/07)
    *    (ms) ***WARNING: This might break backward compatibility 
                          with some wrapper classes. 

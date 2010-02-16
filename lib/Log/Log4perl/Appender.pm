@@ -664,6 +664,10 @@ afterwards:
 
         # ... some logic to decide whether to cache or flush
 
+            # Adjust the caller stack
+        local $Log::Log4perl::caller_depth;
+        $Log::Log4perl::caller_depth += 2;
+
             # We need to cache.
             # Ask the appender to save a cached message in $cache
         $self->{relay_app}->SUPER::log(\%params,
@@ -674,9 +678,15 @@ afterwards:
         push @{ $self->{buffer} }, $cache;
     }
 
+Note that before calling the log() method of the relay appender's base class
+(and thus introducing two additional levels on the call stack), we need to
+adjust the call stack to allow Log4perl to render cspecs like the %M or %L
+correctly.  The cache will then contain a correctly rendered message, according
+to the layout of the target appender.
+
 Later, when the time comes to flush the cached messages, a call to the relay
 appender's base class' log_cached() method with the cached message as 
-an argument will forward the correctly rendered messages:
+an argument will forward the correctly rendered message:
 
     ###########################################
     sub log {
@@ -690,6 +700,7 @@ an argument will forward the correctly rendered messages:
             $self->{relay_app}->SUPER::log_cached($cache);
         }
     }
+
 
 =head1 SEE ALSO
 

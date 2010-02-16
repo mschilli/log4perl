@@ -17,7 +17,7 @@ BEGIN {
                                                # early Perl versions dont
                                                # have it.
     }else{
-        plan tests => 16;
+        plan tests => 18;
     }
 }
 
@@ -279,3 +279,44 @@ $buffer = Log::Log4perl::Appender::TestBuffer->by_name("Buffer");
 like($buffer->buffer(), 
      qr/cat=main meth=main::.*cat=Willy.Wonka meth=Willy::Wonka::func/s,
      "%M/%c with composite appender");
+
+### Different caller stacks with normal vs. composite appenders
+Log::Log4perl->reset();
+
+$conf = qq(
+  log4perl.category = WARN, Buffer1, Composite
+
+    # 1st TestBuffer appender
+  log4perl.appender.Buffer1          = Log::Log4perl::Appender::TestBuffer
+  log4perl.appender.Buffer1.layout   = PatternLayout
+  log4perl.appender.Buffer1.layout.ConversionPattern=meth=%M %m %n
+
+    # 2nd TestBuffer appender
+  log4perl.appender.Buffer2          = Log::Log4perl::Appender::TestBuffer
+  log4perl.appender.Buffer2.layout   = PatternLayout
+  log4perl.appender.Buffer2.layout.ConversionPattern=meth=%M %m %n
+
+    # Composite Appender
+  log4perl.appender.Composite         = Log::Log4perl::Appender::Buffer
+  log4perl.appender.Composite.appender     = Buffer2
+  log4perl.appender.Composite.trigger = sub { 1 }
+);
+
+Log::Log4perl->init(\$conf);
+
+my $buffer1 = Log::Log4perl::Appender::TestBuffer->by_name("Buffer1");
+my $buffer2 = Log::Log4perl::Appender::TestBuffer->by_name("Buffer2");
+
+$logger = get_logger();
+
+$logger->warn("Sent from main");
+
+Willy::Wonka::func();
+
+like $buffer1->buffer(), 
+    qr/meth=main:: Sent from main.*meth=Willy::Wonka::func Sent from func/s,
+    "caller stack from direct appender";
+like $buffer2->buffer(),
+    qr/meth=main:: Sent from main.*meth=Willy::Wonka::func Sent from func/s,
+    "caller stack from composite appender";
+
