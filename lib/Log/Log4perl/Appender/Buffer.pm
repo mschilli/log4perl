@@ -54,8 +54,8 @@ sub log {
 ###########################################
     my($self, %params) = @_;
 
-    local $Log::Log4perl::caller_depth;
-    $Log::Log4perl::caller_depth += 2;
+    local $Log::Log4perl::caller_depth =
+        $Log::Log4perl::caller_depth + 2;
 
         # Do we need to discard a message because there's already
         # max_size messages in the buffer?

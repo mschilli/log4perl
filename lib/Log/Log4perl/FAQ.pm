@@ -370,7 +370,8 @@ C<$SIG{__DIE__}> pseudo signal handler
             # this message but catch it later
             return;
         }
-        $Log::Log4perl::caller_depth++;
+        local $Log::Log4perl::caller_depth =
+              $Log::Log4perl::caller_depth + 1;
         my $logger = get_logger("");
         $logger->fatal(@_);
         die @_; # Now terminate really
@@ -393,7 +394,8 @@ If you make sure you've configured with a root logger like this:
 
 then all C<die()> messages will be routed to a file properly. The line
 
-     $Log::Log4perl::caller_depth++;
+     local $Log::Log4perl::caller_depth =
+           $Log::Log4perl::caller_depth + 1;
 
 in the pseudo signal handler above merits a more detailed explanation. With
 the setup above, if a module calls C<die()> in one of its functions, 
@@ -1704,7 +1706,8 @@ required, a C<__DIE__> handler is appropriate:
             # this message but catch it later
             return;
         }
-        $Log::Log4perl::caller_depth++;
+        local $Log::Log4perl::caller_depth =
+            $Log::Log4perl::caller_depth + 1;
         LOGDIE @_;
     };
 

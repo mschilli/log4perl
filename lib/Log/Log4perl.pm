@@ -490,9 +490,9 @@ sub infiltrate_lwp {  #
 
     my $l4p_wrapper = sub {
         my($prio, @message) = @_;
-        $Log::Log4perl::caller_depth += 2;
+        local $Log::Log4perl::caller_depth =
+              $Log::Log4perl::caller_depth + 2;
         get_logger(scalar caller(1))->log($prio, @message);
-        $Log::Log4perl::caller_depth -= 2;
     };
 
     *LWP::Debug::trace = sub { 

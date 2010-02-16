@@ -665,8 +665,8 @@ afterwards:
         # ... some logic to decide whether to cache or flush
 
             # Adjust the caller stack
-        local $Log::Log4perl::caller_depth;
-        $Log::Log4perl::caller_depth += 2;
+        local $Log::Log4perl::caller_depth =
+              $Log::Log4perl::caller_depth + 2;
 
             # We need to cache.
             # Ask the appender to save a cached message in $cache

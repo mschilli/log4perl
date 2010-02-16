@@ -57,8 +57,8 @@ sub log {
 ###########################################
     my($self, %params) = @_;
     
-    local $Log::Log4perl::caller_depth;
-    $Log::Log4perl::caller_depth += 2;
+    local $Log::Log4perl::caller_depth =
+        $Log::Log4perl::caller_depth + 2;
 
         # Check if message needs to be discarded
     my $discard = 0;

@@ -43,7 +43,8 @@ sub DESTROY {}
 package main;
 
 use Log::Log4perl;
-$Log::Log4perl::caller_depth = 1;
+local $Log::Log4perl::caller_depth =
+    $Log::Log4perl::caller_depth + 1;
 use Log::Log4perl::Level;
 
 my $log0 = Wrapper::Log4perl->get_logger("");
@@ -60,7 +61,7 @@ $log0->add_appender($app0);
 my $rootlogger = Wrapper::Log4perl->get_logger("");
 $rootlogger->debug("Hello");
 
-is($app0->buffer(), "File: 022Wrap.t Line number: 61 package: main",
+is($app0->buffer(), "File: 022Wrap.t Line number: 62 package: main",
    "appender check");
 
 ##################################################
