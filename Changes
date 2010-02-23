@@ -2,12 +2,13 @@
  Revision history for Log::Log4perl
 ##################################################
 
-1.28 (not yet released)
+1.28 (2010/02/22)
    *    (ms) Fixed caller stack with Buffer composite appender
    *    (ms) Fixed 'local caller_depth' error in various places. First
              localizing a variable and then increasing it is incorrect,
              as this ignores previous settings. The correct way of
              increasing the caller level is: 'local depth = depth + 1'.
+   *    (ms) Added Log::Log4perl::Catalyst for use in Catalyst applications.
 
 1.27 (2010/02/07)
    *    (ms) ***WARNING: This might break backward compatibility 
