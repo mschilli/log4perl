@@ -2,6 +2,8 @@
  Revision history for Log::Log4perl
 ##################################################
 
+1.29 (not yet released)
+
 1.28 (2010/02/24)
    *    (ms) Fixed caller stack with Buffer composite appender
    *    (ms) Fixed 'local caller_depth' error in various places. First
