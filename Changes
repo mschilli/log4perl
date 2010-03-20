@@ -3,6 +3,8 @@
 ##################################################
 
 1.29 (not yet released)
+   *    (ms) Added documentation on how to use Log4perl's :easy macros
+             with Catalyst in Log::Log4perl::Catalyst.
 
 1.28 (2010/02/24)
    *    (ms) Fixed caller stack with Buffer composite appender
