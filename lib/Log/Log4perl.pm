@@ -187,7 +187,7 @@ sub import {
     if(exists $tags{':resurrect'}) {
         my $FILTER_MODULE = "Filter::Util::Call";
         if(! Log::Log4perl::Util::module_available($FILTER_MODULE)) {
-            die "$FILTER_MODULE required with :unhide" .
+            die "$FILTER_MODULE required with :resurrect" .
                 "(install from CPAN)";
         }
         eval "require $FILTER_MODULE" or die "Cannot pull in $FILTER_MODULE";
@@ -2691,7 +2691,7 @@ for details.
 
 Log::Log4perl is still being actively developed. We will
 always make sure the test suite (approx. 500 cases) will pass, but there 
-might still be bugs. please check http://log4perl.sourceforge.net
+might still be bugs. please check http://github.com/mschilli/log4perl
 for the latest release. The api has reached a mature state, we will 
 not change it unless for a good reason.
 
