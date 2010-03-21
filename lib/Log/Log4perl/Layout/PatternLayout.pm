@@ -6,6 +6,7 @@ use 5.006;
 use strict;
 use warnings;
 use Carp;
+use Log::Log4perl;
 use Log::Log4perl::Util;
 use Log::Log4perl::Level;
 use Log::Log4perl::DateFormat;
@@ -166,7 +167,20 @@ sub render {
         my ($package, $filename, $line, 
             $subroutine, $hasargs,
             $wantarray, $evaltext, $is_require, 
-            $hints, $bitmask) = caller($caller_level);
+            $hints, $bitmask);
+
+        { 
+            ($package, $filename, $line, 
+             $subroutine, $hasargs,
+             $wantarray, $evaltext, $is_require, 
+             $hints, $bitmask) = caller($caller_level);
+
+            if(exists $Log::Log4perl::WRAPPERS_REGISTERED{$package}) {
+                  # We hit a predefined wrapper, step up to the next frame.
+                $caller_level++;
+                redo;
+            }
+        }
 
         # If caller() choked because of a whacko caller level,
         # correct undefined values to '[undef]' in order to prevent 

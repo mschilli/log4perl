@@ -5,6 +5,10 @@
 1.29 (not yet released)
    *    (ms) Added documentation on how to use Log4perl's :easy macros
              with Catalyst in Log::Log4perl::Catalyst.
+   *    (ms) wrapper_register() now deals with caller_depth automatically.
+             Backwards compatibility with old wrapper classes using 
+             caller_depth directly is provided. Documentation has been 
+             updated.
 
 1.28 (2010/02/24)
    *    (ms) Fixed caller stack with Buffer composite appender

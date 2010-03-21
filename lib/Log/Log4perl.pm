@@ -2492,8 +2492,21 @@ want
 
 because the C<func> function called your logging function.
 
-But don't dispair, there's a solution: Just increase the value
-of C<$Log::Log4perl::caller_depth> (defaults to 0) by one for every
+But don't dispair, there's a solution: Just register your wrapper
+package with Log4perl beforehand. If Log4perl then finds that it's being 
+called from a registered wrapper, it will automatically step up to the
+next call frame.
+
+    Log::Log4perl->wrapper_register(__PACKAGE__);
+
+    sub mylog {
+        my($message) = @_;
+
+        DEBUG $message;
+    }
+
+Alternatively, you can increase the value of the global variable
+C<$Log::Log4perl::caller_depth> (defaults to 0) by one for every
 wrapper that's in between your application and C<Log::Log4perl>,
 then C<Log::Log4perl> will compensate for the difference:
 

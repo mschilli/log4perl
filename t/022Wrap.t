@@ -7,7 +7,7 @@ use strict;
 
 use Test::More;
 
-BEGIN { plan tests => 4 }
+BEGIN { plan tests => 5 }
 
 ##################################################
 package Wrapper::Log4perl;
@@ -62,6 +62,15 @@ my $rootlogger = Wrapper::Log4perl->get_logger("");
 $rootlogger->debug("Hello");
 
 is($app0->buffer(), "File: 022Wrap.t Line number: 62 package: main",
+   "appender check");
+
+  # with the new wrapper_register in Log4perl 1.29, this will even work
+  # *without* modifying caller_depth
+$Log::Log4perl::caller_depth--;
+$app0->buffer("");
+$rootlogger->debug("Hello");
+
+is($app0->buffer(), "File: 022Wrap.t Line number: 71 package: main",
    "appender check");
 
 ##################################################
