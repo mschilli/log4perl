@@ -65,7 +65,7 @@ sub resurrector_loader {
 
     my $fh = resurrector_fh($module);
 
-    $INC{$module} = 1;
+    $INC{$module} = $module;
     return $fh;
 }
 

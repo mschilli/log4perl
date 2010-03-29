@@ -9,6 +9,9 @@
              Backwards compatibility with old wrapper classes using 
              caller_depth directly is provided. Documentation has been 
              updated.
+   *    (ms) Felix Antonius Wilhelm Ostmann reported Resurrector.pm 
+             crashes, fixed as suggested by setting the %INC value to 
+             the module path.
 
 1.28 (2010/02/24)
    *    (ms) Fixed caller stack with Buffer composite appender
