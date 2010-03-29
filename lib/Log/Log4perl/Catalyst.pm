@@ -24,9 +24,9 @@ sub init {
         *{$level} = sub {
             my ( $self, @message ) = @_;
 
-            local $Log::Log4perl::caller_depth;
-            $Log::Log4perl::caller_depth += 
-                $LOG_LEVEL_ADJUSTMENT;
+            local $Log::Log4perl::caller_depth =
+                  $Log::Log4perl::caller_depth +
+                     $LOG_LEVEL_ADJUSTMENT;
 
             my $logger = Log::Log4perl->get_logger();
             $logger->$level(@message);
@@ -36,9 +36,9 @@ sub init {
         *{"is_$level"} = sub {
             my ( $self, @message ) = @_;
 
-            local $Log::Log4perl::caller_depth;
-            $Log::Log4perl::caller_depth += 
-                $LOG_LEVEL_ADJUSTMENT;
+            local $Log::Log4perl::caller_depth =
+                  $Log::Log4perl::caller_depth +
+                     $LOG_LEVEL_ADJUSTMENT;
 
             my $logger = Log::Log4perl->get_logger();
             my $func   = "is_" . $level;
