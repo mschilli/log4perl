@@ -3,6 +3,7 @@ use warnings;
 use strict;
 
 use File::Temp qw(tempfile);
+use File::Spec;
 
 use constant INTERNAL_DEBUG => 0;
 
@@ -42,9 +43,11 @@ sub resurrector_loader {
 ###########################################
     my ($code, $module) = @_;
 
+    print "resurrector_loader called with $module\n" if INTERNAL_DEBUG;
+
       # Skip Log4perl appenders
     if($module =~ m#^Log/Log4perl/Appender#) {
-        print "Ignoreing $module (Log4perl-internal)\n" if INTERNAL_DEBUG;
+        print "Ignoring $module (Log4perl-internal)\n" if INTERNAL_DEBUG;
         return undef;
     }
 
@@ -65,7 +68,10 @@ sub resurrector_loader {
 
     my $fh = resurrector_fh($module);
 
-    $INC{$module} = $module;
+    my $abs_path = File::Spec->rel2abs( $module );
+    print "Setting %INC entry of $module to $abs_path\n" if INTERNAL_DEBUG;
+    $INC{$module} = $abs_path;
+
     return $fh;
 }
 
