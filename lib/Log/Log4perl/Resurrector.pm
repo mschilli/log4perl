@@ -51,24 +51,25 @@ sub resurrector_loader {
         return undef;
     }
 
+    my $path = $module;
+
       # Skip unknown files
     if(!-f $module) {
           # We might have a 'use lib' statement that modified the
           # INC path, search again.
-        my $path = pm_search($module);
+        $path = pm_search($module);
         if(! defined $path) {
             print "File $module not found\n" if INTERNAL_DEBUG;
             return undef;
         }
         print "File $module found in $path\n" if INTERNAL_DEBUG;
-        $module = $path;
     }
 
-    print "Resurrecting module $module\n" if INTERNAL_DEBUG;
+    print "Resurrecting module $path\n" if INTERNAL_DEBUG;
 
-    my $fh = resurrector_fh($module);
+    my $fh = resurrector_fh($path);
 
-    my $abs_path = File::Spec->rel2abs( $module );
+    my $abs_path = File::Spec->rel2abs( $path );
     print "Setting %INC entry of $module to $abs_path\n" if INTERNAL_DEBUG;
     $INC{$module} = $abs_path;
 
