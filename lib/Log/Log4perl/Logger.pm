@@ -25,7 +25,8 @@ our $LOGGERS_BY_NAME = {};
 our %APPENDER_BY_NAME = ();
 our $INITIALIZED = 0;
 our $NON_INIT_WARNED;
-
+our $DIE_DEBUG = 0;
+our $DIE_DEBUG_BUFFER = "";
     # Define the default appender that's used for formatting
     # warn/die/croak etc. messages.
 our $STRING_APP_NAME = "_l4p_warn";
@@ -852,7 +853,14 @@ sub and_warn {
 sub and_die {
 #######################################################
   my $self = shift;
-  die(callerline($self->warning_render(@_)));
+
+  my($msg) = callerline($self->warning_render(@_));
+
+  if($DIE_DEBUG) {
+      $DIE_DEBUG_BUFFER = "DIE_DEBUG: $msg";
+  } else {
+      die($msg);
+  }
 }
 
 ##################################################

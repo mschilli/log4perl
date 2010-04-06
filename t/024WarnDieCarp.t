@@ -301,3 +301,14 @@ my $foo = Foo1->new();
 eval { $foo->foo1() };
 
 like $@, qr/024WarnDieCarp.*Foo1::foo1.*eval/s, "Confess logs correct frame";
+
+######################################################################
+# logdie/warn caller level bug
+######################################################################
+Log::Log4perl->easy_init({ level => $DEBUG, layout => "%F{1}-%L: %m%n" });
+$logger = get_logger("Twix::Bar");
+
+$Log::Log4perl::Logger::DIE_DEBUG = 1;
+$logger->logdie("warn!");
+like $Log::Log4perl::Logger::DIE_DEBUG_BUFFER, qr/024WarnDieCarp/, 
+     "logdie() caller depth bug";
