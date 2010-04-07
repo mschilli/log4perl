@@ -27,7 +27,7 @@ BEGIN {
     if ($] < 5.006) {
         plan skip_all => "Only with perl >= 5.006";
     } else {
-        plan tests => 66;
+        plan tests => 70;
     }
 }
 
@@ -324,3 +324,35 @@ like $Log::Log4perl::Logger::DIE_DEBUG_BUFFER, qr/024WarnDieCarp/,
      "logdie() caller depth bug";
 unlike $Log::Log4perl::Logger::DIE_DEBUG_BUFFER, qr/Logger.pm/, 
      "logdie() caller depth bug";
+
+my $app3 = Log::Log4perl::Appender::TestBuffer->by_name("A1");
+$app3->buffer("");
+
+my $line1 = __LINE__ + 1;
+subroutine();
+
+my $line2;
+sub subroutine {
+    $line2 = __LINE__ + 1;
+    $logger->logcluck("cluck!");
+}
+
+like $app3->buffer(), qr/-$line2: cluck!/, "logcluck()";
+like $app3->buffer(), qr/main::subroutine\(\) called .* line $line1/, 
+     "logcluck()";
+
+# Carp test
+
+$app3->buffer("");
+my $line3 = __LINE__ + 1;
+subroutine_carp();
+
+my $line4;
+sub subroutine_carp {
+    $line4 = __LINE__ + 1;
+    $logger->logcarp("carp!");
+}
+
+like $app3->buffer(), qr/-$line4: carp!/, "logcarp()";
+like $app3->buffer(), qr/main::subroutine_carp\(\) called .* line $line3/, 
+     "logcarp()";

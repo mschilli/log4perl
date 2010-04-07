@@ -905,13 +905,14 @@ sub logexit {
 ##################################################
   my $self = shift;
 
+  local $Log::Log4perl::caller_depth = 
+        $Log::Log4perl::caller_depth + 1;
+
   if ($self->is_fatal()) {
         # Since we're one caller level off now, compensate for that.
-    $Log::Log4perl::caller_depth++;
     my @chomped = @_;
     chomp($chomped[-1]);
     $self->fatal(@chomped);
-    $Log::Log4perl::caller_depth--;
   }
 
   exit $Log::Log4perl::LOGEXIT_CODE;
@@ -923,16 +924,19 @@ sub logcluck {
 ##################################################
   my $self = shift;
 
-  local $Carp::CarpLevel = $Carp::CarpLevel + 1;
+  local $Log::Log4perl::caller_depth = 
+        $Log::Log4perl::caller_depth + 1;
+
+  local $Carp::CarpLevel = 
+        $Carp::CarpLevel + 1;
+
   my $msg = $self->warning_render(@_);
 
   if ($self->is_warn()) {
     my $message = Carp::longmess($msg);
-    $Log::Log4perl::caller_depth++;
     foreach (split(/\n/, $message)) {
       $self->warn("$_\n");
     }
-    $Log::Log4perl::caller_depth--;
     Carp::cluck($msg);
   }
 }
@@ -943,15 +947,17 @@ sub logcarp {
   my $self = shift;
 
   local $Carp::CarpLevel = $Carp::CarpLevel + 1;
+
+  local $Log::Log4perl::caller_depth = 
+        $Log::Log4perl::caller_depth + 1;
+
   my $msg = $self->warning_render(@_);
 
   if ($self->is_warn()) {
     my $message = Carp::shortmess($msg);
-    $Log::Log4perl::caller_depth++;
     foreach (split(/\n/, $message)) {
       $self->warn("$_\n");
     }
-    $Log::Log4perl::caller_depth--;
     Carp::carp($msg) if $Log::Log4perl::LOGDIE_MESSAGE_ON_STDERR;
   }
 }
@@ -963,16 +969,19 @@ sub logcroak {
 ##################################################
   my $self = shift;
 
-  local $Carp::CarpLevel = $Carp::CarpLevel + 1;
   my $msg = $self->warning_render(@_);
+
+  local $Carp::CarpLevel = 
+        $Carp::CarpLevel + 1;
+
+  local $Log::Log4perl::caller_depth = 
+        $Log::Log4perl::caller_depth + 1;
 
   if ($self->is_fatal()) {
     my $message = Carp::shortmess($msg);
-    $Log::Log4perl::caller_depth++;
     foreach (split(/\n/, $message)) {
       $self->fatal("$_\n");
     }
-    $Log::Log4perl::caller_depth--;
   }
 
   $Log::Log4perl::LOGDIE_MESSAGE_ON_STDERR ? 
@@ -985,16 +994,19 @@ sub logconfess {
 ##################################################
   my $self = shift;
 
-  local $Carp::CarpLevel = $Carp::CarpLevel + 1;
+  local $Carp::CarpLevel = 
+        $Carp::CarpLevel + 1;
+
+  local $Log::Log4perl::caller_depth = 
+        $Log::Log4perl::caller_depth + 1;
+
   my $msg = $self->warning_render(@_);
 
   if ($self->is_fatal()) {
     my $message = Carp::longmess($msg);
-    $Log::Log4perl::caller_depth++;
     foreach (split(/\n/, $message)) {
       $self->fatal("$_\n");
     }
-    $Log::Log4perl::caller_depth--;
   }
 
   $Log::Log4perl::LOGDIE_MESSAGE_ON_STDERR ? 
@@ -1008,10 +1020,12 @@ sub logconfess {
 sub error_warn {
 ##################################################
   my $self = shift;
+
+  local $Log::Log4perl::caller_depth = 
+        $Log::Log4perl::caller_depth + 1;
+
   if ($self->is_error()) {
-    $Log::Log4perl::caller_depth++;
     $self->error(@_);
-    $Log::Log4perl::caller_depth--;
     $self->and_warn(@_);
   }
 }
@@ -1021,12 +1035,13 @@ sub error_die {
 ##################################################
   my $self = shift;
 
+  local $Log::Log4perl::caller_depth = 
+        $Log::Log4perl::caller_depth + 1;
+
   my $msg = $self->warning_render(@_);
 
   if ($self->is_error()) {
-    $Log::Log4perl::caller_depth++;
     $self->error($msg);
-    $Log::Log4perl::caller_depth--;
   }
 
   $Log::Log4perl::LOGDIE_MESSAGE_ON_STDERR ? 
