@@ -13,6 +13,7 @@
              crashes, fixed as suggested by setting the %INC value to 
              the module path.
    *    (ms) Another caller_depth fix in Log::Log4perl::Catalyst.
+   *    (ms) Fixed logdie() caller_depth bug reported by Rob Retter.
 
 1.28 (2010/02/24)
    *    (ms) Fixed caller stack with Buffer composite appender

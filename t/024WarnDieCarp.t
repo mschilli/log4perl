@@ -27,7 +27,7 @@ BEGIN {
     if ($] < 5.006) {
         plan skip_all => "Only with perl >= 5.006";
     } else {
-        plan tests => 62;
+        plan tests => 66;
     }
 }
 
@@ -305,10 +305,22 @@ like $@, qr/024WarnDieCarp.*Foo1::foo1.*eval/s, "Confess logs correct frame";
 ######################################################################
 # logdie/warn caller level bug
 ######################################################################
-Log::Log4perl->easy_init({ level => $DEBUG, layout => "%F{1}-%L: %m%n" });
+Log::Log4perl->init(\<<'EOT');
+    log4perl.rootLogger=DEBUG, A1
+    log4perl.appender.A1=Log::Log4perl::Appender::TestBuffer
+    log4perl.appender.A1.layout=org.apache.log4j.PatternLayout
+    log4perl.appender.A1.layout.ConversionPattern=%F-%L: %m
+EOT
+
 $logger = get_logger("Twix::Bar");
 
+$logger->logwarn("warn!");
+like $warnstr, qr/024WarnDieCarp/, "logwarn() caller depth bug";
+unlike $warnstr, qr/Logger.pm/, "logwarn() caller depth bug";
+
 $Log::Log4perl::Logger::DIE_DEBUG = 1;
-$logger->logdie("warn!");
+$logger->logdie("die!");
 like $Log::Log4perl::Logger::DIE_DEBUG_BUFFER, qr/024WarnDieCarp/, 
+     "logdie() caller depth bug";
+unlike $Log::Log4perl::Logger::DIE_DEBUG_BUFFER, qr/Logger.pm/, 
      "logdie() caller depth bug";

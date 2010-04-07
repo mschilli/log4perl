@@ -859,7 +859,7 @@ sub and_die {
   if($DIE_DEBUG) {
       $DIE_DEBUG_BUFFER = "DIE_DEBUG: $msg";
   } else {
-      die($msg);
+      die("$msg\n");
   }
 }
 
@@ -867,13 +867,15 @@ sub and_die {
 sub logwarn {
 ##################################################
   my $self = shift;
+
+  local $Log::Log4perl::caller_depth = 
+        $Log::Log4perl::caller_depth + 1;
+
   if ($self->is_warn()) {
         # Since we're one caller level off now, compensate for that.
-    $Log::Log4perl::caller_depth++;
     my @chomped = @_;
     chomp($chomped[-1]);
     $self->warn(@chomped);
-    $Log::Log4perl::caller_depth--;
     $self->and_warn(@_);
   }
 }
@@ -882,13 +884,15 @@ sub logwarn {
 sub logdie {
 ##################################################
   my $self = shift;
+
+  local $Log::Log4perl::caller_depth = 
+        $Log::Log4perl::caller_depth + 1;
+
   if ($self->is_fatal()) {
         # Since we're one caller level off now, compensate for that.
-    $Log::Log4perl::caller_depth++;
     my @chomped = @_;
     chomp($chomped[-1]);
     $self->fatal(@chomped);
-    $Log::Log4perl::caller_depth--;
   }
 
   $Log::Log4perl::LOGDIE_MESSAGE_ON_STDERR ? 
