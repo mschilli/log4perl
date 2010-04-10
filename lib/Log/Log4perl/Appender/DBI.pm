@@ -322,34 +322,33 @@ Log::Log4perl::Appender::DBI - implements appending to a DB
 
 =head1 SYNOPSIS
 
-    my $config = <<'EOT';
-    log4j.category = WARN, DBAppndr
-    log4j.appender.DBAppndr             = Log::Log4perl::Appender::DBI
-    log4j.appender.DBAppndr.datasource  = DBI:CSV:f_dir=t/tmp
-    log4j.appender.DBAppndr.username    = bobjones
-    log4j.appender.DBAppndr.password    = 12345
-    log4j.appender.DBAppndr.sql         = \
-       insert into log4perltest           \
-       (loglevel, custid, category, message, ipaddr) \
-       values (?,?,?,?,?)
-    log4j.appender.DBAppndr.params.1 = %p    
-                                  #2 is custid from the log() call
-    log4j.appender.DBAppndr.params.3 = %c
-                                  #4 is the message from log()
-                                  #5 is ipaddr from log()
-        
-    
-    log4j.appender.DBAppndr.usePreparedStmt = 1
-     #--or--
-    log4j.appender.DBAppndr.bufferSize = 2
-    
-    #just pass through the array of message items in the log statement 
-    log4j.appender.DBAppndr.layout    = Log::Log4perl::Layout::NoopLayout
-    log4j.appender.DBAppndr.warp_message = 0
-    
-    
+    my $config = q{
+     log4j.category = WARN, DBAppndr
+     log4j.appender.DBAppndr             = Log::Log4perl::Appender::DBI
+     log4j.appender.DBAppndr.datasource  = DBI:CSV:f_dir=t/tmp
+     log4j.appender.DBAppndr.username    = bobjones
+     log4j.appender.DBAppndr.password    = 12345
+     log4j.appender.DBAppndr.sql         = \
+        insert into log4perltest           \
+        (loglevel, custid, category, message, ipaddr) \
+        values (?,?,?,?,?)
+     log4j.appender.DBAppndr.params.1 = %p    
+                                   #2 is custid from the log() call
+     log4j.appender.DBAppndr.params.3 = %c
+                                   #4 is the message from log()
+                                   #5 is ipaddr from log()
+         
+     
+     log4j.appender.DBAppndr.usePreparedStmt = 1
+      #--or--
+     log4j.appender.DBAppndr.bufferSize = 2
+     
+     #just pass through the array of message items in the log statement 
+     log4j.appender.DBAppndr.layout    = Log::Log4perl::Layout::NoopLayout
+     log4j.appender.DBAppndr.warp_message = 0
+    };
+     
     $logger->warn( $custid, 'big problem!!', $ip_addr );
-
 
 =head1 CAVEAT
 
