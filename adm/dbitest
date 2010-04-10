@@ -1,0 +1,29 @@
+#!/usr/local/bin/perl -w
+###########################################
+# xx -- 
+# Mike Schilli, 2010 (m@perlmeister.com)
+###########################################
+use strict;
+use Sysadm::Install qw(:all);
+use Log::Log4perl qw(:easy);
+
+my $config = q{
+    log4j.category = WARN, DBAppndr
+    log4j.appender.DBAppndr             = Log::Log4perl::Appender::DBI
+    log4j.appender.DBAppndr.datasource  = DBI:mysql:database=dbiapp
+    log4j.appender.DBAppndr.username    = root
+    log4j.appender.DBAppndr.password    = 
+    log4j.appender.DBAppndr.sql         = \
+       insert into log4perltest1           \
+       (message) values (?)
+    log4j.appender.DBAppndr.usePreparedStmt = 1
+    
+      # just pass through the array of message items in the log statement 
+    log4j.appender.DBAppndr.layout    = Log::Log4perl::Layout::NoopLayout
+    log4j.appender.DBAppndr.warp_message = 0
+}; 
+use Log::Log4perl qw(:easy);
+Log::Log4perl->init( \$config );
+
+my $logger = get_logger();
+$logger->warn( 'big problem!!' );
