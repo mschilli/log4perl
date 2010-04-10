@@ -132,9 +132,14 @@ sub log {
 sub query_execute {
     my($self, $sth, @qmarks) = @_;
 
+    my $errstr = "[no error]";
+
     for my $attempt (0..$self->{reconnect_attempts}) {
         #warn "Exe: @qmarks"; # TODO
         if(! $sth->execute(@qmarks)) {
+
+                  # save errstr because ping() would override it [RT 56145]
+                $errstr = $self->{dbh}->errstr();
 
                 # Exe failed -- was it because we lost the DB
                 # connection?
@@ -142,14 +147,9 @@ sub query_execute {
                     # No, the connection is ok, we failed because there's
                     # something wrong with the execute(): Bad SQL or 
                     # missing parameters or some such). Abort.
-                    croak "Log4perl: DBI appender error: '" .
-                          $self->{dbh}->errstr() . 
-                          "'";
+                    croak "Log4perl: DBI appender error: '$errstr'";
                 }
 
-                # warn "Log4perl: DBI->execute failed $DBI::errstr, \n".
-                #                  "on $self->{SQL}\n@qmarks";
-                #warn "Exe: failed: $DBI::errstr"; # TODO
                 if($attempt == $self->{reconnect_attempts}) {
                     croak "Log4perl: DBI appender failed to " .
                           ($self->{reconnect_attempts} == 1 ? "" : "re") .
@@ -157,9 +157,7 @@ sub query_execute {
                           "to database after " .
                           "$self->{reconnect_attempts} attempt" .
                           ($self->{reconnect_attempts} == 1 ? "" : "s") .
-                          " (last error error was [" .
-                          $self->{dbh}->errstr() . 
-                          "])";
+                          " (last error error was [$errstr]";
                 }
             if(! $self->{dbh}->ping()) {
                 # Ping failed, try to reconnect
@@ -186,7 +184,7 @@ sub query_execute {
         }
         return 1;
     }
-    croak "Log4perl: DBI->execute failed $DBI::errstr, \n".
+    croak "Log4perl: DBI->execute failed $errstr, \n".
           "on $self->{SQL}\n @qmarks";
 }
 
