@@ -1,5 +1,12 @@
 #!/usr/bin/perl
 
+BEGIN { 
+    if($ENV{INTERNAL_DEBUG}) {
+        require Log::Log4perl::InternalDebug;
+        Log::Log4perl::InternalDebug->enable();
+    }
+}
+
 use strict;
 use warnings;
 

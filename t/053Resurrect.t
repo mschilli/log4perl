@@ -2,6 +2,14 @@
 # Test Suite for Log::Log4perl::Resurrector
 # Mike Schilli, 2007 (m@perlmeister.com)
 ###########################################
+
+BEGIN { 
+    if($ENV{INTERNAL_DEBUG}) {
+        require Log::Log4perl::InternalDebug;
+        Log::Log4perl::InternalDebug->enable();
+    }
+}
+
 use strict;
 use Test::More;
 use Log::Log4perl qw(:easy);

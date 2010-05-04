@@ -9,6 +9,13 @@
 use Test;
 use strict;
 
+BEGIN { 
+    if($ENV{INTERNAL_DEBUG}) {
+        require Log::Log4perl::InternalDebug;
+        Log::Log4perl::InternalDebug->enable();
+    }
+}
+
 BEGIN { plan tests => 34 };
 use Log::Log4perl::Level;
 BEGIN {

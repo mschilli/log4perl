@@ -3,6 +3,14 @@
 # Check if a custom appender with a destroy handler gets its 
 # warning through
 ###################################################################
+
+BEGIN { 
+    if($ENV{INTERNAL_DEBUG}) {
+        require Log::Log4perl::InternalDebug;
+        Log::Log4perl::InternalDebug->enable();
+    }
+}
+
 package SomeAppender;
 our @ISA = qw(Log::Log4perl::Appender);
 sub new {

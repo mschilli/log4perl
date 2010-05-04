@@ -1,5 +1,12 @@
 #Testing if the file-appender appends in default mode
 
+BEGIN { 
+    if($ENV{INTERNAL_DEBUG}) {
+        require Log::Log4perl::InternalDebug;
+        Log::Log4perl::InternalDebug->enable();
+    }
+}
+
 use Test::More;
 
 use warnings;

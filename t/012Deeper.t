@@ -2,6 +2,13 @@
 # `make test'. After `make install' it should work as `perl test.pl'
 
 
+BEGIN { 
+    if($ENV{INTERNAL_DEBUG}) {
+        require Log::Log4perl::InternalDebug;
+        Log::Log4perl::InternalDebug->enable();
+    }
+}
+
 use Log::Log4perl;
 use Test::More;
 use File::Spec;

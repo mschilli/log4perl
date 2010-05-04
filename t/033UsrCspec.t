@@ -1,5 +1,12 @@
 #testing user-defined conversion specifiers (cspec)
 
+BEGIN { 
+    if($ENV{INTERNAL_DEBUG}) {
+        require Log::Log4perl::InternalDebug;
+        Log::Log4perl::InternalDebug->enable();
+    }
+}
+
 use Test::More;
 use Log::Log4perl;
 use Log::Log4perl::Appender::TestBuffer;

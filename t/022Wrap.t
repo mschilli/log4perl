@@ -2,6 +2,14 @@
 # Tests for Log4perl used by a wrapper class
 # Mike Schilli, 2002 (m@perlmeister.com)
 ###########################################
+
+BEGIN { 
+    if($ENV{INTERNAL_DEBUG}) {
+        require Log::Log4perl::InternalDebug;
+        Log::Log4perl::InternalDebug->enable();
+    }
+}
+
 use warnings;
 use strict;
 
@@ -59,18 +67,20 @@ $log0->add_appender($app0);
 
 ##################################################
 my $rootlogger = Wrapper::Log4perl->get_logger("");
+my $line = __LINE__ + 1;
 $rootlogger->debug("Hello");
 
-is($app0->buffer(), "File: 022Wrap.t Line number: 62 package: main",
+is($app0->buffer(), "File: 022Wrap.t Line number: $line package: main",
    "appender check");
 
   # with the new wrapper_register in Log4perl 1.29, this will even work
   # *without* modifying caller_depth
 $Log::Log4perl::caller_depth--;
 $app0->buffer("");
+$line = __LINE__ + 1;
 $rootlogger->debug("Hello");
 
-is($app0->buffer(), "File: 022Wrap.t Line number: 71 package: main",
+is($app0->buffer(), "File: 022Wrap.t Line number: $line package: main",
    "appender check");
 
 ##################################################

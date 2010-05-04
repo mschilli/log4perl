@@ -5,6 +5,9 @@ package Log::Log4perl::Layout::PatternLayout;
 use 5.006;
 use strict;
 use warnings;
+
+use constant _INTERNAL_DEBUG => 0;
+
 use Carp;
 use Log::Log4perl;
 use Log::Log4perl::Util;
@@ -14,6 +17,7 @@ use Log::Log4perl::NDC;
 use Log::Log4perl::MDC;
 use Log::Log4perl::Util::TimeTracker;
 use File::Spec;
+use File::Basename;
 
 our $TIME_HIRES_AVAILABLE_WARNED = 0;
 our $HOSTNAME;
@@ -170,13 +174,22 @@ sub render {
             $hints, $bitmask);
 
         { 
-            ($package, $filename, $line, 
+            ($package, $filename, $line,  
              $subroutine, $hasargs,
              $wantarray, $evaltext, $is_require, 
-             $hints, $bitmask) = caller($caller_level);
+             $hints, $bitmask) = my @callinfo =
+               caller($caller_level);
+
+            if(_INTERNAL_DEBUG) {
+                callinfo_dump( $caller_level, \@callinfo );
+            }
 
             if(exists $Log::Log4perl::WRAPPERS_REGISTERED{$package}) {
                   # We hit a predefined wrapper, step up to the next frame.
+                if(_INTERNAL_DEBUG) {
+                    print "[$package] recognized as a wrapper, increasing ",
+                          "caller level (currently $caller_level)\n";
+                }
                 $caller_level++;
                 redo;
             }
@@ -206,15 +219,23 @@ sub render {
             # logger, we need to go one additional level up.
             my $levels_up = 1; 
             {
-                $subroutine = (caller($caller_level+$levels_up))[3];
+                my @callinfo = caller($caller_level+$levels_up);
+
+                if(_INTERNAL_DEBUG) {
+                    callinfo_dump( $caller_level, \@callinfo );
+                }
+
+                $subroutine = $callinfo[3];
                     # If we're inside an eval, go up one level further.
                 if(defined $subroutine and
                    $subroutine eq "(eval)") {
+                    print "Inside an eval, one up\n" if _INTERNAL_DEBUG;
                     $levels_up++;
                     redo;
                 }
             }
             $subroutine = "main::" unless $subroutine;
+            print "Subroutine is '$subroutine'\n" if _INTERNAL_DEBUG;
             $info{M} = $subroutine;
             $info{l} = "$subroutine $filename ($line)";
         }
@@ -288,8 +309,6 @@ sub render {
         $result = "[undef]" unless defined $result;
         push @results, $result;
     }
-
-    #print STDERR "sprintf $self->{printformat}--$results[0]--\n";
 
     return (sprintf $self->{printformat}, @results);
 }
@@ -446,6 +465,39 @@ sub add_layout_cspec {
     $self->{CSPECS} .= $letter;
 }
 
+###########################################
+sub callinfo_dump {
+###########################################
+    my($level, $info) = @_;
+
+    my @called_by = caller(0);
+
+    # Just for internal debugging
+    $called_by[1] = basename $called_by[1];
+    print "caller($level) at $called_by[1]-$called_by[2] returned ";
+
+    my @by_idx;
+
+    # $info->[1] = basename $info->[1] if defined $info->[1];
+
+    my $i = 0;
+    for my $field (qw(package filename line subroutine hasargs
+                      wantarray evaltext is_require hints bitmask)) {
+        $by_idx[$i] = $field;
+        $i++;
+    }
+
+    $i = 0;
+    for my $value (@$info) {
+        my $field = $by_idx[ $i ];
+        print "$field=", 
+              (defined $info->[$i] ? $info->[$i] : "[undef]"),
+              " ";
+        $i++;
+    }
+
+    print "\n";
+}
 
 1;
 

@@ -1,6 +1,13 @@
 #testing init_and_watch
 #same as 027Watch2, just with signal handling instead of watch/delay code
 
+BEGIN { 
+    if($ENV{INTERNAL_DEBUG}) {
+        require Log::Log4perl::InternalDebug;
+        Log::Log4perl::InternalDebug->enable();
+    }
+}
+
 use warnings;
 use strict;
 use Test::More;

@@ -1,5 +1,12 @@
 #testing init_and_watch
 
+BEGIN { 
+    if($ENV{INTERNAL_DEBUG}) {
+        require Log::Log4perl::InternalDebug;
+        Log::Log4perl::InternalDebug->enable();
+    }
+}
+
 use Test::More;
 
 use warnings;

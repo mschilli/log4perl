@@ -1,3 +1,10 @@
+BEGIN { 
+    if($ENV{INTERNAL_DEBUG}) {
+        require Log::Log4perl::InternalDebug;
+        Log::Log4perl::InternalDebug->enable();
+    }
+}
+
 use Log::Log4perl;
 use Log::Log4perl::Appender::TestBuffer;
 use Log::Log4perl::Appender::File;

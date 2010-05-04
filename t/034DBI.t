@@ -3,6 +3,13 @@
 # Kevin Goess <cpan@goess.org>
 ###########################################
 
+BEGIN { 
+    if($ENV{INTERNAL_DEBUG}) {
+        require Log::Log4perl::InternalDebug;
+        Log::Log4perl::InternalDebug->enable();
+    }
+}
+
 use Test::More;
 
 use Log::Log4perl;

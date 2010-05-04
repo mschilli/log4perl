@@ -3,6 +3,13 @@
 # Mike Schilli, 2002 (m@perlmeister.com)
 ###########################################
 
+BEGIN { 
+    if($ENV{INTERNAL_DEBUG}) {
+        require Log::Log4perl::InternalDebug;
+        Log::Log4perl::InternalDebug->enable();
+    }
+}
+
 #########################
 # change 'tests => 1' to 'tests => last_test_to_print';
 #########################
@@ -38,11 +45,13 @@ Log::Log4perl->init("$EG_DIR/log4j-file-append-java.conf");
 
 
 my $logger = Log::Log4perl->get_logger("");
-$logger->debug("Gurgel");
-$logger->info("Gurgel");
-$logger->warn("Gurgel");
-$logger->error("Gurgel");
-$logger->fatal("Gurgel");
+my $lines = ();
+my $line = __LINE__ + 1;
+push @lines, $line++; $logger->debug("Gurgel");
+push @lines, $line++; $logger->info("Gurgel");
+push @lines, $line++; $logger->warn("Gurgel");
+push @lines, $line++; $logger->error("Gurgel");
+push @lines, $line++; $logger->fatal("Gurgel");
 
 open FILE, "<$LOGFILE" or die "Cannot open $LOGFILE";
 my $data = join '', <FILE>;
@@ -51,11 +60,11 @@ close FILE;
 my $file = "t/006Config-Java.t";
 
 my $exp = <<EOT;
-$file 41 DEBUG N/A  - Gurgel
-$file 42 INFO N/A  - Gurgel
-$file 43 WARN N/A  - Gurgel
-$file 44 ERROR N/A  - Gurgel
-$file 45 FATAL N/A  - Gurgel
+$file $lines[0] DEBUG N/A  - Gurgel
+$file $lines[1] INFO N/A  - Gurgel
+$file $lines[2] WARN N/A  - Gurgel
+$file $lines[3] ERROR N/A  - Gurgel
+$file $lines[4] FATAL N/A  - Gurgel
 EOT
 
     # Adapt Win32 paths

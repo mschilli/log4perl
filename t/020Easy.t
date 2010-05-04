@@ -1,5 +1,12 @@
 # Tests for the lazy man:s logger with easy_init()
 
+BEGIN { 
+    if($ENV{INTERNAL_DEBUG}) {
+        require Log::Log4perl::InternalDebug;
+        Log::Log4perl::InternalDebug->enable();
+    }
+}
+
 use warnings;
 use strict;
 
@@ -70,6 +77,7 @@ sub crunch { DEBUG("Twix Not shown");
 
 package Bar::Mars;
 use Log::Log4perl qw(:easy);
+my $line = __LINE__ + 1;
 sub crunch { ERROR("Mars mjam"); 
              INFO("Mars not shown"); }
 package main;
@@ -94,7 +102,7 @@ open FILE, "<$TMP_FILE" or die "Cannot open $TMP_FILE";
 my $data = join '', <FILE>;
 close FILE;
 
-is($data, "020Easy.t-73-Bar::Mars::crunch: Mars mjam\nTwix mjam\n");
+is($data, "020Easy.t-$line-Bar::Mars::crunch: Mars mjam\nTwix mjam\n");
 
 ############################################################
 # LOGDIE and LOGWARN
@@ -106,9 +114,10 @@ open IN, "<$TMP_FILE" or die "Cannot open $TMP_FILE";
 
 Log::Log4perl->easy_init($INFO);
 $log = get_logger();
+$line = __LINE__ + 1;
 eval { LOGDIE("logdie"); };
 
-like($@, qr/logdie at .*?020Easy.t line 109/);
+like($@, qr/logdie at .*?020Easy.t line $line/);
 like(readstderr(), qr/^[\d:\/ ]+logdie$/m);
 
 LOGWARN("logwarn");
@@ -178,11 +187,13 @@ package main;
 
 Log::Log4perl->easy_init($INFO);
 $log = get_logger();
+$line = __LINE__ + 1;
 eval { Whack::whack() };
 
-like($@, qr/logcroak in whack at .*?020Easy.t line 181/);
-like(readstderr(), qr/^[\d:\/ ]+logcroak in whack.*181/m);
+like($@, qr/logcroak in whack at .*?020Easy.t line $line/);
+like(readstderr(), qr/^[\d:\/ ]+logcroak in whack.*$line/m);
 
+$line = __LINE__ + 8;
 package Junk1;
 use Log::Log4perl qw(:easy);
 sub foo {
@@ -198,7 +209,7 @@ SKIP: {
     use Carp; 
     skip "Detected buggy Carp.pm (upgrade to perl-5.8.*)", 1 unless 
         defined $Carp::VERSION;
-    like(readstderr(), qr/LOGCARP.*020Easy.t line 193/);
+    like(readstderr(), qr/LOGCARP.*020Easy.t line $line/);
 }
 
 ############################################################

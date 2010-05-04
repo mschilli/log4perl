@@ -3,6 +3,13 @@
 # Mike Schilli, 2005 (m@perlmeister.com)
 ###########################################
 
+BEGIN { 
+    if($ENV{INTERNAL_DEBUG}) {
+        require Log::Log4perl::InternalDebug;
+        Log::Log4perl::InternalDebug->enable();
+    }
+}
+
 use warnings;
 use strict;
 
@@ -57,9 +64,8 @@ END   { unlink $TMP_FILE;
 
 my $buf = Log::Log4perl::Appender::TestBuffer->by_name("Screen");
 
-my $line_ref = 63;
-
 $buf->buffer("");
+my $line_ref = __LINE__ + 1;
 LOGCARP("logcarp");
 
 is(readstderr(), "", "No output to stderr");

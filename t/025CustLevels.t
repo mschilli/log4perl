@@ -4,6 +4,13 @@
 # clone of 025CustLevels.t but uses nicer method (?) we hope
 ###########################################
 
+BEGIN { 
+    if($ENV{INTERNAL_DEBUG}) {
+        require Log::Log4perl::InternalDebug;
+        Log::Log4perl::InternalDebug->enable();
+    }
+}
+
 #########################
 # change 'tests => 1' to 'tests => last_test_to_print';
 #########################

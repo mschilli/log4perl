@@ -5,6 +5,14 @@
 # each other/s way.
 # Mike Schilli, 2003 (m@perlmeister.com)
 ##########################################################################
+
+BEGIN { 
+    if($ENV{INTERNAL_DEBUG}) {
+        require Log::Log4perl::InternalDebug;
+        Log::Log4perl::InternalDebug->enable();
+    }
+}
+
 use warnings;
 use strict;
 

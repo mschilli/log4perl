@@ -3,6 +3,13 @@
 # Mike Schilli, 2002 (m@perlmeister.com)
 ###########################################
 
+BEGIN { 
+    if($ENV{INTERNAL_DEBUG}) {
+        require Log::Log4perl::InternalDebug;
+        Log::Log4perl::InternalDebug->enable();
+    }
+}
+
 #########################
 # change 'tests => 1' to 'tests => last_test_to_print';
 #########################
@@ -27,11 +34,13 @@ Log::Log4perl->init(
 
 
 my $logger = Log::Log4perl->get_logger("");
-$logger->debug("Gurgel");
-$logger->info("Gurgel");
-$logger->warn("Gurgel");
-$logger->error("Gurgel");
-$logger->fatal("Gurgel");
+my @lines = ();
+my $line = __LINE__ + 1;
+push @lines, $line++; $logger->debug("Gurgel");
+push @lines, $line++; $logger->info("Gurgel");
+push @lines, $line++; $logger->warn("Gurgel");
+push @lines, $line++; $logger->error("Gurgel");
+push @lines, $line++; $logger->fatal("Gurgel");
 
 open FILE, "<$LOGFILE" or die "Cannot open $LOGFILE";
 my $data = join '', <FILE>;
@@ -40,11 +49,11 @@ close FILE;
 my $file = "007LogPrio.t";
 
 my $exp = <<EOT;
-$file 30 DEBUG N/A  - Gurgel
-$file 31 INFO N/A  - Gurgel
-$file 32 WARN N/A  - Gurgel
-$file 33 ERROR N/A  - Gurgel
-$file 34 FATAL N/A  - Gurgel
+$file $lines[0] DEBUG N/A  - Gurgel
+$file $lines[1] INFO N/A  - Gurgel
+$file $lines[2] WARN N/A  - Gurgel
+$file $lines[3] ERROR N/A  - Gurgel
+$file $lines[4] FATAL N/A  - Gurgel
 EOT
 
 unlink $LOGFILE;

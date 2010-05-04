@@ -3,6 +3,13 @@
 # Mike Schilli, 2008 (m@perlmeister.com)
 ###########################################
 
+BEGIN { 
+    if($ENV{INTERNAL_DEBUG}) {
+        require Log::Log4perl::InternalDebug;
+        Log::Log4perl::InternalDebug->enable();
+    }
+}
+
 ###########################################
   # Subclass L4p
 package Mylogger;

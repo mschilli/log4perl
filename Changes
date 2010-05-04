@@ -15,6 +15,9 @@
    *    (ms) Another caller_depth fix in Log::Log4perl::Catalyst.
    *    (ms) Fixed logdie() caller_depth bug reported by Rob Retter.
    *    (ms) [RT 56145] Saving errstr in DBI appender to survive ping()
+   *    (ms) Added INTERNAL_DEBUG env variable to test suite triggering
+             all _INTERNAL_DEBUG statements to be printed for better
+             error diagnosis on misbehaving systems.
 
 1.28 (2010/02/24)
    *    (ms) Fixed caller stack with Buffer composite appender
