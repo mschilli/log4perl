@@ -1,5 +1,5 @@
 use Log::Log4perl;
-use Test;
+use Test::More;
 
 $testfile = 't/tmp/test12.log';
 
@@ -18,7 +18,7 @@ EOL
 eval{
     Log::Log4perl->init(\$conf);
 };
-ok($@, '/ERROR: can\'t load appenderclass \'Log::Log4perl::Appender::FileAppenderx\'/');
+like($@, qr/ERROR: can't load appenderclass 'Log::Log4perl::Appender::FileAppenderx'/);
 
 
 # *****************************************************
@@ -34,7 +34,7 @@ EOL
 eval{
     Log::Log4perl->init(\$conf);
 };
-ok($@,'/ERROR: trying to set layout for myAppender to \'Log::Log4perl::Layout::SimpleLayoutx\' failed/');
+like($@, qr/ERROR: trying to set layout for myAppender to 'Log::Log4perl::Layout::SimpleLayoutx' failed/);
 
 # *****************************************************
 # nonexistent appender class containing a ';'
@@ -49,7 +49,7 @@ EOL
 eval{
     Log::Log4perl->init(\$conf);
 };
-ok($@, '/ERROR: can\'t load appenderclass \'Log::Log4perl::Appender::TestBuffer;\'/');
+like($@, qr/ERROR: can't load appenderclass 'Log::Log4perl::Appender::TestBuffer;'/);
 
 # *****************************************************
 # nonexistent layout class containing a ';'
@@ -64,7 +64,7 @@ EOL
 eval{
     Log::Log4perl->init(\$conf);
 };
-ok($@, "/trying to set layout for myAppender to 'Log::Log4perl::Layout::SimpleLayout;' failed/");
+like($@, qr/trying to set layout for myAppender to 'Log::Log4perl::Layout::SimpleLayout;' failed/);
 
 # *****************************************************
 # Relative Layout class
@@ -80,7 +80,7 @@ eval{
     Log::Log4perl->init(\$conf);
 };
     # It's supposed to find it.
-ok($@, '');
+is($@, '', 'relative layout class');
 
 # *****************************************************
 # bad priority
@@ -96,9 +96,7 @@ eval{
     Log::Log4perl->init(\$conf);
 
 };
-ok($@,"/level 'xxINFO' is not a valid error level/");
-
-
+like($@, qr/level 'xxINFO' is not a valid error level/);
 
 # *****************************************************
 # nonsense conf file 1
@@ -113,7 +111,8 @@ EOL
 eval{
     Log::Log4perl->init(\$conf);
 };
-ok($@,'/Layout not specified for appender myAppender at/');
+like($@, qr/Layout not specified for appender myAppender at/, 
+    "nonsense conf file 1");
 
 # *****************************************************
 # nonsense conf file 2
@@ -130,7 +129,7 @@ eval{
     Log::Log4perl->init(\$conf);
 
 };
-ok($@,"/log4j.appender.myAppender redefined/");
+like($@, qr/log4j.appender.myAppender redefined/);
 
 
 
@@ -148,7 +147,8 @@ eval{
     Log::Log4perl->init(\$conf);
 
 };
-ok($@,"/ERROR: you didn't tell me how to implement your appender 'XXmyAppender'/");
+like($@, 
+ qr/ERROR: you didn't tell me how to implement your appender 'XXmyAppender'/);
 
 
 # *****************************************************
@@ -164,9 +164,7 @@ eval{
     Log::Log4perl->init(\$conf);
 
 };
-ok($@,"/Layout not specified for appender myAppender/");
-
-
+like($@, qr/Layout not specified for appender myAppender/, 'no layout defined');
 
 
 # ************************************
@@ -189,7 +187,7 @@ eval{
     Log::Log4perl->init(\$conf);
 
 };
-ok($@,"");
+is($@,"");
 
 # *****************************************************
 # init_once
@@ -208,7 +206,7 @@ $logger->error("foobar");
 $buffer = Log::Log4perl::Appender::TestBuffer->by_name("myAppender");
 
 #print "BUFFER: [", $buffer->buffer(), "]\n";
-ok($buffer->buffer(),"ERROR - foobar\n");
+is($buffer->buffer(),"ERROR - foobar\n");
 
 $conf = <<EOL;
 log4perl.category = FATAL, myAppender
@@ -226,7 +224,7 @@ $logger->error("foobar");
 my $buffer = Log::Log4perl::Appender::TestBuffer->by_name("myAppender");
 
 #print "BUFFER: [", $buffer->buffer(), "]\n";
-ok($buffer->buffer(),"ERROR - foobar\n");
+is($buffer->buffer(),"ERROR - foobar\n");
 
 $conf = <<EOL;
 log4perl.logger.Foo.Bar          = INFO, Screen
@@ -237,7 +235,7 @@ EOL
 eval {
     Log::Log4perl::init( \$conf );
 };
-ok($@, '/log4perl.logger.Foo.Bar redefined/');
+like($@, qr/log4perl.logger.Foo.Bar redefined/);
 
 BEGIN { plan tests => 14, }
 
