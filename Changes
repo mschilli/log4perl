@@ -2,7 +2,7 @@
  Revision history for Log::Log4perl
 ##################################################
 
-1.29 (not yet released)
+1.29 (2010/06/16)
    *    (ms) Added documentation on how to use Log4perl's :easy macros
              with Catalyst in Log::Log4perl::Catalyst.
    *    (ms) wrapper_register() now deals with caller_depth automatically.

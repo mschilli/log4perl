@@ -1860,7 +1860,20 @@ Using Log::Log4perl with wrapper functions and classes
 
     because the "func" function called your logging function.
 
-    But don't dispair, there's a solution: Just increase the value of
+    But don't dispair, there's a solution: Just register your wrapper
+    package with Log4perl beforehand. If Log4perl then finds that it's being
+    called from a registered wrapper, it will automatically step up to the
+    next call frame.
+
+        Log::Log4perl->wrapper_register(__PACKAGE__);
+
+        sub mylog {
+            my($message) = @_;
+
+            DEBUG $message;
+        }
+
+    Alternatively, you can increase the value of the global variable
     $Log::Log4perl::caller_depth (defaults to 0) by one for every wrapper
     that's in between your application and "Log::Log4perl", then
     "Log::Log4perl" will compensate for the difference:
@@ -2046,7 +2059,7 @@ INSTALLATION
 DEVELOPMENT
     Log::Log4perl is still being actively developed. We will always make
     sure the test suite (approx. 500 cases) will pass, but there might still
-    be bugs. please check http://log4perl.sourceforge.net for the latest
+    be bugs. please check http://github.com/mschilli/log4perl for the latest
     release. The api has reached a mature state, we will not change it
     unless for a good reason.
 
