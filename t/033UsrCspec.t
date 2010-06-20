@@ -263,6 +263,7 @@ Log::Log4perl::Config::allow_code(1);
 Log::Log4perl::Appender::TestBuffer->reset();
 
 our %hash = (foo => "bar", quack => "schmack");
+$hash{hollerin} = "hootin"; # shut up perl warnings
 
 use Data::Dumper;
 $config = <<'EOL';
