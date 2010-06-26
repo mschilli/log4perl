@@ -110,6 +110,8 @@ Log::Log4perl::Resurrector - Dark Magic to resurrect hidden L4p statements
 Loading C<use Log::Log4perl::Resurrector> causes subsequently loaded
 modules to have their hidden
 
+    ###l4p use Log::Log4perl qw(:easy);
+
     ###l4p DEBUG(...)
     ###l4p INFO(...)
     ...
@@ -136,11 +138,15 @@ C<Foobar> actually gets loaded.
 
 Therefore, C<Foobar> will then behave as if the
 
+    ###l4p use Log::Log4perl qw(:easy);
+
     ###l4p DEBUG(...)
     ###l4p INFO(...)
     ...
 
 statements were actually written like
+
+    use Log::Log4perl qw(:easy);
 
     DEBUG(...)
     INFO(...)
@@ -157,7 +163,7 @@ phase has finished, the perl program will run at full speed.
 Some of the techniques used in this module have been stolen from the
 C<Acme::Incorporated> CPAN module, written by I<chromatic>. Long
 live CPAN!
-
+ 
 =head1 COPYRIGHT AND LICENSE
 
 Copyright 2002-2009 by Mike Schilli E<lt>m@perlmeister.comE<gt> 
