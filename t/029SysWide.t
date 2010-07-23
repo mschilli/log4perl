@@ -19,7 +19,7 @@ use Log::Log4perl qw(get_logger);
 use Log::Log4perl::Level;
 use Log::Log4perl::Appender::TestBuffer;
 
-BEGIN { plan tests => 5 }
+BEGIN { plan tests => 6 }
 
 ok(1); # If we made it this far, we're ok.
 
@@ -30,6 +30,30 @@ ok(1); # If we made it this far, we're ok.
 Log::Log4perl::Appender::TestBuffer->reset();
 
 my $conf = <<EOT;
+log4perl.logger.a = INFO, BUF0
+log4perl.appender.BUF0           = Log::Log4perl::Appender::TestBuffer
+log4perl.appender.BUF0.layout    = Log::Log4perl::Layout::SimpleLayout
+log4perl.threshold = ERROR
+EOT
+
+Log::Log4perl::init(\$conf);
+
+my $app0 = Log::Log4perl::Appender::TestBuffer->by_name("BUF0");
+
+my $loga = get_logger("a");
+
+$loga->info("Don't want to see this");
+$loga->error("Yeah, loga");
+
+ok($app0->buffer(), "ERROR - Yeah, loga\n");
+
+##################################################
+# System-wide threshold with appender threshold
+##################################################
+# Reset appender population
+Log::Log4perl::Appender::TestBuffer->reset();
+
+$conf = <<EOT;
 log4perl.logger   = ERROR, BUF0
 log4perl.logger.a = INFO, BUF1
 log4perl.appender.BUF0           = Log::Log4perl::Appender::TestBuffer
@@ -43,10 +67,10 @@ EOT
 
 Log::Log4perl::init(\$conf);
 
-my $app0 = Log::Log4perl::Appender::TestBuffer->by_name("BUF0");
+$app0 = Log::Log4perl::Appender::TestBuffer->by_name("BUF0");
 my $app1 = Log::Log4perl::Appender::TestBuffer->by_name("BUF1");
 
-my $loga = get_logger("a");
+$loga = get_logger("a");
 
 $loga->info("Don't want to see this");
 $loga->error("Yeah, loga");

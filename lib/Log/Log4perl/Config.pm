@@ -434,6 +434,12 @@ sub create_appender_instance {
        # Check for appender thresholds
     my $threshold = 
        $data->{appender}->{$appname}->{Threshold}->{value};
+
+    if(defined $system_wide_threshold and
+       !defined $threshold) {
+        $threshold = $system_wide_threshold;
+    }
+
     if(defined $threshold) {
             # Need to split into two lines because of CVS
         $appender->threshold($
