@@ -12,7 +12,7 @@ sub render {
 
     $caller_level = 0 unless defined $caller_level;
 
-    my $result;
+    my $result = '';
 
     for my $msg ( @messages ) {
         $result .= $self->SUPER::render(
