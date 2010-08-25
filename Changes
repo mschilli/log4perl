@@ -3,12 +3,16 @@
 ##################################################
 
 1.30 (not yet released)
-   *    (ms) [RT 59617] Fixed system-wide threshold without appender
+   *    (ms) [rt.cpan.org #59617] Fixed system-wide threshold without appender
              thresholds. Bug reported by Dmitry Bigunyak.
-   *    (ms) [RT 24884] Using require() instead of incomplete
+   *    (ms) [rt.cpan.org #24884] Using require() instead of incomplete
              logic in L4p::Util::module_available(). local __DIE__
              handler takes care of user-defined __DIE__ handlers 
              ignoring $^S (suggested by Eric Wilhelm and others).
+   *    (ms) [rt.cpan.org #60386] Fixed init_and_watch() which 
+             double-bumped the caller_level and led to uninitialized 
+             values in the pattern layout. Thanks to Mitja Bartsch for 
+             the report.
 
 1.29 (2010/06/16)
    *    (ms) Added documentation on how to use Log4perl's :easy macros

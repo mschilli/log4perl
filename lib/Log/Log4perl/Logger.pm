@@ -409,7 +409,7 @@ sub generate_watch_code {
                # Bump up the caller level by three, since
                # we've artifically introduced additional levels.
                local $Log::Log4perl::caller_depth =
-                     $Log::Log4perl::caller_depth += 3;
+                     $Log::Log4perl::caller_depth + 3;
 
                # Get a new logger for the same category (the old
                # logger might be obsolete because of the re-init)

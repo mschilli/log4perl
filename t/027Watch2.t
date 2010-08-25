@@ -22,7 +22,7 @@ BEGIN {
     if ($] < 5.006) {
         plan skip_all => "Only with perl >= 5.006";
     } else {
-        plan tests => 20;
+        plan tests => 21;
     }
 }
 
@@ -191,6 +191,12 @@ ERROR("third");
 
 ok($counter >= 1, "Callback counter check");
 
+print "Sleeping 2 seconds\n";
+sleep(2);
+ERROR("fourth");
+like $buf->buffer(), qr/main-main:: 027Watch2.t/, 
+     "[rt.cpan.org #60386] caller level check";
+
 ###########################################
 sub conf_file_write {
 ###########################################
@@ -203,7 +209,7 @@ sub conf_file_write {
 log4perl.category.main = $level, Testbuffer
 log4perl.appender.Testbuffer        = Log::Log4perl::Appender::TestBuffer
 log4perl.appender.Testbuffer.layout = Log::Log4perl::Layout::PatternLayout
-log4perl.appender.Testbuffer.layout.ConversionPattern = %d %F{1} %L> %m %n
+log4perl.appender.Testbuffer.layout.ConversionPattern = %d %C-%M %F{1} %L> %m %n
 EOT
     close FILE;
 #print "Config written\n";
