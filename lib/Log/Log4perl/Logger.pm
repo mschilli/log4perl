@@ -700,6 +700,7 @@ sub create_custom_level {
                            "forgot to pass in a level after which to " .
                            "place the new level!");
   my $syslog_equiv = shift; # can be undef
+  my $log_dispatch_level = shift; # optional
 
   ## only let users create custom levels before initialization
 
@@ -733,7 +734,8 @@ sub create_custom_level {
       create_custom_level("cust1", cust2);
    }) if (${Log::Log4perl::Level::LEVELS{$cust_prio}});
 
-  Log::Log4perl::Level::add_priority($level, $cust_prio, $syslog_equiv);
+  Log::Log4perl::Level::add_priority($level, $cust_prio, $syslog_equiv,
+                                     $log_dispatch_level);
 
   print("Adding prio $level at $cust_prio\n") if _INTERNAL_DEBUG;
 

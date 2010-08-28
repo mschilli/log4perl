@@ -13,6 +13,9 @@
              double-bumped the caller_level and led to uninitialized 
              values in the pattern layout. Thanks to Mitja Bartsch for 
              the report.
+   *    (ms) Applied patch by Karsten Silkenbäumer to add an optional
+             $log_dispatch_level to create_custom_level(). Updated 
+             documentation.
 
 1.29 (2010/06/16)
    *    (ms) Added documentation on how to use Log4perl's :easy macros
