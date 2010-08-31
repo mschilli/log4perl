@@ -138,6 +138,7 @@ t/057MsgChomp.t
 t/058Warnings.t
 t/059Wrapper.t
 t/060Initialized.t
+t/061Multiline.t
 t/compare.pl
 t/deeper1.expected
 t/deeper6.expected
