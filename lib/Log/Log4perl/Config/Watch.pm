@@ -28,9 +28,14 @@ sub new {
             # We're in signal mode, set up the handler
         print "Setting up signal handler for '$self->{signal}'\n" if
             _INTERNAL_DEBUG;
+
+        # save old signal handlers; they belong to other appenders or
+        # possibly something else in the consuming application
+        my $old_sig_handler = $SIG{$self->{signal}};
         $SIG{$self->{signal}} = sub { 
-            print "Caught signal\n" if _INTERNAL_DEBUG;
+            print "Caught $self->{signal} signal\n" if _INTERNAL_DEBUG;
             $self->force_next_check();
+            $old_sig_handler->(@_) if $old_sig_handler and ref $old_sig_handler eq 'CODE';
         };
             # Reset the marker. The handler is going to modify it.
         $self->{signal_caught} = 0;

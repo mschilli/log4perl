@@ -24,7 +24,7 @@ BEGIN {
     if ($] < 5.006) {
         plan skip_all => "Only with perl >= 5.006";
     } else {
-        plan tests => 30;
+        plan tests => 34;
     }
 }
 
@@ -38,10 +38,12 @@ unless (-e "$WORK_DIR"){
 }
 
 my $testfile = File::Spec->catfile($WORK_DIR, "test17.log");
+my $testfile2 = File::Spec->catfile($WORK_DIR, "test17b.log");
 my $testconf = File::Spec->catfile($WORK_DIR, "test17.conf");
 
 END { 
     unlink $testfile if (-e $testfile);
+    unlink $testfile2 if (-e $testfile2);
     unlink $testconf if (-e $testconf);
     rmdir $WORK_DIR;
 }
@@ -209,39 +211,61 @@ EOL
    trunc($testconf);
 };
 
+
 # ***************************************************************
 # Check the 'recreate' feature with signal handling
-
 
 SKIP: {
   skip "File recreation not supported on Win32", 5 if $^O eq "MSWin32";
 
-  my $conf5 = <<EOL;
-    log4j.category.animal.dog   = INFO, myAppender
+  # Use two appenders to confirm that both files are recreated when the
+  # signal is received, rather than just whichever watcher was created
+  # last.
 
-    log4j.appender.myAppender          = Log::Log4perl::Appender::File
-    log4j.appender.myAppender.layout   = Log::Log4perl::Layout::SimpleLayout
-    log4j.appender.myAppender.filename = $testfile
-    log4j.appender.myAppender.recreate = 1
-    log4j.appender.myAppender.recreate_check_signal = USR1
+  my $conf5 = <<EOL;
+    log4j.category.animal.dog   = INFO, myAppender1
+    log4j.category.animal.cat   = INFO, myAppender2
+
+    log4j.appender.myAppender1          = Log::Log4perl::Appender::File
+    log4j.appender.myAppender1.layout   = Log::Log4perl::Layout::SimpleLayout
+    log4j.appender.myAppender1.filename = $testfile
+    log4j.appender.myAppender1.recreate = 1
+    log4j.appender.myAppender1.recreate_check_signal = USR1
+
+    log4j.appender.myAppender2          = Log::Log4perl::Appender::File
+    log4j.appender.myAppender2.layout   = Log::Log4perl::Layout::SimpleLayout
+    log4j.appender.myAppender2.filename = $testfile2
+    log4j.appender.myAppender2.recreate = 1
+    log4j.appender.myAppender2.recreate_check_signal = USR1
 EOL
 
   Log::Log4perl->init(\$conf5);
   
-  $logger = Log::Log4perl::get_logger('animal.dog');
+  my $logger = Log::Log4perl::get_logger('animal.dog');
   $logger->info("test1");
   ok(-f $testfile, "recreate_signal - testfile created");
+
+  my $logger2 = Log::Log4perl::get_logger('animal.cat');
+  $logger2->info("test1");
+  ok(-f $testfile2, "recreate_signal - testfile created");
+
   
-  unlink $testfile;
+  unlink $testfile, $testfile2;
   ok(!-f $testfile, "recreate_signal - testfile deleted");
+  ok(!-f $testfile2, "recreate_signal - testfile2 deleted");
   
   $logger->info("test1");
+  $logger2->info("test1");
   ok(!-f $testfile, "recreate_signal - testfile still missing");
+  ok(!-f $testfile2, "recreate_signal - testfile2 still missing");
   
   ok(kill('USR1', $$), "sending signal");
   $logger->info("test1");
+  $logger2->info("test1");
   ok(-f $testfile, "recreate_signal - testfile reinstated");
+  ok(-f $testfile2, "recreate_signal - testfile2 reinstated");
 };
+
 
 # ***************************************************************
 # Check the 'recreate' feature with check_interval

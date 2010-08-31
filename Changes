@@ -2,7 +2,13 @@
  Revision history for Log::Log4perl
 ##################################################
 
-1.30 (not yet released)
+1.30 (2010/08/30)
+   *    (ms) [RT 60665] HUP handlers are stacked on top of each other now,
+             to make sure that multiple file appenders recreate multiple
+             files and not just one (patch provided by Karen Etheridge).
+   *    (ms) [RT 60197] Fixed uninitialized value warnings with
+             the multiline appender and provided a test case (patch provided
+             by Karen Etheridge)
    *    (ms) [rt.cpan.org #59617] Fixed system-wide threshold without appender
              thresholds. Bug reported by Dmitry Bigunyak.
    *    (ms) [rt.cpan.org #24884] Using require() instead of incomplete
