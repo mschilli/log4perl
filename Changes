@@ -2,6 +2,10 @@
  Revision history for Log::Log4perl
 ##################################################
 
+1.31 (not yet released)
+  *     (ms) Fixed the number of skipped tests for Windows for previous fix
+             of [RT 60665].
+
 1.30 (2010/08/30)
    *    (ms) [RT 60665] HUP handlers are stacked on top of each other now,
              to make sure that multiple file appenders recreate multiple

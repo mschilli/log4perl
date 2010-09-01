@@ -216,7 +216,7 @@ EOL
 # Check the 'recreate' feature with signal handling
 
 SKIP: {
-  skip "File recreation not supported on Win32", 5 if $^O eq "MSWin32";
+  skip "File recreation not supported on Win32", 9 if $^O eq "MSWin32";
 
   # Use two appenders to confirm that both files are recreated when the
   # signal is received, rather than just whichever watcher was created
