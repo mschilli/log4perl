@@ -1,5 +1,5 @@
 ######################################################################
-    Log::Log4perl 1.30
+    Log::Log4perl 1.31
 ######################################################################
 
 NAME
@@ -42,7 +42,7 @@ SYNOPSIS
         log4perl.appender.FileAppndr1.layout   = \
                                 Log::Log4perl::Layout::SimpleLayout
         ######################################################
-       
+
 ABSTRACT
         Log::Log4perl provides a powerful logging API for your application
 
@@ -1147,7 +1147,7 @@ Cool Tricks
     specified as described in Opcode:
 
      Log::Log4perl::Config->allowed_code_ops(':subprocess');
- 
+
     This example would allow Perl operations like backticks, system, fork,
     and waitpid to be executed in the compartment. Of course, you probably
     don't want to use this mask -- it would allow exactly what the Safe
@@ -1170,7 +1170,7 @@ Cool Tricks
 
      safe        = [ ':browse' ]
      restrictive = [ ':default' ]
- 
+
     For convenience, if Log::Log4perl::Config->allow_code() is called with a
     value which is a key of the map previously defined with
     Log::Log4perl::Config->allowed_code_ops_convenience_map(), then the
@@ -1589,7 +1589,7 @@ Cool Tricks
 
     will log something like
 
-       adsl-63.dsl.snf.pacbell.net: Content delivered 
+       adsl-63.dsl.snf.pacbell.net: Content delivered
 
     later on in the program.
 
@@ -2031,7 +2031,7 @@ EXAMPLE
 
     This will log something like
 
-        2002/09/19 23:48:15 t1 25> Blah 
+        2002/09/19 23:48:15 t1 25> Blah
 
     to the log file "test.log", which Log4perl will append to or create it
     if it doesn't exist already.
