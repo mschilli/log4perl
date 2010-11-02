@@ -629,7 +629,7 @@ sub config_read {
             }
         }else{
             print "Reading config from file '$config'\n" if _INTERNAL_DEBUG;
-            open FILE, "<$config" or die "Cannot open config file '$config'";
+            open FILE, "<$config" or die "Cannot open config file '$config' - $!";
             print "Reading ", -s $config, " bytes.\n" if _INTERNAL_DEBUG;
             config_file_read(\*FILE, \@text);
             close FILE;
