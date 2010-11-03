@@ -1,6 +1,9 @@
 ##################################################
  Revision history for Log::Log4perl
 ##################################################
+1.32 (not yet released)
+   *         [RT 62674] Fixed call to deprecated form of UNIVERSAL::can (Karen
+             Etheridge).
 
 1.31 (2010/10/27)
   *     (ms) Fixed the number of skipped tests for Windows for previous fix

@@ -47,29 +47,9 @@ sub new {
         # Check if the class/package is already available because
         # something like Class::Prototyped injected it previously.
 
-           # Can we use UNIVERSAL to check the appender's new() method?
-           # [RT 28987]
-        my $use_universal;
-        {
-          no strict 'refs';
-          if(scalar(keys %{"UNIVERSAL\::"})) {
-              $use_universal = 1;
-          }
-        }
-
-        my $module_loaded;
-
-        if($use_universal) {
-           if( UNIVERSAL::can($appenderclass, 'new') ) {
-               $module_loaded = 1;
-           }
-        } else {
-           if(scalar(keys %{"$appenderclass\::"})) {
-               $module_loaded = 1;
-           }
-        }
-
-        if( !$module_loaded ) {
+        # Use UNIVERSAL::can to check the appender's new() method
+        # [RT 28987]
+        if( ! $appenderclass->can('new') ) {
             # Not available yet, try to pull it in.
             # see 'perldoc -f require' for why two evals
             eval "require $appenderclass";
