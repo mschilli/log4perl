@@ -1,7 +1,8 @@
 ##################################################
 package Log::Log4perl::Appender::ScreenColoredLevels;
 ##################################################
-our @ISA = qw(Log::Log4perl::Appender);
+use Log::Log4perl::Appender::Screen;
+our @ISA = qw(Log::Log4perl::Appender::Screen);
 
 use warnings;
 use strict;
@@ -12,14 +13,18 @@ use Log::Log4perl::Level;
 ##################################################
 sub new {
 ##################################################
-    my($class, @options) = @_;
+    my($class, %options) = @_;
 
-    my $self = {
-        name   => "unknown name",
-        stderr => 1,
-        color  => {},
-        @options,
-    };
+    my %specific_options = ( color => {} );
+
+    for my $option ( keys %specific_options ) {
+        $specific_options{ $option } = delete $options{ $option } if
+            exists $options{ $option };
+    }
+
+    my $self = $class->SUPER::new( %options );
+    @$self{ keys %specific_options } = values %specific_options;
+    bless $self, __PACKAGE__; # rebless
 
       # also accept lower/mixed case levels in config
     for my $level ( keys %{ $self->{color} } ) {
