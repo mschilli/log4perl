@@ -55,7 +55,7 @@ $logger->warn("End");
 #  Debug traces to be turned on when troubleshooting
 if ($DEBUG) {
     # Get the contents of the buffers
-    foreach my $appender qw(A B) {
+    foreach my $appender (qw(A B)) {
         my $buffer = Log::Log4perl::Appender::TestBuffer->by_name($appender)->buffer();
         diag("========= $appender ==========");
         diag($buffer);

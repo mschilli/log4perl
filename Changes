@@ -2,6 +2,7 @@
  Revision history for Log::Log4perl
 ##################################################
 1.32 (not yet released)
+   *    (ms) [RT 63053] Fixed for qw() {} deprecated (Todd Rinaldo)
    *    (ms) [RT 62674] Fixed call to deprecated form of UNIVERSAL::can (Karen
              Etheridge).
    *    (ms) [RT 62896] Log::Log4perl::Appender::ScreenColoredLevels now 
