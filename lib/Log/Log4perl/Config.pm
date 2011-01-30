@@ -468,7 +468,7 @@ sub create_appender_instance {
     }
 
     if(exists $data->{appender}->{$appname}->{threshold}) {
-            die "threshold keyword needs to be uppercase";
+        die "invalid keyword 'threshold' - perhaps you meant 'Threshold'?";
     }
 
     return $appender;

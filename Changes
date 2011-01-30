@@ -8,6 +8,8 @@
    *    (ms) [RT 62896] Log::Log4perl::Appender::ScreenColoredLevels now 
              inherits from Log::Log4perl::Appender::Screen and therefore
              supports the utf8 flag.
+   *    (ms) [RT 64318] Andrew Sayers provided a better error message for
+             "threshold needs to be uppercase".
 
 1.31 (2010/10/27)
   *     (ms) Fixed the number of skipped tests for Windows for previous fix
