@@ -20,7 +20,7 @@ BEGIN {
     if ($] < 5.006) {
         plan skip_all => "Only with perl >= 5.006";
     } else {
-        plan tests => 9;
+        plan tests => 11;
     }
 }
 
@@ -79,6 +79,12 @@ SKIP: { use Carp;
     is(readstderr(), "", "No output to stderr");
     like($buf->buffer(), qr/logcarp.*$line_ref/, "Appender output intact");
 }
+
+$line_ref += 6;
+$buf->clear;
+LOGWARN("Doesn't call 'exit'");
+is(readstderr(), "", "No output to stderr");
+like($buf->buffer(), qr/Doesn't call 'exit'/, "Appender output intact");
 #########################################################################
 # Turn default behaviour back on
 #########################################################################
