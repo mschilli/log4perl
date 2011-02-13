@@ -163,7 +163,8 @@ EOT
 eval { Log::Log4perl::init(\$conf); };
 
 if($@) {
-    like($@, qr/uppercase/, "warn on misspelled 'threshold'");
+    like($@, qr/perhaps you meant 'Threshold'/, 
+         "warn on misspelled 'threshold'");
 } else {
     ok(0, "Abort on misspelled 'threshold'");
 }
