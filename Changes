@@ -10,6 +10,8 @@
              supports the utf8 flag.
    *    (ms) [RT 64318] Andrew Sayers provided a better error message for
              "threshold needs to be uppercase".
+   *    (ms) CharleyDixon fixed LOGWARN when :no_extra_logdie_message is 
+             in use to no longer exit().
 
 1.31 (2010/10/27)
   *     (ms) Fixed the number of skipped tests for Windows for previous fix
