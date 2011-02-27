@@ -1,7 +1,7 @@
 ##################################################
  Revision history for Log::Log4perl
 ##################################################
-1.32 (not yet released)
+1.32 (2011/02/26)
    *    (ms) Fixed %T caller_depth with wrapper_register(), reported
              by David Christensen.
    *    (ms) [RT 63053] Fixed for qw() {} deprecated (Todd Rinaldo)
