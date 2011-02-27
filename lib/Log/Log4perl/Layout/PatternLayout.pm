@@ -166,6 +166,7 @@ sub render {
        $self->{info_needed}->{C} or
        $self->{info_needed}->{l} or
        $self->{info_needed}->{M} or
+       $self->{info_needed}->{T} or
        0
       ) {
         my ($package, $filename, $line, 
@@ -269,9 +270,12 @@ sub render {
 
         # Stack trace wanted?
     if($self->{info_needed}->{T}) {
+        local $Carp::CarpLevel =
+              $Carp::CarpLevel + $caller_level;
         my $mess = Carp::longmess(); 
         chomp($mess);
-        $mess =~ s/(?:\A\s*at.*\n|^\s*Log::Log4perl.*\n|^\s*)//mg;
+        # $mess =~ s/(?:\A\s*at.*\n|^\s*Log::Log4perl.*\n|^\s*)//mg;
+        $mess =~ s/(?:\A\s*at.*\n|^\s*)//mg;
         $mess =~ s/\n/, /g;
         $info{T} = $mess;
     }

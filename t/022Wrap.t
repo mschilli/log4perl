@@ -14,6 +14,7 @@ use warnings;
 use strict;
 
 use Test::More;
+use File::Basename;
 
 BEGIN { plan tests => 5 }
 
@@ -61,7 +62,7 @@ $log0->level($DEBUG);
 my $app0 = Log::Log4perl::Appender->new(
     "Log::Log4perl::Appender::TestBuffer");
 my $layout = Log::Log4perl::Layout::PatternLayout->new(
-    "File: %F{1} Line number: %L package: %C");
+    "File: %F{1} Line number: %L package: %C trace: %T");
 $app0->layout($layout);
 $log0->add_appender($app0);
 
@@ -70,7 +71,12 @@ my $rootlogger = Wrapper::Log4perl->get_logger("");
 my $line = __LINE__ + 1;
 $rootlogger->debug("Hello");
 
-is($app0->buffer(), "File: 022Wrap.t Line number: $line package: main",
+my $buf = $app0->buffer();
+$buf =~ s#(\S+022Wrap\.t)#basename( $1 )#eg;
+
+is($buf,
+    "File: 022Wrap.t Line number: $line package: main " .
+    "trace: at 022Wrap.t line $line",
    "appender check");
 
   # with the new wrapper_register in Log4perl 1.29, this will even work
@@ -80,7 +86,13 @@ $app0->buffer("");
 $line = __LINE__ + 1;
 $rootlogger->debug("Hello");
 
-is($app0->buffer(), "File: 022Wrap.t Line number: $line package: main",
+  # Win32
+$buf = $app0->buffer();
+$buf =~ s#(\S+022Wrap\.t)#basename( $1 )#eg;
+
+is($buf,
+    "File: 022Wrap.t Line number: $line package: main " .
+    "trace: at 022Wrap.t line $line",
    "appender check");
 
 ##################################################
