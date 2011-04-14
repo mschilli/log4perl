@@ -1,6 +1,10 @@
 ##################################################
  Revision history for Log::Log4perl
 ##################################################
+1.33 (not yet released)
+   *    (ms) [RT 67132] Applied patch by Darin McBride to allow for
+             empty syswrite messages in the file appender.
+
 1.32 (2011/02/26)
    *    (ms) Fixed %T caller_depth with wrapper_register(), reported
              by David Christensen.

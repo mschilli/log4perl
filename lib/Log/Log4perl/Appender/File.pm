@@ -239,8 +239,8 @@ sub log {
     my $fh = $self->{fh};
 
     if($self->{syswrite}) {
-        syswrite $fh, $params{message} or
-            die "Cannot syswrite to '$self->{filename}': $!";
+       defined (syswrite $fh, $params{message}) or
+           die "Cannot syswrite to '$self->{filename}': $!";
     } else {
         print $fh $params{message} or
             die "Cannot write to '$self->{filename}': $!";
