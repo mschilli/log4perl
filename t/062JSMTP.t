@@ -6,27 +6,24 @@ BEGIN {
 }
 
 use Log::Log4perl;
-use Test;
+use Test::More;
 
-our $LOG_DISPATCH_PRESENT = 0;
-
-BEGIN { 
-    eval { require Log::Dispatch; };
+BEGIN {
+    eval { require Log::Dispatch::Email::MailSender; };
     if($@) {
-       plan skip_all => "only with Log::Dispatch";
-    } elsif (!$ENV{LOG_DISPATCH_TEST_EMAIL}) {
-       skip ("Log::Log4perl::JavaMap::SMTPAppender test (env variable LOG_DISPATCH_TEST_EMAIL is not defined)");
+       plan skip_all => "only with Log::Dispatch::Email::MailSender";
     } else {
-       $LOG_DISPATCH_PRESENT = 1;
-       plan tests => 1;
+       plan tests => 3;
     }
 };
 
 my %TestConfig;
-if (my $email_address = $ENV{LOG_DISPATCH_TEST_EMAIL}) {
-    %TestConfig = ( email_address => $email_address );
-}
+SKIP: {
 
+my $email_address = $ENV{SMTPAPPENDER_TEST_EMAIL};
+skip "Log::Log4perl::JavaMap::SMTPAppender test (env variable SMTPAPPENDER_TEST_EMAIL is not defined)", 3 unless $email_address;
+
+%TestConfig = ( email_address => $email_address );
 
 print <<EOL;
 Sending email to $TestConfig{email_address}.
@@ -37,7 +34,6 @@ WARN - warning message 1
 
 EOL
 
-
 my $conf = <<CONF;
 log4j.category.cat1      = INFO, myAppender
 
@@ -46,18 +42,12 @@ log4j.appender.myAppender.layout=org.apache.log4j.SimpleLayout
 log4j.appender.myAppender.to=$TestConfig{email_address}
 CONF
 
-eval {
+Log::Log4perl->init(\$conf);
+my $logger = Log::Log4perl->get_logger('cat1');
 
-   Log::Log4perl->init(\$conf);
-
-   my $logger = Log::Log4perl->get_logger('cat1');
-
-   $logger->debug("debugging message 1 ");
-   $logger->info("info message 1 ");      
-   $logger->warn("warning message 1 ");   
+ok($logger->debug('debugging message 1'), 'debugging message');
+ok($logger->info('info message 1'), 'info message');
+ok($logger->warn('warning message 1'), 'warning message');
 
 };
-
-ok(1);
-
 
