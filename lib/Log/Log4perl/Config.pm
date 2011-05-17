@@ -569,8 +569,13 @@ sub config_read {
     if (ref($config) eq 'HASH') {   # convert the hashref into a list 
                                     # of name/value pairs
         print "Reading config from hash\n" if _INTERNAL_DEBUG;
-        @text = map { $_ . '=' . $config->{$_} } keys %{$config};
-
+        @text = ();
+        for my $key ( keys %$config ) {
+            if( ref( $config->{$key} ) eq "CODE" ) {
+                $config->{$key} = $config->{$key}->();
+            }
+            push @text, $key . '=' . $config->{$key} . "\n";
+        }
     } elsif (ref $config eq 'SCALAR') {
         print "Reading config from scalar\n" if _INTERNAL_DEBUG;
         @text = split(/\n/,$$config);
