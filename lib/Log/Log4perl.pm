@@ -65,12 +65,13 @@ our $LOGDIE_MESSAGE_ON_STDERR = 1;
 our $LOGEXIT_CODE             = 1;
 our %IMPORT_CALLED;
 
+our $EASY_CLOSURES = {};
+use constant _INTERNAL_DEBUG => 0;
+
 ##################################################
 sub import {
 ##################################################
     my($class) = shift;
-
-    no strict qw(refs);
 
     my $caller_pkg = caller();
 
@@ -92,7 +93,7 @@ sub import {
 
     if(exists $tags{get_logger}) {
         # Export get_logger into the calling module's 
-
+        no strict qw(refs);
         *{"$caller_pkg\::get_logger"} = *get_logger;
 
         delete $tags{get_logger};
@@ -106,6 +107,7 @@ sub import {
                # mess it up.
             my $value = $
                         Log::Log4perl::Level::PRIORITY{$key};
+            no strict qw(refs);
             *{"$name"} = \$value;
         }
 
@@ -118,59 +120,57 @@ sub import {
 
             # Define default logger object in caller's package
         my $logger = get_logger("$caller_pkg");
-        ${$caller_pkg . '::_default_logger'} = $logger;
         
             # Define DEBUG, INFO, etc. routines in caller's package
         for(qw(TRACE DEBUG INFO WARN ERROR FATAL ALWAYS)) {
             my $level   = $_;
             $level = "OFF" if $level eq "ALWAYS";
             my $lclevel = lc($_);
-            *{"$caller_pkg\::$_"} = sub { 
+            easy_closure_create($caller_pkg, $_, sub {
                 Log::Log4perl::Logger::init_warn() unless 
                     $Log::Log4perl::Logger::INITIALIZED or
                     $Log::Log4perl::Logger::NON_INIT_WARNED;
                 $logger->{$level}->($logger, @_, $level);
-            };
+            }, $logger);
         }
 
             # Define LOGCROAK, LOGCLUCK, etc. routines in caller's package
         for(qw(LOGCROAK LOGCLUCK LOGCARP LOGCONFESS)) {
             my $method = "Log::Log4perl::Logger::" . lc($_);
 
-            *{"$caller_pkg\::$_"} = sub {
+            easy_closure_create($caller_pkg, $_, sub {
                 unshift @_, $logger;
                 goto &$method;
-            };
+            }, $logger);
         }
 
             # Define LOGDIE, LOGWARN
+         easy_closure_create($caller_pkg, "LOGDIE", sub {
+             Log::Log4perl::Logger::init_warn() unless 
+                     $Log::Log4perl::Logger::INITIALIZED or
+                     $Log::Log4perl::Logger::NON_INIT_WARNED;
+             $logger->{FATAL}->($logger, @_, "FATAL");
+             $Log::Log4perl::LOGDIE_MESSAGE_ON_STDERR ?
+                 CORE::die(Log::Log4perl::Logger::callerline(join '', @_)) :
+                 exit $Log::Log4perl::LOGEXIT_CODE;
+         }, $logger);
 
-        *{"$caller_pkg\::LOGDIE"} = sub {
-            Log::Log4perl::Logger::init_warn() unless 
-                    $Log::Log4perl::Logger::INITIALIZED or
-                    $Log::Log4perl::Logger::NON_INIT_WARNED;
-            $logger->{FATAL}->($logger, @_, "FATAL");
-            $Log::Log4perl::LOGDIE_MESSAGE_ON_STDERR ?
-                CORE::die(Log::Log4perl::Logger::callerline(join '', @_)) :
-                exit $Log::Log4perl::LOGEXIT_CODE;
-        };
-
-        *{"$caller_pkg\::LOGEXIT"} = sub {
+         easy_closure_create($caller_pkg, "LOGEXIT", sub {
             Log::Log4perl::Logger::init_warn() unless 
                     $Log::Log4perl::Logger::INITIALIZED or
                     $Log::Log4perl::Logger::NON_INIT_WARNED;
             $logger->{FATAL}->($logger, @_, "FATAL");
             exit $Log::Log4perl::LOGEXIT_CODE;
-        };
+         }, $logger);
 
-        *{"$caller_pkg\::LOGWARN"} = sub { 
+        easy_closure_create($caller_pkg, "LOGWARN", sub {
             Log::Log4perl::Logger::init_warn() unless 
                     $Log::Log4perl::Logger::INITIALIZED or
                     $Log::Log4perl::Logger::NON_INIT_WARNED;
             $logger->{WARN}->($logger, @_, "WARN");
             CORE::warn(Log::Log4perl::Logger::callerline(join '', @_))
                 if $Log::Log4perl::LOGDIE_MESSAGE_ON_STDERR;
-        };
+        }, $logger);
     }
 
     if(exists $tags{':nowarn'}) {
@@ -501,6 +501,62 @@ sub infiltrate_lwp {  #
     *LWP::Debug::debug = sub { 
         $l4p_wrapper->($DEBUG, @_); 
     };
+}
+
+##################################################
+sub easy_closure_create {
+##################################################
+    my($caller_pkg, $entry, $code, $logger) = @_;
+
+    no strict 'refs';
+
+    print("easy_closure: Setting shortcut $caller_pkg\::$entry ", 
+         "(logger=$logger\n") if _INTERNAL_DEBUG;
+
+    $EASY_CLOSURES->{ $caller_pkg }->{ $entry } = $logger;
+    *{"$caller_pkg\::$entry"} = $code;
+}
+
+###########################################
+sub easy_closure_cleanup {
+###########################################
+    my($caller_pkg, $entry) = @_;
+
+    no warnings 'redefine';
+    no strict 'refs';
+
+    my $logger = $EASY_CLOSURES->{ $caller_pkg }->{ $entry };
+
+    print("easy_closure: Nuking easy shortcut $caller_pkg\::$entry ", 
+         "(logger=$logger\n") if _INTERNAL_DEBUG;
+
+    *{"$caller_pkg\::$entry"} = sub { };
+    delete $EASY_CLOSURES->{ $caller_pkg }->{ $entry };
+}
+
+##################################################
+sub easy_closure_category_cleanup {
+##################################################
+    my($caller_pkg) = @_;
+
+    if(! exists $EASY_CLOSURES->{ $caller_pkg } ) {
+        return 1;
+    }
+
+    for my $entry ( keys %{ $EASY_CLOSURES->{ $caller_pkg } } ) {
+        easy_closure_cleanup( $caller_pkg, $entry );
+    }
+
+    delete $EASY_CLOSURES->{ $caller_pkg };
+}
+
+###########################################
+sub easy_closure_global_cleanup {
+###########################################
+
+    for my $caller_pkg ( keys %$EASY_CLOSURES ) {
+        easy_closure_category_cleanup( $caller_pkg );
+    }
 }
 
 1;
@@ -2003,13 +2059,13 @@ your log statements to a file, you can use the following features:
     }
 
 In C<:easy> mode, C<Log::Log4perl> will instantiate a I<stealth logger>
-named C<$_default_logger> and import it into the current package. Also,
-it will introduce the
+and introduce the
 convenience functions C<TRACE>, C<DEBUG()>, C<INFO()>, C<WARN()>, 
 C<ERROR()>, C<FATAL()>, and C<ALWAYS> into the package namespace.
 These functions simply take messages as
-arguments and forward them to C<_default_logger-E<gt>debug()>,
-C<_default_logger-E<gt>info()> and so on.
+arguments and forward them to the stealth loggers methods (C<debug()>,
+C<info()>, and so on).
+
 If a message should never be blocked, regardless of the log level,
 use the C<ALWAYS> function which corresponds to a log level of C<OFF>:
 

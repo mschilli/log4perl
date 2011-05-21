@@ -55,29 +55,22 @@ sub cleanup {
 ##################################################
     # warn "Logger cleanup";
 
+    # Nuke all convenience loggers to avoid them causing cleanup to 
+    # be delayed until global destruction. Problem is that something like
+    #     *{"DEBUG"} = sub { $logger->debug };
+    # ties up a reference to $logger until global destruction, so we 
+    # need to clean up all :easy shortcuts, hence freeing the last
+    # logger references, to then rely on the garbage collector for cleaning
+    # up the loggers.
+    Log::Log4perl->easy_closure_global_cleanup();
+
     # Delete all loggers
-    foreach my $loggername (keys %$LOGGERS_BY_NAME){
-        # warn "Logger delete: $loggername";
-        $LOGGERS_BY_NAME->{$loggername}->DESTROY();
-        delete $LOGGERS_BY_NAME->{$loggername};
-    }
+    $LOGGERS_BY_NAME = {};
 
     # Delete the root logger
     undef $ROOT_LOGGER;
 
     # Delete all appenders
-    foreach my $appendername (keys %APPENDER_BY_NAME){
-        if (exists $APPENDER_BY_NAME{$appendername} &&
-            exists $APPENDER_BY_NAME{$appendername}->{appender}) {
-                # Destroy the specific appender
-            my $appref = $APPENDER_BY_NAME{$appendername}->{appender};
-            $appref->DESTROY() if $appref->can("DESTROY");
-                # Destroy L4p::Appender
-            $APPENDER_BY_NAME{$appendername}->DESTROY();
-            delete $APPENDER_BY_NAME{$appendername}->{appender};
-        }
-        delete $APPENDER_BY_NAME{$appendername};
-    }
     %APPENDER_BY_NAME   = ();
 
     undef $INITIALIZED;
@@ -88,10 +81,6 @@ sub DESTROY {
 ##################################################
     CORE::warn 
         "Destroying logger $_[0]" if $Log::Log4perl::CHATTY_DESTROY_METHODS;
-
-    for(keys %{$_[0]}) {
-        delete $_[0]->{$_};
-    }
 }
 
 ##################################################
@@ -102,13 +91,6 @@ sub reset {
                                 #reset_all_output_methods when 
                                 #the config changes
 
-
-    #we've got a circular reference thing going on somewhere
-    foreach my $appendername (keys %APPENDER_BY_NAME){
-        delete $APPENDER_BY_NAME{$appendername}->{appender} 
-                if (exists $APPENDER_BY_NAME{$appendername} &&
-                    exists $APPENDER_BY_NAME{$appendername}->{appender});
-    }
     %APPENDER_BY_NAME   = ();
     undef $INITIALIZED;
     undef $NON_INIT_WARNED;
@@ -166,6 +148,8 @@ sub _new {
    $LOGGERS_BY_NAME->{$category} = $self;
 
    $self->set_output_methods;
+
+   print("Created logger $self ($category)\n") if _INTERNAL_DEBUG;
 
    return $self;
 }

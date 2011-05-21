@@ -6,6 +6,11 @@
              empty syswrite messages in the file appender.
    *    (ms) [RT 68105] Fixed init-hash handling of subroutine references,
              reported by Frew Schmidt.
+   *    (ms) Mike Schwern noticed confusing DESTROY calls to clean up loggers 
+             and appenders (http://stackoverflow.com/questions/5914088 and
+             https://github.com/mschilli/log4perl/issues/7), so I put on my 
+             hazmat suit and cleaned it up. Now perl's garbage collector takes 
+             care of disposing of logger and appender carcasses.
 
 1.32 (2011/02/26)
    *    (ms) Fixed %T caller_depth with wrapper_register(), reported
