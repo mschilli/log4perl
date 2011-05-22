@@ -79,8 +79,8 @@ sub cleanup {
 ##################################################
 sub DESTROY {
 ##################################################
-    CORE::warn 
-        "Destroying logger $_[0]" if $Log::Log4perl::CHATTY_DESTROY_METHODS;
+    CORE::warn "Destroying logger $_[0] ($_[0]->{category})" 
+            if $Log::Log4perl::CHATTY_DESTROY_METHODS;
 }
 
 ##################################################
@@ -1073,8 +1073,6 @@ sub dec_level {
 
     $self->set_output_methods;
 }
-
-##################################################
 
 1;
 

@@ -559,6 +559,34 @@ sub easy_closure_global_cleanup {
     }
 }
 
+###########################################
+sub easy_closure_logger_remove {
+###########################################
+    my($class, $logger) = @_;
+
+    PKG: for my $caller_pkg ( keys %$EASY_CLOSURES ) {
+        for my $entry ( keys %{ $EASY_CLOSURES->{ $caller_pkg } } ) {
+            if( $logger == $EASY_CLOSURES->{ $caller_pkg }->{ $entry } ) {
+                easy_closure_category_cleanup( $caller_pkg );
+                next PKG;
+            }
+        }
+    }
+}
+
+##################################################
+sub remove_logger {
+##################################################
+    my ($class, $logger) = @_;
+
+    # Any stealth logger convenience function still using it will
+    # now become a no-op.
+    Log::Log4perl->easy_closure_logger_remove( $logger );
+
+    # Remove the logger from the system
+    delete $Log::Log4perl::Logger::LOGGERS_BY_NAME->{ $logger->{category} };
+}
+
 1;
 
 __END__
@@ -2482,6 +2510,12 @@ To eradicate an appender from the system,
 you need to call C<Log::Log4perl-E<gt>eradicate_appender($appender_name)>
 which will first remove the appender from every logger in the system
 and then will delete all references Log4perl holds to it.
+
+To remove a logger from the system, use 
+C<Log::Log4perl-E<gt>remove_logger($logger)>. After the remaining 
+reference C<$logger> goes away, the logger will self-destruct. If the
+logger in question is a stealth logger, all of its convenience shortcuts
+(DEBUG, INFO, etc) will turn into no-ops.
 
 =head1 How about Log::Dispatch::Config?
 

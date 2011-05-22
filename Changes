@@ -11,6 +11,8 @@
              https://github.com/mschilli/log4perl/issues/7), so I put on my 
              hazmat suit and cleaned it up. Now perl's garbage collector takes 
              care of disposing of logger and appender carcasses.
+   *    (ms) Added Log::Log4perl->remove_logger($logger) to remove a logger
+             from the system.
 
 1.32 (2011/02/26)
    *    (ms) Fixed %T caller_depth with wrapper_register(), reported
