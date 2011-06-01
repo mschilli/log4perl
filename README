@@ -1401,14 +1401,14 @@ Cool Tricks
             FATAL("Fatal this!");
         }
 
-    In ":easy" mode, "Log::Log4perl" will instantiate a *stealth logger*
-    named $_default_logger and import it into the current package. Also, it
-    will introduce the convenience functions "TRACE", "DEBUG()", "INFO()",
+    In ":easy" mode, "Log::Log4perl" will instantiate a *stealth logger* and
+    introduce the convenience functions "TRACE", "DEBUG()", "INFO()",
     "WARN()", "ERROR()", "FATAL()", and "ALWAYS" into the package namespace.
     These functions simply take messages as arguments and forward them to
-    "_default_logger->debug()", "_default_logger->info()" and so on. If a
-    message should never be blocked, regardless of the log level, use the
-    "ALWAYS" function which corresponds to a log level of "OFF":
+    the stealth loggers methods ("debug()", "info()", and so on).
+
+    If a message should never be blocked, regardless of the log level, use
+    the "ALWAYS" function which corresponds to a log level of "OFF":
 
         ALWAYS "This will be printed regardless of the log level";
 
@@ -1809,6 +1809,12 @@ Advanced configuration within Perl
     "Log::Log4perl->eradicate_appender($appender_name)" which will first
     remove the appender from every logger in the system and then will delete
     all references Log4perl holds to it.
+
+    To remove a logger from the system, use
+    "Log::Log4perl->remove_logger($logger)". After the remaining reference
+    $logger goes away, the logger will self-destruct. If the logger in
+    question is a stealth logger, all of its convenience shortcuts (DEBUG,
+    INFO, etc) will turn into no-ops.
 
 How about Log::Dispatch::Config?
     Tatsuhiko Miyagawa's "Log::Dispatch::Config" is a very clever simplified

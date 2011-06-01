@@ -1,7 +1,7 @@
 ##################################################
  Revision history for Log::Log4perl
 ##################################################
-1.33 (not yet released)
+1.33 (2011/05/31)
    *    (ms) [RT 67132] Applied patch by Darin McBride to allow for
              empty syswrite messages in the file appender.
    *    (ms) [RT 68105] Fixed init-hash handling of subroutine references,
