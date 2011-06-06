@@ -25,7 +25,7 @@ sub internal_debug_fh {
 
     my($tmp_fh, $tmpfile) = tempfile( UNLINK => 1 );
 
-    $text =~ s/_INTERNAL_DEBUG(?!\s*=>)/1/;
+    $text =~ s/_INTERNAL_DEBUG(?!\s*=>)/1/g;
 
     print $tmp_fh $text;
     seek $tmp_fh, 0, 0;

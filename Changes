@@ -1,6 +1,10 @@
 ##################################################
  Revision history for Log::Log4perl
 ##################################################
+1.34 (not yet released)
+   *    (ms) InternalDebug now replaces all instances of INTERNAL_DEBUG,
+             not just the first one.
+
 1.33 (2011/05/31)
    *    (ms) [RT 67132] Applied patch by Darin McBride to allow for
              empty syswrite messages in the file appender.
