@@ -1,6 +1,8 @@
 ##################################################
  Revision history for Log::Log4perl
 ##################################################
+TODO: Error out if appender class can't be loaded
+
 1.34 (not yet released)
    *    (ms) InternalDebug now replaces all instances of INTERNAL_DEBUG,
              not just the first one.
