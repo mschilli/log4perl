@@ -1118,7 +1118,7 @@ category, using the format defined for it.
 
 Third example:
 
-    log4j.rootLogger=debug, stdout, R
+    log4j.rootLogger=DEBUG, stdout, R
     log4j.appender.stdout=org.apache.log4j.ConsoleAppender
     log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
     log4j.appender.stdout.layout.ConversionPattern=%5p (%F:%L) - %m%n
