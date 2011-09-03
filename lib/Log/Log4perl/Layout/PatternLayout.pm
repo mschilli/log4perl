@@ -533,6 +533,7 @@ replaced by the logging engine when it's time to log the message:
     %c Category of the logging event.
     %C Fully qualified package (or class) name of the caller
     %d Current date in yyyy/MM/dd hh:mm:ss format
+    %d{...} Current date in customized format (see below)
     %F File where the logging event occurred
     %H Hostname (if Sys::Hostname is available)
     %l Fully qualified name of the calling method followed by the
@@ -634,6 +635,7 @@ specification:
     E        day in week             (Text)           Tuesday
     D        day in year             (Number)         189
     a        am/pm marker            (Text)           PM
+    e        epoch seconds           (Number)         1315011604
 
     (Text): 4 or more pattern letters--use full form, < 4--use short or 
             abbreviated form if one exists. 

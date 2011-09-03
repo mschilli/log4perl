@@ -17,7 +17,7 @@ use strict;
 # change 'tests => 1' to 'tests => last_test_to_print';
 #########################
 use Test::More;
-BEGIN { plan tests => 23 };
+BEGIN { plan tests => 24 };
 
 use Log::Log4perl;
 use Log::Log4perl::Layout;
@@ -90,6 +90,14 @@ $layout = Log::Log4perl::Layout::PatternLayout->new(
 $app->layout($layout);
 $logger->debug("That's the message");
 like($app->buffer(), qr{01/1970}); 
+
+  # epoch format
+$app->buffer("");
+$layout = Log::Log4perl::Layout::PatternLayout->new(
+  { time_function => \&mytimer1 }, "%d{e}> %m");
+$app->layout($layout);
+$logger->debug("That's the message");
+like($app->buffer(), qr/^180000/); 
 
 ############################################################
 # Check SimpleLayout

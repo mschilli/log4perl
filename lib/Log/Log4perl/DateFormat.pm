@@ -79,7 +79,7 @@ sub prepare {
                   "unmatched single quote in chunk \"$chunk\"";
         } else {
             # handle active chunks just like before
-            $chunk =~ s/(([GyMdhHmsSEDFwWakKzZ])\2*)/$self->rep($1)/ge;
+            $chunk =~ s/(([GyMdhHmsSEeDFwWakKzZ])\2*)/$self->rep($1)/ge;
             $fmt .= $chunk;
         }
     }
@@ -138,6 +138,15 @@ sub rep {
     if($first eq "G") {
         # Always constant
         return "AD";
+
+###################
+#e - epoch seconds#
+###################
+    } elsif($first eq "e") {
+          # index (0) irrelevant, but we return time() which 
+          # comes in as 2nd parameter
+        push @{$self->{stack}}, [0, sub { return $_[1] }];
+        return "%d";
 
 ##########
 #y - year#
@@ -287,7 +296,7 @@ sub format {
     for(@{$self->{stack}}) {
         my($val, $code) = @$_;
         if($code) {
-            push @values, $code->($time[$val]);
+            push @values, $code->($time[$val], $secs);
         } else {
             push @values, $time[$val];
         }
@@ -333,13 +342,14 @@ for you to read this.
 C<Log::Log4perl::DateFormat> is a formatter which allows dates to be
 formatted according to the log4j spec on
 
-    http://java.sun.com/j2se/1.5.0/docs/api/java/text/SimpleDateFormat.html
+    http://download.oracle.com/javase/1.4.2/docs/api/java/text/SimpleDateFormat.html
 
 which allows the following placeholders to be recognized and processed:
 
     Symbol Meaning              Presentation    Example
     ------ -------              ------------    -------
     G      era designator       (Text)          AD
+    e      epoch seconds        (Number)        1315011604
     y      year                 (Number)        1996
     M      month in year        (Text & Number) July & 07
     d      day in month         (Number)        10
