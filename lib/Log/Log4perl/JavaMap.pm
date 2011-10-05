@@ -3,6 +3,8 @@ package Log::Log4perl::JavaMap;
 use Carp;
 use strict;
 
+use Module::Load;   # imports 'load'
+
 use constant _INTERNAL_DEBUG => 0;
 
 our %translate = (
@@ -38,12 +40,10 @@ sub get {
             die "ERROR:  I don't know how to make a '$appender_data->{value}' " .
                 "to implement your appender '$appender_name', that's not a " .
                 "supported class\n";
-    eval {
-        eval "require $perl_class";  #see 'perldoc -f require' for why two evals
-        die $@ if $@;
-    };
-    $@ and die "ERROR: trying to set appender for $appender_name to " .
-               "$appender_data->{value} using $perl_class failed\n$@  \n";
+
+    if ( ! $perl_class->can('new') ) {
+        load($perl_class);
+    }
 
     my $app = $perl_class->new($appender_name, $appender_data);
     return $app;

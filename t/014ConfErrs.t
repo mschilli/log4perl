@@ -25,7 +25,7 @@ EOL
 eval{
     Log::Log4perl->init(\$conf);
 };
-like($@, qr/ERROR: can't load appenderclass 'Log::Log4perl::Appender::FileAppenderx'/);
+isnt($@, undef, 'An exception occured when trying to load appender class Log::Log4perl::Appender::FileAppenderx');
 
 
 # *****************************************************
@@ -56,7 +56,7 @@ EOL
 eval{
     Log::Log4perl->init(\$conf);
 };
-like($@, qr/ERROR: can't load appenderclass 'Log::Log4perl::Appender::TestBuffer;'/);
+isnt($@, undef, 'An exception occured when trying to load appender class Log::Log4perl::Appender::TestBuffer');
 
 # *****************************************************
 # nonexistent layout class containing a ';'

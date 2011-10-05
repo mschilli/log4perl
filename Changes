@@ -7,6 +7,8 @@
    *    (ms) Added test case for get_logger() with a ref() on the actual
              object instead of on a static category. Updated docs.
    *    (ms) %d{e} in PatternLayout now returns epoch seconds
+   *         Plugin classes (appenders, filters etc) now loaded with
+             Class::Load (Karen Etheridge).
 
 1.33 (2011/05/31)
    *    (ms) [RT 67132] Applied patch by Darin McBride to allow for
