@@ -8,6 +8,7 @@ use warnings;
 
 use Log::Log4perl::Level;
 use Log::Log4perl::Config;
+use Module::Load;   # imports 'load'
 
 use constant _INTERNAL_DEBUG => 0;
 
@@ -34,32 +35,11 @@ sub new {
 ##################################################
     my($class, $appenderclass, %params) = @_;
 
-        # Pull in the specified Log::Log4perl::Appender object
-    eval {
-
-           # Eval erroneously succeeds on unknown appender classes if
-           # the eval string just consists of valid perl code (e.g. an
-           # appended ';' in $appenderclass variable). Fail if we see
-           # anything in there that can't be class name.
-        die "'$appenderclass' not a valid class name " if 
-            $appenderclass =~ /[^:\w]/;
-
-        # Check if the class/package is already available because
-        # something like Class::Prototyped injected it previously.
-
-        # Use UNIVERSAL::can to check the appender's new() method
-        # [RT 28987]
-        if( ! $appenderclass->can('new') ) {
-            # Not available yet, try to pull it in.
-            # see 'perldoc -f require' for why two evals
-            eval "require $appenderclass";
-                 #unless ${$appenderclass.'::IS_LOADED'};  #for unit tests, 
-                                                          #see 004Config
-            die $@ if $@;
-        }
-    };
-
-    $@ and die "ERROR: can't load appenderclass '$appenderclass'\n$@";
+    # Pull in the specified Log::Log4perl::Appender object, dying if it cannot
+    # be loaded
+    if( ! $appenderclass->can('new') ) {
+        load($appenderclass);
+    }
 
     $params{name} = unique_name() unless exists $params{name};
 

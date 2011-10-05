@@ -12,6 +12,7 @@ use Log::Log4perl::JavaMap;
 use Log::Log4perl::Filter;
 use Log::Log4perl::Filter::Boolean;
 use Log::Log4perl::Config::Watch;
+use Module::Load;   # imports 'load'
 
 use constant _INTERNAL_DEBUG => 0;
 
@@ -242,7 +243,6 @@ sub _init {
                 # Filter class
                 die "Filter class '$type' doesn't exist" unless
                      Log::Log4perl::Util::module_available($type);
-                eval "require $type" or die "Require of $type failed ($!)";
 
                 # Invoke with all defined parameter
                 # key/values (except the key 'value' which is the entry 
@@ -498,8 +498,9 @@ sub add_layout_by_name {
         }
     }
 
-    eval "require $layout_class" or 
-        die "Require to $layout_class failed ($!)";
+    if( ! $layout_class->can('new') ) {
+        load($layout_class);
+    }
 
     $appender->layout($layout_class->new(
         $data->{appender}->{$appender_name}->{layout},

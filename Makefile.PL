@@ -45,6 +45,8 @@ WriteMakefile(
     'VERSION_FROM'	=> 'lib/Log/Log4perl.pm', # finds $VERSION
     'PREREQ_PM'		=> { Test::More    => 0.45,
                              File::Spec    => 0.82,
+                             Module::Load  => 0,
+                             Module::Load::Conditional  => 0,
                            }, # e.g., Module::Name => 1.1
     ($] >= 5.005 ?    ## Add these new keywords supported since 5.005
       (ABSTRACT_FROM => 'lib/Log/Log4perl.pm', # retrieve abstract from module

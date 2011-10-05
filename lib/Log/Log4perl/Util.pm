@@ -1,27 +1,14 @@
 package Log::Log4perl::Util;
 
 use File::Spec;
+use Module::Load::Conditional 'can_load';
 
 ##################################################
-sub module_available {  # Check if a module is available
+sub module_available {  # Check if a module is available, and loads it
 ##################################################
     my($full_name) = @_;
 
-      # Weird cases like "strict;" (including the semicolon) would 
-      # succeed with the eval below, so check those up front. 
-      # I can't believe Perl doesn't have a proper way to check if a 
-      # module is available or not!
-    return 0 if $full_name =~ /[^\w:]/;
-
-    local $SIG{__DIE__} = sub {};
-
-    eval "require $full_name";
-
-    if($@) {
-        return 0;
-    }
-
-    return 1;
+    return can_load(modules => { $full_name => 0 });
 }
 
 ##################################################
