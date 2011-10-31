@@ -39,6 +39,9 @@ sub log {
     my $self = shift;
     my %params = @_;
 
+    if( !defined $params{level} ) {
+        die "No level defined in log() call of " . __PACKAGE__;
+    }
     $self->{buffer} .= "[$params{level}]: " if $LOG_PRIORITY;
     $self->{buffer} .= $params{message};
 }

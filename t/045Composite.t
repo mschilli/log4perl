@@ -24,7 +24,7 @@ BEGIN {
                                                # early Perl versions dont
                                                # have it.
     }else{
-        plan tests => 18;
+        plan tests => 19;
     }
 }
 
@@ -327,3 +327,31 @@ like $buffer2->buffer(),
     qr/meth=main:: Sent from main.*meth=Willy::Wonka::func Sent from func/s,
     "caller stack from composite appender";
 
+# [RT 72056] Appender Threshold blocks composite appender
+
+$conf = qq(
+  log4perl.category = DEBUG, Composite
+
+  log4perl.appender.Buffer          = Log::Log4perl::Appender::TestBuffer
+  log4perl.appender.Buffer.layout   = PatternLayout
+  log4perl.appender.Buffer.Threshold=INFO
+  log4perl.appender.Buffer.layout.ConversionPattern=%M %m %n
+
+    # Composite Appender
+  log4perl.appender.Composite         = Log::Log4perl::Appender::Buffer
+  log4perl.appender.Composite.appender = Buffer
+  log4perl.appender.Composite.trigger = sub { 0 }
+
+);
+
+Log::Log4perl->init(\$conf);
+
+$buffer = Log::Log4perl::Appender::TestBuffer->by_name("Buffer");
+$logger = get_logger();
+$logger->debug("this will be blocked by the appender threshold");
+
+my $composite = Log::Log4perl->appender_by_name("Composite");
+$composite->flush();
+
+is $buffer->buffer(), "", 
+   "appender threshold blocks message in composite appender";

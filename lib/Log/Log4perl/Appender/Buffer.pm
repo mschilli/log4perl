@@ -68,8 +68,11 @@ sub log {
                          $params{log4p_category},
                          $params{log4p_level}, \my $cache);
 
-        # Save it in the appender's message buffer
-    push @{ $self->{buffer} }, $cache;
+        # Save it in the appender's message buffer, but only if
+        # it hasn't been suppressed by an appender threshold
+    if( defined $cache ) {
+        push @{ $self->{buffer} }, $cache;
+    }
 
     $self->flush() if $self->{trigger}->($self, \%params);
 }

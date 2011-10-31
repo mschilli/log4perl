@@ -1,12 +1,15 @@
 ##################################################
  Revision history for Log::Log4perl
 ##################################################
-1.34 (not yet released)
+1.34 (2011/10/30)
    *    (ms) InternalDebug now replaces all instances of INTERNAL_DEBUG,
              not just the first one.
    *    (ms) Added test case for get_logger() with a ref() on the actual
              object instead of on a static category. Updated docs.
    *    (ms) %d{e} in PatternLayout now returns epoch seconds
+   *    (ms) [RT 72056] Messages blocked by an appender threshold are no
+             longer passed on to the L4p::Appender::Buffer as undefined
+             entries.
 
 1.33 (2011/05/31)
    *    (ms) [RT 67132] Applied patch by Darin McBride to allow for
