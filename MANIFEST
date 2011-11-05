@@ -141,6 +141,7 @@ t/060Initialized.t
 t/061Multiline.t
 t/062InitHash.t
 t/063LoggerRemove.t
+t/064RealClass.t
 t/compare.pl
 t/deeper1.expected
 t/deeper6.expected
