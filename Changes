@@ -1,6 +1,12 @@
 ##################################################
  Revision history for Log::Log4perl
 ##################################################
+
+1.35 (not yet released)
+   *    (ms) [RT 73462] Changed logwarn/logcluck/logcarp/error_warn to
+             warn() unconditionally and send the message to log4perl which
+             will log it only if the log level conditions are met.
+
 1.34 (2011/11/04)
    *    (ms) InternalDebug now replaces all instances of INTERNAL_DEBUG,
              not just the first one.

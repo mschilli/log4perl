@@ -68,7 +68,7 @@ $buf->buffer("");
 my $line_ref = __LINE__ + 1;
 LOGCARP("logcarp");
 
-is(readstderr(), "", "No output to stderr");
+like(readstderr(), qr/logcarp at /, "Output to stderr");
 SKIP: { use Carp;
     skip "Detected buggy Carp.pm (upgrade to perl-5.8.*)", 3 unless 
         defined $Carp::VERSION;
@@ -76,7 +76,7 @@ SKIP: { use Carp;
     $line_ref += 9;
     $buf->buffer("");
     LOGCARP("logcarp");
-    is(readstderr(), "", "No output to stderr");
+    like(readstderr(), qr/logcarp at /, "Output to stderr");
     like($buf->buffer(), qr/logcarp.*$line_ref/, "Appender output intact");
 }
 

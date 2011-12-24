@@ -862,8 +862,9 @@ sub logwarn {
     my @chomped = @_;
     chomp($chomped[-1]);
     $self->warn(@chomped);
-    $self->and_warn(@_);
   }
+
+  $self->and_warn(@_);
 }
 
 ##################################################
@@ -923,8 +924,9 @@ sub logcluck {
     foreach (split(/\n/, $message)) {
       $self->warn("$_\n");
     }
-    Carp::cluck($msg);
   }
+
+  Carp::cluck($msg);
 }
 
 ##################################################
@@ -944,8 +946,9 @@ sub logcarp {
     foreach (split(/\n/, $message)) {
       $self->warn("$_\n");
     }
-    Carp::carp($msg) if $Log::Log4perl::LOGDIE_MESSAGE_ON_STDERR;
   }
+
+  Carp::carp($msg);
 }
 
 ##################################################
@@ -1012,8 +1015,9 @@ sub error_warn {
 
   if ($self->is_error()) {
     $self->error(@_);
-    $self->and_warn(@_);
   }
+
+  $self->and_warn(@_);
 }
 
 ##################################################
