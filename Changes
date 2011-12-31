@@ -3,9 +3,11 @@
 ##################################################
 
 1.35 (not yet released)
-   *    (ms) [RT 73462] Changed logwarn/logcluck/logcarp/error_warn to
-             warn() unconditionally and send the message to log4perl which
+   *    (ms) [rt.cpan.org #73462] Changed logwarn/logcluck/logcarp/error_warn 
+             to warn() unconditionally and send the message to log4perl which
              will log it only if the log level conditions are met.
+   *    (ms) [rt.cpan.org #73598] Gerda Shank reported test suite problems
+             with DBD::CSV-0.26. Bumped up to DBD::CSV-0.33 if installed.
 
 1.34 (2011/11/04)
    *    (ms) InternalDebug now replaces all instances of INTERNAL_DEBUG,

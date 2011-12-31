@@ -10,23 +10,35 @@ BEGIN {
     }
 }
 
-use Test::More;
+BEGIN {
+    use FindBin qw($Bin);
+    use lib "$Bin/lib";
+    require Log4perlInternalTest;
+}
 
+use Test::More;
 use Log::Log4perl;
 use warnings;
 use strict;
 
 BEGIN {
+    my $minversion = \%Log::Log4perl::Internal::Test::MINVERSION;
     eval {
         require DBI;
+        die if $DBI::VERSION < $minversion->{ "DBI" };
+
         require DBD::CSV;
+        die if $DBD::CSV::VERSION < $minversion->{ "DBD::CSV" };
+
         require SQL::Statement;
-        die if $DBI::VERSION < 1.607;
-        die if $DBD::CSV::VERSION < 0.22;
-        die if $SQL::Statement::VERSION < 1.20;
+        die if $SQL::Statement::VERSION < $minversion->{ "SQL::Statement" };
     };
     if ($@) {
-        plan skip_all => "DBI 1.607 or DBD::CSV 0.22 or SQL::Statement 1.20 not installed, skipping tests\n";
+        plan skip_all => 
+          "DBI $minversion->{ DBI } or " .
+          "DBD::CSV $minversion->{'DBD::CSV'} or " .
+          "SQL::Statement $minversion->{'SQL::Statement'} " .
+          "not installed, skipping tests\n";
     }else{
         plan tests => 32;
     }

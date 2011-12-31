@@ -3,6 +3,9 @@
 # Kevin Goess <cpan@goess.org>
 ###########################################
 
+use strict;
+use warnings;
+
 BEGIN { 
     if($ENV{INTERNAL_DEBUG}) {
         require Log::Log4perl::InternalDebug;
@@ -15,12 +18,22 @@ use Test::More;
 use Log::Log4perl;
 
 BEGIN {
+    use FindBin qw($Bin);
+    use lib "$Bin/lib";
+    require Log4perlInternalTest;
+}
+
+BEGIN {
+    my $minversion = \%Log::Log4perl::Internal::Test::MINVERSION;
     eval {
         require DBD::CSV;
+        die if $DBD::CSV::VERSION < $minversion->{ "DBD::CSV" };
+
 	require Log::Dispatch;
     };
     if ($@) {
-        plan skip_all => "only with Log::Dispatch and DBD::CSV";
+        plan skip_all => 
+          "only with Log::Dispatch and DBD::CSV $minversion->{'DBD::CSV'}";
     }else{
         plan tests => 14;
     }
