@@ -2,7 +2,7 @@
  Revision history for Log::Log4perl
 ##################################################
 
-1.35 (not yet released)
+1.35 (2012/01/03)
    *    (ms) [rt.cpan.org #73462] Changed logwarn/logcluck/logcarp/error_warn 
              to warn() unconditionally and send the message to log4perl which
              will log it only if the log level conditions are met.
