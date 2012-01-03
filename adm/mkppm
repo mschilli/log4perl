@@ -20,8 +20,8 @@ Log::Log4perl->easy_init({level   => $DEBUG,
                          });
 
 my $PPM_DIR  = "ppm";
-my $TAR      = "/bin/tar";
-my $GZIP     = "/bin/gzip";
+my $TAR      = "tar";
+my $GZIP     = "gzip";
 
 if(-d $PPM_DIR) {
     rmtree $PPM_DIR or LOGDIE("Cannot delete $PPM_DIR");
