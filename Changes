@@ -2,6 +2,10 @@
  Revision history for Log::Log4perl
 ##################################################
 
+1.36 (not yet released)
+   *    (ms) [rt.cpan.org #74833] Reini Urban fixed "defined @array" for
+             perl 5.16
+
 1.35 (2012/01/03)
    *    (ms) [rt.cpan.org #73462] Changed logwarn/logcluck/logcarp/error_warn 
              to warn() unconditionally and send the message to log4perl which
