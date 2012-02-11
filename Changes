@@ -5,6 +5,8 @@
 1.36 (not yet released)
    *    (ms) [rt.cpan.org #74833] Reini Urban fixed "defined @array" for
              perl 5.16
+   *    (ms) [rt.cpan.org #74836] Cope with Carp's questionable decision to
+             add a trailing dot to its messages.
 
 1.35 (2012/01/03)
    *    (ms) [rt.cpan.org #73462] Changed logwarn/logcluck/logcarp/error_warn 

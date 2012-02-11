@@ -74,6 +74,10 @@ $rootlogger->debug("Hello");
 my $buf = $app0->buffer();
 $buf =~ s#(\S+022Wrap\.t)#basename( $1 )#eg;
 
+# [rt 74836] Carp.pm added a dot at the end with 1.25. 
+# Be dot-agnostic.
+$buf =~ s/\.$//;
+
 is($buf,
     "File: 022Wrap.t Line number: $line package: main " .
     "trace: at 022Wrap.t line $line",
@@ -87,6 +91,9 @@ $line = __LINE__ + 1;
 $rootlogger->debug("Hello");
 
   # Win32
+# [rt 74836] Carp.pm added a dot at the end with 1.25. 
+# Be dot-agnostic.
+$buf =~ s/\.$//;
 $buf = $app0->buffer();
 $buf =~ s#(\S+022Wrap\.t)#basename( $1 )#eg;
 
