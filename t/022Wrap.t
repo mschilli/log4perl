@@ -93,8 +93,8 @@ $rootlogger->debug("Hello");
   # Win32
 # [rt 74836] Carp.pm added a dot at the end with 1.25. 
 # Be dot-agnostic.
-$buf =~ s/\.$//;
 $buf = $app0->buffer();
+$buf =~ s/\.$//;
 $buf =~ s#(\S+022Wrap\.t)#basename( $1 )#eg;
 
 is($buf,
