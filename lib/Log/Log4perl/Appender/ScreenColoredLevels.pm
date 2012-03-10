@@ -186,6 +186,15 @@ The constructor can also take an optional parameter C<color>, whose
 value is a  hashref of color configuration options, any levels that
 are not included in the hashref will be set to their default values.
 
+=head2 Using ScreenColoredLevels on Windows
+
+Note that if you're using this appender on Windows, you need to fetch
+Win32::Console::ANSI from CPAN and add
+
+    use Win32::Console::ANSI;
+
+to your script.
+
 =head1 COPYRIGHT AND LICENSE
 
 Copyright 2002-2009 by Mike Schilli E<lt>m@perlmeister.comE<gt> 
