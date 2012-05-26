@@ -24,6 +24,7 @@ our $DEFAULT_WATCH_DELAY = 60; # seconds
 our $OPTS = {};
 our $OLD_CONFIG;
 our $LOGGERS_DEFINED;
+our $UTF8 = 0;
 
 ###########################################
 sub init {
@@ -33,6 +34,16 @@ sub init {
     undef $WATCHER; # just in case there's a one left over (e.g. test cases)
 
     return _init(@_);
+}
+
+###########################################
+sub utf8 {
+###########################################
+    my( $class, $flag ) = @_;
+
+    $UTF8 = $flag if defined $flag;
+
+    return $UTF8;
 }
 
 ###########################################
@@ -564,7 +575,9 @@ sub config_read {
 
     $CONFIG_FILE_READS++;  # Count for statistical purposes
 
-    my $base_configurator = Log::Log4perl::Config::BaseConfigurator->new( );
+    my $base_configurator = Log::Log4perl::Config::BaseConfigurator->new(
+        utf8 => $UTF8,
+    );
 
     my $data = {};
 
@@ -1119,6 +1132,20 @@ certainly override it:
 
 C<write> is the C<mode> that has C<Log::Log4perl::Appender::File>
 explicitely clobber the log file if it exists.
+
+=head2 Configuration files encoded in utf-8
+
+If your configuration file is encoded in utf-8 (which matters if you 
+e.g. specify utf8-encoded appender filenames in it), then you need to 
+tell Log4perl before running init():
+
+    use Log::Log4perl::Config;
+    Log::Log4perl::Config->utf( 1 );
+
+    Log::Log4perl->init( ... );
+
+This makes sure Log4perl interprets utf8-encoded config files correctly.
+This setting might become the default at some point.
 
 =head1 SEE ALSO
 

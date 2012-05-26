@@ -12,6 +12,9 @@ BEGIN {
 
 use strict;
 
+my $EG_DIR = "eg";
+$EG_DIR = "../eg" unless -d $EG_DIR;
+
 use Test::More;
 use Log::Log4perl qw(:easy);
 
@@ -19,7 +22,7 @@ BEGIN {
     if($] < 5.008) {
         plan skip_all => "utf-8 tests with perl >= 5.8 only";
     } else {
-        plan tests => 4;
+        plan tests => 6;
     }
 }
 
@@ -113,3 +116,15 @@ use utf8;
 DEBUG "Über";
 binmode STDOUT, ":utf8"; # for better error messages of the test suite
 like(readstderr(), qr/Über/, 'utf8 matches');
+
+###########
+# utf8 config file
+###########
+use Log::Log4perl::Config;
+Log::Log4perl::Config->utf8(1);
+Log::Log4perl->init("$EG_DIR/log4j-utf8.conf");
+DEBUG "blech";
+my $app = Log::Log4perl::Appender::TestBuffer->by_name("Ä1");
+ok defined $app, "app found";
+my $buf = $app->buffer();
+is $buf, "blech\n", "utf8 named appender";

@@ -14,8 +14,9 @@ sub new {
     my($class, %options) = @_;
 
     my $self = { 
+        utf8 => 0,
         %options,
-               };
+    };
 
     bless $self, $class;
 
@@ -47,7 +48,12 @@ sub file {
 ################################################
     my($self, $filename) = @_;
 
-    open my $fh, "<$filename" or die "Cannot open $filename ($!)";
+    open my $fh, "$filename" or die "Cannot open $filename ($!)";
+
+    if( $self->{ utf8 } ) {
+        binmode $fh, ":utf8";
+    }
+
     $self->file_h_read( $fh );
     close $fh;
 }
