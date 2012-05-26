@@ -564,6 +564,8 @@ sub config_read {
 
     $CONFIG_FILE_READS++;  # Count for statistical purposes
 
+    my $base_configurator = Log::Log4perl::Config::BaseConfigurator->new( );
+
     my $data = {};
 
     if (ref($config) eq 'HASH') {   # convert the hashref into a list 
@@ -584,7 +586,7 @@ sub config_read {
              ref $config eq 'IO::File') {
             # If we have a file handle, just call the reader
         print "Reading config from file handle\n" if _INTERNAL_DEBUG;
-        config_file_read($config, \@text);
+        @text = @{ $base_configurator->file_h_read( $config ) };
 
     } elsif (ref $config) {
             # Caller provided a config parser object, which already
@@ -593,8 +595,7 @@ sub config_read {
         $data = $config->parse();
         return $data;
 
-    #TBD
-    }elsif ($config =~ m|^ldap://|){
+    } elsif ($config =~ m|^ldap://|){
        if(! Log::Log4perl::Util::module_available("Net::LDAP")) {
            die "Log4perl: missing Net::LDAP needed to parse LDAP urls\n$@\n";
        }
@@ -604,7 +605,7 @@ sub config_read {
 
        return Log::Log4perl::Config::LDAPConfigurator->new->parse($config);
 
-    }else{
+    } else {
 
         if ($config =~ /^(https?|ftp|wais|gopher|file):/){
             my ($result, $ua);
@@ -632,12 +633,13 @@ sub config_read {
                 die "Log4perl couln't get $config, ".
                      $res->message." ";
             }
-        }else{
+        } else {
             print "Reading config from file '$config'\n" if _INTERNAL_DEBUG;
-            open FILE, "<$config" or die "Cannot open config file '$config' - $!";
             print "Reading ", -s $config, " bytes.\n" if _INTERNAL_DEBUG;
-            config_file_read(\*FILE, \@text);
-            close FILE;
+              # Use the BaseConfigurator's file reader to avoid duplicating
+              # utf8 handling here.
+            $base_configurator->file( $config );
+            @text = @{ $base_configurator->text() };
         }
     }
     
@@ -666,19 +668,6 @@ sub config_read {
     $data = $parser->parse_post_process( $data, leaf_paths($data) );
 
     return $data;
-}
-
-
-###########################################
-sub config_file_read {
-###########################################
-    my($handle, $linesref) = @_;
-
-        # Dennis Gregorovic <dgregor@redhat.com> added this
-        # to protect apps which are tinkering with $/ globally.
-    local $/ = "\n";
-
-    @$linesref = <$handle>;
 }
 
 ###########################################
