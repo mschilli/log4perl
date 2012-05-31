@@ -8,6 +8,8 @@
              updated docs.
    *    (ms) [rt.cpan.org #76827] UTF-8 encoded configuration files are
              now supported (see Log::Log4perl::Config).
+   *    (ms) [rt.cpan.org #77501] Unescaped left brace in regex is deprecated
+             with perl 5.17. Times we live in. 
 
 1.36 (2012/02/21)
    *    (ms) [rt.cpan.org #74833] Reini Urban fixed "defined @array" for
