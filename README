@@ -1,5 +1,5 @@
 ######################################################################
-    Log::Log4perl 1.36
+    Log::Log4perl 1.37
 ######################################################################
 
 NAME
@@ -2162,5 +2162,3 @@ COPYRIGHT AND LICENSE
     This library is free software; you can redistribute it and/or modify it
     under the same terms as Perl itself.
 
-
-test

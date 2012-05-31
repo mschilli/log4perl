@@ -1,3 +1,5 @@
+.gz$
+.travis.yml
 blib
 ^Makefile$
 ^Makefile.old$

@@ -12,6 +12,7 @@ eg/log4j-file-append-perl.conf
 eg/log4j-manual-1.conf
 eg/log4j-manual-2.conf
 eg/log4j-manual-3.conf
+eg/log4j-utf8.conf
 eg/newsyslog-test
 eg/override_appender
 eg/prototype
@@ -72,7 +73,7 @@ lib/Log/Log4perl/Util/Semaphore.pm
 lib/Log/Log4perl/Util/TimeTracker.pm
 LICENSE
 Makefile.PL
-MANIFEST			This list of files
+MANIFEST
 MANIFEST.SKIP
 README
 t/001Level.t

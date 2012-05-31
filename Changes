@@ -2,7 +2,7 @@
  Revision history for Log::Log4perl
 ##################################################
 
-1.37 (not yet released)
+1.37 (2012/05/30)
    *    (ms) [rt.cpan.org #75655] Meir Guttman found the module to make
              Log::Log4perl::Appender::ScreenColoredLevels work on Win32,
              updated docs.
