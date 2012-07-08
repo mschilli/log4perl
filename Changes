@@ -2,6 +2,11 @@
  Revision history for Log::Log4perl
 ##################################################
 
+1.38 (not yet released)
+   *    (ms) Meir Guttman reported a use case for logging messages
+             with dynamic levels on log4perl-devel@lists.sourceforge.net.
+             Added to manual page.
+
 1.37 (2012/05/30)
    *    (ms) [rt.cpan.org #75655] Meir Guttman found the module to make
              Log::Log4perl::Appender::ScreenColoredLevels work on Win32,
