@@ -6,8 +6,9 @@ use 5.006;
 use strict;
 use warnings;
 
-use Log::Log4perl::Level;
 use Log::Log4perl::Config;
+use Log::Log4perl::Level;
+use Carp;
 
 use constant _INTERNAL_DEBUG => 0;
 
@@ -162,10 +163,20 @@ sub log {
             #not defined, the normal case
         if (! defined $self->{warp_message} ){
                 #join any message elements
-            $p->{message} = 
-                join($Log::Log4perl::JOIN_MSG_ARRAY_CHAR, 
-                     @{$p->{message}} 
-                     ) if ref $p->{message} eq "ARRAY";
+            if (ref $p->{message} eq "ARRAY") {
+                for my $i (0..$#{$p->{message}}) {
+                    if( !defined $p->{message}->[ $i ] ) {
+                        local $Carp::CarpLevel =
+                        $Carp::CarpLevel + $Log::Log4perl::caller_depth + 1;
+                        carp "Warning: Log message argument #" . 
+                             ($i+1) . " undefined";
+                    }
+                }
+                $p->{message} = 
+                    join($Log::Log4perl::JOIN_MSG_ARRAY_CHAR, 
+                         @{$p->{message}} 
+                         );
+            }
             
             #defined but false, e.g. Appender::DBI
         } elsif (! $self->{warp_message}) {
