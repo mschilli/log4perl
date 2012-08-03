@@ -8,6 +8,7 @@ use strict;
 use warnings;
 
 use Log::Log4perl::Config;
+use Log::Log4perl::Util qw( params_check );
 
 use constant _INTERNAL_DEBUG => 0;
 
@@ -20,11 +21,16 @@ sub new {
 
      print join('-', %options) if _INTERNAL_DEBUG;
 
-     my $self = { StringToMatch => '',
+     my $self = { StringToMatch => undef,
                   AcceptOnMatch => 1,
                   %options,
                 };
      
+     params_check( $self,
+                  [ qw( StringToMatch ) ], 
+                  [ qw( name AcceptOnMatch ) ] 
+                );
+
      $self->{AcceptOnMatch} = Log::Log4perl::Config::boolean_to_perlish(
                                                  $self->{AcceptOnMatch});
 

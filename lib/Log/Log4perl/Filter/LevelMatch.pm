@@ -9,6 +9,7 @@ use warnings;
 
 use Log::Log4perl::Level;
 use Log::Log4perl::Config;
+use Log::Log4perl::Util qw( params_check );
 
 use constant _INTERNAL_DEBUG => 0;
 
@@ -24,6 +25,11 @@ sub new {
                  %options,
                };
      
+    params_check( $self,
+                  [ qw( LevelToMatch ) ], 
+                  [ qw( name AcceptOnMatch ) ] 
+                );
+
     $self->{AcceptOnMatch} = Log::Log4perl::Config::boolean_to_perlish(
                                                 $self->{AcceptOnMatch});
 

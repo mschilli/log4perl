@@ -10,6 +10,7 @@
              undefined message elements before they're assembled in Appender.pm
              and a warning is issued without a proper code location:
              https://github.com/mschilli/log4perl/issues/15
+   *    (ms) [rt.cpan.org #78734] Added spell check on filter parameter names
 
 1.37 (2012/05/30)
    *    (ms) [rt.cpan.org #75655] Meir Guttman found the module to make

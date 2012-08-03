@@ -13,7 +13,7 @@ BEGIN {
 use warnings;
 use strict;
 
-use Test::More tests => 29;
+use Test::More tests => 30;
 
 use Log::Log4perl;
 
@@ -384,3 +384,16 @@ $buffer->buffer("");
 
 Log::Log4perl->reset();
 $buffer->reset();
+
+eval {
+    Log::Log4perl->init(\ <<'EOT');
+      log4perl.logger = INFO, A1
+      log4perl.filter.Match1      = Log::Log4perl::Filter::LevelMatch
+      log4perl.filter.Match1.LevelToWomper = INFO
+      log4perl.appender.A1        = Log::Log4perl::Appender::TestBuffer
+      log4perl.appender.A1.Filter = Match1
+      log4perl.appender.A1.layout = Log::Log4perl::Layout::SimpleLayout
+EOT
+};
+
+like $@, qr/Unknown parameter: LevelToWomper/, "Unknown parameter check";

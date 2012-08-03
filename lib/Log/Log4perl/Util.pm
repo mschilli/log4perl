@@ -1,6 +1,38 @@
 package Log::Log4perl::Util;
 
+require Exporter;
+our @EXPORT_OK = qw( params_check );
+our @ISA       = qw( Exporter );
+
 use File::Spec;
+
+###########################################
+sub params_check {
+###########################################
+    my( $hash, $required, $optional ) = @_;
+
+    my $pkg       = caller();
+    my %hash_copy = %$hash;
+
+    if( defined $required ) {
+        for my $p ( @$required ) {
+            if( !exists $hash->{ $p } or
+                !defined $hash->{ $p } ) {
+                die "$pkg: Required parameter $p missing.";
+            }
+            delete $hash_copy{ $p };
+        }
+    }
+
+    if( defined $optional ) {
+        for my $p ( @$optional ) {
+            delete $hash_copy{ $p };
+        }
+        if( scalar keys %hash_copy ) {
+            die "$pkg: Unknown parameter: ", join( ",", keys %hash_copy );
+        }
+    }
+}
 
 ##################################################
 sub module_available {  # Check if a module is available

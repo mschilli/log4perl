@@ -9,6 +9,7 @@ use warnings;
 
 use Log::Log4perl::Level;
 use Log::Log4perl::Config;
+use Log::Log4perl::Util qw( params_check );
 
 use constant _INTERNAL_DEBUG => 0;
 
@@ -25,6 +26,11 @@ sub new {
                  %options,
                };
      
+    params_check( $self,
+                  [ qw( LevelMin LevelMax ) ], 
+                  [ qw( name AcceptOnMatch ) ] 
+                );
+
     $self->{AcceptOnMatch} = Log::Log4perl::Config::boolean_to_perlish(
                                                 $self->{AcceptOnMatch});
 
@@ -70,6 +76,9 @@ has a priority matching a predefined range.
 The C<LevelMin> and C<LevelMax> parameters define the levels
 (choose from C<DEBUG>, C<INFO>, C<WARN>, C<ERROR>, C<FATAL>) marking
 the window of allowed messages priorities.
+
+C<LevelMin> defaults to C<DEBUG>, and C<LevelMax> to C<FATAL>.
+
 The additional parameter C<AcceptOnMatch> defines if the filter
 is supposed to pass or block the message (C<true> or C<false>).
 
