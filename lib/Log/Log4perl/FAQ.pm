@@ -75,7 +75,7 @@ These stealth loggers
 will be absolutely silent until you initialize Log::Log4perl in 
 your main program with either 
 
-        # Define any Log4perl behaviour
+        # Define any Log4perl behavior
     Log::Log4perl->init("foo.conf");
 
 (using a full-blown Log4perl config file) or the super-easy method
@@ -94,7 +94,7 @@ For more info, please check out L<Log::Log4perl/"Stealth Loggers">.
 =head2 How can I simply log all my ERROR messages to a file?
 
 After pulling in the C<Log::Log4perl> module, just initialize its
-behaviour by passing in a configuration to its C<init> method as a string
+behavior by passing in a configuration to its C<init> method as a string
 reference. Then, obtain a logger instance and write out a message
 with its C<error()> method:
 
@@ -109,7 +109,7 @@ with its C<error()> method:
         log4perl.appender.FileApp.layout.ConversionPattern = %d> %m%n
     );
 
-        # Initialize logging behaviour
+        # Initialize logging behavior
     Log::Log4perl->init( \$conf );
 
         # Obtain a logger instance
@@ -143,7 +143,7 @@ doesn't list a category, defining a root logger. Compare that with
     log4perl.logger.Bar.Twix = ERROR, FileApp
 
 which would define a logger for the category C<Bar::Twix>,
-showing probably different behaviour. C<FileApp> on
+showing probably different behavior. C<FileApp> on
 the right side of the assignment is
 an arbitrarily defined variable name, which is only used to somehow 
 reference an appender defined later on.
@@ -180,7 +180,7 @@ sake of compactness:
     $logger->error("Oh my, a dreadful error!");
 
 This retrieves an instance of the logger of the category C<Bar::Twix>, 
-which, as all other categories, inherits behaviour from the root logger if no
+which, as all other categories, inherits behavior from the root logger if no
 other loggers are defined in the initialization section. 
 
 The C<error()>
@@ -521,11 +521,11 @@ LWP can be utilized in any Log::Log4perl way you can think of. You can
 have them sent to different appenders, block them based on the
 category and everything else Log::Log4perl has to offer.
 
-Only drawback of this method: Steering logging behaviour via category 
+Only drawback of this method: Steering logging behavior via category 
 is always based on the C<LWP::Debug> package. Although the logging
 statements reflect the package name of the issuing module properly, 
 the stealth loggers in C<LWP::Debug> are all of the category C<LWP::Debug>.
-This implies that you can't control the logging behaviour based on the
+This implies that you can't control the logging behavior based on the
 package that's I<initiating> a log request (e.g. LWP::UserAgent) but only
 based on the package that's actually I<executing> the logging statement, 
 C<LWP::Debug> in this case.
@@ -579,7 +579,7 @@ above.
 
 Say, your application uses Log::Log4perl for logging and 
 therefore comes with a Log4perl configuration file, specifying the logging
-behaviour.
+behavior.
 But, you also want it to take command line parameters to set values
 like the name of the log file.
 How can you have
@@ -806,7 +806,7 @@ C<0>:
 The message will now be accepted by the C<Cat::Subcat> logger,
 forwarded to its appender, but then C<Cat::Subcat> will suppress
 any further action. While this setting avoids duplicate messages
-as seen before, it is often not the desired behaviour. Messages
+as seen before, it is often not the desired behavior. Messages
 percolating up the hierarchy are a useful Log4perl feature.
 
 If you're defining I<different> appenders for the two loggers,
