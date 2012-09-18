@@ -390,6 +390,26 @@ sub get_logger {  # Get an instance (shortcut)
     return Log::Log4perl::Logger->get_logger($category);
 }
 
+###########################################
+sub caller_depth_offset {
+###########################################
+    my( $level ) = @_;
+
+    my $category;
+
+    { 
+        my $category = scalar caller($level + 1);
+
+        if(defined $category and
+           exists $WRAPPERS_REGISTERED{ $category }) {
+            $level++;
+            redo;
+        }
+    }
+
+    return $level;
+}
+
 ##################################################
 sub appenders {  # Get a hashref of all defined appender wrappers
 ##################################################

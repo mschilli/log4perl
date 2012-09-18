@@ -813,7 +813,11 @@ sub init_warn {
 sub callerline {
   my $message = join ('', @_);
 
-  my ($pack, $file, $line) = caller($Log::Log4perl::caller_depth + 1);
+  my $caller_offset = 
+    Log::Log4perl::caller_depth_offset( 
+        $Log::Log4perl::caller_depth + 1 );
+
+  my ($pack, $file, $line) = caller($caller_offset);
 
   if (not chomp $message) {     # no newline
     $message .= " at $file line $line";

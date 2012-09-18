@@ -161,6 +161,8 @@ sub render {
 
     my @results = ();
 
+    my $caller_offset = Log::Log4perl::caller_depth_offset( $caller_level );
+
     if($self->{info_needed}->{L} or
        $self->{info_needed}->{F} or
        $self->{info_needed}->{C} or
@@ -169,32 +171,11 @@ sub render {
        $self->{info_needed}->{T} or
        0
       ) {
+
         my ($package, $filename, $line, 
             $subroutine, $hasargs,
             $wantarray, $evaltext, $is_require, 
-            $hints, $bitmask);
-
-        { 
-            ($package, $filename, $line,  
-             $subroutine, $hasargs,
-             $wantarray, $evaltext, $is_require, 
-             $hints, $bitmask) = my @callinfo =
-               caller($caller_level);
-
-            if(_INTERNAL_DEBUG) {
-                callinfo_dump( $caller_level, \@callinfo );
-            }
-
-            if(exists $Log::Log4perl::WRAPPERS_REGISTERED{$package}) {
-                  # We hit a predefined wrapper, step up to the next frame.
-                if(_INTERNAL_DEBUG) {
-                    print "[$package] recognized as a wrapper, increasing ",
-                          "caller level (currently $caller_level)\n";
-                }
-                $caller_level++;
-                redo;
-            }
-        }
+            $hints, $bitmask) = caller($caller_offset);
 
         # If caller() choked because of a whacko caller level,
         # correct undefined values to '[undef]' in order to prevent 
@@ -220,10 +201,10 @@ sub render {
             # logger, we need to go one additional level up.
             my $levels_up = 1; 
             {
-                my @callinfo = caller($caller_level+$levels_up);
+                my @callinfo = caller($caller_offset+$levels_up);
 
                 if(_INTERNAL_DEBUG) {
-                    callinfo_dump( $caller_level, \@callinfo );
+                    callinfo_dump( $caller_offset, \@callinfo );
                 }
 
                 $subroutine = $callinfo[3];
@@ -271,7 +252,7 @@ sub render {
         # Stack trace wanted?
     if($self->{info_needed}->{T}) {
         local $Carp::CarpLevel =
-              $Carp::CarpLevel + $caller_level;
+              $Carp::CarpLevel + $caller_offset;
         my $mess = Carp::longmess(); 
         chomp($mess);
         # $mess =~ s/(?:\A\s*at.*\n|^\s*Log::Log4perl.*\n|^\s*)//mg;
@@ -294,7 +275,7 @@ sub render {
             $self->{curlies} = $curlies;
             $result = $self->{USER_DEFINED_CSPECS}->{$op}->($self, 
                               $message, $category, $priority, 
-                              $caller_level+1);
+                              $caller_offset+1);
         } elsif(exists $info{$op}) {
             $result = $info{$op};
             if($curlies) {
