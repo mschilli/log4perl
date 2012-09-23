@@ -2,7 +2,7 @@
  Revision history for Log::Log4perl
 ##################################################
 
-1.38 (not yet released)
+1.38 (2012/09/23)
    *    (ms) Bob Kleemann reported that logdie() in wrapper classes
              printed incorrect caller lines. Fixed by adding 
              caller_depth_offset() utility to Log4perl.pm.
