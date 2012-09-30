@@ -29,7 +29,7 @@ BEGIN {
     if ($] < 5.006) {
         plan skip_all => "Only with perl >= 5.006";
     } else {
-        plan tests => 20;
+        plan tests => 21;
     }
 }
 
@@ -213,6 +213,23 @@ SKIP: {
 }
 
 ############################################################
+# LOGDIE and wrapper packages
+############################################################
+package JunkWrapper;
+use Log::Log4perl qw(:easy);
+sub foo {
+    LOGDIE("Ahhh");
+}
+
+package main;
+
+Log::Log4perl->wrapper_register("JunkWrapper");
+$line = __LINE__ + 2;
+eval {
+    JunkWrapper::foo();
+};
+like $@, qr/line $line/, "logdie with wrapper";
+
 # Finally close
 ############################################################
 close IN;

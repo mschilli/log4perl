@@ -14,7 +14,7 @@ use Log::Log4perl::Level;
 use Log::Log4perl::Config;
 use Log::Log4perl::Appender;
 
-our $VERSION = '1.37';
+our $VERSION = '1.38';
 
    # set this to '1' if you're using a wrapper
    # around Log::Log4perl
@@ -388,6 +388,26 @@ sub get_logger {  # Get an instance (shortcut)
 
     # Delegate this to the logger module
     return Log::Log4perl::Logger->get_logger($category);
+}
+
+###########################################
+sub caller_depth_offset {
+###########################################
+    my( $level ) = @_;
+
+    my $category;
+
+    { 
+        my $category = scalar caller($level + 1);
+
+        if(defined $category and
+           exists $WRAPPERS_REGISTERED{ $category }) {
+            $level++;
+            redo;
+        }
+    }
+
+    return $level;
 }
 
 ##################################################
