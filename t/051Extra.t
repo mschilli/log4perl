@@ -17,8 +17,8 @@ use Log::Log4perl qw(:easy :no_extra_logdie_message);
 use Test::More;
 
 BEGIN {
-    if ($] < 5.006) {
-        plan skip_all => "Only with perl >= 5.006";
+    if ($] < 5.008) {
+        plan skip_all => "Only with perl >= 5.008";
     } else {
         plan tests => 11;
     }
