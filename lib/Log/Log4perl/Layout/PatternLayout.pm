@@ -21,7 +21,7 @@ use File::Basename;
 
 our $TIME_HIRES_AVAILABLE_WARNED = 0;
 our $HOSTNAME;
-
+our $UNDEF_COLUMN_VALUE = "[undef]";
 our %GLOBAL_USER_DEFINED_CSPECS = ();
 
 our $CSPECS = 'cCdFHIlLmMnpPrRtTxX%';
@@ -291,8 +291,14 @@ sub render {
             $result = "FORMAT-ERROR";
         }
 
-        $result = "[undef]" unless defined $result;
+        $result = $UNDEF_COLUMN_VALUE unless defined $result;
         push @results, $result;
+    }
+
+      # dbi appender needs that
+    if( scalar @results == 1 and
+        !defined $results[0] ) {
+        return undef;
     }
 
     return (sprintf $self->{printformat}, @results);
