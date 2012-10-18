@@ -941,8 +941,8 @@ functions in case you'd like to use ERROR for either warn() or die():
     $logger->error_warn();
     $logger->error_die();
 
-Finally, there's the Carp functions that do just what the Carp functions
-do, but with logging:
+Finally, there's the Carp functions that, in addition to logging,
+also pass the stringified message to their companions in the Carp package:
 
     $logger->logcarp();        # warn w/ 1-level stack trace
     $logger->logcluck();       # warn w/ full stack trace
