@@ -40,7 +40,7 @@ BEGIN {
           "SQL::Statement $minversion->{'SQL::Statement'} " .
           "not installed, skipping tests\n";
     }else{
-        plan tests => 32;
+        plan tests => 33;
     }
 }
 
@@ -66,7 +66,6 @@ my $stmt = <<EOL;
       pkg    char(16),
       runtime1 char(16),
       runtime2 char(16)
-      
   )
 EOL
 
@@ -231,7 +230,6 @@ $dbh->do($stmt) || die "do failed on $stmt".$dbh->errstr;
 
 
 $config = <<'EOT';
-#log4j.category = WARN, DBAppndr, console
 log4j.category = WARN, DBAppndr
 log4j.appender.DBAppndr             = Log::Log4perl::Appender::DBI
 log4j.appender.DBAppndr.datasource = DBI:CSV:f_dir=t/tmp
@@ -275,3 +273,55 @@ EOL
 
 $logger->fatal('warning message');
 
+  # https://rt.cpan.org/Public/Bug/Display.html?id=79960
+  # undef as NULL
+$Log::Log4perl::Layout::PatternLayout::UNDEF_COLUMN_VALUE = undef;
+$dbh->do('DROP TABLE log4perltest');
+$stmt = <<EOL;
+    CREATE TABLE log4perltest (
+      loglevel     char(9) ,   
+      message   char(128),
+      mdc char(16)
+      
+  )
+EOL
+
+$dbh->do($stmt) || die "do failed on $stmt".$dbh->errstr;
+
+$config = <<'EOT';
+log4j.category = WARN, DBAppndr
+log4j.appender.DBAppndr             = Log::Log4perl::Appender::DBI
+log4j.appender.DBAppndr.datasource = DBI:CSV:f_dir=t/tmp
+log4j.appender.DBAppndr.sql = \
+   insert into log4perltest \
+   (loglevel, mdc, message) \
+   values (?, ?, ?)
+log4j.appender.DBAppndr.params.1 = %p    
+log4j.appender.DBAppndr.params.2 = %X{foo}
+#---------------------------- #3 is message
+
+log4j.appender.DBAppndr.usePreparedStmt=2
+log4j.appender.DBAppndr.warp_message=0
+    
+#noop layout to pass it through
+log4j.appender.DBAppndr.layout    = Log::Log4perl::Layout::NoopLayout
+
+EOT
+
+Log::Log4perl::init(\$config);
+
+$logger = Log::Log4perl->get_logger();
+$logger->warn('test message');
+
+open (F, "t/tmp/log4perltest");
+my $got = join '', <F>;
+close F;
+
+my $expected = <<EOT;
+loglevel,message,mdc
+WARN,"test message",
+EOT
+
+$got =~ s/[^\w ,"()]//g;  #silly DBD_CSV uses funny EOL chars
+$expected =~ s/[^\w ,"()]//g;
+is $got, $expected, "dbi insert with NULL values";
