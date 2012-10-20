@@ -843,13 +843,17 @@ sub and_warn {
 sub and_die {
 #######################################################
   my $self = shift;
+  my $arg  = $_[0];
 
   my($msg) = callerline($self->warning_render(@_));
 
   if($DIE_DEBUG) {
       $DIE_DEBUG_BUFFER = "DIE_DEBUG: $msg";
   } else {
-      die("$msg\n");
+      if( $Log::Log4perl::STRINGIFY_DIE_MESSAGE ) {
+          die("$msg\n");
+      }
+      die $arg;
   }
 }
 
@@ -961,6 +965,7 @@ sub logcarp {
 sub logcroak {
 ##################################################
   my $self = shift;
+  my $arg  = $_[0];
 
   my $msg = $self->warning_render(@_);
 
@@ -977,8 +982,14 @@ sub logcroak {
     }
   }
 
+  my $croak_msg = $arg;
+
+  if( $Log::Log4perl::STRINGIFY_DIE_MESSAGE ) {
+      $croak_msg = $msg;
+  }
+
   $Log::Log4perl::LOGDIE_MESSAGE_ON_STDERR ? 
-      Carp::croak($msg) : 
+      Carp::croak($croak_msg) : 
         exit($Log::Log4perl::LOGEXIT_CODE);
 }
 
@@ -986,6 +997,7 @@ sub logcroak {
 sub logconfess {
 ##################################################
   my $self = shift;
+  my $arg  = $_[0];
 
   local $Carp::CarpLevel = 
         $Carp::CarpLevel + 1;
@@ -1002,8 +1014,14 @@ sub logconfess {
     }
   }
 
+  my $confess_msg = $arg;
+
+  if( $Log::Log4perl::STRINGIFY_DIE_MESSAGE ) {
+      $confess_msg = $msg;
+  }
+
   $Log::Log4perl::LOGDIE_MESSAGE_ON_STDERR ? 
-      confess($msg) :
+      confess($confess_msg) :
         exit($Log::Log4perl::LOGEXIT_CODE);
 }
 

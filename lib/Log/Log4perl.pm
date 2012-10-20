@@ -66,6 +66,10 @@ our $LOGEXIT_CODE             = 1;
 our %IMPORT_CALLED;
 
 our $EASY_CLOSURES = {};
+
+  # to throw refs as exceptions via logcarp/confess, turn this off
+our $STRINGIFY_DIE_MESSAGE = 1;
+
 use constant _INTERNAL_DEBUG => 0;
 
 ##################################################
@@ -2789,6 +2793,21 @@ the first value to overwrite the second. In this case use
     use Log::Log4perl qw(:nostrict);
 
 to put Log4perl in a more permissive mode.
+
+=item Prevent croak/confess from stringifying
+
+The logcroak/logconfess functions stringify their arguments before
+they pass them to Carp's croak/confess functions. This can get in the
+way if you want to throw an object or a hashref as an exception, in
+this case use:
+
+    $Log::Log4perl::STRINGIFY_CARP_MESSAGE = 0;
+
+    eval {
+          # throws { foo => "bar" }
+          # without stringification
+        $logger->logcroak( { foo => "bar" } );
+    };
 
 =back
 

@@ -34,7 +34,7 @@ BEGIN {
     if ($] < 5.006) {
         plan skip_all => "Only with perl >= 5.006";
     } else {
-        plan tests => 70;
+        plan tests => 73;
     }
 }
 
@@ -380,3 +380,25 @@ sub subroutine_carp {
 like $app3->buffer(), qr/-$line4: carp!/, "logcarp()";
 like $app3->buffer(), qr/main::subroutine_carp\(\) called .* line $line3/, 
      "logcarp()";
+
+# Stringify test
+$Log::Log4perl::Logger::DIE_DEBUG = 0;
+$Log::Log4perl::STRINGIFY_DIE_MESSAGE = 0;
+
+eval {
+    $logger->logcroak( { foo => "bar" } );
+};
+
+is $@->{ foo }, "bar", "croak without stringify";
+
+eval {
+    $logger->logconfess( { foo => "bar" } );
+};
+
+is $@->{ foo }, "bar", "confess without stringify";
+
+eval {
+    $logger->logdie( { foo => "bar" } );
+};
+
+is $@->{ foo }, "bar", "die without stringify";

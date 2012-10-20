@@ -2,6 +2,11 @@
  Revision history for Log::Log4perl
 ##################################################
 
+1.39 (not yet released)
+   *    (ms) Markus Benning reported that logcroak/confess/die stringify
+             their arguments, which gets in the way when throwing data
+             structures as exceptions. Added flag $STRINGIFY_DIE_MESSAGE.
+
 1.38 (2012/09/23)
    *    (ms) Bob Kleemann reported that logdie() in wrapper classes
              printed incorrect caller lines. Fixed by adding 
