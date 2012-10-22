@@ -6,6 +6,10 @@
    *    (ms) Markus Benning reported that logcroak/confess/die stringify
              their arguments, which gets in the way when throwing data
              structures as exceptions. Added flag $STRINGIFY_DIE_MESSAGE.
+   *    (ms) [rt.cpan.org #80086] David Morel pointed out misleading 
+             documentation in the Limiter composite appender. Fixed docs
+             and added C<appender_method_on_flush> parameter to support
+             appender flush calls by the limiter.
 
 1.38 (2012/09/23)
    *    (ms) Bob Kleemann reported that logdie() in wrapper classes

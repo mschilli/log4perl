@@ -24,7 +24,7 @@ BEGIN {
                                                # early Perl versions dont
                                                # have it.
     }else{
-        plan tests => 19;
+        plan tests => 20;
     }
 }
 
@@ -75,6 +75,21 @@ like($buffer->buffer(), qr/delayed/);
 $buffer->reset();
     # Nothing to flush
 $limit->flush();
+is($buffer->buffer(), "");
+
+##################################################
+# Flush method
+##################################################
+$conf .= <<EOT;
+  log4perl.appender.Limiter.appender_method_on_flush = clear
+EOT
+Log::Log4perl->init(\$conf);
+$buffer = Log::Log4perl::Appender::TestBuffer->by_name("Buffer");
+$logger = get_logger("");
+$logger->warn("This message will be queued but discarded on flush.");
+$limit = Log::Log4perl->appenders()->{Limiter};
+$limit->flush();
+
 is($buffer->buffer(), "");
 
 ##################################################

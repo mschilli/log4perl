@@ -26,6 +26,8 @@ sub new {
     my $self = {
         max_until_flushed   => undef,
         max_until_discarded => undef,
+        appender_method_on_flush 
+                            => undef,
         appender            => undef,
         accumulate          => 1,
         persistent          => undef,
@@ -166,6 +168,13 @@ sub flush {
         $self->{app}->SUPER::log_cached($_);
     }
 
+      # call flush() on the attached appender if so desired.
+    if( $self->{appender_method_on_flush} ) {
+        no strict 'refs';
+        my $method = $self->{appender_method_on_flush};
+        $self->{app}->$method();
+    }
+
         # Empty buffer
     $self->{buffer} = [];
 }
@@ -207,10 +216,10 @@ __END__
     );
 
     Log::Log4perl->init(\$conf);
-    WARN("This message will be sent immediately");
+    WARN("This message will be sent immediately.");
     WARN("This message will be delayed by one hour.");
     sleep(3601);
-    WARN("This message plus the last one will be sent now");
+    WARN("This message plus the last one will be sent now, seperately.");
 
 =head1 DESCRIPTION
 
@@ -246,6 +255,34 @@ has passed or not. Don't mix with C<max_until_discarded>.
 Maximum number of accumulated messages. If exceeded, the appender will
 simply discard additional messages, waiting for C<block_period> to expire
 to flush all accumulated messages. Don't mix with C<max_until_flushed>.
+
+=item C<appender_method_on_flush>
+
+Optional method name to be called on the appender attached to the
+limiter when messages are flushed. For example, to have the sample code 
+in the SYNOPSIS section bundle buffered emails into one, change the 
+mailer's C<buffered> parameter to C<1> and set the limiters 
+C<appender_method_on_flush> value to the string C<"flush">:
+
+      log4perl.category = WARN, Limiter
+    
+          # Email appender
+      log4perl.appender.Mailer          = Log::Dispatch::Email::MailSend
+      log4perl.appender.Mailer.to       = drone\@pageme.com
+      log4perl.appender.Mailer.subject  = Something's broken!
+      log4perl.appender.Mailer.buffered = 1
+      log4perl.appender.Mailer.layout   = PatternLayout
+      log4perl.appender.Mailer.layout.ConversionPattern=%d %m %n
+
+          # Limiting appender, using the email appender above
+      log4perl.appender.Limiter              = Log::Log4perl::Appender::Limit
+      log4perl.appender.Limiter.appender     = Mailer
+      log4perl.appender.Limiter.block_period = 3600
+      log4perl.appender.Limiter.appender_method_on_flush = flush
+
+This will cause the mailer to buffer messages and wait for C<flush()>
+to send out the whole batch. The limiter will then call the appender's
+C<flush()> method when it's own buffer gets flushed out.
 
 =back
 
