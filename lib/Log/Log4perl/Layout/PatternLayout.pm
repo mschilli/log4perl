@@ -21,7 +21,6 @@ use File::Basename;
 
 our $TIME_HIRES_AVAILABLE_WARNED = 0;
 our $HOSTNAME;
-our $UNDEF_COLUMN_VALUE = "[undef]";
 our %GLOBAL_USER_DEFINED_CSPECS = ();
 
 our $CSPECS = 'cCdFHIlLmMnpPrRtTxX%';
@@ -55,6 +54,10 @@ sub new {
         CSPECS                => $CSPECS,
         dontCollapseArrayRefs => $options->{dontCollapseArrayRefs}{value},
         last_time             => undef,
+        undef_column_value    => 
+            (exists $options->{ undef_column_value } 
+                ? $options->{ undef_column_value } 
+                : "[undef]"),
     };
 
     $self->{timer} = Log::Log4perl::Util::TimeTracker->new(
@@ -291,7 +294,7 @@ sub render {
             $result = "FORMAT-ERROR";
         }
 
-        $result = $UNDEF_COLUMN_VALUE unless defined $result;
+        $result = $self->{undef_column_value} unless defined $result;
         push @results, $result;
     }
 
