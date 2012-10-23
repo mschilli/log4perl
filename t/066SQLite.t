@@ -54,7 +54,6 @@ my $dbh = DBI->connect("dbi:SQLite:dbname=$dbfile","","");
 
   # https://rt.cpan.org/Public/Bug/Display.html?id=79960
   # undef as NULL
-$Log::Log4perl::Layout::PatternLayout::UNDEF_COLUMN_VALUE = undef;
 my $stmt = <<EOL;
     CREATE TABLE log4perltest (
       loglevel  char(9) ,   

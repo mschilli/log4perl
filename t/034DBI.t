@@ -275,7 +275,6 @@ $logger->fatal('warning message');
 
   # https://rt.cpan.org/Public/Bug/Display.html?id=79960
   # undef as NULL
-$Log::Log4perl::Layout::PatternLayout::UNDEF_COLUMN_VALUE = undef;
 $dbh->do('DROP TABLE log4perltest');
 $stmt = <<EOL;
     CREATE TABLE log4perltest (

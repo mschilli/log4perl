@@ -33,8 +33,10 @@ sub new {
     #log4j.appender.DBAppndr.params.2 = %5.5m
     foreach my $pnum (keys %{$p{params}}){
         $self->{bind_value_layouts}{$pnum} = 
-                Log::Log4perl::Layout::PatternLayout->new(
-                    {ConversionPattern => {value  => $p{params}->{$pnum}}});
+                Log::Log4perl::Layout::PatternLayout->new({
+                   ConversionPattern  => {value  => $p{params}->{$pnum}},
+                   undef_column_value => undef,
+                });
     }
     #'bind_value_layouts' now contains a PatternLayout
     #for each parameter heading for the Sql engine
@@ -49,8 +51,10 @@ sub new {
         $self->{sth} = $self->create_statement($p{sql});
         $self->{usePreparedStmt} = 1;
     }else{
-        $self->{layout} = Log::Log4perl::Layout::PatternLayout->new(
-                    {ConversionPattern => {value  => $p{sql}}});
+        $self->{layout} = Log::Log4perl::Layout::PatternLayout->new({
+            ConversionPattern  => {value  => $p{sql}},
+            undef_column_value => undef,
+        });
     }
 
     if ($self->{usePreparedStmt} &&  $self->{bufferSize}){
