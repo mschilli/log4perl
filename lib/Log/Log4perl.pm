@@ -2801,7 +2801,7 @@ they pass them to Carp's croak/confess functions. This can get in the
 way if you want to throw an object or a hashref as an exception, in
 this case use:
 
-    $Log::Log4perl::STRINGIFY_CARP_MESSAGE = 0;
+    $Log::Log4perl::STRINGIFY_DIE_MESSAGE = 0;
 
     eval {
           # throws { foo => "bar" }
