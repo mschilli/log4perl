@@ -14,6 +14,10 @@
              interpolated as NULL for the database appender if its value is 
              undef. The DBI appender now inits PatternLayout with the 
              undef_column_name parameter set to undef (defaults to "[undef]").
+   *    (ms) Updated license/copyright/author sections in all files using 
+             licensizer and .licensizer.yml.
+   *    (ms) Skipped log file recreation test on Win32 as it won't remove
+             busy files anyway.
 
 1.38 (2012/09/23)
    *    (ms) Bob Kleemann reported that logdie() in wrapper classes
