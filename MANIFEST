@@ -1,3 +1,4 @@
+.licensizer.yml
 Changes
 eg/5005it.pl
 eg/benchmarks/Makefile
@@ -144,6 +145,7 @@ t/062InitHash.t
 t/063LoggerRemove.t
 t/064RealClass.t
 t/065Undef.t
+t/066SQLite.t
 t/compare.pl
 t/deeper1.expected
 t/deeper6.expected
