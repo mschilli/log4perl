@@ -1,5 +1,5 @@
 ######################################################################
-    Log::Log4perl 1.38
+    Log::Log4perl 1.39
 ######################################################################
 
 NAME
@@ -2152,7 +2152,7 @@ SEE ALSO
     Log::Log4perl::JavaMap Log::Log4perl::NDC,
 
 AUTHORS
-    Please contribute patches to the project page on Github:
+    Please contribute patches to the project on Github:
 
         http://github.com/mschilli/log4perl
 
