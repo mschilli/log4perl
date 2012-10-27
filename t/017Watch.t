@@ -267,34 +267,38 @@ EOL
 };
 
 
-# ***************************************************************
-# Check the 'recreate' feature with check_interval
+SKIP: {
+  skip "Removing busy files not supported on Win32", 1 if $^O eq "MSWin32";
 
-trunc($testfile);
-my $conf3 = <<EOL;
-log4j.category.animal.dog   = INFO, myAppender
-
-log4j.appender.myAppender          = Log::Log4perl::Appender::File
-log4j.appender.myAppender.layout   = Log::Log4perl::Layout::SimpleLayout
-log4j.appender.myAppender.filename = $testfile
-log4j.appender.myAppender.recreate = 1
-log4j.appender.myAppender.recreate_check_interval = 1
-log4j.appender.myAppender.mode     = append
+    # ***************************************************************
+    # Check the 'recreate' feature with check_interval
+    
+    trunc($testfile);
+    my $conf3 = <<EOL;
+    log4j.category.animal.dog   = INFO, myAppender
+    
+    log4j.appender.myAppender          = Log::Log4perl::Appender::File
+    log4j.appender.myAppender.layout   = Log::Log4perl::Layout::SimpleLayout
+    log4j.appender.myAppender.filename = $testfile
+    log4j.appender.myAppender.recreate = 1
+    log4j.appender.myAppender.recreate_check_interval = 1
+    log4j.appender.myAppender.mode     = append
 EOL
-
-  # Create logfile
-Log::Log4perl->init(\$conf3);
-  # ... and immediately remove it
-unlink $testfile;
-
-print "sleeping for 2 secs\n";
-sleep(2);
-
-$logger = Log::Log4perl::get_logger('animal.dog');
-$logger->info("test1");
-open (LOG, $testfile) or die "can't open $testfile $!";
-is(scalar <LOG>, "INFO - test1\n", "recreate before first write");
-close LOG;
+    
+      # Create logfile
+    Log::Log4perl->init(\$conf3);
+      # ... and immediately remove it
+    unlink $testfile or die "cannot remove file $testfile ($!)";
+    
+    print "sleeping for 2 secs\n";
+    sleep(2);
+    
+    $logger = Log::Log4perl::get_logger('animal.dog');
+    $logger->info("test1");
+    open (LOG, $testfile) or die "can't open $testfile $!";
+    is(scalar <LOG>, "INFO - test1\n", "recreate before first write");
+    close LOG;
+}
 
 # ***************************************************************
 # Check the 'recreate' feature with check_interval (2nd write)
@@ -302,7 +306,7 @@ close LOG;
 SKIP: {
   skip "Signal handling not supported on Win32", 1 if $^O eq "MSWin32";
     trunc($testfile);
-    $conf3 = <<EOL;
+    my $conf3 = <<EOL;
     log4j.category.animal.dog   = INFO, myAppender
 
     log4j.appender.myAppender          = Log::Log4perl::Appender::File
@@ -343,7 +347,7 @@ SKIP: {
   skip "Moving busy files not supported on Win32", 1 if $^O eq "MSWin32";
 
     trunc($testfile);
-    $conf3 = <<EOL;
+    my $conf3 = <<EOL;
     log4j.category.animal.dog   = INFO, myAppender
 
     log4j.appender.myAppender          = Log::Log4perl::Appender::File
