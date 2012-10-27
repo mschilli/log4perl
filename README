@@ -300,8 +300,8 @@ How to use it
         $logger->error_warn();
         $logger->error_die();
 
-    Finally, there's the Carp functions that do just what the Carp functions
-    do, but with logging:
+    Finally, there's the Carp functions that, in addition to logging, also
+    pass the stringified message to their companions in the Carp package:
 
         $logger->logcarp();        # warn w/ 1-level stack trace
         $logger->logcluck();       # warn w/ full stack trace
@@ -2049,6 +2049,20 @@ Dirty Tricks
 
         to put Log4perl in a more permissive mode.
 
+    Prevent croak/confess from stringifying
+        The logcroak/logconfess functions stringify their arguments before
+        they pass them to Carp's croak/confess functions. This can get in
+        the way if you want to throw an object or a hashref as an exception,
+        in this case use:
+
+            $Log::Log4perl::STRINGIFY_DIE_MESSAGE = 0;
+
+            eval {
+                  # throws { foo => "bar" }
+                  # without stringification
+                $logger->logcroak( { foo => "bar" } );
+            };
+
 EXAMPLE
     A simple example to cut-and-paste and get started:
 
@@ -2142,25 +2156,23 @@ AUTHORS
 
         http://github.com/mschilli/log4perl
 
-    Bug reports or requests for enhancements to the authors via our
+    Send bug reports or requests for enhancements to the authors via our
 
-        MAILING LIST (questions, bug reports, suggestions/patches): 
-        log4perl-devel@lists.sourceforge.net
+    MAILING LIST (questions, bug reports, suggestions/patches):
+    log4perl-devel@lists.sourceforge.net
 
-        Authors (please contact them via the list above, not directly)
-        Mike Schilli <m@perlmeister.com>
-        Kevin Goess <cpan@goess.org>
+    Authors (please contact them via the list above, not directly): Mike
+    Schilli <m@perlmeister.com>, Kevin Goess <cpan@goess.org>
 
-        Contributors (in alphabetical order):
-        Ateeq Altaf, Cory Bennett, Jens Berthold, Jeremy Bopp, Hutton
-        Davidson, Chris R. Donnelly, Matisse Enzer, Hugh Esco, Anthony
-        Foiani, James FitzGibbon, Carl Franks, Dennis Gregorovic, Andy
-        Grundman, Paul Harrington, David Hull, Robert Jacobson, Jason Kohles, 
-        Jeff Macdonald, Markus Peter, Brett Rann, Peter Rabbitson, Erik
-        Selberg, Aaron Straup Cope, Lars Thegler, David Viner, Mac Yang.
+    Contributors (in alphabetical order): Ateeq Altaf, Cory Bennett, Jens
+    Berthold, Jeremy Bopp, Hutton Davidson, Chris R. Donnelly, Matisse
+    Enzer, Hugh Esco, Anthony Foiani, James FitzGibbon, Carl Franks, Dennis
+    Gregorovic, Andy Grundman, Paul Harrington, David Hull, Robert Jacobson,
+    Jason Kohles, Jeff Macdonald, Markus Peter, Brett Rann, Peter Rabbitson,
+    Erik Selberg, Aaron Straup Cope, Lars Thegler, David Viner, Mac Yang.
 
-COPYRIGHT AND LICENSE
-    Copyright 2002-2009 by Mike Schilli <m@perlmeister.com> and Kevin Goess
+LICENSE
+    Copyright 2002-2012 by Mike Schilli <m@perlmeister.com> and Kevin Goess
     <cpan@goess.org>.
 
     This library is free software; you can redistribute it and/or modify it
