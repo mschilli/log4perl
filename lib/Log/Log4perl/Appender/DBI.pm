@@ -76,7 +76,7 @@ sub _init {
     } else {
         $self->{connect} = sub {
             DBI->connect(@params{qw(datasource username password)},
-                         {PrintError => 0})
+                         {PrintError => 0, $params{attrs} ? %{$params{attrs}} : ()})
                             or croak "Log4perl: $DBI::errstr";
         };
         $self->{dbh} = $self->{connect}->();
@@ -339,17 +339,19 @@ Log::Log4perl::Appender::DBI - implements appending to a DB
      log4j.appender.DBAppndr.params.3 = %c
                                    #4 is the message from log()
                                    #5 is ipaddr from log()
-         
-     
+
      log4j.appender.DBAppndr.usePreparedStmt = 1
       #--or--
      log4j.appender.DBAppndr.bufferSize = 2
-     
-     #just pass through the array of message items in the log statement 
+
+     #just pass through the array of message items in the log statement
      log4j.appender.DBAppndr.layout    = Log::Log4perl::Layout::NoopLayout
      log4j.appender.DBAppndr.warp_message = 0
+
+     #driver attributes support
+     log4j.appender.DBAppndr.attrs.f_encoding = utf8
     };
-     
+
     $logger->warn( $custid, 'big problem!!', $ip_addr );
 
 =head1 CAVEAT
@@ -379,7 +381,7 @@ The simplest usage is this:
        INSERT INTO logtbl                \
           (loglevel, message)            \
           VALUES ('%c','%m')
-    
+
     log4j.appender.DBAppndr.layout    = Log::Log4perl::Layout::PatternLayout
 
 
