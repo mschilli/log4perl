@@ -4,6 +4,8 @@
 
 1.40 (not yet released)
    *    (ms) Denis Ibaev added support for DBI appender attributes.
+   *    (ms) Chris Weyl put in a workaround for a DBD::CSV bug that
+             tripped our test suite.
 
 1.39 (2012/10/27)
    *    (ms) Markus Benning reported that logcroak/confess/die stringify
