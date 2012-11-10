@@ -214,9 +214,10 @@ $dbh->disconnect;
 # might as well give it a thorough check
 Log::Log4perl->reset;
 
-$dbh = DBI->connect('DBI:CSV:f_dir=t/tmp','testuser','testpw',{ PrintError => 1 });
+unlink 't/tmp/log4perltest'
+    if -e 't/tmp/log4perltest';
 
-$dbh->do('DROP TABLE log4perltest') if -e 't/tmp/log4perltest';
+$dbh = DBI->connect('DBI:CSV:f_dir=t/tmp','testuser','testpw',{ PrintError => 1 });
 
 $stmt = <<EOL;
     CREATE TABLE log4perltest (
