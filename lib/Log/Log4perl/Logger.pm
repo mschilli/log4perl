@@ -555,7 +555,7 @@ sub get_logger {
     my($class, $category) = @_;
 
     unless(defined $ROOT_LOGGER) {
-        die "Internal error: Root Logger not initialized.";
+        Carp::confess "Internal error: Root Logger not initialized.";
     }
 
     return $ROOT_LOGGER if $category eq "";

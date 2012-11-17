@@ -6,6 +6,10 @@
    *    (ms) Denis Ibaev added support for DBI appender attributes.
    *    (ms) Chris Weyl put in a workaround for a DBD::CSV bug that
              tripped our test suite.
+   *    (ms) Tim Bunce provided a patch using Carp::confess() instead of die()
+             on the "Root Logger not initialized" message which pops up
+             during global construction to make it easier to find the 
+             offending code.
 
 1.39 (2012/10/27)
    *    (ms) Markus Benning reported that logcroak/confess/die stringify
