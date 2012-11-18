@@ -20,6 +20,15 @@ sub trunc {
     close FILE;
 }
 
+sub is_like_windows {
+    if( $^O eq "MSWin32" or
+        $^O eq "cygwin" ) {
+        return 1;
+    }
+
+    return 0;
+}
+
 BEGIN {
     if ($] < 5.006) {
         plan skip_all => "Only with perl >= 5.006";
@@ -177,7 +186,7 @@ $log = join('',@log);
 is($log, "INFO - info message\nDEBUG animal.dog - 2nd debug message\nINFO  animal.dog - 2nd info message\nINFO  animal.dog - 2nd info message again\nINFO - 3rd info message\n", "after reload");
 
 SKIP: {
-  skip "Signal handling not supported on Win32", 2 if $^O eq "MSWin32";
+  skip "Signal handling not supported on Win32", 2 if is_like_windows();
    # ***************************************************************
    # Check the 'recreate' feature
    
@@ -216,7 +225,7 @@ EOL
 # Check the 'recreate' feature with signal handling
 
 SKIP: {
-  skip "File recreation not supported on Win32", 9 if $^O eq "MSWin32";
+  skip "File recreation not supported on Win32", 9 if is_like_windows();
 
   # Use two appenders to confirm that both files are recreated when the
   # signal is received, rather than just whichever watcher was created
@@ -268,7 +277,7 @@ EOL
 
 
 SKIP: {
-  skip "Removing busy files not supported on Win32", 1 if $^O eq "MSWin32";
+  skip "Removing busy files not supported on Win32", 1 if is_like_windows();
 
     # ***************************************************************
     # Check the 'recreate' feature with check_interval
@@ -304,7 +313,7 @@ EOL
 # Check the 'recreate' feature with check_interval (2nd write)
 
 SKIP: {
-  skip "Signal handling not supported on Win32", 1 if $^O eq "MSWin32";
+  skip "Signal handling not supported on Win32", 1 if is_like_windows();
     trunc($testfile);
     my $conf3 = <<EOL;
     log4j.category.animal.dog   = INFO, myAppender
@@ -344,7 +353,7 @@ EOL
 # Check the 'recreate' feature with moved/recreated file
 
 SKIP: {
-  skip "Moving busy files not supported on Win32", 1 if $^O eq "MSWin32";
+  skip "Moving busy files not supported on Win32", 1 if is_like_windows();
 
     trunc($testfile);
     my $conf3 = <<EOL;

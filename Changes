@@ -10,6 +10,8 @@
              on the "Root Logger not initialized" message which pops up
              during global construction to make it easier to find the 
              offending code.
+   *    (ms) Cygwin masks MSWin32-ishness by setting $^O to "cygwin" and not
+             to "Win32". Modified check to catch both.
 
 1.39 (2012/10/27)
    *    (ms) Markus Benning reported that logcroak/confess/die stringify
