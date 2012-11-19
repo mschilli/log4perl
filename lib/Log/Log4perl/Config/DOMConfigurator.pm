@@ -512,7 +512,7 @@ sub parse_boolean {
 sub subst {
     my $val = shift;
 
-    $val =~ s/\${(.*?)}/
+    $val =~ s/\$\{(.*?)}/
                       Log::Log4perl::Config::var_subst($1, {})/gex;
     return $val;
 }

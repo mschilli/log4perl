@@ -12,6 +12,8 @@
              offending code.
    *    (ms) Cygwin masks MSWin32-ishness by setting $^O to "cygwin" and not
              to "Win32". Modified check to catch both.
+   *    (ms) Fixed unescaped brace in regex that perl 5.17.4 was complaining 
+             about.
 
 1.39 (2012/10/27)
    *    (ms) Markus Benning reported that logcroak/confess/die stringify
