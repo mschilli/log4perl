@@ -1350,7 +1350,7 @@ are located in:
     package Candy::Twix;
 
     sub new { 
-        my $logger = Log::Log4perl->new("Candy::Twix");
+        my $logger = Log::Log4perl->get_logger("Candy::Twix");
         $logger->debug("Creating a new Twix bar");
         bless {}, shift;
     }
@@ -1360,7 +1360,7 @@ are located in:
     package Candy::Snickers;
 
     sub new { 
-        my $logger = Log::Log4perl->new("Candy.Snickers");
+        my $logger = Log::Log4perl->get_logger("Candy.Snickers");
         $logger->debug("Creating a new Snickers bar");
         bless {}, shift;
     }
@@ -1390,7 +1390,7 @@ procedural:
 
     sub print_portfolio {
 
-        my $log = Log::Log4perl->new("user.portfolio");
+        my $log = Log::Log4perl->get_logger("user.portfolio");
         $log->debug("Quotes requested: @_");
 
         for(@_) {
@@ -1400,7 +1400,7 @@ procedural:
 
     sub get_quote {
 
-        my $log = Log::Log4perl->new("internet.quotesystem");
+        my $log = Log::Log4perl->get_logger("internet.quotesystem");
         $log->debug("Fetching quote: $_[0]");
 
         return yahoo_quote($_[0]);
