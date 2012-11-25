@@ -17,7 +17,7 @@ use strict;
 
 #########################
 # used Test::Simple to help debug the test script
-use Test::More tests => 73;
+use Test::More tests => 74;
 
 use Log::Log4perl;
 use Log::Log4perl::Level;
@@ -32,6 +32,7 @@ is $logger->is_debug, 0, "is_debug false when L4p is uninitialized";
 is $logger->is_error, 0, "is_error false when L4p is uninitialized";
 
 my $log0 = Log::Log4perl->get_logger("abc.def");
+is $log0->category(), "abc.def", "category accessor";
 my $log1 = Log::Log4perl->get_logger("abc.def");
 my $log2 = Log::Log4perl->get_logger("abc.def");
 my $log3 = Log::Log4perl->get_logger("abc.def.ghi");

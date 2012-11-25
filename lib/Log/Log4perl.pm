@@ -814,6 +814,8 @@ the log level is supposed to be C<ERROR> -- meaning that I<DEBUG>
 and I<INFO> messages are suppressed. Note that this 'inheritance' is
 unrelated to Perl's class inheritance, it is merely related to the
 logger namespace.
+By the way, if you're ever in doubt about what a logger's category is, 
+use C<$logger->category()> to retrieve it.
 
 =head2 Log Levels
 
