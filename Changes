@@ -2,6 +2,10 @@
  Revision history for Log::Log4perl
 ##################################################
 
+1.41 (not yet released)
+   *    (ms) [rt 81731] Added 'trace' level to Log4perl::Catalyst, as 
+             suggested by Ashley Pond.
+
 1.40 (2012/11/30)
    *    (ms) Denis Ibaev added support for DBI appender attributes.
    *    (ms) Chris Weyl put in a workaround for a DBD::CSV bug that

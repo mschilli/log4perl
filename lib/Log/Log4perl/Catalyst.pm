@@ -14,7 +14,7 @@ init();
 sub init {
 ##################################################
 
-    my @levels = qw[ debug info warn error fatal ];
+    my @levels = qw[ trace debug info warn error fatal ];
 
     Log::Log4perl->wrapper_register(__PACKAGE__);
 
