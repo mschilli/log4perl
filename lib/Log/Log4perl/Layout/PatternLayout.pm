@@ -210,10 +210,19 @@ sub render {
                     callinfo_dump( $caller_offset, \@callinfo );
                 }
 
-                $subroutine = $callinfo[3];
-                    # If we're inside an eval, go up one level further.
-                if(defined $subroutine and
-                   $subroutine eq "(eval)") {
+                $subroutine =  $callinfo[3] || '';
+                my $subname    =  ((split '::', $subroutine)[-1] || '');
+                     # If we're inside an eval, __ANON__, try, go up one level further.
+                if(
+                     $subname eq "(eval)"    or
+                     $subname eq "__ANON__"  or
+                     $subname eq "try"       or
+                0) {
+                    if( $subname eq "__ANON__"  and
+                        ((caller($caller_level +$levels_up +2))[3] || '') ne 'Try::Tiny::try'
+                    ) {
+                        $info{L} =  "$callinfo[2]:$info{L}";
+                    }
                     print "Inside an eval, one up\n" if _INTERNAL_DEBUG;
                     $levels_up++;
                     redo;
@@ -222,7 +231,7 @@ sub render {
             $subroutine = "main::" unless $subroutine;
             print "Subroutine is '$subroutine'\n" if _INTERNAL_DEBUG;
             $info{M} = $subroutine;
-            $info{l} = "$subroutine $filename ($line)";
+            $info{l} = "$subroutine $filename ($info{L})";
         }
     }
 
