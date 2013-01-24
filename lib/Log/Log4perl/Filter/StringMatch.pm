@@ -65,7 +65,7 @@ __END__
 
 =head1 NAME
 
-Log::Log4perl::Filter::StringMatch - Filter to match the log level exactly
+Log::Log4perl::Filter::StringMatch - Filter on log message string
 
 =head1 SYNOPSIS
 
