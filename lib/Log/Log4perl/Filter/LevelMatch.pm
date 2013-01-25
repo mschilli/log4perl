@@ -77,9 +77,10 @@ on a match.
 =head1 SEE ALSO
 
 L<Log::Log4perl::Filter>,
+L<Log::Log4perl::Filter::Boolean>,
 L<Log::Log4perl::Filter::LevelRange>,
-L<Log::Log4perl::Filter::StringRange>,
-L<Log::Log4perl::Filter::Boolean>
+L<Log::Log4perl::Filter::MDC>,
+L<Log::Log4perl::Filter::StringMatch>
 
 =head1 LICENSE
 
