@@ -85,9 +85,10 @@ is supposed to pass or block the message (C<true> or C<false>).
 =head1 SEE ALSO
 
 L<Log::Log4perl::Filter>,
+L<Log::Log4perl::Filter::Boolean>,
 L<Log::Log4perl::Filter::LevelMatch>,
-L<Log::Log4perl::Filter::StringRange>,
-L<Log::Log4perl::Filter::Boolean>
+L<Log::Log4perl::Filter::MDC>,
+L<Log::Log4perl::Filter::StringMatch>
 
 =head1 LICENSE
 

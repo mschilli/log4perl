@@ -169,6 +169,7 @@ standard Perl. Here's a bunch of examples:
 L<Log::Log4perl::Filter>,
 L<Log::Log4perl::Filter::LevelMatch>,
 L<Log::Log4perl::Filter::LevelRange>,
+L<Log::Log4perl::Filter::MDC>,
 L<Log::Log4perl::Filter::StringRange>
 
 =head1 LICENSE
