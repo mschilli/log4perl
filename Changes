@@ -2,8 +2,12 @@
  Revision history for Log::Log4perl
 ##################################################
 
+   *    (ah) Added Log::Log4perl::Filter::MDC to filter based on MDC key/value
+   *    (ah) Updated license/copyright/author sections in all files using
+             licensizer and .licensizer.yml
+
 1.41 (not yet released)
-   *    (ms) [rt 81731] Added 'trace' level to Log4perl::Catalyst, as 
+   *    (ms) [rt 81731] Added 'trace' level to Log4perl::Catalyst, as
              suggested by Ashley Pond.
 
 1.40 (2012/11/30)
