@@ -433,4 +433,3 @@ is $buffer->gobbled(), "second\nthird\n";
 
 $limiter->DESTROY();
 is $buffer->gobbled(), "fourth\n";
-

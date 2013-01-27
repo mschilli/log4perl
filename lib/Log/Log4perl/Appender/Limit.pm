@@ -174,6 +174,10 @@ sub flush {
 ###########################################
     my($self) = @_;
 
+    if( ! defined $self->{app} ) {
+        return;
+    }
+
         # Log pending messages if we have any
     for(@{$self->{buffer}}) {
         $self->{app}->SUPER::log_cached($_);
@@ -181,7 +185,6 @@ sub flush {
 
       # call flush() on the attached appender if so desired.
     if( $self->{appender_method_on_flush} ) {
-        no strict 'refs';
         my $method = $self->{appender_method_on_flush};
         $self->{app}->$method();
     }
@@ -206,9 +209,7 @@ sub DESTROY {
 
     if( $self->{ flush_on_destroy } ) {
             # Log pending messages if we have any
-        if( defined $self->{ app } ) {
-            $self->flush();
-        }
+        $self->flush();
     }
 }
 
