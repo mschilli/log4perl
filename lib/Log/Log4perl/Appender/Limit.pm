@@ -193,13 +193,21 @@ sub flush {
     $self->{buffer} = [];
 }
 
-{ no warnings 'redefine';
-  ###########################################
-  sub time {
-  ###########################################
-        # in a method so we can override it for testing
-      return CORE::time();
-  }
+  # For testing, initialize/update this with a time stamp
+###########################################
+sub time {
+###########################################
+    my($self, $time) = @_;
+
+    if(defined $time) {
+        $self->{ time } = $time;
+    }
+
+    if( exists $self->{ time } ) {
+        return $self->{ time };
+    }
+
+    return CORE::time();
 }
 
 ###########################################
@@ -207,7 +215,8 @@ sub DESTROY {
 ###########################################
     my($self) = @_;
 
-    if( $self->{ flush_on_destroy } ) {
+    if( $self->time_to_flush() or 
+        $self->{ flush_on_destroy } ) {
             # Log pending messages if we have any
         $self->flush();
     }

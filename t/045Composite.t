@@ -384,16 +384,6 @@ is $buffer->buffer(), "",
       my( $self ) = @_;
       return $self->{ gobble };
   };
-  use Log::Log4perl::Appender::Limit;
-  *Log::Log4perl::Appender::Limit::time = sub {
-      my( $self, $time ) = @_;
-
-      if( defined $time ) {
-          $self->{ time } = $time;
-      }
-
-      return $self->{ time };
-  };
 }
 
 $conf = qq(
