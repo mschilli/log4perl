@@ -204,11 +204,11 @@ sub DESTROY {
 ###########################################
     my($self) = @_;
 
-    $DB::single = 1;
-
     if( $self->{ flush_on_destroy } ) {
             # Log pending messages if we have any
-        $self->flush();
+        if( defined $self->{ app } ) {
+            $self->flush();
+        }
     }
 }
 
