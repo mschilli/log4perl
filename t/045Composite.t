@@ -24,7 +24,7 @@ BEGIN {
                                                # early Perl versions dont
                                                # have it.
     }else{
-        plan tests => 20;
+        plan tests => 25;
     }
 }
 
@@ -34,66 +34,6 @@ use Log::Log4perl::Appender::TestBuffer;
 
 ok(1); # If we made it this far, we/re ok.
 
-# [RT 82923] Last message not sent
-
-{ no warnings 'redefine';
-  no warnings 'once';
-  *Log::Log4perl::Appender::TestBuffer::gobble = sub {
-      my( $self ) = @_;
-      $self->{ gobble } = $self->buffer();
-      $self->clear();
-  };
-  *Log::Log4perl::Appender::TestBuffer::gobbled = sub {
-      my( $self ) = @_;
-      return $self->{ gobble };
-  };
-  use Log::Log4perl::Appender::Limit;
-  *Log::Log4perl::Appender::Limit::time = sub {
-      my( $self, $time ) = @_;
-
-      if( defined $time ) {
-          $self->{ time } = $time;
-      }
-
-      return $self->{ time };
-  };
-}
-
-my $conf = qq(
-  log4perl.category = DEBUG, Limiter
-
-  log4perl.appender.Buffer          = Log::Log4perl::Appender::TestBuffer
-  log4perl.appender.Buffer.layout   = PatternLayout
-  log4perl.appender.Buffer.layout.ConversionPattern=%m%n
-
-    # Composite Appender
-  log4perl.appender.Limiter              = Log::Log4perl::Appender::Limit
-  log4perl.appender.Limiter.appender     = Buffer
-  log4perl.appender.Limiter.block_period = 1
-  log4perl.appender.Limiter.appender_method_on_flush = gobble
-);
-
-Log::Log4perl->init(\$conf);
-
-my $limiter = Log::Log4perl->appender_by_name("Limiter");
-$limiter->time( 0 );
-my $buffer = Log::Log4perl->appender_by_name("Buffer");
-
-my $logger = get_logger();
-$logger->error( "first" );
-is $buffer->gobbled(), "first\n";
-
-$logger->error( "second" );
-is $buffer->gobbled(), "first\n";
-
-$limiter->time( 1 );
-$logger->error( "third" );
-
-is $buffer->gobbled(), "second\nthird\n";
-
-# undef $limiter;
-
-__END__
 ##################################################
 # Limit Appender
 ##################################################
@@ -430,4 +370,67 @@ $composite->flush();
 
 is $buffer->buffer(), "", 
    "appender threshold blocks message in composite appender";
+
+# [RT 82923] Last message not sent
+
+{ no warnings 'redefine';
+  no warnings 'once';
+  *Log::Log4perl::Appender::TestBuffer::gobble = sub {
+      my( $self ) = @_;
+      $self->{ gobble } = $self->buffer();
+      $self->clear();
+  };
+  *Log::Log4perl::Appender::TestBuffer::gobbled = sub {
+      my( $self ) = @_;
+      return $self->{ gobble };
+  };
+  use Log::Log4perl::Appender::Limit;
+  *Log::Log4perl::Appender::Limit::time = sub {
+      my( $self, $time ) = @_;
+
+      if( defined $time ) {
+          $self->{ time } = $time;
+      }
+
+      return $self->{ time };
+  };
+}
+
+$conf = qq(
+  log4perl.category = DEBUG, Limiter
+
+  log4perl.appender.Buffer          = Log::Log4perl::Appender::TestBuffer
+  log4perl.appender.Buffer.layout   = PatternLayout
+  log4perl.appender.Buffer.layout.ConversionPattern=%m%n
+
+    # Composite Appender
+  log4perl.appender.Limiter              = Log::Log4perl::Appender::Limit
+  log4perl.appender.Limiter.appender     = Buffer
+  log4perl.appender.Limiter.block_period = 1
+  log4perl.appender.Limiter.appender_method_on_flush = gobble
+  log4perl.appender.Limiter.flush_on_destroy = 1
+);
+
+Log::Log4perl->init(\$conf);
+
+my $limiter = Log::Log4perl->appender_by_name("Limiter");
+$limiter->time( 0 );
+$buffer = Log::Log4perl->appender_by_name("Buffer");
+
+$logger = get_logger();
+$logger->error( "first" );
+is $buffer->gobbled(), "first\n";
+
+$logger->error( "second" );
+is $buffer->gobbled(), "first\n";
+
+$limiter->time( 1 );
+$logger->error( "third" );
+is $buffer->gobbled(), "second\nthird\n";
+
+$logger->error( "fourth" );
+is $buffer->gobbled(), "second\nthird\n";
+
+$limiter->DESTROY();
+is $buffer->gobbled(), "fourth\n";
 

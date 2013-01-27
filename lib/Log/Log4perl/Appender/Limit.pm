@@ -78,8 +78,6 @@ sub log {
 ###########################################
     my($self, %params) = @_;
     
-    $DB::single = 1;
-
     local $Log::Log4perl::caller_depth =
         $Log::Log4perl::caller_depth + 2;
 
@@ -205,6 +203,8 @@ sub flush {
 sub DESTROY {
 ###########################################
     my($self) = @_;
+
+    $DB::single = 1;
 
     if( $self->{ flush_on_destroy } ) {
             # Log pending messages if we have any
