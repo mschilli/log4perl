@@ -26,6 +26,7 @@ sub new {
     my $self = {
         max_until_flushed   => undef,
         max_until_discarded => undef,
+        flush_on_destroy    => 0,
         appender_method_on_flush 
                             => undef,
         appender            => undef,
@@ -55,10 +56,30 @@ sub new {
 }
 
 ###########################################
+sub time_to_flush {
+###########################################
+    my($self) = @_;
+
+    if(defined $self->{max_until_flushed} and
+       scalar @{$self->{buffer}} >= $self->{max_until_flushed} - 1) {
+        return 1;
+    }
+
+    if(exists $self->{sent_last} and
+       $self->{sent_last} + $self->{block_period} > $self->time()) {
+        return 0;
+    }
+
+    return 1;
+}
+
+###########################################
 sub log {
 ###########################################
     my($self, %params) = @_;
     
+    $DB::single = 1;
+
     local $Log::Log4perl::caller_depth =
         $Log::Log4perl::caller_depth + 2;
 
@@ -69,18 +90,7 @@ sub log {
         $discard = 1;
     }
 
-        # Check if we need to flush
-    my $flush = 0;
-    if(defined $self->{max_until_flushed} and
-       scalar @{$self->{buffer}} >= $self->{max_until_flushed} - 1) {
-        $flush = 1;
-    }
-
-    if(!$flush and
-       (exists $self->{sent_last} and
-        $self->{sent_last} + $self->{block_period} > time()
-       )
-      ) {
+    if(!$self->time_to_flush()) {
             # Message needs to be blocked for now.
         return if $discard;
 
@@ -100,15 +110,18 @@ sub log {
     # Relay all messages we got to the SUPER class, which needs to render the
     # messages according to the appender's layout, first.
 
+        # Log current message as well
+            # Ask the appender to save a cached message in $cache
+    $self->{app}->SUPER::log(\%params,
+                         $params{log4p_category},
+                         $params{log4p_level}, \my $cache);
+           # Save message and other parameters
+    push @{$self->{buffer}}, $cache if $self->{accumulate};
+
         # Log pending messages if we have any
     $self->flush();
 
-        # Log current message as well
-    $self->{app}->SUPER::log(\%params,
-                             $params{log4p_category},
-                             $params{log4p_level});
-
-    $self->{sent_last} = time();
+    $self->{sent_last} = $self->time();
 
         # We need to store the timestamp persistently, if requested
     $self->save() if $self->{persistent};
@@ -179,11 +192,24 @@ sub flush {
     $self->{buffer} = [];
 }
 
+{ no warnings 'redefine';
+  ###########################################
+  sub time {
+  ###########################################
+        # in a method so we can override it for testing
+      return CORE::time();
+  }
+}
+
 ###########################################
 sub DESTROY {
 ###########################################
     my($self) = @_;
 
+    if( $self->{ flush_on_destroy } ) {
+            # Log pending messages if we have any
+        $self->flush();
+    }
 }
 
 1;
@@ -238,6 +264,11 @@ Period in seconds between delivery of messages. If messages arrive in between,
 they will be either saved (if C<accumulate> is set to a true value) or
 discarded (if C<accumulate> isn't set).
 
+=item C<accumulate>
+
+If set to 1, blocked messages will the saved and sent later. Messages
+will be discarded if C<accumulate> is set to 0. Defaults to 1.
+
 =item C<persistent>
 
 File name in which C<Log::Log4perl::Appender::Limit> persistently stores 
@@ -283,6 +314,14 @@ C<appender_method_on_flush> value to the string C<"flush">:
 This will cause the mailer to buffer messages and wait for C<flush()>
 to send out the whole batch. The limiter will then call the appender's
 C<flush()> method when it's own buffer gets flushed out.
+
+=item C<flush_on_destroy>
+
+If there are pending messages when the appender goes out of scope (usually
+when the main program shuts down), they are dropped on the floor 
+if sending them would violate the C<block_period> restriction. However,
+if those pending messages need to go out at object destruction time,
+set the C<flush_on_destroy> option to a true value. Default is false.
 
 =back
 
