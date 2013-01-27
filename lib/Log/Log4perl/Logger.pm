@@ -70,7 +70,17 @@ sub cleanup {
     # Delete the root logger
     undef $ROOT_LOGGER;
 
-    # Delete all appenders
+    # Delete all appenders, make sure that composite appenders get
+    # destroyed first, so that they can inform their delegates to perform
+    # flushes and such
+    for my $name (keys %APPENDER_BY_NAME ) {
+        my $appender = $APPENDER_BY_NAME{ $name };
+        next if !$appender->composite();
+       print "Deleting ref to composite appender $name\n" if _INTERNAL_DEBUG;
+       delete $APPENDER_BY_NAME{ $name };
+    } 
+      # destroy the rest
+    print "Deleting all other appenders \n" if _INTERNAL_DEBUG;
     %APPENDER_BY_NAME   = ();
 
     undef $INITIALIZED;
