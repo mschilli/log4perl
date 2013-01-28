@@ -409,7 +409,15 @@ sub create_appender_instance {
                 l4p_depends_on       => $depends_on,
                 %param,
             ); 
-    
+
+            $DB::single = 1;
+              # don't store those in the object, they're creating 
+              # circular references that prevent object cleanup
+            if( exists $appender->{ appender } ) {
+                delete $appender->{ appender }->{ l4p_post_config_subs };
+                delete $appender->{ appender }->{ l4p_depends_on };
+            }
+
             for my $dependency (@$depends_on) {
                 # If this appender indicates that it needs other appenders
                 # to exist (e.g. because it's a composite appender that

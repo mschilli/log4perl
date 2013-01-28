@@ -421,5 +421,14 @@ is $buffer->gobbled(), "second\nthird\n";
 $logger->error( "fourth" );
 is $buffer->gobbled(), "second\nthird\n";
 
-$limiter->DESTROY();
+#$limiter->DESTROY();
+Log::Log4perl::Logger->cleanup();
+use Devel::Cycle;
+use Devel::Peek;
+find_cycle( $limiter );
+Dump( $limiter );
+undef $limiter;
+
+warn "end of file";
+
 is $buffer->gobbled(), "fourth\n";

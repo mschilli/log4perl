@@ -40,5 +40,8 @@ Log::Log4perl::Logger->cleanup();
   # $app should be the last reference, the cleanup should happen
   # right after the 'undef' command in the next line. If it happens
   # afterwards, it's too late.
+#use Devel::Cycle;
+#$DB::single = 1;
+#find_cycle( $app );
 undef $app;
 $too_late = 1;
