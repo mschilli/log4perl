@@ -225,7 +225,7 @@ the value returned on the previous call by 1000.
 
 =head1 LICENSE
 
-Copyright 2002-2012 by Mike Schilli E<lt>m@perlmeister.comE<gt> 
+Copyright 2002-2013 by Mike Schilli E<lt>m@perlmeister.comE<gt> 
 and Kevin Goess E<lt>cpan@goess.orgE<gt>.
 
 This library is free software; you can redistribute it and/or modify
@@ -250,7 +250,8 @@ Contributors (in alphabetical order):
 Ateeq Altaf, Cory Bennett, Jens Berthold, Jeremy Bopp, Hutton
 Davidson, Chris R. Donnelly, Matisse Enzer, Hugh Esco, Anthony
 Foiani, James FitzGibbon, Carl Franks, Dennis Gregorovic, Andy
-Grundman, Paul Harrington, David Hull, Robert Jacobson, Jason Kohles, 
-Jeff Macdonald, Markus Peter, Brett Rann, Peter Rabbitson, Erik
-Selberg, Aaron Straup Cope, Lars Thegler, David Viner, Mac Yang.
+Grundman, Paul Harrington, Alexander Hartmaier  David Hull, 
+Robert Jacobson, Jason Kohles, Jeff Macdonald, Markus Peter, 
+Brett Rann, Peter Rabbitson, Erik Selberg, Aaron Straup Cope, 
+Lars Thegler, David Viner, Mac Yang.
 
