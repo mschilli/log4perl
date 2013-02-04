@@ -20,6 +20,8 @@ our %translate = (
         'Log::Log4perl::JavaMap::SyslogAppender',
      'org.apache.log4j.NTEventLogAppender'    => 
         'Log::Log4perl::JavaMap::NTEventLogAppender',
+     'org.apache.log4j.SMTPAppender'    => 
+        'Log::Log4perl::JavaMap::SMTPAppender',
 );
 
 our %user_defined;
@@ -99,12 +101,12 @@ These are implemented
     JDBCAppender        - Log::Log4perl::Appender::DBI
     SyslogAppender      - Log::Dispatch::Syslog
     NTEventLogAppender  - Log::Dispatch::Win32EventLog
+    SMTPAppender        - Log::Dispatch::Email::MailSender
 
 
 These should/will/might be implemented
     
     DailyRollingFileAppender - 
-    SMTPAppender     - Log::Dispatch::Email::MailSender
     
 
 These might be implemented but they don't have corresponding classes
