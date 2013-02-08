@@ -94,7 +94,7 @@ sub file_open {
 
     umask($self->{umask}) if defined $self->{umask};
 
-    my $didnt_exist = ! -f $self->{filename};
+    my $didnt_exist = ! -e $self->{filename};
 
     if($self->{syswrite}) {
         sysopen $fh, "$self->{filename}", $sysmode or
@@ -336,6 +336,7 @@ If set, specifies that the owner of the newly created log file should
 be different from the effective user id of the running process.
 Only makes sense if the process is running as root. 
 Both numerical user ids and user names are acceptable.
+Log4perl does not attempt to change the ownership of I<existing> files.
 
 =item group
 
@@ -343,6 +344,7 @@ If set, specifies that the group of the newly created log file should
 be different from the effective group id of the running process.
 Only makes sense if the process is running as root.
 Both numerical group ids and group names are acceptable.
+Log4perl does not attempt to change the group membership of I<existing> files.
 
 =item utf8
 
