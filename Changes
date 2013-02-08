@@ -2,11 +2,11 @@
  Revision history for Log::Log4perl
 ##################################################
 
-   *    (ah) Added Log::Log4perl::Filter::MDC to filter based on MDC key/value
-
 1.41 (not yet released)
    *    (ms) [rt 81731] Added 'trace' level to Log4perl::Catalyst, as
              suggested by Ashley Pond.
+   *    (ms) Alexander Hartmaier added Log::Log4perl::Filter::MDC to filter 
+             based on MDC key/value
 
 1.40 (2012/11/30)
    *    (ms) Denis Ibaev added support for DBI appender attributes.
