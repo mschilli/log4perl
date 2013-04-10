@@ -272,9 +272,23 @@ C<Log::Log4perl::Level> explicitely.
 
 The numerical values assigned to these constants are purely virtual,
 only used by Log::Log4perl internally and can change at any time,
-so please don't make any assumptions.
+so please don't make any assumptions. You can test for numerical equality
+by directly comparing two level values, that's ok:
 
-If the caller wants to import these constants into a different namespace,
+    if( get_logger()->level() == $DEBUG ) {
+        print "The logger's level is DEBUG\n";
+    }
+
+But if you want to figure out which of two levels is more verbose, use
+Log4perl's own comparator:
+
+    if( Log::Log4perl::Level::isGreaterOrEqual( $level1, $level2 ) ) {
+        print Log::Log4perl::Level::to_level( $level1 ), 
+            " is equal or more verbose than ", 
+            Log::Log4perl::Level::to_level( $level2 ), "\n";
+    }
+
+If the caller wants to import level constants into a different namespace,
 it can be provided with the C<use> command:
 
     use Log::Log4perl::Level qw(MyNameSpace);

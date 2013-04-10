@@ -10,6 +10,8 @@
    *    (ms) [rt.cpan.org 83193] The file appender now ignores owner/group 
              settings on all types of existing file system entries (previously,
              this was only the case for actual files).
+        (ms) [rt.cpan.org 84289] Documented Level.pm's isGreaterOrEqual()
+             comparator.
 
 1.40 (2012/11/30)
    *    (ms) Denis Ibaev added support for DBI appender attributes.
