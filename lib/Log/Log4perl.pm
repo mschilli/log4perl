@@ -1275,8 +1275,8 @@ tradition, C<%-20c> will reserve 20 chars for the category and left-justify it.
 For more details on logging and how to use the flexible and the simple
 format, check out the original C<log4j> website under
 
-    http://jakarta.apache.org/log4j/docs/api/org/apache/log4j/SimpleLayout.html
-    http://jakarta.apache.org/log4j/docs/api/org/apache/log4j/PatternLayout.html
+    http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/SimpleLayout.html
+    http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/PatternLayout.html
 
 =head2 Penalties
 
@@ -2898,7 +2898,7 @@ http://www.perl.com/pub/a/2002/09/11/log4perl.html
 =item [2]
 
 Ceki Gülcü, "Short introduction to log4j",
-http://jakarta.apache.org/log4j/docs/manual.html
+http://logging.apache.org/log4j/1.2/manual.html
 
 =item [3]
 
