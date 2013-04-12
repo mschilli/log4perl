@@ -815,7 +815,7 @@ and I<INFO> messages are suppressed. Note that this 'inheritance' is
 unrelated to Perl's class inheritance, it is merely related to the
 logger namespace.
 By the way, if you're ever in doubt about what a logger's category is, 
-use C<$logger->category()> to retrieve it.
+use C<$logger-E<gt>category()> to retrieve it.
 
 =head2 Log Levels
 
@@ -2165,7 +2165,7 @@ create a STDERR appender and a root logger as in
 or, as shown below (and in the example above) 
 with a reference to a hash, specifying values
 for C<level> (the logger's priority), C<file> (the appender's data sink),
-C<category> (the logger's category> and C<layout> for the appender's 
+C<category> (the logger's category and C<layout> for the appender's 
 pattern layout specification.
 All key-value pairs are optional, they 
 default to C<$DEBUG> for C<level>, C<STDERR> for C<file>,
