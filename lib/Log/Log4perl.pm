@@ -2443,7 +2443,11 @@ which holds references to all appender wrapper objects.
 
 =head2 Modify appender thresholds
 
-To conveniently adjust appender thresholds (e.g. because a script
+To set an appender's threshold, use its C<threshold()> method:
+
+    $app->threshold( $FATAL );
+
+To conveniently adjust I<all> appender thresholds (e.g. because a script
 uses more_logging()), use
 
        # decrease thresholds of all appenders
