@@ -620,7 +620,6 @@ __END__
 Log::Log4perl - Log4j implementation for Perl
 
 =head1 SYNOPSIS
- 
         # Easy mode if you like it simple ...
 
     use Log::Log4perl qw(:easy);
@@ -657,10 +656,10 @@ Log::Log4perl - Log4j implementation for Perl
     log4perl.appender.FileAppndr1.layout   = \
                             Log::Log4perl::Layout::SimpleLayout
     ######################################################
-       
+
 =head1 ABSTRACT
 
-    Log::Log4perl provides a powerful logging API for your application
+Log::Log4perl provides a powerful logging API for your application
 
 =head1 DESCRIPTION
 
@@ -1255,7 +1254,7 @@ customized specifiers.
 Please note that the subroutines you're defining in this way are going
 to be run in the C<main> namespace, so be sure to fully qualify functions
 and variables if they're located in different packages.
-    
+
 SECURITY NOTE: this feature means arbitrary perl code can be embedded in the 
 config file.  In the rare case where the people who have access to your config 
 file are different from the people who write your code and shouldn't have 
@@ -1873,7 +1872,7 @@ that are allowed to run in the compartment.  The opcode masks must be
 specified as described in L<Opcode>:
 
  Log::Log4perl::Config->allowed_code_ops(':subprocess');
- 
+
 This example would allow Perl operations like backticks, system, fork, and
 waitpid to be executed in the compartment.  Of course, you probably don't
 want to use this mask -- it would allow exactly what the Safe compartment is
@@ -1897,7 +1896,7 @@ following convenience names are defined:
 
  safe        = [ ':browse' ]
  restrictive = [ ':default' ]
- 
+
 For convenience, if Log::Log4perl::Config-E<gt>allow_code() is called with a
 value which is a key of the map previously defined with
 Log::Log4perl::Config-E<gt>allowed_code_ops_convenience_map(), then the
@@ -2869,13 +2868,6 @@ Manual installation works as usual with
     make
     make test
     make install
-
-If you're running B<Windows (98, 2000, NT, XP etc.)>, 
-and you're too lazy to rummage through all of 
-Log-Log4perl's dependencies, don't despair: We're providing a PPM package
-which installs easily with your Activestate Perl. Check
-L<Log::Log4perl::FAQ/"how_can_i_install_log__log4perl_on_microsoft_windows">
-for details.
 
 =head1 DEVELOPMENT
 
