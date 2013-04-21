@@ -73,7 +73,7 @@ foreach (8, 4, 2, 1, 3, 6, 5, 7, 12, 10, 9, 11, 14, 13, 15) {
 # }
 
 
-my $LOGFILE = "example.log";
+my $LOGFILE = "example$$.log";
 unlink $LOGFILE;
 
 my $config = <<EOT;

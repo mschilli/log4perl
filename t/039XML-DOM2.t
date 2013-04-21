@@ -1,4 +1,6 @@
 
+our $table_name = "log4perltest$$";
+
 BEGIN { 
     if($ENV{INTERNAL_DEBUG}) {
         require Log::Log4perl::InternalDebug;
@@ -37,7 +39,7 @@ if ($no_XMLDOM){
 }
 
 
-my $xmlconfig = <<'EOL';
+my $xmlconfig = <<EOL;
 <?xml version="1.0" encoding="UTF-8"?> 
 <!DOCTYPE log4perl:configuration SYSTEM "log4perl.dtd">
 
@@ -52,8 +54,8 @@ my $xmlconfig = <<'EOL';
                 <param name="resource" value="logger"/>
                 <param name="username" value="bobjones"/>
          </param-nested>
-         <param name="to" value="bob@a.jabber.server"/>
-         <param-text name="to">mary@another.jabber.server</param-text>
+         <param name="to" value="bob\@a.jabber.server"/>
+         <param-text name="to">mary\@another.jabber.server</param-text>
           <layout class="Log::Log4perl::Layout::SimpleLayout"/>
          
 </log4perl:appender>
@@ -61,10 +63,10 @@ my $xmlconfig = <<'EOL';
           <param name="warp_message" value="0"/>
           <param name="datasource" value="DBI:CSV:f_dir=t/tmp"/>
           <param name="bufferSize" value="2"/>
-          <param name="password" value="sub { $ENV{PWD} }"/>
+          <param name="password" value="sub { \$ENV{PWD} }"/>
            <param name="username" value="bobjones"/>
           
-          <param-text name="sql">insert into log4perltest (loglevel, message, shortcaller, thingid, category, pkg, runtime1, runtime2) values (?,?,?,?,?,?,?,?)</param-text> 
+          <param-text name="sql">insert into $table_name (loglevel, message, shortcaller, thingid, category, pkg, runtime1, runtime2) values (?,?,?,?,?,?,?,?)</param-text> 
            <param-nested name="params">
                 <param name="1" value="%p"/>
                 <param name="3" value="%5.5l"/>
@@ -81,7 +83,7 @@ my $xmlconfig = <<'EOL';
 </category>
 
 <PatternLayout>
-    <cspec name="G"><![CDATA[sub { return "UID $< GID $("; }]]></cspec>
+    <cspec name="G"><![CDATA[sub { return "UID \$< GID \$("; }]]></cspec>
 </PatternLayout>
 
 
@@ -91,14 +93,14 @@ EOL
 
 my $xmldata = Log::Log4perl::Config::config_read(\$xmlconfig);
 
-my $propsconfig = <<'EOL';
+my $propsconfig = <<EOL;
 
 log4j.category.animal.dog   = INFO, jabbender
 log4j.threshold = DEBUG
 
 log4j.oneMessagePerAppender=1
 
-log4j.PatternLayout.cspec.G=sub { return "UID $< GID $("; }
+log4j.PatternLayout.cspec.G=sub { return "UID \$< GID \$("; }
 
 log4j.appender.jabbender          = Log::Dispatch::Jabber
 log4j.appender.jabbender.layout   = Log::Log4perl::Layout::SimpleLayout
@@ -107,14 +109,14 @@ log4j.appender.jabbender.login.port = 5222
 log4j.appender.jabbender.login.username = bobjones
 log4j.appender.jabbender.login.password = 12345
 log4j.appender.jabbender.login.resource = logger
-log4j.appender.jabbender.to = bob@a.jabber.server
-log4j.appender.jabbender.to = mary@another.jabber.server
+log4j.appender.jabbender.to = bob\@a.jabber.server
+log4j.appender.jabbender.to = mary\@another.jabber.server
 
 log4j.appender.DBAppndr2             = Log::Log4perl::Appender::DBI
 log4j.appender.DBAppndr2.username  = bobjones
 log4j.appender.DBAppndr2.datasource = DBI:CSV:f_dir=t/tmp
-log4j.appender.DBAppndr2.password = sub { $ENV{PWD} }
-log4j.appender.DBAppndr2.sql = insert into log4perltest (loglevel, message, shortcaller, thingid, category, pkg, runtime1, runtime2) values (?,?,?,?,?,?,?,?)
+log4j.appender.DBAppndr2.password = sub { \$ENV{PWD} }
+log4j.appender.DBAppndr2.sql = insert into $table_name (loglevel, message, shortcaller, thingid, category, pkg, runtime1, runtime2) values (?,?,?,?,?,?,?,?)
 log4j.appender.DBAppndr2.params.1 = %p    
 log4j.appender.DBAppndr2.params.3 = %5.5l
 log4j.appender.DBAppndr2.params.5 = %c
@@ -338,7 +340,7 @@ $ENV{hostnameval} = 'a.jabber.server';
 $ENV{password} = 'password';
 $ENV{passwordval} = '12345';
 $ENV{topcdata} = 'mary@another.jabber.server';
-$ENV{tablename} = 'log4perltest';
+$ENV{tablename} = $table_name;
 $ENV{cspecname} = 'G';
 $ENV{perlcode} = 'return "UID $< GID $(";';
 

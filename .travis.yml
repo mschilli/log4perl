@@ -3,3 +3,5 @@ perl:
   - "5.14"
   - "5.12"
   - "5.10"
+install:
+  - export HARNESS_OPTIONS=j10:c HARNESS_TIMER=1

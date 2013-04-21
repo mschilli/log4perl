@@ -2,6 +2,8 @@
 # Test DBI appender with SQLite
 ###########################################
 
+our $table_name = "log4perltest$$";
+
 BEGIN { 
     if($ENV{INTERNAL_DEBUG}) {
         require Log::Log4perl::InternalDebug;
@@ -55,7 +57,7 @@ my $dbh = DBI->connect("dbi:SQLite:dbname=$dbfile","","");
   # https://rt.cpan.org/Public/Bug/Display.html?id=79960
   # undef as NULL
 my $stmt = <<EOL;
-    CREATE TABLE log4perltest (
+    CREATE TABLE $table_name (
       loglevel  char(9) ,   
       message   char(128),
       mdc       char(16)
@@ -69,7 +71,7 @@ log4j.category = WARN, DBAppndr
 log4j.appender.DBAppndr            = Log::Log4perl::Appender::DBI
 log4j.appender.DBAppndr.datasource = dbi:SQLite:dbname=$dbfile
 log4j.appender.DBAppndr.sql = \\
-   insert into log4perltest \\
+   insert into $table_name \\
    (loglevel, mdc, message) \\
    values (?, ?, ?)
 log4j.appender.DBAppndr.params.1 = %p    
@@ -88,7 +90,7 @@ Log::Log4perl::init(\$config);
 my $logger = Log::Log4perl->get_logger();
 $logger->warn('test message');
 
-my $ary_ref = $dbh->selectall_arrayref( "SELECT * from log4perltest" );
+my $ary_ref = $dbh->selectall_arrayref( "SELECT * from $table_name" );
 is $ary_ref->[0]->[0], "WARN", "level logged in db";
 is $ary_ref->[0]->[1], "test message", "msg logged in db";
 is $ary_ref->[0]->[2], undef, "msg logged in db";

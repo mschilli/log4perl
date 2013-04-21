@@ -36,7 +36,7 @@ $EG_DIR = "../eg" unless -d $EG_DIR;
 
 ok(1); # If we made it this far, we're ok.
 
-my $LOGFILE = "example.log";
+my $LOGFILE = "example-java.log";
 unlink $LOGFILE; 
 
 #Log::Log4perl->init(

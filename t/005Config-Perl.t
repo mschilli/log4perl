@@ -25,7 +25,7 @@ $EG_DIR = "../eg" unless -d $EG_DIR;
 
 ok(1); # If we made it this far, we're ok.
 
-my $LOGFILE = "example.log";
+my $LOGFILE = "example-perl.log";
 unlink $LOGFILE;
 
 Log::Log4perl->init(File::Spec->catfile($EG_DIR, 'log4j-file-append-perl.conf'));

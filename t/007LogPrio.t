@@ -26,12 +26,19 @@ $EG_DIR = "../eg" unless -d $EG_DIR;
 
 ok(1); # If we made it this far, we're ok.
 
-my $LOGFILE = "example.log";
+my $LOGFILE = "example-perl2.log";
 unlink $LOGFILE;
 
-Log::Log4perl->init(
-        File::Spec->catfile($EG_DIR, 'log4j-file-append-perl.conf'));
+Log::Log4perl->init( \ <<EOT );
+log4j.rootLogger=DEBUG, LOGFILE
 
+log4j.appender.LOGFILE=Log::Log4perl::Appender::File
+log4j.appender.LOGFILE.filename=$LOGFILE
+log4j.appender.LOGFILE.mode=append
+
+log4j.appender.LOGFILE.layout=org.apache.log4j.PatternLayout
+log4j.appender.LOGFILE.layout.ConversionPattern=%F{1} %L %p %t %c - %m%n
+EOT
 
 my $logger = Log::Log4perl->get_logger("");
 my @lines = ();

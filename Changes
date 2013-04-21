@@ -10,8 +10,11 @@
    *    (ms) [rt.cpan.org 83193] The file appender now ignores owner/group 
              settings on all types of existing file system entries (previously,
              this was only the case for actual files).
-        (ms) [rt.cpan.org 84289] Documented Level.pm's isGreaterOrEqual()
+   *    (ms) [rt.cpan.org 84289] Documented Level.pm's isGreaterOrEqual()
              comparator.
+   *    (ms) [rt.cpan.org #84725] Fixed test suite to allow running tests 
+             in parallel via HARNESS_OPTIONS=j10:c HARNESS_TIMER=1. 
+             Reported by Brendan Byrd.
 
 1.40 (2012/11/30)
    *    (ms) Denis Ibaev added support for DBI appender attributes.

@@ -6,6 +6,8 @@
 use strict;
 use warnings;
 
+our $table_name = "log4perl$$";
+
 BEGIN { 
     if($ENV{INTERNAL_DEBUG}) {
         require Log::Log4perl::InternalDebug;
@@ -40,7 +42,7 @@ BEGIN {
 }
 
 END {
-    unlink "t/tmp/log4perltest";
+    unlink "t/tmp/$table_name";
     rmdir "t/tmp";
 }
 
@@ -49,10 +51,10 @@ mkdir "t/tmp" unless -d "t/tmp";
 require DBI;
 my $dbh = DBI->connect('DBI:CSV:f_dir=t/tmp','testuser','testpw',{ PrintError => 1 });
 
--e "t/tmp/log4perltest" && $dbh->do('DROP TABLE log4perltest');
+-e "t/tmp/$table_name" && $dbh->do("DROP TABLE $table_name");
 
 my $stmt = <<EOL;
-    CREATE TABLE log4perltest (
+    CREATE TABLE $table_name (
       loglevel     char(9) ,   
       message   char(128),     
       shortcaller   char(5),  
@@ -72,16 +74,16 @@ $dbh->do($stmt);
 #calculated at runtime and fed to the $logger->whatever(...)
 #statement
 
-my $config = <<'EOT';
+my $config = <<"EOT";
 #log4j.category = WARN, DBAppndr, console
 log4j.category = WARN, DBAppndr
 log4j.appender.DBAppndr             = org.apache.log4j.jdbc.JDBCAppender
 log4j.appender.DBAppndr.URL = jdbc:CSV:testdb://localhost:9999;f_dir=t/tmp
 log4j.appender.DBAppndr.user  = bobjones
 log4j.appender.DBAppndr.password = 12345
-log4j.appender.DBAppndr.sql = \
-   insert into log4perltest \
-   (loglevel, message, shortcaller, thingid, category, pkg, runtime1, runtime2) \
+log4j.appender.DBAppndr.sql = \\
+   insert into $table_name \\
+   (loglevel, message, shortcaller, thingid, category, pkg, runtime1, runtime2) \\
    values (?,?,?,?,?,?,?,?)
 log4j.appender.DBAppndr.params.1 = %p    
 #---------------------------- #2 is message
@@ -116,7 +118,7 @@ $logger->fatal('fatal message',1234,'foo', 'bar');
 $logger->warn('warning message',3456,'foo','bar');
 $logger->debug('debug message',99,'foo','bar');
 
-my $sth = $dbh->prepare('select * from log4perltest');
+my $sth = $dbh->prepare("select * from $table_name");
 $sth->execute;
 
 my $row = $sth->fetchrow_arrayref;
@@ -137,6 +139,6 @@ is($row->[5], 'main');
 is($row->[6], 'foo');
 is($row->[7], 'bar');
 
-$dbh->do('DROP TABLE log4perltest');
+$dbh->do("DROP TABLE $table_name");
 
 1;
