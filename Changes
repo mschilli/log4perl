@@ -2,7 +2,7 @@
  Revision history for Log::Log4perl
 ##################################################
 
-1.41 (not yet released)
+1.41 (2013/04/21)
    *    (ms) [rt 81731] Added 'trace' level to Log4perl::Catalyst, as
              suggested by Ashley Pond.
    *    (ms) Alexander Hartmaier added Log::Log4perl::Filter::MDC to filter 

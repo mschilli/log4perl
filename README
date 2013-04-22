@@ -1,13 +1,12 @@
 ######################################################################
-    Log::Log4perl 1.40
+    Log::Log4perl 1.41
 ######################################################################
 
 NAME
     Log::Log4perl - Log4j implementation for Perl
 
 SYNOPSIS
-            # Easy mode if you like it simple ...
-
+        # Easy mode if you like it simple ...
         use Log::Log4perl qw(:easy);
         Log::Log4perl->easy_init($ERROR);
 
@@ -44,7 +43,7 @@ SYNOPSIS
         ######################################################
 
 ABSTRACT
-        Log::Log4perl provides a powerful logging API for your application
+    Log::Log4perl provides a powerful logging API for your application
 
 DESCRIPTION
     Log::Log4perl lets you remote-control and fine-tune the logging
@@ -177,7 +176,7 @@ How to use it
     suppressed. Note that this 'inheritance' is unrelated to Perl's class
     inheritance, it is merely related to the logger namespace. By the way,
     if you're ever in doubt about what a logger's category is, use
-    "$logger-"category()> to retrieve it.
+    "$logger->category()" to retrieve it.
 
   Log Levels
     There are six predefined log levels: "FATAL", "ERROR", "WARN", "INFO",
@@ -619,8 +618,8 @@ How to use it
     For more details on logging and how to use the flexible and the simple
     format, check out the original "log4j" website under
 
-        http://jakarta.apache.org/log4j/docs/api/org/apache/log4j/SimpleLayout.html
-        http://jakarta.apache.org/log4j/docs/api/org/apache/log4j/PatternLayout.html
+        http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/SimpleLayout.html
+        http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/PatternLayout.html
 
   Penalties
     Logging comes with a price tag. "Log::Log4perl" has been optimized to
@@ -1454,7 +1453,7 @@ Cool Tricks
 
     or, as shown below (and in the example above) with a reference to a
     hash, specifying values for "level" (the logger's priority), "file" (the
-    appender's data sink), "category" (the logger's category> and "layout"
+    appender's data sink), "category" (the logger's category and "layout"
     for the appender's pattern layout specification. All key-value pairs are
     optional, they default to $DEBUG for "level", "STDERR" for "file", ""
     (root category) for "category" and "%d %m%n" for "layout":
@@ -1720,8 +1719,12 @@ Cool Tricks
     references to all appender wrapper objects.
 
   Modify appender thresholds
-    To conveniently adjust appender thresholds (e.g. because a script uses
-    more_logging()), use
+    To set an appender's threshold, use its "threshold()" method:
+
+        $app->threshold( $FATAL );
+
+    To conveniently adjust *all* appender thresholds (e.g. because a script
+    uses more_logging()), use
 
            # decrease thresholds of all appenders
         Log::Log4perl->appender_thresholds_adjust(-1);
@@ -2116,13 +2119,6 @@ INSTALLATION
         make test
         make install
 
-    If you're running Windows (98, 2000, NT, XP etc.), and you're too lazy
-    to rummage through all of Log-Log4perl's dependencies, don't despair:
-    We're providing a PPM package which installs easily with your
-    Activestate Perl. Check
-    "how_can_i_install_log__log4perl_on_microsoft_windows" in
-    Log::Log4perl::FAQ for details.
-
 DEVELOPMENT
     Log::Log4perl is still being actively developed. We will always make
     sure the test suite (approx. 500 cases) will pass, but there might still
@@ -2140,7 +2136,7 @@ REFERENCES
         http://www.perl.com/pub/a/2002/09/11/log4perl.html
 
     [2] Ceki Gülcü, "Short introduction to log4j",
-        http://jakarta.apache.org/log4j/docs/manual.html
+        http://logging.apache.org/log4j/1.2/manual.html
 
     [3] Vipan Singla, "Don't Use System.out.println! Use Log4j.",
         http://www.vipan.com/htdocs/log4jhelp.html
@@ -2169,12 +2165,13 @@ AUTHORS
     Contributors (in alphabetical order): Ateeq Altaf, Cory Bennett, Jens
     Berthold, Jeremy Bopp, Hutton Davidson, Chris R. Donnelly, Matisse
     Enzer, Hugh Esco, Anthony Foiani, James FitzGibbon, Carl Franks, Dennis
-    Gregorovic, Andy Grundman, Paul Harrington, David Hull, Robert Jacobson,
-    Jason Kohles, Jeff Macdonald, Markus Peter, Brett Rann, Peter Rabbitson,
-    Erik Selberg, Aaron Straup Cope, Lars Thegler, David Viner, Mac Yang.
+    Gregorovic, Andy Grundman, Paul Harrington, Alexander Hartmaier, David
+    Hull, Robert Jacobson, Jason Kohles, Jeff Macdonald, Markus Peter, Brett
+    Rann, Peter Rabbitson, Erik Selberg, Aaron Straup Cope, Lars Thegler,
+    David Viner, Mac Yang.
 
 LICENSE
-    Copyright 2002-2012 by Mike Schilli <m@perlmeister.com> and Kevin Goess
+    Copyright 2002-2013 by Mike Schilli <m@perlmeister.com> and Kevin Goess
     <cpan@goess.org>.
 
     This library is free software; you can redistribute it and/or modify it

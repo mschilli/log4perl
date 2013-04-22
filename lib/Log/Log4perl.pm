@@ -14,7 +14,7 @@ use Log::Log4perl::Level;
 use Log::Log4perl::Config;
 use Log::Log4perl::Appender;
 
-our $VERSION = '1.40';
+our $VERSION = '1.41';
 
    # set this to '1' if you're using a wrapper
    # around Log::Log4perl
@@ -2936,7 +2936,7 @@ Contributors (in alphabetical order):
 Ateeq Altaf, Cory Bennett, Jens Berthold, Jeremy Bopp, Hutton
 Davidson, Chris R. Donnelly, Matisse Enzer, Hugh Esco, Anthony
 Foiani, James FitzGibbon, Carl Franks, Dennis Gregorovic, Andy
-Grundman, Paul Harrington, Alexander Hartmaier  David Hull, 
+Grundman, Paul Harrington, Alexander Hartmaier, David Hull, 
 Robert Jacobson, Jason Kohles, Jeff Macdonald, Markus Peter, 
 Brett Rann, Peter Rabbitson, Erik Selberg, Aaron Straup Cope, 
 Lars Thegler, David Viner, Mac Yang.
