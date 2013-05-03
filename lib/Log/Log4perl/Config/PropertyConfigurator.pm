@@ -32,7 +32,7 @@ sub parse {
 
     while (@$text) {
         local $_ = shift @$text;
-        s/^\s*#.*//;
+        s/^\s*[#;!].*//;
         next unless /\S/;
     
         my @parts = ();
@@ -41,7 +41,7 @@ sub parse {
             my $prev = $1;
             my $next = shift(@$text);
             $next =~ s/^ +//g;  #leading spaces
-            $next =~ s/^#.*//;
+            $next =~ s/^[#;!].*//;
             $_ = $prev. $next;
             chomp;
         }

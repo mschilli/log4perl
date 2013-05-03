@@ -14,7 +14,7 @@ BEGIN {
 # change 'tests => 1' to 'tests => last_test_to_print';
 #########################
 use Test::More;
-BEGIN { plan tests => 26 };
+BEGIN { plan tests => 28 };
 
 use Log::Log4perl;
 use Log::Log4perl::Appender::TestBuffer;
@@ -383,3 +383,24 @@ log4j.appender.A1.layout.ConversionPattern = object%m%n
 eval { Log::Log4perl->init( \$conf ); };
 
 is $@, "", "'trigger' category [rt.cpan.org #50495]";
+
+######################################################################
+# Test alternate comment syntax
+######################################################################
+
+$conf = <<'END_CONF';
+log4perl.MyParam = MyVal
+; log4perl.MyParam = AnotherVal
+END_CONF
+
+eval { Log::Log4perl->init( \$conf ); };
+is $@, "", "support semi-colon comment character [github.com #24]";
+
+$conf = <<'END_CONF';
+log4perl.MyParam = MyVal
+! log4perl.MyParam = AnotherVal
+END_CONF
+
+eval { Log::Log4perl->init( \$conf ); };
+is $@, "", "support exclamation comment character [github.com #24]";
+
