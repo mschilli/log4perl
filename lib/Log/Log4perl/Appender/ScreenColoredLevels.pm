@@ -10,6 +10,10 @@ use strict;
 use Term::ANSIColor qw();
 use Log::Log4perl::Level;
 
+BEGIN {
+    $Term::ANSIColor::EACHLINE="\n";
+}
+
 ##################################################
 sub new {
 ##################################################
