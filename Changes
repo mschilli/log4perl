@@ -6,6 +6,8 @@
    *    (ms) BenRifkah Bergsten-Buret added ';!' for property configurator
              comment delimiters:
              https://github.com/mschilli/log4perl/issues/25
+   *    (ms) [rt.cpan.org 84723] Suppress error if close() in the file 
+             appender in pipe mode returns "No child processes".
 
 1.41 (2013/04/21)
    *    (ms) [rt 81731] Added 'trace' level to Log4perl::Catalyst, as

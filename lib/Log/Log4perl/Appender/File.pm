@@ -160,8 +160,7 @@ sub file_close {
     my($self) = @_;
 
     if(defined $self->{fh}) {
-        close $self->{fh} or
-            die "Can't close $self->{filename} ($!)";
+        $self->close_with_care( $self->{ fh } );
     }
 
     undef $self->{fh};
@@ -254,8 +253,36 @@ sub DESTROY {
 
     if ($self->{fh}) {
         my $fh = $self->{fh};
-        close $fh;
+        $self->close_with_care( $fh );
     }
+}
+
+###########################################
+sub close_with_care {
+###########################################
+    my( $self, $fh ) = @_;
+
+    my $prev_rc = $?;
+
+    my $rc = close $fh;
+
+      # [rt #84723] If a sig handler is reaping the child generated
+      # by close() internally before close() gets to it, it'll
+      # result in a weird (but benign) error that we don't want to
+      # expose to the user.
+    if( !$rc ) {
+        if( $self->{ mode } eq "pipe" and 
+            $!{ ECHILD } ) {
+            if( $Log::Log4perl::CHATTY_DESTROY_METHODS ) {
+                warn "$$: pipe closed with ECHILD error -- guess that's ok";
+            }
+            $? = $prev_rc;
+        } else {
+            warn "Can't close $self->{filename} ($!)";
+        }
+    }
+
+    return $rc;
 }
 
 1;
