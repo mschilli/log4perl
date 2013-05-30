@@ -34,7 +34,7 @@ unless (-e "$WORK_DIR"){
 
 my $testfile = File::Spec->catfile($WORK_DIR, "test26.log");
 
-BEGIN {plan tests => 20}
+BEGIN {plan tests => 22}
 
 END { 
     unlink_testfiles();
@@ -379,18 +379,47 @@ is($content, "INFO - File1\n");
 unlink "${testfile}_3";
 
 #########################################################
+# Testing create_at_logtime with recreate_check_signal
+#########################################################
+unlink "${testfile}_4"; # delete leftovers from previous tests
+
+$data = qq(
+log4perl.category         = DEBUG, Logfile
+log4perl.appender.Logfile          = Log::Log4perl::Appender::File
+log4perl.appender.Logfile.filename = ${testfile}_4
+log4perl.appender.Logfile.create_at_logtime = 1
+log4perl.appender.Logfile.recreate = 1;
+log4perl.appender.Logfile.recreate_check_signal = USR1
+log4perl.appender.Logfile.layout   = Log::Log4perl::Layout::SimpleLayout
+);
+
+Log::Log4perl->init(\$data);
+ok(! -f "${testfile}_4");
+
+$log = Log::Log4perl::get_logger("");
+$log->info("File1");
+
+open FILE, "<${testfile}_4" or die "Cannot open ${testfile}_4";
+$content = join '', <FILE>;
+close FILE;
+
+is($content, "INFO - File1\n");
+
+unlink "${testfile}_4";
+
+#########################################################
 # Print a header into a newly opened file
 #########################################################
 $data = qq(
 log4perl.category         = DEBUG, Logfile
 log4perl.appender.Logfile          = Log::Log4perl::Appender::File
-log4perl.appender.Logfile.filename = ${testfile}_4
+log4perl.appender.Logfile.filename = ${testfile}_5
 log4perl.appender.Logfile.header_text = This is a nice header.
 log4perl.appender.Logfile.layout   = Log::Log4perl::Layout::SimpleLayout
 );
 
 Log::Log4perl->init(\$data);
-open FILE, "<${testfile}_4" or die "Cannot open ${testfile}_4";
+open FILE, "<${testfile}_5" or die "Cannot open ${testfile}_5";
 $content = join '', <FILE>;
 close FILE;
 
