@@ -46,6 +46,7 @@ sub unlink_testfiles {
     unlink "${testfile}_2";
     unlink "${testfile}_3";
     unlink "${testfile}_4";
+    unlink "${testfile}_5";
 }
 
 unlink_testfiles();
