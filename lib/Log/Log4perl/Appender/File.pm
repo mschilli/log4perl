@@ -223,9 +223,10 @@ sub log {
 
     if($self->{recreate}) {
         if($self->{recreate_check_signal}) {
-            if($self->{watcher}->{signal_caught}) {
-                $self->{watcher}->{signal_caught} = 0;
+            if(!$self->{watcher} or
+               $self->{watcher}->{signal_caught}) {
                 $self->file_switch($self->{filename});
+                $self->{watcher}->{signal_caught} = 0;
             }
         } else {
             if(!$self->{watcher} or
