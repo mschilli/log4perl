@@ -8,6 +8,10 @@
              https://github.com/mschilli/log4perl/issues/25
    *    (ms) [rt.cpan.org 84723] Suppress error if close() in the file 
              appender in pipe mode returns "No child processes".
+   *    (ms) Ronald J Kimball fixed a bug with the file appender's 
+             create_at_logtime option in combination with 
+             recreate_check_signal:
+             https://github.com/mschilli/log4perl/pull/28
 
 1.41 (2013/04/21)
    *    (ms) [rt 81731] Added 'trace' level to Log4perl::Catalyst, as
