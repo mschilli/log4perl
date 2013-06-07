@@ -548,10 +548,14 @@ sub get_root_logger {
 ##################################################
 sub additivity {
 ##################################################
-    my($self, $onoff) = @_;
+    my($self, $onoff, $no_reinit) = @_;
 
     if(defined $onoff) {
         $self->{additivity} = $onoff;
+    }
+
+    if( ! $no_reinit ) {
+        $self->set_output_methods();
     }
 
     return $self->{additivity};

@@ -289,7 +289,7 @@ sub _init {
             'dont_reset_all');
 
         if(exists $additivity{$name}) {
-            $logger->additivity($additivity{$name});
+            $logger->additivity($additivity{$name}, 1);
         }
 
         for my $appname (@appnames) {
