@@ -111,6 +111,8 @@ sub eval_logic {
 
 __END__
 
+=encoding utf8
+
 =head1 NAME
 
 Log::Log4perl::Filter::Boolean - Special filter to combine the results of others

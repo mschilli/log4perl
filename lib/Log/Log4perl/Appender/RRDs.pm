@@ -45,6 +45,8 @@ sub log {
 
 __END__
 
+=encoding utf8
+
 =head1 NAME
 
 Log::Log4perl::Appender::RRDs - Log to a RRDtool Archive

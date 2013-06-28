@@ -57,6 +57,8 @@ sub get_context {
 
 __END__
 
+=encoding utf8
+
 =head1 NAME
 
 Log::Log4perl::MDC - Mapped Diagnostic Context

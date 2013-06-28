@@ -56,6 +56,8 @@ sub ok {
 
 __END__
 
+=encoding utf8
+
 =head1 NAME
 
 Log::Log4perl::Filter::LevelMatch - Filter to match the log level exactly
