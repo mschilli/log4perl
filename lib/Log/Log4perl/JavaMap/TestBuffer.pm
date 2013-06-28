@@ -16,6 +16,8 @@ sub new {
 
 1;
 
+=encoding utf8
+
 =head1 NAME
 
 Log::Log4perl::JavaMap::TestBuffer - wraps Log::Log4perl::Appender::TestBuffer

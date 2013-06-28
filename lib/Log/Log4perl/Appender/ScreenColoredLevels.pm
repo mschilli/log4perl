@@ -75,6 +75,8 @@ sub log {
 
 __END__
 
+=encoding utf8
+
 =head1 NAME
 
 Log::Log4perl::Appender::ScreenColoredLevel - Colorize messages according to level

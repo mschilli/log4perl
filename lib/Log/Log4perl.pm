@@ -615,6 +615,8 @@ sub remove_logger {
 
 __END__
 
+=encoding utf8
+
 =head1 NAME
 
 Log::Log4perl - Log4j implementation for Perl

@@ -233,6 +233,8 @@ sub isGreaterOrEqual {
 
 __END__
 
+=encoding utf8
+
 =head1 NAME
 
 Log::Log4perl::Level - Predefined log levels

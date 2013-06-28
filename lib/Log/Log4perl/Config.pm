@@ -962,6 +962,8 @@ sub var_subst {
 
 __END__
 
+=encoding utf8
+
 =head1 NAME
 
 Log::Log4perl::Config - Log4perl configuration file syntax

@@ -167,6 +167,8 @@ sub disable {
 
 __END__
 
+=encoding utf8
+
 =head1 NAME
 
 Log::Log4perl::Catalyst - Log::Log4perl Catalyst Module

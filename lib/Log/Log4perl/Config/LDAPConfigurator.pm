@@ -709,6 +709,8 @@ sub subst {
 
 __END__
 
+=encoding utf8
+
 =head1 NAME
 
 Log::Log4perl::Config::LDAPConfigurator - configures log4perl via LDAP

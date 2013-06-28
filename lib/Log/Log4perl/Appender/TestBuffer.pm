@@ -108,6 +108,8 @@ sub by_name {
 
 __END__
 
+=encoding utf8
+
 =head1 NAME
 
 Log::Log4perl::Appender::TestBuffer - Appender class for testing

@@ -137,6 +137,8 @@ sub delta_milliseconds {
 
 __END__
 
+=encoding utf8
+
 =head1 NAME
 
 Log::Log4perl::Util::TimeTracker - Track time elapsed

@@ -58,6 +58,8 @@ sub ok {
 
 __END__
 
+=encoding utf8
+
 =head1 NAME
 
 Log::Log4perl::Filter::LevelRange - Filter for a range of log levels

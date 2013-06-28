@@ -176,6 +176,8 @@ sub parse_post_process {
 
 __END__
 
+=encoding utf8
+
 =head1 NAME
 
 Log::Log4perl::Config::BaseConfigurator - Configurator Base Class

@@ -290,6 +290,8 @@ sub close_with_care {
 
 __END__
 
+=encoding utf8
+
 =head1 NAME
 
 Log::Log4perl::Appender::File - Log to file
