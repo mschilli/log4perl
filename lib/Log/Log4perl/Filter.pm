@@ -100,6 +100,8 @@ sub ok {
 
 __END__
 
+=encoding utf8
+
 =head1 NAME
 
 Log::Log4perl::Filter - Log4perl Custom Filter Base Class

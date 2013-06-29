@@ -101,6 +101,8 @@ sub resurrector_init {
 
 __END__
 
+=encoding utf8
+
 =head1 NAME
 
 Log::Log4perl::Resurrector - Dark Magic to resurrect hidden L4p statements

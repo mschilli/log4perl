@@ -63,6 +63,8 @@ sub ok {
 
 __END__
 
+=encoding utf8
+
 =head1 NAME
 
 Log::Log4perl::Filter::StringMatch - Filter on log message string

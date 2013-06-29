@@ -30,6 +30,8 @@ sub new {
 
 1;
 
+=encoding utf8
+
 =head1 NAME
 
 Log::Log4perl::JavaMap::NTEventLogAppender - wraps Log::Dispatch::Win32EventLog

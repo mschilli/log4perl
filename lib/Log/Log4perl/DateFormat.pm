@@ -309,6 +309,8 @@ sub format {
 
 __END__
 
+=encoding utf8
+
 =head1 NAME
 
 Log::Log4perl::DateFormat - Log4perl advanced date formatter helper class

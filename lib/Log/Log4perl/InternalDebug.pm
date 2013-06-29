@@ -73,6 +73,8 @@ sub import {
 
 __END__
 
+=encoding utf8
+
 =head1 NAME
 
 Log::Log4perl::InternalDebug - Dark Magic to enable _INTERNAL_DEBUG

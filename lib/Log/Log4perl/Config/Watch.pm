@@ -205,6 +205,8 @@ sub check {
 
 __END__
 
+=encoding utf8
+
 =head1 NAME
 
 Log::Log4perl::Config::Watch - Detect file changes

@@ -36,6 +36,8 @@ sub ok {
 
 __END__
 
+=encoding utf8
+
 =head1 NAME
 
 Log::Log4perl::Filter::MDC - Filter to match on values of a MDC key

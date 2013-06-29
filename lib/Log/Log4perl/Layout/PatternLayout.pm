@@ -497,6 +497,8 @@ sub callinfo_dump {
 
 __END__
 
+=encoding utf8
+
 =head1 NAME
 
 Log::Log4perl::Layout::PatternLayout - Pattern Layout

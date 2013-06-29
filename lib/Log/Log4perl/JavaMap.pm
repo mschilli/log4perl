@@ -60,6 +60,8 @@ sub translate {
 1;
 
 
+=encoding utf8
+
 =head1 NAME
 
 Log::Log4perl::JavaMap - maps java log4j appenders to Log::Dispatch classes

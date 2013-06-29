@@ -2,6 +2,8 @@
 
 __END__
 
+=encoding utf8
+
 =head1 NAME
 
 Log::Log4perl::FAQ - Frequently Asked Questions on Log::Log4perl
