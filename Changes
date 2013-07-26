@@ -2,7 +2,7 @@
  Revision history for Log::Log4perl
 ##################################################
 
-1.42 (not yet released)
+1.42 (2013/07/25)
    *    (ms) BenRifkah Bergsten-Buret added ';!' for property configurator
              comment delimiters:
              https://github.com/mschilli/log4perl/issues/25
