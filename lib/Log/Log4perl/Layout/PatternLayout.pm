@@ -282,7 +282,8 @@ sub render {
         } elsif(exists $info{$op}) {
             $result = $info{$op};
             if($curlies) {
-                $result = $self->curly_action($op, $curlies, $info{$op});
+                $result = $self->curly_action($op, $curlies, $info{$op},
+                                              $self->{printformat}, \@results);
             } else {
                 # just for %d
                 if($op eq 'd') {
@@ -310,7 +311,7 @@ sub render {
 ##################################################
 sub curly_action {
 ##################################################
-    my($self, $ops, $curlies, $data) = @_;
+    my($self, $ops, $curlies, $data, $printformat, $results) = @_;
 
     if($ops eq "c") {
         $data = shrink_category($data, $curlies);
@@ -325,6 +326,10 @@ sub curly_action {
     } elsif($ops eq "m") {
         if($curlies eq "chomp") {
             chomp $data;
+        } elsif( $curlies eq "indent" ) {
+            no warnings; # trailing array elements are undefined
+            my $indent = length sprintf $printformat, @$results;
+            $data =~ s/\n/ "\n" . (" " x $indent)/ge;
         }
     } elsif($ops eq "F") {
         my @parts = File::Spec->splitdir($data);
@@ -534,6 +539,7 @@ replaced by the logging engine when it's time to log the message:
     %L Line number within the file where the log statement was issued
     %m The message to be logged
     %m{chomp} The message to be logged, stripped off a trailing newline
+    %m{indent} Log message, indented if mult-line
     %M Method or function where the logging request was issued
     %n Newline (OS-independent)
     %p Priority of the logging event (%p{1} shows the first letter)
