@@ -64,6 +64,7 @@ lib/Log/Log4perl/Layout.pm
 lib/Log/Log4perl/Layout/NoopLayout.pm
 lib/Log/Log4perl/Layout/PatternLayout.pm
 lib/Log/Log4perl/Layout/PatternLayout/Multiline.pm
+lib/Log/Log4perl/Layout/PatternLayout/MultilineIndented.pm
 lib/Log/Log4perl/Layout/SimpleLayout.pm
 lib/Log/Log4perl/Level.pm
 lib/Log/Log4perl/Logger.pm
@@ -148,6 +149,7 @@ t/064RealClass.t
 t/065Undef.t
 t/066SQLite.t
 t/067Exception.t
+t/068MultilineIndented.t
 t/compare.pl
 t/deeper1.expected
 t/deeper6.expected
