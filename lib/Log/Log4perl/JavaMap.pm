@@ -129,11 +129,11 @@ These will probably not be implemented
 
 =head1 ROLL YOUR OWN
 
-Let's say you've in a mixed Java/Perl enviroment and you've
+Let's say you've in a mixed Java/Perl environment and you've
 come up with some custom Java appender with behavior you want to 
 use in both worlds, C<myorg.customAppender>.  You write a
 Perl appender with the same behavior C<Myorg::CustomAppender>. You
-want to use one config file accross both applications, so the
+want to use one config file across both applications, so the
 config file will have to say 'myorg.customAppender'.  But
 the mapping from C<myorg.customAppender> to C<Myorg::CustomAppender>
 isn't in this JavaMap class, so what do you do?

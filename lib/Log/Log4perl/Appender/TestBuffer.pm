@@ -139,7 +139,7 @@ Log::Log4perl::Appender::TestBuffer - Appender class for testing
 This class is used for internal testing of C<Log::Log4perl>. It
 is a C<Log::Dispatch>-style appender, which writes to a buffer 
 in memory, from where actual results can be easily retrieved later
-to compare with expeced results.
+to compare with expected results.
 
 Every buffer created is stored in an internal global array, and can
 later be referenced by name:

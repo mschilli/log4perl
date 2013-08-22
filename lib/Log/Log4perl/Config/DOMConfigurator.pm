@@ -11,7 +11,7 @@ our @ISA = qw(Log::Log4perl::Config::BaseConfigurator);
 # DONE in Config.pm re URL loading, steal from XML::DOM
 # DONE, OK see PropConfigurator re importing unlog4j, eval_if_perl
 # NO (is specified in DTD) - need to handle 0/1, true/false?
-# DONEsee Config, need to check version of XML::DOM
+# DONE see Config, need to check version of XML::DOM
 # OK user defined levels? see parse_level
 # OK make sure 2nd test is using log4perl constructs, not log4j
 # OK handle new filter stuff
@@ -111,7 +111,7 @@ sub parse {
 }
 
 #this is just for toplevel log4perl.PatternLayout tags
-#holding the custome cspecs
+#holding the custom cspecs
 sub parse_patternlayout {
     my ($l4p_tree, $node) = @_;
 

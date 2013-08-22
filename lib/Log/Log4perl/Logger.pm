@@ -177,7 +177,7 @@ sub reset_all_output_methods {
 sub set_output_methods {
 # Here's a big performance increase.  Instead of having the logger
 # calculate whether to log and whom to log to every time log() is called,
-# we calculcate it once when the logger is created, and recalculate
+# we calculate it once when the logger is created, and recalculate
 # it if the config information ever changes.
 #
 ##################################################
@@ -399,7 +399,7 @@ sub generate_watch_code {
                my $methodname = lc($level);
 
                # Bump up the caller level by three, since
-               # we've artifically introduced additional levels.
+               # we've artificially introduced additional levels.
                local $Log::Log4perl::caller_depth =
                      $Log::Log4perl::caller_depth + 3;
 
