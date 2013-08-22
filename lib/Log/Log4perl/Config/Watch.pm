@@ -317,7 +317,7 @@ been replaced by a new file in the meantime.
     }
 
 The parameters C<check_interval> and C<signal> limit the number of physical 
-file system checks, simililarily as with C<change_detected()>.
+file system checks, similarily as with C<change_detected()>.
 
 =head1 LICENSE
 
