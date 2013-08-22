@@ -314,7 +314,7 @@ Log::Log4perl::Appender::File - Log to file
 This is a simple appender for writing to a file.
 
 The C<log()> method takes a single scalar. If a newline character
-should terminate the message, it has to be added explicitely.
+should terminate the message, it has to be added explicitly.
 
 Upon destruction of the object, the filehandle to access the
 file is flushed and closed.
@@ -349,7 +349,7 @@ C<syswrite>, if set to a true value, makes sure that the appender uses
 syswrite() instead of print() to log the message. C<syswrite()> usually
 maps to the operating system's C<write()> function and makes sure that
 no other process writes to the same log file while C<write()> is busy.
-Might safe you from having to use other syncronisation measures like
+Might safe you from having to use other synchronisation measures like
 semaphores (see: Synchronized appender).
 
 =item umask
