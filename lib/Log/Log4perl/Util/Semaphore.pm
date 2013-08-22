@@ -143,7 +143,7 @@ sub semunlock {
     print "Unlocking semaphore '$self->{key}'\n" if INTERNAL_DEBUG;
 
 #      # ignore errors, as they might result from trying to unlock an
-#      # already unlocked semaphor.
+#      # already unlocked semaphore.
 #    semop($self->{id}, $operation);
 
     semctl $self->{id}, 0, SETVAL, 0;
