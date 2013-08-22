@@ -403,7 +403,7 @@ But the downsides to that usage are:
 =item * 
 
 You'd better be darn sure there are not quotes in your log message, or your
-insert could have unforseen consequences!  This is a very insecure way to
+insert could have unforeseen consequences!  This is a very insecure way to
 handle database inserts, using place holders and bind values is much better, 
 keep reading. (Note that the log4j docs warn "Be careful of quotes in your 
 messages!") B<*>.
@@ -484,7 +484,7 @@ your message, it will use undef for the rest.  For instance,
 
 	$logger->info('arrest him!', $subpoena_id);
 
-results in the first '?' placholder being bound to %p, the second to
+results in the first '?' placeholder being bound to %p, the second to
 "arrest him!", the third to the date from "%d", and the fourth to your
 $subpoenaid.  If you forget the $subpoena_id and just log
 
@@ -554,7 +554,7 @@ see Log::Log4perl::Appender
 =item max_col_size
 
 If you're used to just throwing debugging messages like huge stacktraces
-into your logger, some databases (Sybase's DBD!!) may suprise you 
+into your logger, some databases (Sybase's DBD!!) may surprise you 
 by choking on data size limitations.  Normally, the data would
 just be truncated to fit in the column, but Sybases's DBD it turns out
 maxes out at 255 characters.  Use this parameter in such a situation
