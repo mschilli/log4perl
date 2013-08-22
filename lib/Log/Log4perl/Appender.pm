@@ -588,7 +588,7 @@ The reason for this post-processing step is that the relay appender
 might not be defined yet when the composite appender gets defined.
 This can happen if Log4perl is initialized with a configuration file
 (which is the most common way to initialize Log4perl), because
-appenders spring into existance in unpredictable order.
+appenders spring into existence in unpredictable order.
 
 For example, if you define a Synchronized appender like
 
