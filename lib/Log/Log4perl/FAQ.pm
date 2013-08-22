@@ -405,7 +405,7 @@ C<debug()> messages have priority C<INFO>,
 C<trace()> uses C<DEBUG> and C<conns()> also logs with C<DEBUG> -- 
 although your mileage may certainly vary.
 
-Now, in order to transpartently hook up LWP::Debug with Log::Log4perl,
+Now, in order to transparently hook up LWP::Debug with Log::Log4perl,
 all we have to do is say
 
     package LWP::Debug;
@@ -419,7 +419,7 @@ all we have to do is say
     # ... go on with your regular program ...
 
 at the beginning of our program. In this way, every time the, say, 
-C<LWP::UserAgent> module calls C<LWP::Debug::trace()>, it will implicitely 
+C<LWP::UserAgent> module calls C<LWP::Debug::trace()>, it will implicitly 
 call INFO(), which is the C<info()> method of a stealth logger defined for
 the Log::Log4perl category C<LWP::Debug>. Is this cool or what?
 
@@ -828,13 +828,13 @@ The message of every log incident this appender gets
 will then be forwarded to the given
 email address. Check the C<Log::Dispatch::Email::MailSend> documentation
 for details. And please make sure there's not a flood of email messages 
-sent out by your application, filling up the receipient's inbox.
+sent out by your application, filling up the recipient's inbox.
 
 There's one caveat you need to know about: The C<Log::Dispatch::Email>
 hierarchy of appenders turns on I<buffering> by default. This means that
 the appender will not send out messages right away but wait until a 
 certain threshold has been reached. If you'd rather have your alerts
-sent out immeditately, use
+sent out immediately, use
 
     log4perl.appender.Mailer.buffered = 0
 
@@ -1237,7 +1237,7 @@ If Log::Log4perl detects that an attribute value starts with something like
 C<"sub {...">, it will interpret it as a perl subroutine which is to be executed
 once at configuration time (not runtime!) and its return value is
 to be used as the attribute value. This comes in handy
-for rolling out applications whichs Log::Log4perl configuration files
+for rolling out applications where Log::Log4perl configuration files
 show small host-specific differences, because you can deploy the unmodified
 application distribution on all instances of the server farm.
 
@@ -1438,7 +1438,7 @@ C<"append"> mode, the OS kernel ensures that multiple processes share
 one end-of-file marker, ensuring that each process writes to the I<real> 
 end of the file. (The value of C<"append"> 
 for the C<mode> parameter is the default setting in Log4perl's file 
-appender so you don't have to set it explicitely.)
+appender so you don't have to set it explicitly.)
 
       # Guarantees atomic writes
 
@@ -1780,7 +1780,7 @@ you'll get an error message like
 Why? At compile time, C<pp> didn't realize that 
 C<Log::Log4perl::Appender::Screen> would be needed later on and didn't
 wrap it into the executable created. To avoid this, either say
-C<use Log::Log4perl::Appender::Screen> in the script explicitely or
+C<use Log::Log4perl::Appender::Screen> in the script explicitly or
 compile it with
 
     pp -o mytest -M Log::Log4perl::Appender::Screen mytest.pl
@@ -1792,7 +1792,7 @@ to make sure the appender class gets included.
 Any appender defined in the configuration file or somewhere in the code
 can be accessed later via 
 C<Log::Log4perl-E<gt>appender_by_name("appender_name")>,
-which returns a reference the the appender object.
+which returns a reference of the appender object.
 
 Once you've got a hold of the object, it can be queried or modified to 
 your liking. For example, see the custom C<IndentAppender> defined below:
@@ -1996,7 +1996,7 @@ characters as in
 
     perl -le 'print "\x{30DE}\x{30A4}\x{30AF}"'
 
-(coincidentally pronounced Ma-i-ku, the japanese pronounciation of 
+(coincidentally pronounced Ma-i-ku, the japanese pronunciation of 
 "Mike"), STDOUT is in byte mode and the warning
 
     Wide character in print at ./script.pl line 14.
@@ -2117,7 +2117,7 @@ handler can be set up:
     log4perl.appender.Logfile.recreate_check_signal = USR1
 
 This will install a signal handler which will recreate a missing log file
-immediatly when it receives the defined signal. 
+immediately when it receives the defined signal. 
 
 Note that the init_and_watch() method for Log4perl's initialization
 can also be instructed to install a signal handler, usually using the
@@ -2127,7 +2127,7 @@ of them at the same time.
 =head2 How can I rotate a logfile with newsyslog?
 
 Here's a few things that need to be taken care of when using the popular
-log file rotating utilty C<newsyslog>
+log file rotating utility C<newsyslog>
 (http://www.courtesan.com/newsyslog) with Log4perl's file appender
 in long-running processes.
 
@@ -2269,7 +2269,7 @@ the place and slow down execution to a crawl at high debug levels.
 Remote-controlling logging in the hierarchical parts of an application
 via Log4perl's categories is one of its most distinguished features.
 It allows for enabling high debug levels in specified areas without
-noticable performance impact.
+noticeable performance impact.
 
 =head2 I want to use UTC instead of the local time!
 
@@ -2537,7 +2537,7 @@ The truth is, there's always going to be someone who wants to log a
 messages at all cost, but also another person who wants to suppress it
 with equal vigilance. There's no good way to serve these two conflicting 
 desires, someone will always want to win at the cost of leaving 
-the other party dissappointed.
+the other party disappointed.
 
 So, the best Log4perl offers is the ALWAYS level for a message that even
 fires if the system log level is set to $OFF:
