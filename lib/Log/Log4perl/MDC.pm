@@ -99,7 +99,7 @@ Returns a reference to the hash table.
 
 Please note that all of the methods above are class methods, there's no
 instances of this class. Since the thread model in perl 5.8.0 is
-"no shared data unless explicetly requested" the data structures
+"no shared data unless explicitly requested" the data structures
 used are just global (and therefore thread-specific).
 
 =head1 LICENSE

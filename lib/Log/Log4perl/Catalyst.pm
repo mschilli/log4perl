@@ -186,7 +186,7 @@ In your main Catalyst application module:
     # functionality of Log4perl
   __PACKAGE__->log(Log::Log4perl::Catalyst->new('l4p.conf'));
   
-... and then sprinkly logging statements all over any code executed
+... and then sprinkle logging statements all over any code executed
 by Catalyst:
 
     $c->log->debug("This is using log4perl!");
@@ -277,7 +277,7 @@ options.
 =item new($config, [%options])
 
 If called without parameters, new() initializes Log4perl in a way 
-so that messages are logged similiarly to Catalyst's default logging
+so that messages are logged similarly to Catalyst's default logging
 mechanism. If you provide configuration, either the name of a configuration
 file or a reference to scalar string containing the configuration, it
 will call Log4perl with these parameters.

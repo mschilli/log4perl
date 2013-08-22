@@ -184,7 +184,7 @@ sub _init {
 
         # Continue with lower level loggers. Both 'logger' and 'category'
         # are valid keywords. Also 'additivity' is one, having a logger
-        # attached. We'll differenciate between the two further down.
+        # attached. We'll differentiate between the two further down.
     for my $key (qw(logger category additivity PatternLayout filter)) {
 
         if(exists $data->{$key}) {
@@ -1150,7 +1150,7 @@ certainly override it:
     log4perl.appender.A1.layout=Log::Log4perl::Layout::SimpleLayout
 
 C<write> is the C<mode> that has C<Log::Log4perl::Appender::File>
-explicitely clobber the log file if it exists.
+explicitly clobber the log file if it exists.
 
 =head2 Configuration files encoded in utf-8
 

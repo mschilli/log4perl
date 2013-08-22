@@ -56,7 +56,7 @@ sub prepare {
     #
     # my strategy here is to split the format into active and literal
     # "chunks"; active chunks are prepared using $self->rep() as
-    # before, while literal chunks get transformed to accomodate
+    # before, while literal chunks get transformed to accommodate
     # single quotes and to protect percent signs.
     #
     # motivation: the "recommended" ISO-8601 date spec for a time in
@@ -121,9 +121,9 @@ sub rep {
     
     # So, the array to compute the time format at logtime contains
     # as many elements as the original SimpleDateFormat contained. Each
-    # entry is a arrary ref, holding an array with 2 elements: The index
+    # entry is a array ref, holding an array with 2 elements: The index
     # into the localtime to obtain the value and a reference to a subroutine
-    # to do computations eventually. The subroutine expects the orginal
+    # to do computations eventually. The subroutine expects the original
     # localtime() time component (like year since the epoch) and returns
     # the desired value for sprintf (like y+1900).
 

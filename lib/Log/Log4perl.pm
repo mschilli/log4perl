@@ -366,7 +366,7 @@ sub get_logger {  # Get an instance (shortcut)
 
     # Note that (4) L4pSubclass->get_logger() => ("L4pSubclass")
     # is indistinguishable from (3) and therefore can't be allowed.
-    # Wrapper classes always have to specify the category explicitely.
+    # Wrapper classes always have to specify the category explicitly.
 
     my $category;
 
@@ -749,7 +749,7 @@ errors to C</var/log/myerrs.log>, using the format
     [millisecs] source-filename line-number class - message newline
 
 Assuming that this configuration file is saved as C<log.conf>, you need to 
-read it in in the startup section of your code, using the following
+read it in the startup section of your code, using the following
 commands:
 
   use Log::Log4perl;
@@ -1287,7 +1287,7 @@ to allow for maximum performance, both with logging enabled and disabled.
 But you need to be aware that there's a small hit every time your code
 encounters a log statement -- no matter if logging is enabled or not. 
 C<Log::Log4perl> has been designed to keep this so low that it will
-be unnoticable to most applications.
+be unnoticeable to most applications.
 
 Here's a couple of tricks which help C<Log::Log4perl> to avoid
 unnecessary delays:
@@ -1342,7 +1342,7 @@ value of the filter function.
 =head1 Categories
 
 B<Categories are also called "Loggers" in Log4perl, both refer
-to the the same thing and these terms are used interchangeably.>
+to the same thing and these terms are used interchangeably.>
 C<Log::Log4perl> uses I<categories> to determine if a log statement in
 a component should be executed or suppressed at the current logging level.
 Most of the time, these categories are just the classes the log statements
@@ -1566,7 +1566,7 @@ more than once will cause it to clobber the existing configuration and
 I<replace> it by the new one.
 
 If you're in a traditional CGI environment, where every request is
-handeled by a new process, calling C<init()> every time is fine. In
+handled by a new process, calling C<init()> every time is fine. In
 persistent environments like C<mod_perl>, however, Log::Log4perl
 should be initialized either at system startup time (Apache offers
 startup handlers for that) or via
@@ -1591,7 +1591,7 @@ can be used.
 
 If you're afraid that the components of your system are stepping on 
 each other's toes or if you are thinking that different components should
-initialize Log::Log4perl seperately, try to consolidate your system
+initialize Log::Log4perl separately, try to consolidate your system
 to use a centralized Log4perl configuration file and use 
 Log4perl's I<categories> to separate your components.
 
@@ -1638,7 +1638,7 @@ document in the Log::Log4perl distribution.
 =head1 Cool Tricks
 
 Here's a collection of useful tricks for the advanced C<Log::Log4perl> user.
-For more, check the the FAQ, either in the distribution 
+For more, check the FAQ, either in the distribution 
 (L<Log::Log4perl::FAQ>) or on http://log4perl.sourceforge.net.
 
 =head2 Shortcuts
@@ -1808,7 +1808,7 @@ This is a convenient way to define two appenders with the same layout
 without having to retype the pattern definitions.
 
 Variable substitution via C<${varname}> 
-will first try to find an explicitely defined 
+will first try to find an explicitly defined 
 variable. If that fails, it will check your shell's environment
 for a variable of that name. If that also fails, the program will C<die()>.
 
@@ -1936,7 +1936,7 @@ context or a hash in list context.
 
 =item allowed_code_ops_convenience_map( \%map )
 
-Replaces the entire conveniece name map with the supplied hash reference.
+Replaces the entire convenience name map with the supplied hash reference.
 
 =item allowed_code_ops_convenience_map( $name )
 
@@ -2186,7 +2186,7 @@ the scenes. Also the keywords C<STDOUT> and C<STDERR> (no C<E<gt>> or
 C<E<gt>E<gt>>) are recognized, which will utilize and configure
 C<Log::Log4perl::Appender::Screen> appropriately. The C<utf8> flag,
 if set to a true value, runs a C<binmode> command on the file handle
-to establish a utf8 line discpline on the file, otherwise you'll get a
+to establish a utf8 line discipline on the file, otherwise you'll get a
 'wide character in print' warning message and probably not what you'd
 expect as output.
 
@@ -2351,7 +2351,7 @@ For details, please check L<Log::Log4perl::MDC>.
 =head2 Resurrecting hidden Log4perl Statements
 
 Sometimes scripts need to be deployed in environments without having
-Log::Log4perl installed yet. On the other hand, you dont't want to
+Log::Log4perl installed yet. On the other hand, you don't want to
 live without your Log4perl statements -- they're gonna come in
 handy later.
 
@@ -2363,7 +2363,7 @@ pattern C<###l4p>, like in
     ###l4p INFO "Really!";
 
 If Log::Log4perl is available,
-use the C<:resurrect> tag to have Log4perl resurrect those burried 
+use the C<:resurrect> tag to have Log4perl resurrect those buried 
 statements before the script starts running:
 
     use Log::Log4perl qw(:resurrect :easy);
@@ -2613,7 +2613,7 @@ PatternLayout specifications in accordance with the standard
 Bottom line: Log::Dispatch::Config is fine for small systems with
 simple logging requirements. However, if you're
 designing a system with lots of subsystems which you need to control
-independantly, you'll love the features of C<Log::Log4perl>,
+independently, you'll love the features of C<Log::Log4perl>,
 which is equally easy to use.
 
 =head1 Using Log::Log4perl with wrapper functions and classes
@@ -2655,7 +2655,7 @@ want
 
 because the C<func> function called your logging function.
 
-But don't dispair, there's a solution: Just register your wrapper
+But don't despair, there's a solution: Just register your wrapper
 package with Log4perl beforehand. If Log4perl then finds that it's being 
 called from a registered wrapper, it will automatically step up to the
 next call frame.
