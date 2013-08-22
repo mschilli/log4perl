@@ -221,7 +221,7 @@ suites can simulate time passing by without actually having to wait:
   );
 
 Every call to $timer->epoch() will then return a time value that is one
-second ahead of the the value returned on the previous call. This also means
+second ahead of the value returned on the previous call. This also means
 that every call to delta_milliseconds() will return a value that exceeds
 the value returned on the previous call by 1000.
 
