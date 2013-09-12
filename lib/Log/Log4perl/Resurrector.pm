@@ -45,6 +45,12 @@ sub resurrector_loader {
 
     print "resurrector_loader called with $module\n" if INTERNAL_DEBUG;
 
+      # Skip Win32.pm to avoid infinite recursion
+    if($module eq 'Win32.pm') {
+        print "Ignoring Win32.pm\n" if INTERNAL_DEBUG;
+        return undef;
+    }
+    
       # Skip Log4perl appenders
     if($module =~ m#^Log/Log4perl/Appender#) {
         print "Ignoring $module (Log4perl-internal)\n" if INTERNAL_DEBUG;
