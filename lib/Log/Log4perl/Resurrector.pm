@@ -53,7 +53,7 @@ sub resurrector_loader {
         return undef;
     }
     
-    $resurrecting = $module;
+    local $resurrecting = $module;
     
     
       # Skip Log4perl appenders
