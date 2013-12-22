@@ -706,6 +706,38 @@ as a graveyard. If you deactivate the line (e.g. by commenting it out),
 the system will, upon config reload, snap back to normal operation, providing 
 logging messages according to the rest of the configuration file again.
 
+=head2 How can I log DEBUG and above to the screen and INFO and above to a file?
+
+You need one logger with two appenders attached to it:
+
+    log4perl.logger = DEBUG, Screen, File
+
+    log4perl.appender.Screen   = Log::Log4perl::Appender::Screen
+    log4perl.appender.Screen.layout = SimpleLayout
+
+    log4perl.appender.File   = Log::Log4perl::Appender::File
+    log4perl.appender.File.filename = test.log
+    log4perl.appender.File.layout = SimpleLayout
+    log4perl.appender.Screen.Threshold = INFO
+
+Since the file logger isn't supposed to get any messages with a priority
+less than INFO, the appender's C<Threshold> setting blocks those out, 
+although the logger forwards them.
+
+It's a common mistake to think you can define two loggers for this, but
+it won't work unless those two loggers have different categories. If you
+wanted to log all DEBUG and above messages from the Foo::Bar module to a file 
+and all INFO and above messages from the Quack::Schmack module to the
+screen, then you could have defined two loggers with different levels
+C<log4perl.logger.Foo.Bar> (level INFO)
+and C<log4perl.logger.Quack.Schmack> (level DEBUG) and assigned the file 
+appender to the former and the screen appender to the latter. But what we
+wanted to accomplish was to route all messages, regardless of which module
+(or category) they came from, to both appenders. The only 
+way to accomplish this is to define the root logger with the lower
+level (DEBUG), assign both appenders to it, and block unwanted messages at 
+the file appender (C<Threshold> set to INFO).
+
 =head2 I keep getting duplicate log messages! What's wrong?
 
 Having several settings for related categories in the Log4perl 
