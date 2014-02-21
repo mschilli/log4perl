@@ -484,6 +484,13 @@ a newline at the end of the header will be provided.
 
 =back
 
+=item mkpath
+
+If this this option is set to true.
+The directory path will create if it does not exists.
+
+=back
+
 Design and implementation of this module has been greatly inspired by
 Dave Rolsky's C<Log::Dispatch> appender framework.
 
