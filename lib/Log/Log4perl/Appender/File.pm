@@ -482,12 +482,10 @@ If you want Log4perl to print a header into every newly opened
 or a subroutine returning a string. If the message doesn't have a newline,
 a newline at the end of the header will be provided.
 
-=back
-
 =item mkpath
 
-If this this option is set to true.
-The directory path will create if it does not exists.
+If this this option is set to true, 
+the directory path will be created if it does not exist yet.
 
 =back
 
