@@ -1,6 +1,6 @@
 #Testing if the file-appender appends in default mode
 
-BEGIN { 
+BEGIN {
     if($ENV{INTERNAL_DEBUG}) {
         require Log::Log4perl::InternalDebug;
         Log::Log4perl::InternalDebug->enable();
@@ -17,7 +17,7 @@ use File::Spec;
 
 our $LOG_DISPATCH_PRESENT;
 
-BEGIN { 
+BEGIN {
     eval { require Log::Dispatch; };
     if(! $@) {
        $LOG_DISPATCH_PRESENT = 1;
@@ -33,10 +33,12 @@ unless (-e "$WORK_DIR"){
 }
 
 my $testfile = File::Spec->catfile($WORK_DIR, "test26.log");
+my $testpath = File::Spec->catfile($WORK_DIR, "test26");
+my $testmkpathfile = File::Spec->catfile($testpath, "test26.log");
 
-BEGIN {plan tests => 22}
+BEGIN {plan tests => 23}
 
-END { 
+END {
     unlink_testfiles();
     }
 
@@ -47,6 +49,8 @@ sub unlink_testfiles {
     unlink "${testfile}_3";
     unlink "${testfile}_4";
     unlink "${testfile}_5";
+    unlink $testmkpathfile;
+    rmdir $testpath;
 }
 
 unlink_testfiles();
@@ -155,7 +159,7 @@ for(qw(1 2)) {
 
 #########################################################
 # Check if the 0.33 Log::Log4perl::Appender::File bug is
-# fixed which caused all messages to end up in the same 
+# fixed which caused all messages to end up in the same
 # file.
 #########################################################
 $data = <<EOT;
@@ -426,3 +430,23 @@ close FILE;
 
 is($content, "This is a nice header.\n", "header_text");
 
+####################################################
+# Create path if it is not already created
+####################################################
+$data = <<EOT;
+log4j.category = INFO, FileAppndr
+log4j.appender.FileAppndr          = Log::Log4perl::Appender::File
+log4j.appender.FileAppndr.filename = $testmkpathfile
+log4j.appender.FileAppndr.layout   = Log::Log4perl::Layout::SimpleLayout
+log4j.appender.FileAppndr.mkpath   = 1
+EOT
+
+Log::Log4perl::init(\$data);
+$log = Log::Log4perl::get_logger("");
+$log->info("Shu-wa-chi!");
+
+open FILE, "<$testmkpathfile" or die "Cannot create $testmkpathfile";
+$content = join '', <FILE>;
+close FILE;
+
+is($content, "INFO - Shu-wa-chi!\n");
