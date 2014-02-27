@@ -1,3 +1,5 @@
+my $logfile = "./file.log";
+END { unlink $logfile; }
 
 use Log::Log4perl;
 use Log::Log4perl::Appender;
@@ -12,8 +14,6 @@ my $logger = Log::Log4perl->get_logger("blah");
 #      |                 |
 # %d : yyyy/mm/dd hh:mm:ss
 my $layout = Log::Log4perl::Layout::PatternLayout->new("%d > %m{indent}%n");
-
-my $logfile = "./file.log";
 
 my $appender = Log::Log4perl::Appender->new(
                "Log::Log4perl::Appender::File",
@@ -46,10 +46,6 @@ $appender->log({ level => 1, message => $msg }, 'foo_category', 'INFO');
 my $err_str = check_log_file_format($logfile);
 my $test_name = 'log file has multiline intended format' . ($err_str ? " - reason : $err_str" : "");
 ok ( ! $err_str, $test_name );
-
-
-unlink $logfile;
-
 
 # returns "" on success
 # returns non empty error string on failure

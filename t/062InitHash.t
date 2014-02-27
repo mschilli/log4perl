@@ -1,14 +1,14 @@
 
 # https://rt.cpan.org/Public/Bug/Display.html?id=68105
 
+my $logfile = "test.log";
+END { unlink $logfile; }
+
 use Log::Log4perl;
 use Log::Log4perl::Appender;
 use Log::Log4perl::Appender::File;
 
 use Test::More tests => 1;
-
-my $logfile = "test.log";
-END { unlink $logfile; }
 
 Log::Log4perl->init({
    'log4perl.rootLogger'                             => 'ALL, FILE',
