@@ -19,7 +19,15 @@ use Log::Log4perl;
 use Log::Log4perl::Appender;
 use Log::Log4perl::Appender::File;
 
-use Test::More tests => 1;
+use Test::More;
+
+BEGIN {
+    if(exists $ENV{"L4P_ALL_TESTS"}) {
+        plan tests => 1;
+    } else {
+        plan skip_all => "- only with L4P_ALL_TESTS";
+    }
+}
 
 Log::Log4perl->init({
    'log4perl.rootLogger'                             => 'ALL, FILE',
