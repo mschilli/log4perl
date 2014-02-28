@@ -100,7 +100,7 @@ sub file_open {
     my $didnt_exist = ! -e $self->{filename};
     if($didnt_exist && $self->{mkpath}) {
         my ($volume, $path, $file) = splitpath($self->{filename});
-        if($path && !-e $path) {
+        if($path ne '' && !-e $path) {
             my $old_umask = umask($self->{mkpath_umask}) if defined $self->{mkpath_umask};
             my $options = {};
             foreach my $param (qw(owner group) ) {
@@ -109,11 +109,8 @@ sub file_open {
             eval {
                 mkpath($path,$options);
             };
-            if ($@) {
-                umask($old_umask) if defined $old_umask;
-                die "Can't create path ${path} ($!)";
-            }
             umask($old_umask) if defined $old_umask;
+            die "Can't create path ${path} ($!)" if $@;
         }
     }
 
@@ -128,11 +125,8 @@ sub file_open {
                 die "Can't open $self->{filename} ($!)";
         }
     };
-    if($@) {
-        # reset umask if failed
-        umask($old_umask) if defined $old_umask;
-        die $@;
-    }
+    umask($old_umask) if defined $old_umask;
+    die $@ if $@;
 
     if($didnt_exist and
          ( defined $self->{owner} or defined $self->{group} )
@@ -143,7 +137,6 @@ sub file_open {
         if($@) {
               # Cleanup and re-throw
             unlink $self->{filename};
-            umask($old_umask) if defined $old_umask;
             die $@;
         }
     }
@@ -157,8 +150,6 @@ sub file_open {
               (signal => $self->{recreate_check_signal}) : ()),
         );
     }
-
-    umask($old_umask) if defined $old_umask;
 
     $self->{fh} = $fh;
 
@@ -504,7 +495,7 @@ a newline at the end of the header will be provided.
 
 =item mkpath
 
-If this this option is set to true, 
+If this this option is set to true,
 the directory path will be created if it does not exist yet.
 
 =item mkpath_umask
@@ -513,7 +504,7 @@ Specifies the C<umask> to use when creating the directory, determining
 the directory's permission settings.
 If set to C<0022> (default), new
 directory will be created with C<rwxr-xr-x> permissions.
-If set to C<0000>, new files will be created with C<rwxrwxrwx> permissions.
+If set to C<0000>, new directory will be created with C<rwxrwxrwx> permissions.
 
 =back
 
