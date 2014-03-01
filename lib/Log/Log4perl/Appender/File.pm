@@ -34,16 +34,18 @@ sub new {
         create_at_logtime       => 0,
         header_text             => undef,
         mkpath                  => 0,
+        mkpath_umask            => 0,
         @options,
     };
 
     if($self->{create_at_logtime}) {
         $self->{recreate}  = 1;
     }
-
-    if(defined $self->{umask} and $self->{umask} =~ /^0/) {
-            # umask value is a string, meant to be an oct value
-        $self->{umask} = oct($self->{umask});
+    for my $param ('umask', 'mkpath_umask') {
+        if(defined $self->{$param} and $self->{$param} =~ /^0/) {
+                # umask value is a string, meant to be an oct value
+            $self->{$param} = oct($self->{$param});
+        }
     }
 
     die "Mandatory parameter 'filename' missing" unless
@@ -82,7 +84,6 @@ sub file_open {
     my $arrows  = ">";
     my $sysmode = (O_CREAT|O_WRONLY);
 
-    my $old_umask = umask();
 
     if($self->{mode} eq "append") {
         $arrows   = ">>";
@@ -95,25 +96,37 @@ sub file_open {
 
     my $fh = do { local *FH; *FH; };
 
-    umask($self->{umask}) if defined $self->{umask};
 
     my $didnt_exist = ! -e $self->{filename};
     if($didnt_exist && $self->{mkpath}) {
-        my ($volume,$path,$file) = splitpath($self->{filename});
-        my $options = {};
-        foreach my $param (qw(owner group) ) {
-            $options->{$param} = $self->{$param} if defined $self->{$param};
+        my ($volume, $path, $file) = splitpath($self->{filename});
+        if($path ne '' && !-e $path) {
+            my $old_umask = umask($self->{mkpath_umask}) if defined $self->{mkpath_umask};
+            my $options = {};
+            foreach my $param (qw(owner group) ) {
+                $options->{$param} = $self->{$param} if defined $self->{$param};
+            }
+            eval {
+                mkpath($path,$options);
+            };
+            umask($old_umask) if defined $old_umask;
+            die "Can't create path ${path} ($!)" if $@;
         }
-        mkpath($path,$options) unless -e $path;
     }
 
-    if($self->{syswrite}) {
-        sysopen $fh, "$self->{filename}", $sysmode or
-            die "Can't sysopen $self->{filename} ($!)";
-    } else {
-        open $fh, "$arrows$self->{filename}" or
-            die "Can't open $self->{filename} ($!)";
-    }
+    my $old_umask = umask($self->{umask}) if defined $self->{umask};
+
+    eval {
+        if($self->{syswrite}) {
+            sysopen $fh, "$self->{filename}", $sysmode or
+                die "Can't sysopen $self->{filename} ($!)";
+        } else {
+            open $fh, "$arrows$self->{filename}" or
+                die "Can't open $self->{filename} ($!)";
+        }
+    };
+    umask($old_umask) if defined $old_umask;
+    die $@ if $@;
 
     if($didnt_exist and
          ( defined $self->{owner} or defined $self->{group} )
@@ -137,8 +150,6 @@ sub file_open {
               (signal => $self->{recreate_check_signal}) : ()),
         );
     }
-
-    umask($old_umask) if defined $self->{umask};
 
     $self->{fh} = $fh;
 
@@ -367,7 +378,7 @@ semaphores (see: Synchronized appender).
 
 Specifies the C<umask> to use when creating the file, determining
 the file's permission settings.
-If set to C<0222> (default), new
+If set to C<0022> (default), new
 files will be created with C<rw-r--r--> permissions.
 If set to C<0000>, new files will be created with C<rw-rw-rw-> permissions.
 
@@ -484,8 +495,16 @@ a newline at the end of the header will be provided.
 
 =item mkpath
 
-If this this option is set to true, 
+If this this option is set to true,
 the directory path will be created if it does not exist yet.
+
+=item mkpath_umask
+
+Specifies the C<umask> to use when creating the directory, determining
+the directory's permission settings.
+If set to C<0022> (default), new
+directory will be created with C<rwxr-xr-x> permissions.
+If set to C<0000>, new directory will be created with C<rwxrwxrwx> permissions.
 
 =back
 

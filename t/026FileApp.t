@@ -14,6 +14,7 @@ use strict;
 
 use Log::Log4perl;
 use File::Spec;
+use File::Path qw(remove_tree);
 
 our $LOG_DISPATCH_PRESENT;
 
@@ -34,9 +35,8 @@ unless (-e "$WORK_DIR"){
 
 my $testfile = File::Spec->catfile($WORK_DIR, "test26.log");
 my $testpath = File::Spec->catfile($WORK_DIR, "test26");
-my $testmkpathfile = File::Spec->catfile($testpath, "test26.log");
 
-BEGIN {plan tests => 23}
+BEGIN {plan tests => 26}
 
 END {
     unlink_testfiles();
@@ -49,8 +49,7 @@ sub unlink_testfiles {
     unlink "${testfile}_3";
     unlink "${testfile}_4";
     unlink "${testfile}_5";
-    unlink $testmkpathfile;
-    rmdir $testpath;
+    remove_tree ($testpath, "${testpath}_1");
 }
 
 unlink_testfiles();
@@ -433,6 +432,10 @@ is($content, "This is a nice header.\n", "header_text");
 ####################################################
 # Create path if it is not already created
 ####################################################
+
+
+my $testmkpathfile = File::Spec->catfile($testpath, "test26.log");
+
 $data = <<EOT;
 log4j.category = INFO, FileAppndr
 log4j.appender.FileAppndr          = Log::Log4perl::Appender::File
@@ -450,3 +453,35 @@ $content = join '', <FILE>;
 close FILE;
 
 is($content, "INFO - Shu-wa-chi!\n");
+
+####################################################
+# Create path with umask if it is not already created
+####################################################
+
+my $oldumask = umask;
+
+$testmkpathfile = File::Spec->catfile("${testpath}_1", "test26.log");
+
+$data = <<EOT;
+log4j.category = INFO, FileAppndr
+log4j.appender.FileAppndr              = Log::Log4perl::Appender::File
+log4j.appender.FileAppndr.filename     = $testmkpathfile
+log4j.appender.FileAppndr.layout       = Log::Log4perl::Layout::SimpleLayout
+log4j.appender.FileAppndr.umask        = 0026
+log4j.appender.FileAppndr.mkpath       = 1
+log4j.appender.FileAppndr.mkpath_umask = 0027
+EOT
+
+Log::Log4perl::init(\$data);
+$log = Log::Log4perl::get_logger("");
+$log->info("Shu-wa-chi!");
+
+my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size, $atime,$mtime,$ctime,$blksize,$blocks) = stat("${testpath}_1");
+
+is($mode & 07777,0750);
+
+ ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size, $atime,$mtime,$ctime,$blksize,$blocks) = stat($testmkpathfile);
+
+is($mode & 07777,0640);
+
+is(umask,$oldumask);
