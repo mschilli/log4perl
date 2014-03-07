@@ -8,6 +8,9 @@
    *    (ms) [rt.cpan.org #84818] Deven T. Corzine suggested adding
              a conditional use Win32 on Win32 platform to fix a 
              chicken-and-egg problem with the resurrector.
+   *    (ms) Brian Wightman fixed Win32 log file cleanup in test suite
+             https://github.com/mschilli/log4perl/pull/39. New FAQ
+             entry on Win32 log file cleanup.
 
 1.42 (2013/07/25)
    *    (ms) BenRifkah Bergsten-Buret added ';!' for property configurator
