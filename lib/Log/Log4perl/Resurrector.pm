@@ -2,6 +2,9 @@ package Log::Log4perl::Resurrector;
 use warnings;
 use strict;
 
+# [rt.cpan.org #84818]
+use if $^O eq "MSWin32", "Win32"; 
+
 use File::Temp qw(tempfile);
 use File::Spec;
 
