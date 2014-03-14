@@ -2,7 +2,7 @@
 # https://rt.cpan.org/Public/Bug/Display.html?id=68105
 
 my $logfile = "test.log";
-END { unlink $logfile; }
+END { unlink $logfile or die "Can't delete temporary log file '$logfile'."; }
 
 use Log::Log4perl;
 use Log::Log4perl::Appender;
@@ -19,6 +19,8 @@ Log::Log4perl->init({
 });
 
 Log::Log4perl->get_logger->debug('yee haw');
+# release file handles
+Log::Log4perl::Logger->cleanup();
 
 open FILE, "<$logfile" or die $!;
 my $data = join '', <FILE>;
