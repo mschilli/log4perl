@@ -1,5 +1,5 @@
 ######################################################################
-    Log::Log4perl 1.42
+    Log::Log4perl 1.43
 ######################################################################
 
 NAME
@@ -116,7 +116,7 @@ How to use it
         [millisecs] source-filename line-number class - message newline
 
     Assuming that this configuration file is saved as "log.conf", you need
-    to read it in in the startup section of your code, using the following
+    to read it in the startup section of your code, using the following
     commands:
 
       use Log::Log4perl;
@@ -628,7 +628,7 @@ How to use it
     But you need to be aware that there's a small hit every time your code
     encounters a log statement -- no matter if logging is enabled or not.
     "Log::Log4perl" has been designed to keep this so low that it will be
-    unnoticable to most applications.
+    unnoticeable to most applications.
 
     Here's a couple of tricks which help "Log::Log4perl" to avoid
     unnecessary delays:
@@ -679,12 +679,11 @@ How to use it
     be replaced by the return value of the filter function.
 
 Categories
-    Categories are also called "Loggers" in Log4perl, both refer to the the
-    same thing and these terms are used interchangeably. "Log::Log4perl"
-    uses *categories* to determine if a log statement in a component should
-    be executed or suppressed at the current logging level. Most of the
-    time, these categories are just the classes the log statements are
-    located in:
+    Categories are also called "Loggers" in Log4perl, both refer to the same
+    thing and these terms are used interchangeably. "Log::Log4perl" uses
+    *categories* to determine if a log statement in a component should be
+    executed or suppressed at the current logging level. Most of the time,
+    these categories are just the classes the log statements are located in:
 
         package Candy::Twix;
 
@@ -893,7 +892,7 @@ Categories
     configuration and *replace* it by the new one.
 
     If you're in a traditional CGI environment, where every request is
-    handeled by a new process, calling "init()" every time is fine. In
+    handled by a new process, calling "init()" every time is fine. In
     persistent environments like "mod_perl", however, Log::Log4perl should
     be initialized either at system startup time (Apache offers startup
     handlers for that) or via
@@ -918,7 +917,7 @@ Categories
 
     If you're afraid that the components of your system are stepping on each
     other's toes or if you are thinking that different components should
-    initialize Log::Log4perl seperately, try to consolidate your system to
+    initialize Log::Log4perl separately, try to consolidate your system to
     use a centralized Log4perl configuration file and use Log4perl's
     *categories* to separate your components.
 
@@ -952,7 +951,7 @@ Categories
 
 Cool Tricks
     Here's a collection of useful tricks for the advanced "Log::Log4perl"
-    user. For more, check the the FAQ, either in the distribution
+    user. For more, check the FAQ, either in the distribution
     (Log::Log4perl::FAQ) or on http://log4perl.sourceforge.net.
 
   Shortcuts
@@ -1118,7 +1117,7 @@ Cool Tricks
     without having to retype the pattern definitions.
 
     Variable substitution via "${varname}" will first try to find an
-    explicitely defined variable. If that fails, it will check your shell's
+    explicitly defined variable. If that fails, it will check your shell's
     environment for a variable of that name. If that also fails, the program
     will "die()".
 
@@ -1239,7 +1238,7 @@ Cool Tricks
         scalar context or a hash in list context.
 
     allowed_code_ops_convenience_map( \%map )
-        Replaces the entire conveniece name map with the supplied hash
+        Replaces the entire convenience name map with the supplied hash
         reference.
 
     allowed_code_ops_convenience_map( $name )
@@ -1471,7 +1470,7 @@ Cool Tricks
     recognized, which will utilize and configure
     "Log::Log4perl::Appender::Screen" appropriately. The "utf8" flag, if set
     to a true value, runs a "binmode" command on the file handle to
-    establish a utf8 line discpline on the file, otherwise you'll get a
+    establish a utf8 line discipline on the file, otherwise you'll get a
     'wide character in print' warning message and probably not what you'd
     expect as output.
 
@@ -1631,7 +1630,7 @@ Cool Tricks
 
   Resurrecting hidden Log4perl Statements
     Sometimes scripts need to be deployed in environments without having
-    Log::Log4perl installed yet. On the other hand, you dont't want to live
+    Log::Log4perl installed yet. On the other hand, you don't want to live
     without your Log4perl statements -- they're gonna come in handy later.
 
     So, just deploy your script with Log4perl statements commented out with
@@ -1642,7 +1641,7 @@ Cool Tricks
         ###l4p INFO "Really!";
 
     If Log::Log4perl is available, use the ":resurrect" tag to have Log4perl
-    resurrect those burried statements before the script starts running:
+    resurrect those buried statements before the script starts running:
 
         use Log::Log4perl qw(:resurrect :easy);
 
@@ -1876,7 +1875,7 @@ How about Log::Dispatch::Config?
 
     Bottom line: Log::Dispatch::Config is fine for small systems with simple
     logging requirements. However, if you're designing a system with lots of
-    subsystems which you need to control independantly, you'll love the
+    subsystems which you need to control independently, you'll love the
     features of "Log::Log4perl", which is equally easy to use.
 
 Using Log::Log4perl with wrapper functions and classes
@@ -1916,7 +1915,7 @@ Using Log::Log4perl with wrapper functions and classes
 
     because the "func" function called your logging function.
 
-    But don't dispair, there's a solution: Just register your wrapper
+    But don't despair, there's a solution: Just register your wrapper
     package with Log4perl beforehand. If Log4perl then finds that it's being
     called from a registered wrapper, it will automatically step up to the
     next call frame.
