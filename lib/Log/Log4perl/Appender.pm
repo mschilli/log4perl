@@ -5,8 +5,9 @@ package Log::Log4perl::Appender;
 use 5.006;
 use strict;
 use warnings;
+no warnings qw( once );
 
-use Log::Log4perl::Config;
+require Log::Log4perl::Config;
 use Log::Log4perl::Level;
 use Carp;
 

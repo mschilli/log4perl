@@ -5,9 +5,10 @@ package Log::Log4perl::Filter;
 use 5.006;
 use strict;
 use warnings;
+no warnings qw( once );
 
 use Log::Log4perl::Level;
-use Log::Log4perl::Config;
+require Log::Log4perl::Config;
 
 use constant _INTERNAL_DEBUG => 0;
 

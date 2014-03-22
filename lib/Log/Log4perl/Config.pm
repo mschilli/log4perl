@@ -4,14 +4,15 @@ package Log::Log4perl::Config;
 use 5.006;
 use strict;
 use warnings;
+no warnings qw( once );
 
-use Log::Log4perl::Logger;
+require Log::Log4perl::Logger;
 use Log::Log4perl::Level;
-use Log::Log4perl::Config::PropertyConfigurator;
-use Log::Log4perl::JavaMap;
-use Log::Log4perl::Filter;
-use Log::Log4perl::Filter::Boolean;
-use Log::Log4perl::Config::Watch;
+require Log::Log4perl::Config::PropertyConfigurator;
+require Log::Log4perl::JavaMap;
+require Log::Log4perl::Filter;
+require Log::Log4perl::Filter::Boolean;
+require Log::Log4perl::Config::Watch;
 
 use constant _INTERNAL_DEBUG => 0;
 

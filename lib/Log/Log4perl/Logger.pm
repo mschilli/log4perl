@@ -5,13 +5,15 @@ package Log::Log4perl::Logger;
 use 5.006;
 use strict;
 use warnings;
+no warnings qw( once );
 
-use Log::Log4perl;
+require Log::Log4perl;
 use Log::Log4perl::Level;
-use Log::Log4perl::Layout;
-use Log::Log4perl::Appender;
-use Log::Log4perl::Appender::String;
-use Log::Log4perl::Filter;
+require Log::Log4perl::Layout;
+require Log::Log4perl::Layout::PatternLayout;
+require Log::Log4perl::Appender;
+require Log::Log4perl::Appender::String;
+require Log::Log4perl::Filter;
 use Carp;
 
 $Carp::Internal{"Log::Log4perl"}++;

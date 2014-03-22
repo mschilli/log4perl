@@ -5,6 +5,8 @@
 1.44 (not yet released)
    *    (ms) Skipped mkpath umask tests on Win32 which doesn't support it
              properly.
+   *    (ms) Fixed 'redefined' warnings in Log4perl.pm, Logger.pm, and 
+             Appender.pm
 
 1.43 (2014/03/16)
    *    (ms) Added %m{indent} to indent multi-line messages according to the
