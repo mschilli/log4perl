@@ -5,6 +5,8 @@
 1.44 (not yet released)
    *    (ms) Skipped mkpath umask tests on Win32 which doesn't support it
              properly.
+   *    (ms) Requiring core module File::Path 2.06_06, which has remove_tree() 
+             (fixes test suite for ancient perl-5.6.2).
 
 1.43 (2014/03/16)
    *    (ms) Added %m{indent} to indent multi-line messages according to the
