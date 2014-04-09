@@ -193,7 +193,7 @@ sub import {
             die "$FILTER_MODULE required with :resurrect" .
                 "(install from CPAN)";
         }
-        eval "require $FILTER_MODULE" or die "Cannot pull in $FILTER_MODULE";
+        eval "require $FILTER_MODULE; 1" or die "Cannot pull in $FILTER_MODULE";
         Filter::Util::Call::filter_add(
             sub {
                 my($status);

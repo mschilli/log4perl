@@ -53,7 +53,7 @@ sub new {
         if( ! $appenderclass->can('new') ) {
             # Not available yet, try to pull it in.
             # see 'perldoc -f require' for why two evals
-            eval "require $appenderclass";
+            eval "require $appenderclass; 1";
                  #unless ${$appenderclass.'::IS_LOADED'};  #for unit tests, 
                                                           #see 004Config
             die $@ if $@;
