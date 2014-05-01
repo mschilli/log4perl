@@ -2036,7 +2036,9 @@ as such:
     
     GetOptions("v+" => \$v, ...);
 
-    $logger->more_logging($v);  # inc logging level once for each -v in ARGV
+    if( $v ) {
+      $logger->more_logging($v); # inc logging level once for each -v in ARGV
+    }
 
 =head2 Custom Log Levels
 
