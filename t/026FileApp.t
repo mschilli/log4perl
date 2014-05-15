@@ -1,5 +1,12 @@
 #Testing if the file-appender appends in default mode
 
+END {
+    # Must be before enabling the Log4Perl stuff, or file will still
+    # be open and locked (under Win32) on program close.
+
+    unlink_testfiles();
+    }
+
 BEGIN {
     if($ENV{INTERNAL_DEBUG}) {
         require Log::Log4perl::InternalDebug;
@@ -37,10 +44,6 @@ my $testfile = File::Spec->catfile($WORK_DIR, "test26.log");
 my $testpath = File::Spec->catfile($WORK_DIR, "test26");
 
 BEGIN {plan tests => 26}
-
-END {
-    unlink_testfiles();
-    }
 
 sub unlink_testfiles {
     unlink $testfile;
