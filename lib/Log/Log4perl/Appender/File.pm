@@ -10,6 +10,7 @@ use Log::Log4perl::Config::Watch;
 use Fcntl;
 use File::Path;
 use File::Spec::Functions qw(splitpath);
+use Scalar::Util qw(openhandle);
 use constant _INTERNAL_DEBUG => 0;
 
 ##################################################
@@ -286,6 +287,8 @@ sub close_with_care {
     my( $self, $fh ) = @_;
 
     my $prev_rc = $?;
+
+    return 0 if not openhandle $fh;
 
     my $rc = close $fh;
 
