@@ -1,5 +1,5 @@
 ######################################################################
-    Log::Log4perl 1.43
+    Log::Log4perl 1.44
 ######################################################################
 
 NAME
@@ -282,7 +282,7 @@ How to use it
 
     you can use the following:
 
-        $logger->logdie();
+        $logger->logdie($err);
 
     And if instead of using
 
@@ -292,7 +292,7 @@ How to use it
     to both issue a warning via Perl's warn() mechanism and make sure you
     have the same message in the log file as well, use:
 
-        $logger->logwarn();
+        $logger->logwarn($message);
 
     Since there is an ERROR level between WARN and FATAL, there are two
     additional helper functions in case you'd like to use ERROR for either
@@ -1328,7 +1328,9 @@ Cool Tricks
     
         GetOptions("v+" => \$v, ...);
 
-        $logger->more_logging($v);  # inc logging level once for each -v in ARGV
+        if( $v ) {
+          $logger->more_logging($v); # inc logging level once for each -v in ARGV
+        }
 
   Custom Log Levels
     First off, let me tell you that creating custom levels is heavily
