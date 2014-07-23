@@ -13,7 +13,7 @@ BEGIN {
 use warnings;
 use strict;
 
-use Test::More tests => 32;
+use Test::More tests => 36;
 
 use Log::Log4perl;
 
@@ -430,3 +430,87 @@ EOT
 };
 
 like $@, qr/Unknown parameter: LevelToWomper/, "Unknown parameter check";
+
+#############################################
+# AND-Shortcut with boolean filters
+#############################################
+my $counter = 0;
+no warnings qw( redefine );
+my $old_level_match_ok = *{ Log::Log4perl::Filter::LevelMatch::ok };
+*{ Log::Log4perl::Filter::LevelMatch::ok } = sub {
+    $counter++; 0 };
+
+Log::Log4perl->init(\ <<'EOT');
+log4perl.category.Some.Where = DEBUG, A1
+
+log4perl.filter.Debug = Log::Log4perl::Filter::LevelMatch
+log4perl.filter.Debug.LevelToMatch = DEBUG
+log4perl.filter.Debug.AcceptOnMatch = true
+
+log4perl.filter.Info = Log::Log4perl::Filter::LevelMatch
+log4perl.filter.Info.LevelToMatch = INFO
+log4perl.filter.Info.AcceptOnMatch = true
+
+log4perl.filter.MyBoolean = Log::Log4perl::Filter::Boolean
+log4perl.filter.MyBoolean.logic = Debug && Info
+
+log4perl.appender.A1        = Log::Log4perl::Appender::TestBuffer
+log4perl.appender.A1.Filter = MyBoolean
+log4perl.appender.A1.layout = Log::Log4perl::Layout::SimpleLayout
+EOT
+
+$buffer = Log::Log4perl::Appender::TestBuffer->by_name("A1");
+
+    # Define a logger
+$logger = Log::Log4perl->get_logger("Some.Where");
+
+    # Block it
+$logger->debug("some message");
+is($buffer->buffer(), "", "all blocked");
+is( $counter, 1, "shortcut ok" );
+$buffer->buffer("");
+
+Log::Log4perl->reset();
+$buffer->reset();
+
+#############################################
+# OR-Shortcut with boolean filters
+#############################################
+$counter = 0;
+*{ Log::Log4perl::Filter::LevelMatch::ok } = sub {
+    $counter++; 1 };
+
+Log::Log4perl->init(\ <<'EOT');
+log4perl.category.Some.Where = DEBUG, A1
+
+log4perl.filter.Debug = Log::Log4perl::Filter::LevelMatch
+log4perl.filter.Debug.LevelToMatch = DEBUG
+log4perl.filter.Debug.AcceptOnMatch = true
+
+log4perl.filter.Info = Log::Log4perl::Filter::LevelMatch
+log4perl.filter.Info.LevelToMatch = INFO
+log4perl.filter.Info.AcceptOnMatch = true
+
+log4perl.filter.MyBoolean = Log::Log4perl::Filter::Boolean
+log4perl.filter.MyBoolean.logic = Debug || Info
+
+log4perl.appender.A1        = Log::Log4perl::Appender::TestBuffer
+log4perl.appender.A1.Filter = MyBoolean
+log4perl.appender.A1.layout = Log::Log4perl::Layout::SimpleLayout
+EOT
+
+$buffer = Log::Log4perl::Appender::TestBuffer->by_name("A1");
+
+    # Define a logger
+$logger = Log::Log4perl->get_logger("Some.Where");
+
+    # Block it
+$logger->debug("some message");
+like($buffer->buffer(), qr/some message/, "all blocked");
+is( $counter, 1, "shortcut ok" );
+$buffer->buffer("");
+
+Log::Log4perl->reset();
+$buffer->reset();
+
+*{ Log::Log4perl::Filter::LevelMatch::ok } = $old_level_match_ok;
