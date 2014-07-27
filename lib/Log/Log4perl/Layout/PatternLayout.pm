@@ -133,20 +133,40 @@ sub rep {
     # If it's a %d{...} construct, initialize a simple date
     # format formatter, so that we can quickly render later on.
     # If it's just %d, assume %d{yyyy/MM/dd HH:mm:ss}
-    my $sdf;
     if($op eq "d") {
         if(defined $curlies) {
-            $sdf = Log::Log4perl::DateFormat->new($curlies);
+            $curlies = Log::Log4perl::DateFormat->new($curlies);
         } else {
-            $sdf = Log::Log4perl::DateFormat->new("yyyy/MM/dd HH:mm:ss");
+            $curlies = Log::Log4perl::DateFormat->new("yyyy/MM/dd HH:mm:ss");
         }
+    } elsif($op eq "m") {
+        $curlies = $self->curlies_csv_parse($curlies);
     }
 
-    push @{$self->{stack}}, [$op, $sdf || $curlies];
+    push @{$self->{stack}}, [$op, $curlies];
 
     $self->{info_needed}->{$op}++;
 
     return "%${num}s";
+}
+
+###########################################
+sub curlies_csv_parse {
+###########################################
+    my($self, $curlies) = @_;
+
+    my $data = {};
+
+    if(defined $curlies and length $curlies) {
+        $curlies =~ s/\s//g;
+
+        for my $field (split /,/, $curlies) {
+            my($key, $value) = split /=/, $field;
+            $data->{$key} = $value;
+        }
+    }
+
+    return $data;
 }
 
 ##################################################
@@ -324,12 +344,19 @@ sub curly_action {
     } elsif($ops eq "M") {
         $data = shrink_category($data, $curlies);
     } elsif($ops eq "m") {
-        if($curlies eq "chomp") {
+        if(exists $curlies->{chomp}) {
             chomp $data;
-        } elsif( $curlies eq "indent" ) {
-            no warnings; # trailing array elements are undefined
-            my $indent = length sprintf $printformat, @$results;
-            $data =~ s/\n/ "\n" . (" " x $indent)/ge;
+        }
+        if(exists $curlies->{indent}) {
+            if(defined $curlies->{indent}) {
+                  # fixed indent
+                $data =~ s/\n/ "\n" . (" " x $curlies->{indent})/ge;
+            } else {
+                  # indent on the lead-in
+                no warnings; # trailing array elements are undefined
+                my $indent = length sprintf $printformat, @$results;
+                $data =~ s/\n/ "\n" . (" " x $indent)/ge;
+            }
         }
     } elsif($ops eq "F") {
         my @parts = File::Spec->splitdir($data);
@@ -538,8 +565,9 @@ replaced by the logging engine when it's time to log the message:
        parentheses.
     %L Line number within the file where the log statement was issued
     %m The message to be logged
-    %m{chomp} The message to be logged, stripped off a trailing newline
-    %m{indent} Log message, indented if mult-line
+    %m{chomp} Log message, stripped off a trailing newline
+    %m{indent} Log message, multi-lines indented so they line up with first
+    %m{indent=n} Log message, multi-lines indented by n spaces
     %M Method or function where the logging request was issued
     %n Newline (OS-independent)
     %p Priority of the logging event (%p{1} shows the first letter)
@@ -792,6 +820,40 @@ newline:
 This will add a single newline to every message, regardless if it
 complies with the Log4perl newline guidelines or not (thanks to 
 Tim Bunce for this idea).
+
+=head2 Multi Lines
+
+If a log message consists of several lines, like
+
+    $logger->debug("line1\nline2\nline3");
+
+then by default, they get logged like this (assuming the the layout is
+set to "%d>%m%n"):
+
+      # layout %d>%m%n
+    2014/07/27 12:46:16>line1
+    line2
+    line3
+
+If you'd rather have the messages aligned like
+
+      # layout %d>%m{indent}%n
+    2014/07/27 12:46:16>line1
+                        line2
+                        line3
+
+then use the C<%m{indent}> option for the %m specifier. This option
+can also take a fixed value, as in C<%m{indent=2}, which indents
+subsequent lines by two spaces:
+
+      # layout %d>%m{indent=2}%n
+    2014/07/27 12:46:16>line1
+      line2
+      line3
+
+Note that you can still add the C<chomp> option for the C<%m> specifier
+in this case (see above what it does), simply add it after a 
+separating comma, like in C<%m{indent=2,chomp}>.
 
 =head1 LICENSE
 
