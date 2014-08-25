@@ -1168,10 +1168,10 @@ Third example:
 
 The root logger defines two appenders here: C<stdout>, which uses 
 C<org.apache.log4j.ConsoleAppender> (ultimately mapped by C<Log::Log4perl>
-to C<Log::Log4perl::Appender::Screen>) to write to the screen. And
+to L<Log::Log4perl::Appender::Screen>) to write to the screen. And
 C<R>, a C<org.apache.log4j.RollingFileAppender> 
 (mapped by C<Log::Log4perl> to 
-C<Log::Dispatch::FileRotate> with the C<File> attribute specifying the
+L<Log::Dispatch::FileRotate> with the C<File> attribute specifying the
 log file.
 
 See L<Log::Log4perl::Config> for more examples and syntax explanations.
