@@ -671,7 +671,7 @@ of your system from the outside. It implements the widely popular
 
 B<For a detailed tutorial on Log::Log4perl usage, please read> 
 
-    http://www.perl.com/pub/a/2002/09/11/log4perl.html
+L<http://www.perl.com/pub/a/2002/09/11/log4perl.html>
 
 Logging beats a debugger if you want to know what's going on 
 in your code during runtime. However, traditional logging packages
@@ -1233,7 +1233,7 @@ and L<"Mapped Diagnostic Context (MDC)">.
 
 Also, C<%d> can be fine-tuned to display only certain characteristics
 of a date, according to the SimpleDateFormat in the Java World
-(http://java.sun.com/j2se/1.3/docs/api/java/text/SimpleDateFormat.html)
+(L<http://java.sun.com/j2se/1.3/docs/api/java/text/SimpleDateFormat.html>)
 
 In this way, C<%d{HH:mm}> displays only hours and minutes of the current date,
 while C<%d{yy, EEEE}> displays a two-digit year, followed by a spelled-out
@@ -1276,8 +1276,9 @@ tradition, C<%-20c> will reserve 20 chars for the category and left-justify it.
 For more details on logging and how to use the flexible and the simple
 format, check out the original C<log4j> website under
 
-    http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/SimpleLayout.html
-    http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/PatternLayout.html
+L<SimpleLayout|http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/SimpleLayout.html>
+and
+L<PatternLayout|http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/PatternLayout.html>
 
 =head2 Penalties
 
@@ -1639,7 +1640,7 @@ document in the Log::Log4perl distribution.
 
 Here's a collection of useful tricks for the advanced C<Log::Log4perl> user.
 For more, check the FAQ, either in the distribution 
-(L<Log::Log4perl::FAQ>) or on http://log4perl.sourceforge.net.
+(L<Log::Log4perl::FAQ>) or on L<http://log4perl.sourceforge.net>.
 
 =head2 Shortcuts
 
@@ -2877,7 +2878,7 @@ Manual installation works as usual with
 
 Log::Log4perl is still being actively developed. We will
 always make sure the test suite (approx. 500 cases) will pass, but there 
-might still be bugs. please check http://github.com/mschilli/log4perl
+might still be bugs. please check L<http://github.com/mschilli/log4perl>
 for the latest release. The api has reached a mature state, we will 
 not change it unless for a good reason.
 
@@ -2893,21 +2894,21 @@ them immediately.
 
 Michael Schilli, "Retire your debugger, log smartly with Log::Log4perl!",
 Tutorial on perl.com, 09/2002, 
-http://www.perl.com/pub/a/2002/09/11/log4perl.html
+L<http://www.perl.com/pub/a/2002/09/11/log4perl.html>
 
 =item [2]
 
 Ceki Gülcü, "Short introduction to log4j",
-http://logging.apache.org/log4j/1.2/manual.html
+L<http://logging.apache.org/log4j/1.2/manual.html>
 
 =item [3]
 
 Vipan Singla, "Don't Use System.out.println! Use Log4j.",
-http://www.vipan.com/htdocs/log4jhelp.html
+L<http://www.vipan.com/htdocs/log4jhelp.html>
 
 =item [4]
 
-The Log::Log4perl project home page: http://log4perl.com
+The Log::Log4perl project home page: L<http://log4perl.com>
 
 =back
 
