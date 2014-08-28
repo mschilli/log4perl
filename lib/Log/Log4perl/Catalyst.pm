@@ -123,21 +123,23 @@ sub _flush {
 
     for my $appender (values %Log::Log4perl::Logger::APPENDER_BY_NAME) {
         next if $appender->{name} !~ /_$CATALYST_APPENDER_SUFFIX$/;
-        $appender->flush();
+
+        if ($self->abort) {
+            $self->abort(undef);
+            $appender->{appender}{buffer} = [];
+        }
+        else {
+            $appender->flush();
+        }
     }
 }
 
 ##################################################
 sub abort {
 ##################################################
-    my($self, $abort)  = @_;
+    my $self = shift;
 
-    $self->{abort} = $abort;
-
-    for my $appender (values %Log::Log4perl::Logger::APPENDER_BY_NAME) {
-        next if $appender->{name} !~ /_$CATALYST_APPENDER_SUFFIX$/;
-        $appender->{buffer} = [];
-    }
+    $self->{abort} = $_[0] if @_;
 
     return $self->{abort};
 }
