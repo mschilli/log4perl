@@ -125,13 +125,14 @@ sub _flush {
         next if $appender->{name} !~ /_$CATALYST_APPENDER_SUFFIX$/;
 
         if ($self->abort) {
-            $self->abort(undef);
             $appender->{appender}{buffer} = [];
         }
         else {
             $appender->flush();
         }
     }
+
+    $self->abort(undef);
 }
 
 ##################################################
