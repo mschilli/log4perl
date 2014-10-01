@@ -26,10 +26,18 @@ sub new {
         $facility = 'user';
     }
 
+    if (defined $data->{Ident}{value}) {
+        $ident = $data->{Ident}{value}
+    }elsif (defined $data->{ident}{value}){
+        $ident = $data->{ident}{value};
+    }else{
+        $ident = $0;
+    }
     
     return Log::Log4perl::Appender->new("Log::Dispatch::Syslog",
         name      => $appender_name,
         facility  => $facility,
+        ident     => $ident,
         min_level => 'debug',
     );
 }
