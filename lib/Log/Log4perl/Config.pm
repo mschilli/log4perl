@@ -179,6 +179,11 @@ sub _init {
                         $data->{oneMessagePerAppender}->{value};
     }
 
+    if(exists $data->{utcDateTimes}) {
+        require Log::Log4perl::DateFormat;
+        $Log::Log4perl::DateFormat::GMTIME = !!$data->{utcDateTimes}->{value};
+    }
+
         # Boolean filters 
     my %boolean_filters = ();
 

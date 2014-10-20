@@ -2308,6 +2308,10 @@ noticeable performance impact.
 If a layout defines a date, Log::Log4perl uses local time to populate it.
 If you want UTC instead, set
 
+    log4perl.utcDateTimes = 1
+
+in your configuration. Alternatively, you can set
+
     $Log::Log4perl::DateFormat::GMTIME = 1;
 
 in your program before the first log statement.

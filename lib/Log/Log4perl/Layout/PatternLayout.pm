@@ -9,7 +9,6 @@ use warnings;
 use constant _INTERNAL_DEBUG => 0;
 
 use Carp;
-use Log::Log4perl;
 use Log::Log4perl::Util;
 use Log::Log4perl::Level;
 use Log::Log4perl::DateFormat;
