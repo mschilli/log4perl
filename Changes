@@ -9,6 +9,9 @@
              PatternLayout's %m specifier allow for fixed indentation,
              variable indentation, and at the same time permit the use
              of the chomp option. Added with tests and docs.
+   *    (ms) Gianni Ceccarelli added the log4perl.utcDateTimes config 
+             option to select UTC instead of localtime:
+             https://github.com/mschilli/log4perl/pull/53
 
 1.44 (2014/05/17)
    *    (ms) Skipped mkpath umask tests on Win32 which doesn't support it
