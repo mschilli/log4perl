@@ -12,6 +12,9 @@
    *    (ms) Gianni Ceccarelli added the log4perl.utcDateTimes config 
              option to select UTC instead of localtime:
              https://github.com/mschilli/log4perl/pull/53
+   *    (ms) @bokutin fixed Catalyst.pm buffer flush:
+               https://github.com/mschilli/log4perl/pull/51
+               https://github.com/mschilli/log4perl/issues/54
 
 1.44 (2014/05/17)
    *    (ms) Skipped mkpath umask tests on Win32 which doesn't support it
