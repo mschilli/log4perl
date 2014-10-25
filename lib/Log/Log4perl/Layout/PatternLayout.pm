@@ -842,7 +842,7 @@ If you'd rather have the messages aligned like
                         line3
 
 then use the C<%m{indent}> option for the %m specifier. This option
-can also take a fixed value, as in C<%m{indent=2}, which indents
+can also take a fixed value, as in C<%m{indent=2}>, which indents
 subsequent lines by two spaces:
 
       # layout %d>%m{indent=2}%n
