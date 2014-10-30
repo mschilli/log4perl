@@ -1,6 +1,5 @@
 ###########################################
-# Tests for Log4perl::DateFormat
-# Gianni Ceccarelli, 2014 (dakkar@thenautilus.net)
+# Tests for Log4perl::DateFormat with gmtime
 ###########################################
 
 BEGIN { 
@@ -34,30 +33,10 @@ CONF
     }
 
     Log::Log4perl::init(\$conf);
-
-    return get_logger("Bar::Twix");
 }
 
-my $logger;
-sub log_string_for {
-    my $buffer = Log::Log4perl::Appender::TestBuffer->by_name("Buffer");
-    $buffer->clear();
-    $logger->error(@_);
-    return $buffer->buffer();
-}
+init_with_utc(1);
+ok $Log::Log4perl::DateFormat::GMTIME, "init_with_utc";
 
-# default
-$logger = init_with_utc();
-my $default_string = log_string_for('blah');
-note "default: $default_string";
-
-$logger = init_with_utc(1);
-my $utc_string = log_string_for('blah');
-note "UTC: $utc_string";
-
-$logger = init_with_utc(0);
-my $local_string = log_string_for('blah');
-note "local: $local_string";
-
-is($default_string,$local_string,'use localtime by default');
-isnt($utc_string,$local_string,'gmtime != localtime');
+init_with_utc(0);
+ok ! $Log::Log4perl::DateFormat::GMTIME, "init_with_utc";

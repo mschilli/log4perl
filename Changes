@@ -2,6 +2,9 @@
  Revision history for Log::Log4perl
 ##################################################
 
+1.46 (not yet released)
+   *    (ms) Fixed Gianni's utc time test for machines set to utc time.
+
 1.45 (2014/10/25)
    *    (ms) fgeueke provided a pull request for short-circuiting boolean
              filters: https://github.com/mschilli/log4perl/pull/48
