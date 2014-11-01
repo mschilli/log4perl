@@ -2,7 +2,7 @@
  Revision history for Log::Log4perl
 ##################################################
 
-1.46 (not yet released)
+1.46 (2014/10/31)
    *    (ms) Fixed Gianni's utc time test for machines set to utc time.
 
 1.45 (2014/10/25)
