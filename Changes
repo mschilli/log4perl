@@ -2,6 +2,11 @@
  Revision history for Log::Log4perl
 ##################################################
 
+1.45 (not yet released)
+   *    (ms) Added suggestion by Dylan Doxey to test for both MSWin32 and
+             cygwin to detect windows-like systems for which tests need
+             to be skipped.
+
 1.44 (2014/05/17)
    *    (ms) Skipped mkpath umask tests on Win32 which doesn't support it
              properly.

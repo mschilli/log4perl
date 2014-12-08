@@ -14,6 +14,12 @@ BEGIN {
     }
 }
 
+BEGIN {
+    use FindBin qw($Bin);
+    use lib "$Bin/lib";
+    use Log4perlInternalTest qw( is_like_windows );
+}
+
 use Test::More;
 
 use warnings;
@@ -275,7 +281,7 @@ is($content, "INFO - File1\nINFO - File1\n");
 # Testing syswrite and recreate
 #########################################################
 SKIP: {
-  skip "File recreation not supported on Win32", 1 if $^O eq "MSWin32";
+  skip "File recreation not supported on Win32", 1 if is_like_windows();
 $data = <<EOT;
 log4perl.category = INFO, FileAppndr1
 log4perl.appender.FileAppndr1          = Log::Log4perl::Appender::File
@@ -326,7 +332,7 @@ eval { $log->info("File1-1"); };
 is($@, "", "no error on moved file/syswrite");
 
 SKIP: {
-  skip "Signals not supported on Win32", 2 if $^O eq "MSWin32";
+  skip "Signals not supported on Win32", 2 if is_like_windows();
 
 #########################################################
 # Testing syswrite and recreate_check_signal
@@ -462,7 +468,7 @@ is($content, "INFO - Shu-wa-chi!\n");
 ####################################################
 
 SKIP: {
-  skip "Umask not supported on Win32", 3 if $^O eq "MSWin32";
+  skip "Umask not supported on Win32", 3 if is_like_windows();
 
   my $oldumask = umask;
   

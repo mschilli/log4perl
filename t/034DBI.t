@@ -24,7 +24,7 @@ use warnings;
 use strict;
 
 BEGIN {
-    my $minversion = \%Log::Log4perl::Internal::Test::MINVERSION;
+    my $minversion = \%Log4perlInternalTest::MINVERSION;
     eval {
         require DBI;
         die if $DBI::VERSION < $minversion->{ "DBI" };

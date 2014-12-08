@@ -1,6 +1,10 @@
-package Log::Log4perl::Internal::Test;
+package Log4perlInternalTest;
 use strict;
 use warnings;
+
+require Exporter;
+our @EXPORT_OK = qw( is_like_windows );
+our @ISA    = qw( Exporter );
 
 # We don't require any of these modules for testing, but if they're 
 # installed, we require minimal versions.
@@ -10,6 +14,16 @@ our %MINVERSION = qw(
     DBD::CSV       0.33
     SQL::Statement 1.20
 );
+
+# check if we're on non-unixy system
+sub is_like_windows {
+    if( $^O eq "MSWin32" or
+        $^O eq "cygwin" ) {
+        return 1;
+    }
+
+    return 0;
+}
 
 1;
 

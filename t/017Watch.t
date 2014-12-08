@@ -7,10 +7,13 @@ BEGIN {
     }
 }
 
-use Test::More;
-
 use warnings;
 use strict;
+
+use FindBin qw($Bin);
+use lib "$Bin/lib";
+use Log4perlInternalTest qw( is_like_windows );
+use Test::More;
 
 use Log::Log4perl;
 use File::Spec;
@@ -18,15 +21,6 @@ use File::Spec;
 sub trunc {
     open FILE, ">$_[0]" or die "Cannot open $_[0]";
     close FILE;
-}
-
-sub is_like_windows {
-    if( $^O eq "MSWin32" or
-        $^O eq "cygwin" ) {
-        return 1;
-    }
-
-    return 0;
 }
 
 BEGIN {

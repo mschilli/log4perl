@@ -26,7 +26,7 @@ BEGIN {
 }
 
 BEGIN {
-    my $minversion = \%Log::Log4perl::Internal::Test::MINVERSION;
+    my $minversion = \%Log4perlInternalTest::MINVERSION;
     eval {
         require DBD::CSV;
         die if $DBD::CSV::VERSION < $minversion->{ "DBD::CSV" };
