@@ -149,6 +149,8 @@ t/065Undef.t
 t/066SQLite.t
 t/067Exception.t
 t/068MultilineIndented.t
+t/069MoreMultiline.t
+t/070UTCDate.t
 t/compare.pl
 t/deeper1.expected
 t/deeper6.expected

@@ -60,9 +60,9 @@ sub compile_logic {
         # Fabricate a parameter list: A1/A2/A3 => $A1, $A2, $A3
     my $plist = join ', ', map { '$' . $_ } keys %{$self->{params}};
 
-        # Replace all the (dollar-less) placeholders in the code 
-        # by scalars (basically just put dollars in front of them)
-    $logic =~ s/([\w_-]+)/\$$1/g;
+        # Replace all the (dollar-less) placeholders in the code with
+        # calls to their respective coderefs.  
+        $logic =~ s/([\w_-]+)/\&\$$1/g;
 
         # Set up the meta decider, which transforms the config file
         # logic into compiled perl code
@@ -95,9 +95,12 @@ sub eval_logic {
         # in the code (although the order of keys is
         # not predictable, it is consistent :)
     for my $param (keys %{$self->{params}}) {
-            # Call ok() and map the result to 1 or 0
-        print "Calling filter $param\n" if _INTERNAL_DEBUG;
-        push @plist, ($self->{params}->{$param}->ok(%$p) ? 1 : 0);
+        # Pass a coderef as a param that will run the filter's ok method and
+        # return a 1 or 0.  
+        print "Passing filter $param\n" if _INTERNAL_DEBUG;
+        push(@plist, sub {
+            return $self->{params}->{$param}->ok(%$p) ? 1 : 0
+        });
     }
 
         # Now pipe the parameters into the canned function,

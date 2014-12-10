@@ -1,5 +1,5 @@
 ######################################################################
-    Log::Log4perl 1.44
+    Log::Log4perl 1.46
 ######################################################################
 
 NAME
@@ -52,7 +52,7 @@ DESCRIPTION
 
     For a detailed tutorial on Log::Log4perl usage, please read
 
-        http://www.perl.com/pub/a/2002/09/11/log4perl.html
+    <http://www.perl.com/pub/a/2002/09/11/log4perl.html>
 
     Logging beats a debugger if you want to know what's going on in your
     code during runtime. However, traditional logging packages are too
@@ -515,9 +515,9 @@ How to use it
 
     The root logger defines two appenders here: "stdout", which uses
     "org.apache.log4j.ConsoleAppender" (ultimately mapped by "Log::Log4perl"
-    to "Log::Log4perl::Appender::Screen") to write to the screen. And "R", a
+    to Log::Log4perl::Appender::Screen) to write to the screen. And "R", a
     "org.apache.log4j.RollingFileAppender" (mapped by "Log::Log4perl" to
-    "Log::Dispatch::FileRotate" with the "File" attribute specifying the log
+    Log::Dispatch::FileRotate with the "File" attribute specifying the log
     file.
 
     See Log::Log4perl::Config for more examples and syntax explanations.
@@ -574,8 +574,8 @@ How to use it
 
         Also, %d can be fine-tuned to display only certain characteristics
         of a date, according to the SimpleDateFormat in the Java World
-        (http://java.sun.com/j2se/1.3/docs/api/java/text/SimpleDateFormat.ht
-        ml)
+        (<http://java.sun.com/j2se/1.3/docs/api/java/text/SimpleDateFormat.h
+        tml>)
 
         In this way, %d{HH:mm} displays only hours and minutes of the
         current date, while %d{yy, EEEE} displays a two-digit year, followed
@@ -618,8 +618,11 @@ How to use it
     For more details on logging and how to use the flexible and the simple
     format, check out the original "log4j" website under
 
-        http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/SimpleLayout.html
-        http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/PatternLayout.html
+    SimpleLayout
+    <http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/SimpleLayo
+    ut.html> and PatternLayout
+    <http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/PatternLay
+    out.html>
 
   Penalties
     Logging comes with a price tag. "Log::Log4perl" has been optimized to
@@ -952,7 +955,7 @@ Categories
 Cool Tricks
     Here's a collection of useful tricks for the advanced "Log::Log4perl"
     user. For more, check the FAQ, either in the distribution
-    (Log::Log4perl::FAQ) or on http://log4perl.sourceforge.net.
+    (Log::Log4perl::FAQ) or on <http://log4perl.sourceforge.net>.
 
   Shortcuts
     When getting an instance of a logger, instead of saying
@@ -2123,9 +2126,9 @@ INSTALLATION
 DEVELOPMENT
     Log::Log4perl is still being actively developed. We will always make
     sure the test suite (approx. 500 cases) will pass, but there might still
-    be bugs. please check http://github.com/mschilli/log4perl for the latest
-    release. The api has reached a mature state, we will not change it
-    unless for a good reason.
+    be bugs. please check <http://github.com/mschilli/log4perl> for the
+    latest release. The api has reached a mature state, we will not change
+    it unless for a good reason.
 
     Bug reports and feedback are always welcome, just email them to our
     mailing list shown in the AUTHORS section. We're usually addressing them
@@ -2134,15 +2137,15 @@ DEVELOPMENT
 REFERENCES
     [1] Michael Schilli, "Retire your debugger, log smartly with
         Log::Log4perl!", Tutorial on perl.com, 09/2002,
-        http://www.perl.com/pub/a/2002/09/11/log4perl.html
+        <http://www.perl.com/pub/a/2002/09/11/log4perl.html>
 
     [2] Ceki Gülcü, "Short introduction to log4j",
-        http://logging.apache.org/log4j/1.2/manual.html
+        <http://logging.apache.org/log4j/1.2/manual.html>
 
     [3] Vipan Singla, "Don't Use System.out.println! Use Log4j.",
-        http://www.vipan.com/htdocs/log4jhelp.html
+        <http://www.vipan.com/htdocs/log4jhelp.html>
 
-    [4] The Log::Log4perl project home page: http://log4perl.com
+    [4] The Log::Log4perl project home page: <http://log4perl.com>
 
 SEE ALSO
     Log::Log4perl::Config, Log::Log4perl::Appender,

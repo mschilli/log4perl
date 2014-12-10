@@ -123,21 +123,24 @@ sub _flush {
 
     for my $appender (values %Log::Log4perl::Logger::APPENDER_BY_NAME) {
         next if $appender->{name} !~ /_$CATALYST_APPENDER_SUFFIX$/;
-        $appender->flush();
+
+        if ($self->abort) {
+            $appender->{appender}{buffer} = [];
+        }
+        else {
+            $appender->flush();
+        }
     }
+
+    $self->abort(undef);
 }
 
 ##################################################
 sub abort {
 ##################################################
-    my($self, $abort)  = @_;
+    my $self = shift;
 
-    $self->{abort} = $abort;
-
-    for my $appender (values %Log::Log4perl::Logger::APPENDER_BY_NAME) {
-        next if $appender->{name} !~ /_$CATALYST_APPENDER_SUFFIX$/;
-        $appender->{buffer} = [];
-    }
+    $self->{abort} = $_[0] if @_;
 
     return $self->{abort};
 }
@@ -218,7 +221,7 @@ Level-based control is available via the following methods:
    $c->log->error("Can't add user ", $user);
    $c->log->fatal("Database down, aborting request");
 
-But that's no all, Log4perl is much more powerful.
+But that's not all, Log4perl is much more powerful.
 
 The logging statement can be suppressed or activated based on a Log4perl
 file that looks like
@@ -238,7 +241,7 @@ log-level and location filtering, and how to forward messages not only
 to the screen or to log files, but also to databases, email appenders,
 and much more.
 
-Also, you can vary the layout of each message. For example if you want
+Also, you can change the message layout. For example if you want
 to know where a particular statement was logged, turn on file names and 
 line numbers:
 
@@ -278,8 +281,8 @@ options.
 
 If called without parameters, new() initializes Log4perl in a way 
 so that messages are logged similarly to Catalyst's default logging
-mechanism. If you provide configuration, either the name of a configuration
-file or a reference to scalar string containing the configuration, it
+mechanism. If you provide a configuration, either the name of a configuration
+file or a reference to a scalar string containing the configuration, it
 will call Log4perl with these parameters.
 
 The second (optional) parameter is a list of key/value pairs:

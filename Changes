@@ -2,10 +2,28 @@
  Revision history for Log::Log4perl
 ##################################################
 
-1.45 (not yet released)
+1.47 (not yet released)
    *    (ms) Added suggestion by Dylan Doxey to test for both MSWin32 and
              cygwin to detect windows-like systems for which tests need
              to be skipped.
+
+1.46 (2014/10/31)
+   *    (ms) Fixed Gianni's utc time test for machines set to utc time.
+
+1.45 (2014/10/25)
+   *    (ms) fgeueke provided a pull request for short-circuiting boolean
+             filters: https://github.com/mschilli/log4perl/pull/48
+   *    (ms) [rt.cpan.org #94009] Tim Bunce had requested that the 
+             PatternLayout's %m specifier allow for fixed indentation,
+             variable indentation, and at the same time permit the use
+             of the chomp option. Added with tests and docs.
+   *    (ms) Gianni Ceccarelli added the log4perl.utcDateTimes config 
+             option to select UTC instead of localtime:
+             https://github.com/mschilli/log4perl/pull/53
+   *    (ms) @bokutin fixed Catalyst.pm buffer flush:
+               https://github.com/mschilli/log4perl/pull/51
+               https://github.com/mschilli/log4perl/issues/54
+>>>>>>> 550d1d01e7c283eff4defbdc2b978c90a1728f9d
 
 1.44 (2014/05/17)
    *    (ms) Skipped mkpath umask tests on Win32 which doesn't support it
