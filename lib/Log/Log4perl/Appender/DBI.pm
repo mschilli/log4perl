@@ -354,6 +354,9 @@ Log::Log4perl::Appender::DBI - implements appending to a DB
      log4j.appender.DBAppndr.attrs.f_encoding = utf8
     };
 
+    Log::Log4perl::init ( \$config ) ;                                      
+
+    my $logger = Log::Log4perl->get_logger () ;                             
     $logger->warn( $custid, 'big problem!!', $ip_addr );
 
 =head1 CAVEAT

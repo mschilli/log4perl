@@ -3,6 +3,8 @@
 ##################################################
 
 1.47 (not yet released)
+   *    (ms) Fixed synopsis code in Log::Log4perl::Appender::DBI, 
+             reported by Chris Collins.
    *    (ms) Added suggestion by Dylan Doxey to test for both MSWin32 and
              cygwin to detect windows-like systems for which tests need
              to be skipped.
