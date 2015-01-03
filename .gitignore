@@ -4,3 +4,5 @@ blib
 pm_to_blib
 MYMETA.json
 MYMETA.yml
+*.log
+t/tmp/
