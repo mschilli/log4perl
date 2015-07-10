@@ -9,6 +9,7 @@ use warnings;
 use Log::Log4perl;
 use Log::Log4perl::Level;
 use Log::Log4perl::Layout;
+use Log::Log4perl::Layout::PatternLayout;
 use Log::Log4perl::Appender;
 use Log::Log4perl::Appender::String;
 use Log::Log4perl::Filter;
@@ -27,26 +28,33 @@ our $INITIALIZED = 0;
 our $NON_INIT_WARNED;
 our $DIE_DEBUG = 0;
 our $DIE_DEBUG_BUFFER = "";
-    # Define the default appender that's used for formatting
-    # warn/die/croak etc. messages.
-our $STRING_APP_NAME = "_l4p_warn";
-our $STRING_APP      = Log::Log4perl::Appender->new(
-                          "Log::Log4perl::Appender::String",
-                          name => $STRING_APP_NAME);
-$STRING_APP->layout(Log::Log4perl::Layout::PatternLayout->new("%m"));
-our $STRING_APP_CODEREF = generate_coderef([[$STRING_APP_NAME, $STRING_APP]]);
 
-__PACKAGE__->reset();
+my $STRING_APP_CODEREF;
+my $STRING_APP;
 
 ###########################################
 sub warning_render {
 ###########################################
     my($logger, @message) = @_;
 
+    if( !defined $STRING_APP_CODEREF ) {
+          # Define the default appender that's used for formatting
+          # warn/die/croak etc. messages.
+        my $string_app_name = "_l4p_warn";
+        $STRING_APP = Log::Log4perl::Appender->new(
+                           "Log::Log4perl::Appender::String",
+                           name => $string_app_name);
+        $STRING_APP->layout(Log::Log4perl::Layout::PatternLayout->new("%m"));
+        $STRING_APP_CODEREF = 
+            generate_coderef([[$string_app_name, $STRING_APP]]);
+    }
+
     $STRING_APP->string("");
     $STRING_APP_CODEREF->($logger, 
                           @message, 
                           Log::Log4perl::Level::to_level($ALL));
+
+
     return $STRING_APP->string();
 }
 
@@ -86,10 +94,6 @@ sub DESTROY {
 ##################################################
 sub reset {
 ##################################################
-    $ROOT_LOGGER        = __PACKAGE__->_new("", $OFF);
-#    $LOGGERS_BY_NAME    = {};  #leave this alone, it's used by 
-                                #reset_all_output_methods when 
-                                #the config changes
 
     %APPENDER_BY_NAME   = ();
     undef $INITIALIZED;
@@ -104,7 +108,7 @@ sub reset {
 	#is deleted from the config file, we need to zero out the existing
 	#loggers so ones not in the config file not continue with their old
 	#behavior --kg
-        next if $logger eq $ROOT_LOGGER;
+        next if $logger eq get_root_logger();
         $logger->{level} = undef;
         $logger->level();  #set it from the hierarchy
     }
@@ -117,6 +121,11 @@ sub reset {
 sub _new {
 ##################################################
     my($class, $category, $level) = @_;
+
+    if( !defined $INITIALIZED ) {
+        __PACKAGE__->reset();
+        $INITIALIZED = 1;
+    }
 
     print("_new: $class/$category/", defined $level ? $level : "undef",
           "\n") if _INTERNAL_DEBUG;
@@ -170,7 +179,7 @@ sub reset_all_output_methods {
     foreach my $loggername ( keys %$LOGGERS_BY_NAME){
         $LOGGERS_BY_NAME->{$loggername}->set_output_methods;
     }
-    $ROOT_LOGGER->set_output_methods;
+    get_root_logger()->set_output_methods;
 }
 
 ##################################################
@@ -495,7 +504,7 @@ sub level {
 
         if($logger->{category} eq "") {
             # It's the root logger
-            return $ROOT_LOGGER->{level};
+            return get_root_logger()->{level};
         }
             
         if(defined $LOGGERS_BY_NAME->{$logger->{category}}->{level}) {
@@ -530,7 +539,7 @@ sub parent_logger {
     }
 
     if($parent_class eq "") {
-        $logger = $ROOT_LOGGER;
+        $logger = get_root_logger();
     } else {
         $logger = $LOGGERS_BY_NAME->{$parent_class};
     }
@@ -542,7 +551,12 @@ sub parent_logger {
 sub get_root_logger {
 ##################################################
     my($class) = @_;
-    return $ROOT_LOGGER;    
+
+    if( !defined $ROOT_LOGGER ) {
+        $ROOT_LOGGER = __PACKAGE__->_new("", $OFF);
+    }
+
+    return $ROOT_LOGGER;
 }
 
 ##################################################
@@ -566,11 +580,7 @@ sub get_logger {
 ##################################################
     my($class, $category) = @_;
 
-    unless(defined $ROOT_LOGGER) {
-        Carp::confess "Internal error: Root Logger not initialized.";
-    }
-
-    return $ROOT_LOGGER if $category eq "";
+    return get_root_logger() if $category eq "";
 
     my $logger = $class->_new($category);
     return $logger;
@@ -642,7 +652,7 @@ sub eradicate_appender {
         $logger->remove_appender($appender_name, 0, 1);
     }
         # Also remove it from the root logger
-    $ROOT_LOGGER->remove_appender($appender_name, 0, 1);
+    get_root_logger()->remove_appender($appender_name, 0, 1);
     
     delete $APPENDER_BY_NAME{$appender_name};
 
