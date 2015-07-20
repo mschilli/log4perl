@@ -13,6 +13,9 @@ use Log::Log4perl::Logger;
 use Log::Log4perl::Level;
 use Log::Log4perl::Config;
 use Log::Log4perl::Appender;
+use Log::Log4perl::Namespace;
+
+our $NAMESPACE = Log::Log4perl::Namespace->new("_l4p_default");
 
 our $VERSION = '1.46';
 
@@ -64,8 +67,6 @@ our $CHATTY_DESTROY_METHODS = 0;
 our $LOGDIE_MESSAGE_ON_STDERR = 1;
 our $LOGEXIT_CODE             = 1;
 our %IMPORT_CALLED;
-
-our $EASY_CLOSURES = {};
 
   # to throw refs as exceptions via logcarp/confess, turn this off
 our $STRINGIFY_DIE_MESSAGE = 1;
@@ -131,9 +132,7 @@ sub import {
             $level = "OFF" if $level eq "ALWAYS";
             my $lclevel = lc($_);
             easy_closure_create($caller_pkg, $_, sub {
-                Log::Log4perl::Logger::init_warn() unless 
-                    $Log::Log4perl::Logger::INITIALIZED or
-                    $Log::Log4perl::Logger::NON_INIT_WARNED;
+                $NAMESPACE->init_warn();
                 $logger->{$level}->($logger, @_, $level);
             }, $logger);
         }
@@ -537,7 +536,7 @@ sub easy_closure_create {
     print("easy_closure: Setting shortcut $caller_pkg\::$entry ", 
          "(logger=$logger\n") if _INTERNAL_DEBUG;
 
-    $EASY_CLOSURES->{ $caller_pkg }->{ $entry } = $logger;
+    $NAMESPACE->{ easy_closures }->{ $caller_pkg }->{ $entry } = $logger;
     *{"$caller_pkg\::$entry"} = $code;
 }
 
@@ -549,13 +548,13 @@ sub easy_closure_cleanup {
     no warnings 'redefine';
     no strict 'refs';
 
-    my $logger = $EASY_CLOSURES->{ $caller_pkg }->{ $entry };
+    my $logger = $NAMESPACE->{ easy_closures }->{ $caller_pkg }->{ $entry };
 
     print("easy_closure: Nuking easy shortcut $caller_pkg\::$entry ", 
          "(logger=$logger\n") if _INTERNAL_DEBUG;
 
     *{"$caller_pkg\::$entry"} = sub { };
-    delete $EASY_CLOSURES->{ $caller_pkg }->{ $entry };
+    delete $NAMESPACE->{ easy_closures }->{ $caller_pkg }->{ $entry };
 }
 
 ##################################################
@@ -563,22 +562,22 @@ sub easy_closure_category_cleanup {
 ##################################################
     my($caller_pkg) = @_;
 
-    if(! exists $EASY_CLOSURES->{ $caller_pkg } ) {
+    if(! exists $NAMESPACE->{ easy_closures }->{ $caller_pkg } ) {
         return 1;
     }
 
-    for my $entry ( keys %{ $EASY_CLOSURES->{ $caller_pkg } } ) {
+    for my $entry ( sort keys %{ $NAMESPACE->{ easy_closures }->{ $caller_pkg } } ) {
         easy_closure_cleanup( $caller_pkg, $entry );
     }
 
-    delete $EASY_CLOSURES->{ $caller_pkg };
+    delete $NAMESPACE->{ easy_closures }->{ $caller_pkg };
 }
 
 ###########################################
 sub easy_closure_global_cleanup {
 ###########################################
 
-    for my $caller_pkg ( keys %$EASY_CLOSURES ) {
+    for my $caller_pkg ( sort keys %{ $NAMESPACE->{ easy_closures } } ) {
         easy_closure_category_cleanup( $caller_pkg );
     }
 }
@@ -588,9 +587,9 @@ sub easy_closure_logger_remove {
 ###########################################
     my($class, $logger) = @_;
 
-    PKG: for my $caller_pkg ( keys %$EASY_CLOSURES ) {
-        for my $entry ( keys %{ $EASY_CLOSURES->{ $caller_pkg } } ) {
-            if( $logger == $EASY_CLOSURES->{ $caller_pkg }->{ $entry } ) {
+    PKG: for my $caller_pkg ( keys %{ $NAMESPACE->{ easy_closures } } ) {
+        for my $entry ( keys %{ $NAMESPACE->{ easy_closures }->{ $caller_pkg } } ) {
+            if( $logger == $NAMESPACE->{ easy_closures }->{ $caller_pkg }->{ $entry } ) {
                 easy_closure_category_cleanup( $caller_pkg );
                 next PKG;
             }
@@ -608,7 +607,7 @@ sub remove_logger {
     Log::Log4perl->easy_closure_logger_remove( $logger );
 
     # Remove the logger from the system
-    delete $Log::Log4perl::Logger::LOGGERS_BY_NAME->{ $logger->{category} };
+    delete $NAMESPACE->{ loggers_by_name }->{ $logger->{category} };
 }
 
 1;

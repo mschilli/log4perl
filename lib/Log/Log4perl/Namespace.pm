@@ -7,6 +7,7 @@ use strict;
 use warnings;
 
 use Log::Log4perl;
+use Log::Log4perl::Logger;
 
 ###########################################
 sub new {
@@ -17,6 +18,7 @@ sub new {
 
     my $self = {
         root_logger        => undef,
+        easy_closures      => {},
         loggers_by_name    => {},
         appenders_by_name  => {},
         initialized        => 0,
@@ -67,52 +69,34 @@ sub warning_render {
     return $self->{ warn_appender }->string();
 }
 
-TODO
-
 ##################################################
-sub cleanup {
+sub init_warn {
 ##################################################
-    # warn "Logger cleanup";
+    my( $self ) = @_;
 
-    # Nuke all convenience loggers to avoid them causing cleanup to 
-    # be delayed until global destruction. Problem is that something like
-    #     *{"DEBUG"} = sub { $logger->debug };
-    # ties up a reference to $logger until global destruction, so we 
-    # need to clean up all :easy shortcuts, hence freeing the last
-    # logger references, to then rely on the garbage collector for cleaning
-    # up the loggers.
-    Log::Log4perl->easy_closure_global_cleanup();
+    return if $self->{ initialized };
+    return if $self->{ non_init_warned };
 
-    # Delete all loggers
-    $LOGGERS_BY_NAME = {};
+    CORE::warn "Log4perl: Seems like no initialization happened. " .
+               "Forgot to call init()?\n";
 
-    # Delete the root logger
-    undef $ROOT_LOGGER;
-
-    # Delete all appenders
-    %APPENDER_BY_NAME   = ();
-
-    undef $INITIALIZED;
-}
-
-##################################################
-sub DESTROY {
-##################################################
-    CORE::warn "Destroying logger $_[0] ($_[0]->{category})" 
-            if $Log::Log4perl::CHATTY_DESTROY_METHODS;
+    # Only tell this once;
+    $self->{ non_init_warned } = 1;
 }
 
 ##################################################
 sub reset {
 ##################################################
-    $ROOT_LOGGER        = __PACKAGE__->_new("", $OFF);
-#    $LOGGERS_BY_NAME    = {};  #leave this alone, it's used by 
-                                #reset_all_output_methods when 
-                                #the config changes
+    my( $self ) = @_;
 
-    %APPENDER_BY_NAME   = ();
-    undef $INITIALIZED;
-    undef $NON_INIT_WARNED;
+    $self->{ root_logger ) = Log::Log4perl::Logger->_new("", $OFF);
+
+    $self->{ loggers_by_name }   = {};
+    $self->{ appenders_by_name } = {};
+
+    $self->{ inititalized } = {};
+    $self->{ non_init_warned } = {};
+
     Log::Log4perl::Appender::reset();
 
     #clear out all the existing appenders
