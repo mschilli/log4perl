@@ -6,9 +6,6 @@ use 5.006;
 use strict;
 use warnings;
 
-use Log::Log4perl;
-use Log::Log4perl::Level;
-use Log::Log4perl::Layout;
 use Log::Log4perl::Appender;
 use Log::Log4perl::Appender::String;
 use Log::Log4perl::Filter;
@@ -27,26 +24,41 @@ our $INITIALIZED = 0;
 our $NON_INIT_WARNED;
 our $DIE_DEBUG = 0;
 our $DIE_DEBUG_BUFFER = "";
-    # Define the default appender that's used for formatting
-    # warn/die/croak etc. messages.
-our $STRING_APP_NAME = "_l4p_warn";
-our $STRING_APP      = Log::Log4perl::Appender->new(
-                          "Log::Log4perl::Appender::String",
-                          name => $STRING_APP_NAME);
-$STRING_APP->layout(Log::Log4perl::Layout::PatternLayout->new("%m"));
-our $STRING_APP_CODEREF = generate_coderef([[$STRING_APP_NAME, $STRING_APP]]);
+our $STRING_APP_NAME;
+our $STRING_APP;
+our $STRING_APP_CODEREF;
 
-__PACKAGE__->reset();
+sub string_app_init {
+    if( !defined $STRING_APP_NAME ) {
+        # Define the default appender that's used for formatting
+        # warn/die/croak etc. messages.
+        $STRING_APP_NAME = "_l4p_warn";
+        $STRING_APP      = Log::Log4perl::Appender->new(
+                                  "Log::Log4perl::Appender::String",
+                                  name => $STRING_APP_NAME);
+        $STRING_APP->layout(Log::Log4perl::Layout::PatternLayout->new("%m"));
+        $STRING_APP_CODEREF = 
+            generate_coderef([[$STRING_APP_NAME, $STRING_APP]]);
+    }
+    __PACKAGE__->reset();
+}
+
+sub bogus {
+    return $Log::Log4perl::Level::ALL, $Log::Log4perl::Level::OFF, 
+        $Log::Log4perl::CHATTY_DESTROY_METHODS;
+}
 
 ###########################################
 sub warning_render {
 ###########################################
     my($logger, @message) = @_;
 
+    string_app_init();
+
     $STRING_APP->string("");
     $STRING_APP_CODEREF->($logger, 
                           @message, 
-                          Log::Log4perl::Level::to_level($ALL));
+                          Log::Log4perl::Level::to_level($Log::Log4perl::Level::ALL));
     return $STRING_APP->string();
 }
 
@@ -86,7 +98,7 @@ sub DESTROY {
 ##################################################
 sub reset {
 ##################################################
-    $ROOT_LOGGER        = __PACKAGE__->_new("", $OFF);
+    $ROOT_LOGGER        = __PACKAGE__->_new("", $Log::Log4perl::Level::OFF);
 #    $LOGGERS_BY_NAME    = {};  #leave this alone, it's used by 
                                 #reset_all_output_methods when 
                                 #the config changes

@@ -9,10 +9,6 @@ use strict;
 use warnings;
 
 use Log::Log4perl::Util;
-use Log::Log4perl::Logger;
-use Log::Log4perl::Level;
-use Log::Log4perl::Config;
-use Log::Log4perl::Appender;
 use Log::Log4perl::Namespace;
 
 our $NAMESPACE = Log::Log4perl::Namespace->new("_l4p_default");

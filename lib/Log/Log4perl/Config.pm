@@ -5,8 +5,6 @@ use 5.006;
 use strict;
 use warnings;
 
-use Log::Log4perl::Logger;
-use Log::Log4perl::Level;
 use Log::Log4perl::Config::PropertyConfigurator;
 use Log::Log4perl::JavaMap;
 use Log::Log4perl::Filter;

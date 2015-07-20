@@ -6,8 +6,13 @@ use 5.006;
 use strict;
 use warnings;
 
-use Log::Log4perl;
 use Log::Log4perl::Logger;
+#use Log::Log4perl::Level;
+
+#$Log::Log4perl::Level::ALL;
+#$Log::Log4perl::Level::OFF;
+
+use constant _INTERNAL_DEBUG => 1;
 
 ###########################################
 sub new {
@@ -30,12 +35,6 @@ sub new {
 }
 
 ###########################################
-sub reset {
-###########################################
-    my( $self ) = @_;
-}
-
-###########################################
 sub warn_appender_setup {
 ###########################################
     my( $self ) = @_;
@@ -54,7 +53,7 @@ sub warn_appender_setup {
         Log::Log4perl::Logger(
             generate_coderef(
               [ [ $self->{ warn_appender_name }, 
-                  $self->{ warn_appender }] ] );
+                  $self->{ warn_appender }] ] ) );
 }
 
 ###########################################
@@ -65,7 +64,7 @@ sub warning_render {
     $self->{ warn_appender }->string("");
     $self->{ warn_appender_coderef }->($logger, 
                           @message, 
-                          Log::Log4perl::Level::to_level($ALL));
+                          Log::Log4perl::Level::to_level($Log::Log4perl::Level::ALL));
     return $self->{ warn_appender }->string();
 }
 
@@ -89,7 +88,8 @@ sub reset {
 ##################################################
     my( $self ) = @_;
 
-    $self->{ root_logger ) = Log::Log4perl::Logger->_new("", $OFF);
+    $self->{ root_logger } = 
+        Log::Log4perl::Logger->_new("", $Log::Log4perl::Level::OFF);
 
     $self->{ loggers_by_name }   = {};
     $self->{ appenders_by_name } = {};
@@ -100,14 +100,14 @@ sub reset {
     Log::Log4perl::Appender::reset();
 
     #clear out all the existing appenders
-    foreach my $logger (values %$LOGGERS_BY_NAME){
+    foreach my $logger (values %{ $self->{ loggers_by_name } }){
         $logger->{appender_names} = [];
 
 	#this next bit deals with an init_and_watch case where a category
 	#is deleted from the config file, we need to zero out the existing
 	#loggers so ones not in the config file not continue with their old
 	#behavior --kg
-        next if $logger eq $ROOT_LOGGER;
+        next if $logger eq $self->{ root_logger };
         $logger->{level} = undef;
         $logger->level();  #set it from the hierarchy
     }
@@ -119,19 +119,22 @@ sub reset {
 ##################################################
 sub reset_all_output_methods {
 ##################################################
+    my( $self ) = @_;
+
     print "reset_all_output_methods: \n" if _INTERNAL_DEBUG;
 
-    foreach my $loggername ( keys %$LOGGERS_BY_NAME){
-        $LOGGERS_BY_NAME->{$loggername}->set_output_methods;
+    foreach my $loggername ( keys %{ $self->{ loggers_by_name } } ){
+        $self->{ loggers_by_name }->{$loggername}->set_output_methods;
     }
-    $ROOT_LOGGER->set_output_methods;
+    $self->{ root_logger }->set_output_methods;
 }
 
 ##################################################
 sub get_root_logger {
 ##################################################
-    my($class) = @_;
-    return $ROOT_LOGGER;    
+    my( $self ) = @_;
+
+    return $self->{ root_logger };    
 }
 
 1;

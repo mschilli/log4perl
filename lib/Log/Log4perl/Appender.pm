@@ -8,6 +8,8 @@ use warnings;
 
 use Log::Log4perl::Config;
 use Log::Log4perl::Level;
+use Log::Log4perl::Layout::SimpleLayout;
+use Log::Log4perl::Layout::PatternLayout;
 use Carp;
 
 use constant _INTERNAL_DEBUG => 0;
