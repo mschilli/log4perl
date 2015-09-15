@@ -1042,7 +1042,10 @@ accomplished by simply omitting the name:
     log4perl.logger = FATAL, Database, Mailer 
 
 This sets the root appender's level to C<FATAL> and also attaches the 
-later-to-be-defined appenders C<Database> and C<Mailer> to it.
+later-to-be-defined appenders C<Database> and C<Mailer> to it. Alternatively,
+the root logger can be addressed as C<rootLogger>:
+
+    log4perl.rootLogger = FATAL, Database, Mailer
 
 The additivity flag of a logger is set or cleared via the 
 C<additivity> keyword:
