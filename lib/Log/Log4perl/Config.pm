@@ -505,12 +505,10 @@ sub add_layout_by_name {
             $layout_class = "Log::Log4perl::Layout::$layout_class";
         } else {
             die "ERROR: trying to set layout for $appender_name to " .
-                "'$layout_class' failed";
+                "'$layout_class' failed ($!)";
         }
     }
 
-    eval "require $layout_class" or 
-        die "Require to $layout_class failed ($!)";
 
     $appender->layout($layout_class->new(
         $data->{appender}->{$appender_name}->{layout},
