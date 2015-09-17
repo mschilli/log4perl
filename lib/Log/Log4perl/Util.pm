@@ -40,12 +40,11 @@ sub module_available {  # Check if a module is available
     my($full_name) = @_;
 
     # Proper way to check if a module is available or not
-    my $module =  *main::;
-    my @sub_name =  split '::', $full_name;
-    while( each @sub_name ) {
-        $module =  $$module{ $sub_name[$_].'::' };
+    {
+        my $pkg =  "${full_name}::";
+        no strict qw( refs );
+        return 1   if defined *{ "${full_name}::" };
     }
-    return 1   if   $module;
 
       # Weird cases like "strict;" (including the semicolon) would 
       # succeed with the eval below, so check those up front. 
