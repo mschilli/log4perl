@@ -53,7 +53,9 @@ sub render {
     }
 
     if( defined $self->{ _chainLayout } ) {
-        $message =  $self->{ _chainLayout }->render( $message );
+        $message =  $self->{ _chainLayout }->render(
+            $message, $category, $priority, $caller_level+1
+        );
     }
 
     return $message;
