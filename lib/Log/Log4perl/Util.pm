@@ -52,11 +52,12 @@ sub module_available {  # Check if a module is available
       # module is available or not!
     return 0 if $full_name =~ /[^\w:]/;
 
-    local $SIG{__DIE__} = sub {};
-
     # We can try to load it, if it is not avaiable yet
     $full_name =~ s#::#/#g;
-    eval { require "$full_name.pm" };
+    eval {
+        local $SIG{__DIE__} =  sub {};
+        require "$full_name.pm";
+    };
 
     if($@) {
         return 0;
