@@ -84,7 +84,7 @@ Log::Log4perl->init( \ <<'EOT' );
     log4perl.appender.A1=Log::Log4perl::Appender::TestArrayBuffer
     log4perl.appender.A1.layout=NoopLayout
     log4perl.appender.A1.warp_message = sub { $#_ = 2 if @_ > 3; \
-                                           return @_; }
+                                           return [ @_ ]; }
 EOT
 
 $app = Log::Log4perl::Appender::TestArrayBuffer->by_name("A1");
@@ -102,7 +102,7 @@ my $COUNTER = 0;
 sub warp_my_message {
     my @chunks = @_;
     unshift @chunks, ++$COUNTER;
-    return @chunks;
+    return [ @chunks ];
 }
 
 Log::Log4perl->init( \ <<'EOT' );

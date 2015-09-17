@@ -185,12 +185,12 @@ sub log {
         } elsif (ref($self->{warp_message}) eq "CODE") {
             #defined and a subref
             $p->{message} = 
-                [$self->{warp_message}->(@{$p->{message}})];
+                $self->{warp_message}->(@{$p->{message}});
         } else {
             #defined and a function name?
             no strict qw(refs);
             $p->{message} = 
-                [$self->{warp_message}->(@{$p->{message}})];
+                $self->{warp_message}->(@{$p->{message}});
         }
 
         $p->{message} = $self->{layout}->render($p->{message}, 
@@ -517,13 +517,13 @@ appender's C<warp_message> property:
     log4perl.appender.SomeApp.layout=NoopLayout
     log4perl.appender.SomeApp.warp_message = sub { \
                                            $#_ = 2 if @_ > 3; \
-                                           return @_; }
+                                           return [ @_ ]; }
 
 The inspection subroutine defined by the C<warp_message> 
 property will receive the list of message chunks, like they were
-passed to the logger and is expected to return a corrected list.
+passed to the logger and is expected to return a corrected array.
 The example above simply limits the argument list to a maximum of
-three by cutting off excess elements and returning the shortened list.
+three by cutting off excess elements and returning the shortened array.
 
 Also, the warp function can be specified by name like in
 
@@ -539,7 +539,7 @@ defined like this:
     sub filter_my_message {
         my @chunks = @_;
         unshift @chunks, ++$COUNTER;
-        return @chunks;
+        return [ @chunks ];
     }
 
 The subroutine above will add an ever increasing counter
