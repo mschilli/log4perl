@@ -502,10 +502,10 @@ conversion specifiers.
 
 B<Please note that the standard appenders in the Log::Dispatch hierarchy
 will choke on a bunch of messages passed to them as an array reference. 
-You can't use C<warp_message = 0> (or the function name syntax
-defined below) on them.
-Only special appenders like Log::Log4perl::Appender::DBI can deal with
-this.>
+If you use C<warp_message = 0> (or the function name syntax
+defined below) on them set layout option to L<Log::Log4perl::Layout::FallbackLayout>>
+
+    log4perl.appender.SomeApp.layout=FallbackLayout
 
 If (and now we're getting fancy)
 an appender expects message chunks, but we would 
