@@ -495,6 +495,11 @@ sub add_layout_by_name {
 ###########################################
     my($data, $appender, $appender_name) = @_;
 
+    #TODO: Replace code below by this and fix tests to match Error messages
+    #    return $appender->layout( create_layout(
+    #            $data->{appender}->{$appender_name}->{layout},
+    #        ));
+
     my $layout_class = $data->{appender}->{$appender_name}->{layout}->{value};
 
     die "Layout not specified for appender $appender_name" unless $layout_class;
