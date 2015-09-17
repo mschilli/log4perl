@@ -251,9 +251,8 @@ sub _init {
             $filter = Log::Log4perl::Filter->new($filter_name, $type);
         } else {
                 # Filter class
-                die "Filter class '$type' doesn't exist" unless
+                die "Filter class '$type' doesn't exist ($!)" unless
                      Log::Log4perl::Util::module_available($type);
-                eval "require $type" or die "Require of $type failed ($!)";
 
                 # Invoke with all defined parameter
                 # key/values (except the key 'value' which is the entry 
