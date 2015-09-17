@@ -55,7 +55,8 @@ sub module_available {  # Check if a module is available
     local $SIG{__DIE__} = sub {};
 
     # We can try to load it, if it is not avaiable yet
-    eval "require $full_name";
+    $full_name =~ s#::#/#g;
+    eval { require "$full_name.pm" };
 
     if($@) {
         return 0;
