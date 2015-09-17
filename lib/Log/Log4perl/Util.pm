@@ -42,7 +42,9 @@ sub module_available {  # Check if a module is available
     # Proper way to check if a module is available or not
     my $module =  *main::;
     my @sub_name =  split '::', $full_name;
-    while( each @sub_name  and  $module =  $$module{ $sub_name[$_].'::' } ) {}
+    while( each @sub_name ) {
+        $module =  $$module{ $sub_name[$_].'::' };
+    }
     return 1   if   $module;
 
       # Weird cases like "strict;" (including the semicolon) would 
