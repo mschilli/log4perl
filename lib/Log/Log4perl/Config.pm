@@ -523,6 +523,33 @@ sub add_layout_by_name {
 }
 
 ###########################################
+sub create_layout {
+###########################################
+    my( $options ) =  @_;
+
+    my $layout_class =  $options->{value};
+    die "Layout not specified"   unless $layout_class;
+
+    $layout_class =~ s/org.apache.log4j./Log::Log4perl::Layout::/;
+
+        # Check if we have this layout class
+    if(!Log::Log4perl::Util::module_available($layout_class)) {
+        if(Log::Log4perl::Util::module_available(
+           "Log::Log4perl::Layout::$layout_class")) {
+            # Someone used the layout shortcut, use the fully qualified
+            # module name instead.
+            $layout_class = "Log::Log4perl::Layout::$layout_class";
+        } else {
+            die "Require of $layout_class failed ($!)";
+        }
+    }
+
+
+    return $layout_class->new( $options );
+}
+
+
+###########################################
 sub get_appender_by_name {
 ###########################################
     my($data, $name, $appenders_created) = @_;
