@@ -490,7 +490,7 @@ EOT
   
   my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size, $atime,$mtime,$ctime,$blksize,$blocks) = stat("${testpath}_1");
   
-  is($mode & 07777,0750); #Win32 777
+  is($mode & 0777,0750); #Win32 777
   
    ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size, $atime,$mtime,$ctime,$blksize,$blocks) = stat($testmkpathfile);
   
