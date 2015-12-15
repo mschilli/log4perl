@@ -8,6 +8,8 @@ use 5.006;
 use strict;
 use warnings;
 
+use Carp;
+
 use Log::Log4perl::Util;
 use Log::Log4perl::Logger;
 use Log::Log4perl::Level;
@@ -298,6 +300,11 @@ sub easy_init { # Initialize the root logger with a screen appender
             } elsif(ref($arg) eq "HASH") {
                 my %logger = (%default, %$arg);
                 push @loggers, \%logger;
+            } else {
+                # I suggest this becomes a croak() after a
+                # reasonable deprecation cycle.
+                carp "All arguments to easy_init should be either "
+                   . "an integer log level or a hash reference.";
             }
         }
     }
