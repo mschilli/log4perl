@@ -5,7 +5,7 @@ use strict;
 use File::Temp qw(tempfile);
 use File::Spec;
 
-require Log::Log4perl::Resurrector;
+use Log::Log4perl::Resurrector;
 
 ###########################################
 sub enable {

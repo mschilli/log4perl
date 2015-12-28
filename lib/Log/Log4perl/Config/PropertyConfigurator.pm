@@ -1,5 +1,6 @@
 package Log::Log4perl::Config::PropertyConfigurator;
-use Log::Log4perl::Config::BaseConfigurator;
+require Log::Log4perl::Config::BaseConfigurator;
+use Log::Log4perl::Global;
 
 use warnings;
 use strict;
@@ -94,7 +95,7 @@ sub parse {
                 push (@{$ptr->{value}}, $val);
             }else{
                 if(defined $ptr->{value}) {
-                    if(! $Log::Log4perl::Logger::NO_STRICT) {
+                    if(! $Log::Log4perl::Global::NO_STRICT) {
                         die "$key_org redefined";
                     }
                 }

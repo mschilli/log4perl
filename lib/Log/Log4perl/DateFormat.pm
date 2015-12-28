@@ -6,8 +6,6 @@ use strict;
 
 use Carp qw( croak );
 
-our $GMTIME = 0;
-
 my @MONTH_NAMES = qw(
 January February March April May June July
 August September October November December);
@@ -282,7 +280,7 @@ sub format {
 
     my @time; 
 
-    if($GMTIME) {
+    if($Log::Log4perl::Global::GMTIME) {
         @time = gmtime($secs);
     } else {
         @time = localtime($secs);

@@ -6,8 +6,10 @@ use 5.006;
 use strict;
 use warnings;
 
-use Log::Log4perl::Config;
+require Log::Log4perl::Config;
 use Log::Log4perl::Level;
+use Log::Log4perl::Global;
+
 use Carp;
 
 use constant _INTERNAL_DEBUG => 0;
@@ -173,7 +175,7 @@ sub log {
                     }
                 }
                 $p->{message} = 
-                    join($Log::Log4perl::JOIN_MSG_ARRAY_CHAR, 
+                    join($Log::Log4perl::Global::JOIN_MSG_ARRAY_CHAR, 
                          @{$p->{message}} 
                          );
             }

@@ -7,7 +7,8 @@ use strict;
 use warnings;
 
 use Log::Log4perl::Level;
-use Log::Log4perl::Config;
+require Log::Log4perl::Config;
+use Log::Log4perl::Global;
 
 use constant _INTERNAL_DEBUG => 0;
 
@@ -85,7 +86,7 @@ sub ok {
     # in $p{message}.
         # Split because of CVS
     local($_) = join $
-                     Log::Log4perl::JOIN_MSG_ARRAY_CHAR, @{$p{message}};
+                     Log::Log4perl::Global::JOIN_MSG_ARRAY_CHAR, @{$p{message}};
     print "\$_ is '$_'\n" if _INTERNAL_DEBUG;
 
     my $decision = $self->{ok}->(%p);

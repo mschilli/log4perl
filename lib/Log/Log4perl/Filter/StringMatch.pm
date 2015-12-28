@@ -9,6 +9,7 @@ use warnings;
 
 use Log::Log4perl::Config;
 use Log::Log4perl::Util qw( params_check );
+use Log::Log4perl::Global;
 
 use constant _INTERNAL_DEBUG => 0;
 
@@ -47,7 +48,7 @@ sub ok {
      my ($self, %p) = @_;
 
      local($_) = join $
-                     Log::Log4perl::JOIN_MSG_ARRAY_CHAR, @{$p{message}};
+                     Log::Log4perl::Global::JOIN_MSG_ARRAY_CHAR, @{$p{message}};
 
      if($_ =~ $self->{StringToMatch}) {
          print "Strings match\n" if _INTERNAL_DEBUG;

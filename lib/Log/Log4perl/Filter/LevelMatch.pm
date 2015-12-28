@@ -7,8 +7,8 @@ use 5.006;
 use strict;
 use warnings;
 
-use Log::Log4perl::Level;
-use Log::Log4perl::Config;
+require Log::Log4perl::Level;
+require Log::Log4perl::Config;
 use Log::Log4perl::Util qw( params_check );
 
 use constant _INTERNAL_DEBUG => 0;

@@ -9,11 +9,11 @@ use warnings;
 use constant _INTERNAL_DEBUG => 0;
 
 use Carp;
-use Log::Log4perl::Util;
-use Log::Log4perl::Level;
-use Log::Log4perl::DateFormat;
-use Log::Log4perl::NDC;
-use Log::Log4perl::MDC;
+require Log::Log4perl::Util;
+require Log::Log4perl::Level;
+require Log::Log4perl::DateFormat;
+require Log::Log4perl::NDC;
+require Log::Log4perl::MDC;
 use Log::Log4perl::Util::TimeTracker;
 use File::Spec;
 use File::Basename;
