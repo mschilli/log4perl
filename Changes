@@ -10,6 +10,9 @@
    *    (ms) Added suggestion by Dylan Doxey to test for both MSWin32 and
              cygwin to detect windows-like systems for which tests need
              to be skipped.
+   *    (ms) [rt.cpan.org #110915] Fixed "Redundant argument in sprintf" 
+             warning caused by DateFormat.pm with %d{Z} placeholders, 
+             reported by Alexander Hartmaier.
 
 1.46 (2014/10/31)
    *    (ms) Fixed Gianni's utc time test for machines set to utc time.

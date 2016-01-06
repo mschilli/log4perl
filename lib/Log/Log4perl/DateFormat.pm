@@ -257,7 +257,7 @@ sub rep {
 ###############################
     } elsif($first eq "Z") {
         push @{$self->{stack}}, [10, sub { $offset }];
-        return "$offset";
+        return "%s";
 
 #############################
 #Something that's not defined
