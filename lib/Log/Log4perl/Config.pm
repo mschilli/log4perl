@@ -229,7 +229,7 @@ sub _init {
     }
 
         # Now go over all filters found by name
-    for my $filter_name (keys %filter_names) {
+    for my $filter_name (sort keys %filter_names) {
 
         print "Checking filter $filter_name\n" if _INTERNAL_DEBUG;
 
@@ -266,7 +266,7 @@ sub _init {
             $filter = $type->new(name => $filter_name,
                 map { $_ => $data->{filter}->{$filter_name}->{$_}->{value} } 
                 grep { $_ ne "value" } 
-                keys %{$data->{filter}->{$filter_name}});
+                sort keys %{$data->{filter}->{$filter_name}});
         }
             # Register filter with the global filter registry
         $filter->register();
@@ -274,7 +274,7 @@ sub _init {
 
         # Initialize boolean filters (they need the other filters to be
         # initialized to be able to compile their logic)
-    for my $name (keys %boolean_filters) {
+    for my $name (sort keys %boolean_filters) {
         my $logic = $data->{filter}->{$name}->{logic}->{value};
         die "No logic defined for boolean filter $name" unless defined $logic;
         my $filter = Log::Log4perl::Filter::Boolean->new(
@@ -375,7 +375,7 @@ sub create_appender_instance {
             # It's Perl
             my @params = grep { $_ ne "layout" and
                                 $_ ne "value"
-                              } keys %{$data->{appender}->{$appname}};
+                              } sort keys %{$data->{appender}->{$appname}};
     
             my %param = ();
             foreach my $pname (@params){
@@ -397,7 +397,7 @@ sub create_appender_instance {
                                                         {$pname}
                                                         {$_}
                                                         {value}} 
-                                     keys %{$data->{appender}
+                                     sort keys %{$data->{appender}
                                                    {$appname}
                                                    {$pname}}
                                      };
@@ -590,7 +590,7 @@ sub config_read {
                                     # of name/value pairs
         print "Reading config from hash\n" if _INTERNAL_DEBUG;
         @text = ();
-        for my $key ( keys %$config ) {
+        for my $key ( sort keys %$config ) {
             if( ref( $config->{$key} ) eq "CODE" ) {
                 $config->{$key} = $config->{$key}->();
             }
@@ -726,7 +726,7 @@ sub leaf_paths {
         my($node, $path) = @$item;
 
         if(ref($node) eq "HASH") { 
-            for(keys %$node) {
+            for(sort keys %$node) {
                 push @stack, [$node->{$_}, [@$path, $_]];
             }
         } else {
@@ -808,7 +808,7 @@ sub compile_in_safe_cpt {
     $safe->permit_only( @{ $allowed_ops } );
  
     # share things with the compartment
-    for( keys %{ Log::Log4perl::Config->vars_shared_with_safe_compartment() } ) {
+    for( sort keys %{ Log::Log4perl::Config->vars_shared_with_safe_compartment() } ) {
         my $toshare = Log::Log4perl::Config->vars_shared_with_safe_compartment($_);
         $safe->share_from( $_, $toshare )
             or die "Can't share @{ $toshare } with Safe compartment";
