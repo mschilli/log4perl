@@ -51,7 +51,7 @@ sub compile_logic {
     while($logic =~ /([\w_-]+)/g) {
             # Get the corresponding filter object
         my $filter = Log::Log4perl::Filter::by_name($1);
-        die "Filter $filter required by Boolean filter, but not defined" 
+        die "Filter $1 required by Boolean filter, but not defined" 
             unless $filter;
 
         $self->{params}->{$1} = $filter;
