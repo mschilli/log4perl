@@ -13,6 +13,10 @@
    *    (ms) [rt.cpan.org #110915] Fixed "Redundant argument in sprintf" 
              warning caused by DateFormat.pm with %d{Z} placeholders, 
              reported by Alexander Hartmaier.
+   *    (ms) [rt.cpan.org #110512] Felix Ostmann fixed a broken error
+             message raised when a boolean filter can't be found.
+   *    (ms) All hash traversals in Config.pm now done via "sort keys"
+             to make sure we can reliably reproduce potential problems.
 
 1.46 (2014/10/31)
    *    (ms) Fixed Gianni's utc time test for machines set to utc time.
