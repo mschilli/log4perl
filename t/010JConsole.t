@@ -38,7 +38,6 @@ foreach my $f (@outfiles){
     unlink $f if (-e $f);
 }
 
-
 my $conf = <<CONF;
 log4j.category.cat1      = INFO, myAppender
 
@@ -60,17 +59,13 @@ close TOUCH;
 open(STDOUT, ">$test_logfile") || die "Can't redirect stdout $test_logfile $!";
 select(STDOUT); $| = 1;     # make unbuffered
 
-
-
 $logger->debug("debugging message 1 ");
 $logger->info("info message 1 ");      
 $logger->warn("warning message 1 ");   
 $logger->fatal("fatal message 1 ");   
 
-
 close(STDOUT);
 open(STDOUT, ">&OLDOUT");
-
 
 my ($result, $expected);
 
@@ -85,9 +80,12 @@ EOL
  $result = <F>;
  close F;
 }
-is ($result, $expected);
+my $rc = is ($result, $expected);
+
+if( !$rc ) {
+    warn "Failed with Log::Dispatch $Log::Dispatch::VERSION";
+}
 
 foreach my $f (@outfiles){
     unlink $f if (-e $f);
 }
-
