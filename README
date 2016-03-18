@@ -1,12 +1,13 @@
 ######################################################################
-    Log::Log4perl 1.46
+    Log::Log4perl 1.47
 ######################################################################
 
 NAME
     Log::Log4perl - Log4j implementation for Perl
 
 SYNOPSIS
-        # Easy mode if you like it simple ...
+                    # Easy mode if you like it simple ...
+
         use Log::Log4perl qw(:easy);
         Log::Log4perl->easy_init($ERROR);
 
@@ -579,7 +580,7 @@ How to use it
 
         In this way, %d{HH:mm} displays only hours and minutes of the
         current date, while %d{yy, EEEE} displays a two-digit year, followed
-        by a spelled-out (like "Wednesday").
+        by a spelled-out day (like "Wednesday").
 
         Similar options are available for shrinking the displayed category
         or limit file/path components, %F{1} only displays the source file
@@ -1009,8 +1010,8 @@ Cool Tricks
      $LWP_USER_AGENT->env_proxy;
 
     Note that env_proxy reads proxy settings from environment variables,
-    which is what I need to do to get thru our firewall. If you want to use
-    a different LWP::UserAgent, you can set it with
+    which is what Log4perl needs to do to get through our firewall. If you
+    want to use a different LWP::UserAgent, you can set it with
 
         Log::Log4perl::Config::set_LWP_UserAgent($my_agent);
 
@@ -1318,7 +1319,7 @@ Cool Tricks
     They're included to allow you a choice in readability. Some folks will
     prefer more/less_logging, as they're fairly clear in what they do, and
     allow the programmer not to worry too much about what a Level is and
-    whether a higher Level means more or less logging. However, other folks
+    whether a higher level means more or less logging. However, other folks
     who do understand and have lots of code that deals with levels will
     probably prefer the inc_level() and dec_level() methods as they want to
     work with Levels and not worry about whether that means more or less
@@ -1353,7 +1354,7 @@ Cool Tricks
 
         Log::Log4perl::Logger::create_custom_level("NOTIFY", "WARN");
 
-    And that's it! create_custom_level() creates the following functions /
+    And that's it! "create_custom_level()" creates the following functions /
     variables for level FOO:
 
         $FOO_INT        # integer to use in L4p::Level::to_level()
