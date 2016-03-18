@@ -2,7 +2,7 @@
  Revision history for Log::Log4perl
 ##################################################
 
-1.47 (2016-03-17)
+1.47 (2016/03/17)
    *    (ms) [rt.cpan.org #102647] Slaven Rezic fixed a test
              case for file permissions
    *    (ms) Fixed synopsis code in Log::Log4perl::Appender::DBI, 
