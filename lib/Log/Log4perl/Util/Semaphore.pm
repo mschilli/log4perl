@@ -57,15 +57,17 @@ sub init {
                           1, 
                           &IPC_EXCL|&IPC_CREAT|($self->{mode}||0777),
                   );
-   
+
    if(! defined $self->{id} and
       $! == EEXIST) {
        print "Semaphore '$self->{key}' already exists\n" if INTERNAL_DEBUG;
-       $self->{id} = semget( $self->{ikey}, 1, 0 )
+       defined( $self->{id} = semget( $self->{ikey}, 1, 0 ) )
            or die "semget($self->{ikey}) failed: $!";
    } elsif($!) {
        die "Cannot create semaphore $self->{key}/$self->{ikey} ($!)";
    }
+
+   print "Semaphore has id $self->{id}\n" if INTERNAL_DEBUG;
 }
 
 ###########################################
@@ -154,7 +156,7 @@ sub remove {
 ###########################################
     my($self) = @_;
 
-    print "Removing semaphore '$self->{key}'\n" if INTERNAL_DEBUG;
+    print "Removing semaphore '$self->{key}/$self->{id}'\n" if INTERNAL_DEBUG;
 
     semctl ($self->{id}, 0, &IPC_RMID, 0) or 
         die "Removing semaphore $self->{key} failed: $!";

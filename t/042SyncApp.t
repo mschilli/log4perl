@@ -43,7 +43,6 @@ $EG_DIR = "../eg" unless -d $EG_DIR;
 my $logfile = "$EG_DIR/fork.log";
 
 our $lock;
-our $locker;
 our $locker_key  = "abc";
 
 unlink $logfile;
@@ -51,11 +50,11 @@ unlink $logfile;
 #goto SECOND;
 
 #print "tie\n";
-$locker = Log::Log4perl::Util::Semaphore->new(
-    key => $locker_key,
+my $locker1 = Log::Log4perl::Util::Semaphore->new(
+    key     => $locker_key,
 );
 
-print $locker->status_as_string, "\n" if INTERNAL_DEBUG;
+print $locker1->status_as_string, "\n" if INTERNAL_DEBUG;
 
 my $conf = qq(
 log4perl.category.Bar.Twix          = WARN, Syncer
@@ -69,9 +68,10 @@ log4perl.appender.Logfile.layout.ConversionPattern = %F{1}%L> %m%n
 log4perl.appender.Syncer           = Log::Log4perl::Appender::Synchronized
 log4perl.appender.Syncer.appender  = Logfile
 log4perl.appender.Syncer.key       = blah
+#log4perl.appender.Syncer.destroy   = 1
 );
 
-$locker->semlock();
+$locker1->semlock();
 
 Log::Log4perl::init(\$conf);
 
@@ -82,7 +82,7 @@ die "fork failed" unless defined $pid;
 my $logger = get_logger("Bar::Twix");
 if($pid) {
    #parent
-   $locker->semlock();
+   $locker1->semlock();
    #print "Waiting for child\n";
    for(1..10) {
        #print "Parent: Writing\n";
@@ -90,7 +90,7 @@ if($pid) {
    }
 } else { 
    #child
-   $locker->semunlock();
+   $locker1->semunlock();
    for(1..10) {
        #print "Child: Writing\n";
        $logger->error("Y" x 4097);
@@ -131,8 +131,8 @@ SECOND:
 unlink $logfile;
 
 #print "tie\n";
-$locker = Log::Log4perl::Util::Semaphore->new(
-    key => $locker_key,
+my $locker2 = Log::Log4perl::Util::Semaphore->new(
+    key     => $locker_key,
 );
 
 $conf = q{
@@ -144,13 +144,13 @@ $conf = q{
 };
 
 print "1 Semunlock\n" if $INTERNAL_DEBUG;
-print $locker->status_as_string, "\n" if INTERNAL_DEBUG;
-$locker->semunlock();
+print $locker2->status_as_string, "\n" if INTERNAL_DEBUG;
+$locker2->semunlock();
 print "1 Done semunlock\n" if $INTERNAL_DEBUG;
 
 print "2 Semlock\n" if $INTERNAL_DEBUG;
-print $locker->status_as_string, "\n" if INTERNAL_DEBUG;
-$locker->semlock();
+print $locker2->status_as_string, "\n" if INTERNAL_DEBUG;
+$locker2->semlock();
 print "2 Done semlock\n" if $INTERNAL_DEBUG;
 
 #print "forking\n";
@@ -162,7 +162,7 @@ if($pid) {
    #parent
    #print "Waiting for child\n";
    print "Before semlock\n" if $INTERNAL_DEBUG;
-   $locker->semlock();
+   $locker2->semlock();
    print "Done semlock\n" if $INTERNAL_DEBUG;
 
    {
@@ -207,7 +207,7 @@ if($pid) {
        # Ready to receive
    #print "Server started\n";
    print "Before semunlock\n" if $INTERNAL_DEBUG;
-   $locker->semunlock();
+   $locker2->semunlock();
    print "After semunlock\n" if $INTERNAL_DEBUG;
 
    my $nof_messages = 2;
@@ -273,8 +273,8 @@ $logger = get_logger("foobar");
     # silently ignored
 $logger->warn("message lost");
 
-$locker->semunlock();
-$locker->semlock();
+$locker2->semunlock();
+$locker2->semlock();
 
     # Now start a server
 $pid = fork();
@@ -284,7 +284,7 @@ if($pid) {
 
        # wait for child
    #print "Waiting for server to start\n";
-   $locker->semlock();
+   $locker2->semlock();
    
        # Send another message (should be sent)
    #print "Sending message\n";
@@ -303,7 +303,7 @@ if($pid) {
    die "Cannot start server: $!" unless defined $sock;
        # Ready to receive
    #print "Server started\n";
-   $locker->semunlock();
+   $locker2->semunlock();
 
    my $nof_messages = 1;
 
@@ -337,3 +337,15 @@ unlink $logfile;
 
 unlike($data, qr/message lost/, "Check logfile for lost message");
 like($data, qr/message sent/, "Check logfile for sent message");
+
+# $locker2 has the same semid, no need to remove
+
+my $locker3 = Log::Log4perl::Util::Semaphore->new(
+    key     => "xyz",
+);
+my $locker4 = Log::Log4perl::Util::Semaphore->new(
+    key     => "xyz",
+);
+
+$locker1->remove;
+$locker3->remove;
