@@ -171,8 +171,11 @@ sub file_open {
         if( $self->{header_text} !~ /\n\Z/ ) {
             $self->{header_text} .= "\n";
         }
-        my $fh = $self->{fh};
-        print $fh $self->{header_text};
+
+          # quick and dirty print/syswrite without the usual
+          # log() recreate magic.
+        local $self->{recreate} = 0;
+        $self->log( message => $self->{header_text} );
     }
 }
 
@@ -242,6 +245,11 @@ sub file_switch {
 sub log {
 ##################################################
     my($self, %params) = @_;
+
+    # Warning: this function gets called by file_open() which assumes 
+    # it can use it as a simple print/syswrite wrapper by temporary 
+    # disabling the 'recreate' entry. Add anything fancy here and 
+    # fix up file_open() accordingly.
 
     if($self->{recreate}) {
         if($self->{recreate_check_signal}) {

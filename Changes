@@ -6,6 +6,8 @@
    *    (ms) Semaphore issue fixed in Synchronized (reported by 
              Siarhei Kuchynski and Martin Köhler):
           https://github.com/mschilli/log4perl/issues/72
+   *    (ms) header_text now works with syswrite (reported by Tom Metro):
+          https://github.com/mschilli/log4perl/issues/73
 
 1.47 (2016/03/17)
    *    (ms) [rt.cpan.org #102647] Slaven Rezic fixed a test
