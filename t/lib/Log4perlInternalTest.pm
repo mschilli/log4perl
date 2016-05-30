@@ -18,7 +18,8 @@ our %MINVERSION = qw(
 # check if we're on non-unixy system
 sub is_like_windows {
     if( $^O eq "MSWin32" or
-        $^O eq "cygwin" ) {
+        $^O eq "cygwin"  or
+        $^O eq "msys" ) {
         return 1;
     }
 
