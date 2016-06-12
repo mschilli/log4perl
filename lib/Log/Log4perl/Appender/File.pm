@@ -6,7 +6,9 @@ our @ISA = qw(Log::Log4perl::Appender);
 
 use warnings;
 use strict;
-use Log::Log4perl::Config::Watch;
+require Log::Log4perl::Config::Watch;
+use Log::Log4perl::Global;
+
 use Fcntl;
 use File::Path;
 use File::Spec::Functions qw(splitpath);
@@ -304,7 +306,7 @@ sub close_with_care {
     if( !$rc ) {
         if( $self->{ mode } eq "pipe" and
             $!{ ECHILD } ) {
-            if( $Log::Log4perl::CHATTY_DESTROY_METHODS ) {
+            if( $Log::Log4perl::Global::CHATTY_DESTROY_METHODS ) {
                 warn "$$: pipe closed with ECHILD error -- guess that's ok";
             }
             $? = $prev_rc;

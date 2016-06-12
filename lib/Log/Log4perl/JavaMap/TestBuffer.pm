@@ -2,7 +2,7 @@ package Log::Log4perl::JavaMap::TestBuffer;
 
 use Carp;
 use strict;
-use Log::Log4perl::Appender::TestBuffer;
+require Log::Log4perl::Appender::TestBuffer;
 
 use constant _INTERNAL_DEBUG => 0;
 

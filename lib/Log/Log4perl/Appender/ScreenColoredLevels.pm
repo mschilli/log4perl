@@ -8,7 +8,7 @@ use warnings;
 use strict;
 
 use Term::ANSIColor qw();
-use Log::Log4perl::Level;
+require Log::Log4perl::Level;
 
 BEGIN {
     $Term::ANSIColor::EACHLINE="\n";

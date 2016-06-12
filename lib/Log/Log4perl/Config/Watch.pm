@@ -3,7 +3,6 @@ package Log::Log4perl::Config::Watch;
 use constant _INTERNAL_DEBUG => 0;
 
 our $NEXT_CHECK_TIME;
-our $SIGNAL_CAUGHT;
 
 our $L4P_TEST_CHANGE_DETECTED;
 our $L4P_TEST_CHANGE_CHECKED;
@@ -39,7 +38,7 @@ sub new {
         };
             # Reset the marker. The handler is going to modify it.
         $self->{signal_caught} = 0;
-        $SIGNAL_CAUGHT = 0 if $self->{l4p_internal};
+        $Log::Log4perl::Global::SIGNAL_CAUGHT = 0 if $self->{l4p_internal};
     } else {
             # Just called to initialize
         $self->change_detected(undef, 1);
@@ -58,7 +57,7 @@ sub force_next_check {
     $self->{next_check_time} = 0;
 
     if( $self->{l4p_internal} ) {
-        $SIGNAL_CAUGHT = 1;
+        $Log::Log4perl::Global::SIGNAL_CAUGHT = 1;
         $NEXT_CHECK_TIME = 0;
     }
 }
@@ -69,7 +68,7 @@ sub force_next_check_reset {
     my($self) = @_;
 
     $self->{signal_caught} = 0;
-    $SIGNAL_CAUGHT = 0 if $self->{l4p_internal};
+    $Log::Log4perl::Global::SIGNAL_CAUGHT = 0 if $self->{l4p_internal};
 }
 
 ###########################################
@@ -173,7 +172,7 @@ sub check {
 
     $time = time() unless defined $time;
 
-    if( $self->{signal_caught} or $SIGNAL_CAUGHT ) {
+    if( $self->{signal_caught} or $Log::Log4perl::Global::SIGNAL_CAUGHT ) {
        $force = 1;
        $self->force_next_check_reset();
        print "Caught signal, forcing check\n" if _INTERNAL_DEBUG;

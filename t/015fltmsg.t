@@ -48,7 +48,7 @@ Log::Log4perl->init( \ <<EOT );
     log4perl.appender.A1.layout.ConversionPattern=%m%n
 EOT
 
-$Log::Log4perl::JOIN_MSG_ARRAY_CHAR = "bang!";
+$Log::Log4perl::Global::JOIN_MSG_ARRAY_CHAR = "bang!";
 
 $app = Log::Log4perl::Appender::TestBuffer->by_name("A1");
 $logger = Log::Log4perl->get_logger("");

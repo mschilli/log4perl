@@ -11,7 +11,7 @@ package Log::Log4perl::Appender::Synchronized;
 
 use strict;
 use warnings;
-use Log::Log4perl::Util::Semaphore;
+require Log::Log4perl::Util::Semaphore;
 
 our @ISA = qw(Log::Log4perl::Appender);
 

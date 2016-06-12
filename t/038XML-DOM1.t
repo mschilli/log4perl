@@ -17,7 +17,7 @@ $SIG{__WARN__} = sub { die @_; };
 our $no_XMLDOM;
 
 BEGIN {
-    my $dvrq = $Log::Log4perl::DOM_VERSION_REQUIRED;
+    my $dvrq = $Log::Log4perl::Global::DOM_VERSION_REQUIRED;
 
     eval {
         require XML::DOM;

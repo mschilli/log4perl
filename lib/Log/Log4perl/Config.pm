@@ -5,13 +5,14 @@ use 5.006;
 use strict;
 use warnings;
 
-use Log::Log4perl::Logger;
+require Log::Log4perl::Logger;
 use Log::Log4perl::Level;
 use Log::Log4perl::Config::PropertyConfigurator;
 use Log::Log4perl::JavaMap;
-use Log::Log4perl::Filter;
-use Log::Log4perl::Filter::Boolean;
+require Log::Log4perl::Filter;
+require Log::Log4perl::Filter::Boolean;
 use Log::Log4perl::Config::Watch;
+use Log::Log4perl::Global;
 
 use constant _INTERNAL_DEBUG => 0;
 
@@ -61,7 +62,7 @@ sub init_and_watch {
 
     if(defined $WATCHER) {
         $config = $WATCHER->file();
-        if(defined $Log::Log4perl::Config::Watch::SIGNAL_CAUGHT) {
+        if(defined $Log::Log4perl::Global::SIGNAL_CAUGHT) {
             $delay  = $WATCHER->signal();
         } else {
             $delay  = $WATCHER->check_interval();
@@ -175,13 +176,13 @@ sub _init {
     }
 
     if (exists $data->{oneMessagePerAppender}){
-                    $Log::Log4perl::one_message_per_appender = 
+                    $Log::Log4perl::Global::one_message_per_appender = 
                         $data->{oneMessagePerAppender}->{value};
     }
 
     if(exists $data->{utcDateTimes}) {
         require Log::Log4perl::DateFormat;
-        $Log::Log4perl::DateFormat::GMTIME = !!$data->{utcDateTimes}->{value};
+        $Log::Log4perl::Global::GMTIME = !!$data->{utcDateTimes}->{value};
     }
 
         # Boolean filters 
@@ -326,7 +327,7 @@ sub _init {
         # Successful init(), save config for later
     $OLD_CONFIG = $data;
 
-    $Log::Log4perl::Logger::INITIALIZED = 1;
+    $Log::Log4perl::Global::INITIALIZED = 1;
 }
 
 ##################################################
@@ -675,7 +676,7 @@ sub config_read {
         require XML::DOM; 
         require Log::Log4perl::Config::DOMConfigurator;
 
-        XML::DOM->VERSION($Log::Log4perl::DOM_VERSION_REQUIRED);
+        XML::DOM->VERSION($Log::Log4perl::Global::DOM_VERSION_REQUIRED);
         $parser = Log::Log4perl::Config::DOMConfigurator->new();
         $data = $parser->parse(\@text);
     } else {

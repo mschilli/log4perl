@@ -6,12 +6,15 @@ use 5.006;
 use strict;
 use warnings;
 
-use Log::Log4perl;
+require Log::Log4perl;
 use Log::Log4perl::Level;
 use Log::Log4perl::Layout;
-use Log::Log4perl::Appender;
+require Log::Log4perl::Appender;
 use Log::Log4perl::Appender::String;
-use Log::Log4perl::Filter;
+require Log::Log4perl::Filter;
+
+use Log::Log4perl::Global;
+
 use Carp;
 
 $Carp::Internal{"Log::Log4perl"}++;
@@ -23,7 +26,6 @@ use constant _INTERNAL_DEBUG => 0;
 our $ROOT_LOGGER;
 our $LOGGERS_BY_NAME = {};
 our %APPENDER_BY_NAME = ();
-our $INITIALIZED = 0;
 our $NON_INIT_WARNED;
 our $DIE_DEBUG = 0;
 our $DIE_DEBUG_BUFFER = "";
@@ -73,14 +75,14 @@ sub cleanup {
     # Delete all appenders
     %APPENDER_BY_NAME   = ();
 
-    undef $INITIALIZED;
+    undef $Log::Log4perl::Global::INITIALIZED;
 }
 
 ##################################################
 sub DESTROY {
 ##################################################
     CORE::warn "Destroying logger $_[0] ($_[0]->{category})" 
-            if $Log::Log4perl::CHATTY_DESTROY_METHODS;
+            if $Log::Log4perl::Global::CHATTY_DESTROY_METHODS;
 }
 
 ##################################################
@@ -92,7 +94,7 @@ sub reset {
                                 #the config changes
 
     %APPENDER_BY_NAME   = ();
-    undef $INITIALIZED;
+    undef $Log::Log4perl::Global::INITIALIZED;
     undef $NON_INIT_WARNED;
     Log::Log4perl::Appender::reset();
 
@@ -154,6 +156,11 @@ sub _new {
    return $self;
 }
 
+sub delete {
+  my($class, $logger) = @_;
+  delete $LOGGERS_BY_NAME->{$logger};
+}
+
 ##################################################
 sub category {
 ##################################################
@@ -197,7 +204,7 @@ sub set_output_methods {
 
                 #only one message per appender, (configurable)
             next if $seen{$appender_name} ++ && 
-                    $Log::Log4perl::one_message_per_appender;
+                    $Log::Log4perl::Global::one_message_per_appender;
 
             push (@appenders,     
                    [$appender_name,
@@ -428,11 +435,11 @@ sub generate_watch_code {
 sub generate_watch_conditional {
 ##################################################
 
-    if(defined $Log::Log4perl::Config::Watch::SIGNAL_CAUGHT) {
+    if(defined $Log::Log4perl::Global::SIGNAL_CAUGHT) {
         # In this mode, we just check for the variable indicating
         # that the signal has been caught
         return sub {
-            return $Log::Log4perl::Config::Watch::SIGNAL_CAUGHT;
+            return $Log::Log4perl::Global::SIGNAL_CAUGHT;
         };
     }
 
@@ -582,7 +589,7 @@ sub add_appender {
     my($self, $appender, $dont_reset_all) = @_;
 
         # We take this as an indicator that we're initialized.
-    $INITIALIZED = 1;
+    $Log::Log4perl::Global::INITIALIZED = 1;
 
     my $appender_name = $appender->name();
 
@@ -672,7 +679,7 @@ sub log {
     $_[0] = $LOGGERS_BY_NAME->{$_[0]->{category}} if 
         defined $Log::Log4perl::Config::WATCHER;
 
-    init_warn() unless $INITIALIZED or $NON_INIT_WARNED;
+    init_warn() unless $Log::Log4perl::Global::INITIALIZED or $NON_INIT_WARNED;
 
     croak "priority $priority isn't numeric" if ($priority =~ /\D/);
 
@@ -701,7 +708,7 @@ sub create_custom_level {
   ## only let users create custom levels before initialization
 
   die("create_custom_level must be called before init or " .
-      "first get_logger() call") if ($INITIALIZED);
+      "first get_logger() call") if ($Log::Log4perl::Global::INITIALIZED);
 
   my %PRIORITY = %Log::Log4perl::Level::PRIORITY; #convenience
 
@@ -780,7 +787,7 @@ sub create_log_level_methods {
                                                      : "[undef]");
             print "$lclevel: ($_[0]->{category}/$level_disp) [@_]\n";
         }
-        init_warn() unless $INITIALIZED or $NON_INIT_WARNED;
+        init_warn() unless $Log::Log4perl::Global::INITIALIZED or $NON_INIT_WARNED;
         $_[0]->{$level}->(@_, $level) if defined $_[0]->{$level};
      };
 

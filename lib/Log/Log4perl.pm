@@ -11,10 +11,11 @@ use warnings;
 use Carp;
 
 use Log::Log4perl::Util;
-use Log::Log4perl::Logger;
+require Log::Log4perl::Logger;
 use Log::Log4perl::Level;
-use Log::Log4perl::Config;
-use Log::Log4perl::Appender;
+require Log::Log4perl::Config;
+require Log::Log4perl::Appender;
+use Log::Log4perl::Global;
 
 our $VERSION = '1.48';
 
@@ -52,16 +53,6 @@ our %VARS_SHARED_WITH_SAFE_COMPARTMENT = (
     #setting this to a false value disables code execution in the
     #config file
 our $ALLOW_CODE_IN_CONFIG_FILE = 1;
-
-    #arrays in a log message will be joined using this character,
-    #see Log::Log4perl::Appender::DBI
-our $JOIN_MSG_ARRAY_CHAR = '';
-
-    #version required for XML::DOM, to enable XML Config parsing
-    #and XML Config unit tests
-our $DOM_VERSION_REQUIRED = '1.29'; 
-
-our $CHATTY_DESTROY_METHODS = 0;
 
 our $LOGDIE_MESSAGE_ON_STDERR = 1;
 our $LOGEXIT_CODE             = 1;
@@ -134,7 +125,7 @@ sub import {
             my $lclevel = lc($_);
             easy_closure_create($caller_pkg, $_, sub {
                 Log::Log4perl::Logger::init_warn() unless 
-                    $Log::Log4perl::Logger::INITIALIZED or
+                    $Log::Log4perl::Global::INITIALIZED or
                     $Log::Log4perl::Logger::NON_INIT_WARNED;
                 $logger->{$level}->($logger, @_, $level);
             }, $logger);
@@ -153,7 +144,7 @@ sub import {
             # Define LOGDIE, LOGWARN
          easy_closure_create($caller_pkg, "LOGDIE", sub {
              Log::Log4perl::Logger::init_warn() unless 
-                     $Log::Log4perl::Logger::INITIALIZED or
+                     $Log::Log4perl::Global::INITIALIZED or
                      $Log::Log4perl::Logger::NON_INIT_WARNED;
              $logger->{FATAL}->($logger, @_, "FATAL");
              $Log::Log4perl::LOGDIE_MESSAGE_ON_STDERR ?
@@ -163,7 +154,7 @@ sub import {
 
          easy_closure_create($caller_pkg, "LOGEXIT", sub {
             Log::Log4perl::Logger::init_warn() unless 
-                    $Log::Log4perl::Logger::INITIALIZED or
+                    $Log::Log4perl::Global::INITIALIZED or
                     $Log::Log4perl::Logger::NON_INIT_WARNED;
             $logger->{FATAL}->($logger, @_, "FATAL");
             exit $Log::Log4perl::LOGEXIT_CODE;
@@ -171,7 +162,7 @@ sub import {
 
         easy_closure_create($caller_pkg, "LOGWARN", sub {
             Log::Log4perl::Logger::init_warn() unless 
-                    $Log::Log4perl::Logger::INITIALIZED or
+                    $Log::Log4perl::Global::INITIALIZED or
                     $Log::Log4perl::Logger::NON_INIT_WARNED;
             $logger->{WARN}->($logger, @_, "WARN");
             CORE::warn(Log::Log4perl::Logger::callerline(join '', @_))
@@ -185,7 +176,7 @@ sub import {
     }
 
     if(exists $tags{':nostrict'}) {
-        $Log::Log4perl::Logger::NO_STRICT = 1;
+        $Log::Log4perl::Global::NO_STRICT = 1;
         delete $tags{':nostrict'};
     }
 
@@ -215,7 +206,7 @@ sub import {
 ##################################################
 sub initialized {
 ##################################################
-    return $Log::Log4perl::Logger::INITIALIZED;
+    return $Log::Log4perl::Global::INITIALIZED;
 }
 
 ##################################################
@@ -236,7 +227,7 @@ sub reset { # Mainly for debugging/testing
 sub init_once { # Call init only if it hasn't been
                 # called yet.
 ##################################################
-    init(@_) unless $Log::Log4perl::Logger::INITIALIZED;
+    init(@_) unless $Log::Log4perl::Global::INITIALIZED;
 }
 
 ##################################################
@@ -348,7 +339,7 @@ sub easy_init { # Initialize the root logger with a screen appender
         $log->add_appender($app);
     }
 
-    $Log::Log4perl::Logger::INITIALIZED = 1;
+    $Log::Log4perl::Global::INITIALIZED = 1;
 }
 
 ##################################################
@@ -615,7 +606,7 @@ sub remove_logger {
     Log::Log4perl->easy_closure_logger_remove( $logger );
 
     # Remove the logger from the system
-    delete $Log::Log4perl::Logger::LOGGERS_BY_NAME->{ $logger->{category} };
+    Log::Log4perl::Logger->delete($logger->{category});
 }
 
 1;
