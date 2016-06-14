@@ -111,11 +111,11 @@ sub import {
             my $name  = "$caller_pkg\::$key";
                # Need to split this up in two lines, or CVS will
                # mess it up.
-            my $value = $
-                        Log::Log4perl::Level::PRIORITY{$key};
+            my $value = $Log::Log4perl::Level::PRIORITY{
+              $key};
             no strict qw(refs);
             *{"$name"} = \$value;
-        }
+        } 
 
         delete $tags{':levels'};
     }
@@ -615,7 +615,10 @@ sub remove_logger {
     Log::Log4perl->easy_closure_logger_remove( $logger );
 
     # Remove the logger from the system
-    delete $Log::Log4perl::Logger::LOGGERS_BY_NAME->{ $logger->{category} };
+      # Need to split this up in two lines, or CVS will
+      # mess it up.
+    delete $Log::Log4perl::Logger::LOGGERS_BY_NAME->{ 
+      $logger->{category} };
 }
 
 1;

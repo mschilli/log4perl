@@ -3,6 +3,8 @@
 ##################################################
 
 1.48 (not yet released)
+   *    (ms) [rt.cpan.org #114822] Split two lines with CVS-sensitive 
+             $Log.. variables into two parts.
    *    (ms) Semaphore issue fixed in Synchronized (reported by 
              Siarhei Kuchynski and Martin Köhler):
           https://github.com/mschilli/log4perl/issues/72

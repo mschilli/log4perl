@@ -181,7 +181,10 @@ sub _init {
 
     if(exists $data->{utcDateTimes}) {
         require Log::Log4perl::DateFormat;
-        $Log::Log4perl::DateFormat::GMTIME = !!$data->{utcDateTimes}->{value};
+          # Need to split this up in two lines, or CVS will
+          # mess it up.
+        $Log::Log4perl::DateFormat::GMTIME = 
+          !!$data->{utcDateTimes}->{value};
     }
 
         # Boolean filters 
