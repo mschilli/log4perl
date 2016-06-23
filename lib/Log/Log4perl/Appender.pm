@@ -84,6 +84,7 @@ sub new {
     my $self = {
                  appender  => $appender,
                  name      => $params{name},
+		 ignore_errors => $params{ignore_errors},
                  layout    => undef,
                  level     => $ALL,
                  composite => 0,
@@ -205,7 +206,13 @@ sub log {
     if(defined $cache) {
         $$cache = $args;
     } else {
-        $self->{appender}->log(@$args);
+	if ($self->{ignore_errors}) {
+	    local ($@, $SIG{__DIE__});
+	    eval { $self->{appender}->log(@$args) };
+	}
+	else {
+	    $self->{appender}->log(@$args);
+	}
     }
 
     return 1;
@@ -216,7 +223,13 @@ sub log_cached {
 ###########################################
     my ($self, $cache) = @_;
 
-    $self->{appender}->log(@$cache);
+    if ($self->{ignore_errors}) {
+	local ($@, $SIG{__DIE__});
+	eval { $self->{appender}->log(@$cache) };
+    }
+    else {
+	$self->{appender}->log(@$cache);
+    }
 }
 
 ##################################################
@@ -373,6 +386,11 @@ C<Log::Dispatch::*> object of the specified type.
 When it comes to logging, the C<Log::Log4perl::Appender> will transparently
 relay all messages to the C<Log::Dispatch::*> object it carries 
 in its womb.
+
+Some appenders throw exceptions to report unexpected issued found when
+logging a message (for instance, not being able to write to a file).
+The option C<ignore_errors> can be set to make L<Log::Log4perl>
+silently catch and discard those exceptions.
 
 =head2 $appender->layout($layout);
 
