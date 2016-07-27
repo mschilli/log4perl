@@ -2472,7 +2472,7 @@ This will decrease the thresholds of all appenders in the system by
 one level, i.e. WARN becomes INFO, INFO becomes DEBUG, etc. To only modify 
 selected ones, use
 
-       # decrease thresholds of all appenders
+       # decrease thresholds of selected appenders
     Log::Log4perl->appender_thresholds_adjust(-1, ['AppName1', ...]);
 
 and pass the names of affected appenders in a ref to an array.
