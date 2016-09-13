@@ -317,36 +317,33 @@ Log::Log4perl::DateFormat - Log4perl advanced date formatter helper class
 
 =head1 SYNOPSIS
 
+
+      # Either in a log4j.conf file ...
+    log4perl.appender.Logfile.layout = \
+        Log::Log4perl::Layout::PatternLayout
+    log4perl.appender.Logfile.layout.ConversionPattern = %d{MM/dd HH:mm} %m
+
+      # ... or via the PatternLayout class ...
+    use Log::Log4perl::Layout::PatternLayout;
+    my $layout = Log::Log4perl::Layout::PatternLayout->new(
+        "%d{HH:mm:ss,SSS} %m");
+
+      # ... or even directly with this helper class:
     use Log::Log4perl::DateFormat;
-
     my $format = Log::Log4perl::DateFormat->new("HH:mm:ss,SSS");
-
-    # Simple time, resolution in seconds
     my $time = time();
     print $format->format($time), "\n";
         # => "17:02:39,000"
 
-    # Advanced time, resultion in milliseconds
-    use Time::HiRes;
-    my ($secs, $msecs) = Time::HiRes::gettimeofday();
-    print $format->format($secs, $msecs), "\n";
-        # => "17:02:39,959"
-
 =head1 DESCRIPTION
 
-C<Log::Log4perl::DateFormat> is a low-level helper class for the 
-advanced date formatting functions in C<Log::Log4perl::Layout::PatternLayout>.
-
-Unless you're writing your own Layout class like
-L<Log::Log4perl::Layout::PatternLayout>, there's probably not much use
-for you to read this.
-
-C<Log::Log4perl::DateFormat> is a formatter which allows dates to be
-formatted according to the log4j spec on
+C<Log::Log4perl::DateFormat> is a helper class for the 
+advanced date formatting functions in C<Log::Log4perl::Layout::PatternLayout>,
+and adheres (mostly) to the log4j SimpleDateFormat spec available on
 
     http://download.oracle.com/javase/1.4.2/docs/api/java/text/SimpleDateFormat.html
 
-which allows the following placeholders to be recognized and processed:
+It supports the following placeholders:
 
     Symbol Meaning              Presentation    Example
     ------ -------              ------------    -------
@@ -373,13 +370,38 @@ which allows the following placeholders to be recognized and processed:
     '      escape for text      (Delimiter)
     ''     single quote         (Literal)       '
 
-For example, if you want to format the current Unix time in 
-C<"MM/dd HH:mm"> format, all you have to do is this:
+    Presentation explanation:
+
+    (Text): 4 or more pattern letters--use full form, < 4--use short or 
+            abbreviated form if one exists. 
+
+    (Number): the minimum number of digits. Shorter numbers are 
+              zero-padded to this amount. Year is handled 
+              specially; that is, if the count of 'y' is 2, the 
+              Year will be truncated to 2 digits. 
+
+    (Text & Number): 3 or over, use text, otherwise use number. 
+
+For example, if you want to format the current Unix time in C<"MM/dd HH:mm">
+format, all you have to do is specify it in the %d{...} section of the
+PatternLayout in a Log4perl configuration file:
+
+    # log4j.conf
+    # ...
+    log4perl.appender.Logfile.layout = \
+        Log::Log4perl::Layout::PatternLayout
+    log4perl.appender.Logfile.layout.ConversionPattern = %d{MM/dd HH:mm} %m
+
+Same goes for Perl code defining a PatternLayout for Log4perl:
+
+    use Log::Log4perl::Layout::PatternLayout;
+    my $layout = Log::Log4perl::Layout::PatternLayout->new(
+        "%d{MM/dd HH:mm} %m");
+
+Or, on a lower level, you can use the class directly:
 
     use Log::Log4perl::DateFormat;
-
     my $format = Log::Log4perl::DateFormat->new("MM/dd HH:mm");
-
     my $time = time();
     print $format->format($time), "\n";
 
@@ -427,9 +449,20 @@ someone (and that could be you :) implements them:
 Also, C<Log::Log4perl::DateFormat> just knows about English week and
 month names, internationalization support has to be added.
 
+=head1 Millisecond Times
+
+More granular timestamps down to the millisecond are also supported,
+just provide the millsecond count as a second argument:
+
+    # Advanced time, resultion in milliseconds
+    use Time::HiRes;
+    my ($secs, $msecs) = Time::HiRes::gettimeofday();
+    print $format->format($secs, $msecs), "\n";
+        # => "17:02:39,959"
+
 =head1 LICENSE
 
-Copyright 2002-2013 by Mike Schilli E<lt>m@perlmeister.comE<gt> 
+Copyright 2002-2016 by Mike Schilli E<lt>m@perlmeister.comE<gt> 
 and Kevin Goess E<lt>cpan@goess.orgE<gt>.
 
 This library is free software; you can redistribute it and/or modify

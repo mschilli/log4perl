@@ -541,7 +541,6 @@ Log::Log4perl::Layout::PatternLayout - Pattern Layout
   my $layout = Log::Log4perl::Layout::PatternLayout->new(
                                                    "%d (%F:%L)> %m");
 
-
 =head1 DESCRIPTION
 
 Creates a pattern layout according to
@@ -639,44 +638,17 @@ looks like
 (which is slightly different from Log4j which uses C<yyyy-MM-dd HH:mm:ss,SSS>)
 you're free to fine-tune it in order to display only certain characteristics
 of a date, according to the SimpleDateFormat in the Java World
-(http://java.sun.com/j2se/1.3/docs/api/java/text/SimpleDateFormat.html):
+(http://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html):
 
     %d{HH:mm}     "23:45" -- Just display hours and minutes
     %d{yy, EEEE}  "02, Monday" -- Just display two-digit year 
                                   and spelled-out weekday
-Here's the symbols and their meaning, according to the SimpleDateFormat
-specification:
+    %d{e}         "1473741760" -- Epoch seconds
+    %d{h a}       "12 PM"      -- Hour and am/pm marker
+    ... and many more
 
-    Symbol   Meaning                 Presentation     Example
-    ------   -------                 ------------     -------
-    G        era designator          (Text)           AD
-    y        year                    (Number)         1996 
-    M        month in year           (Text & Number)  July & 07
-    d        day in month            (Number)         10
-    h        hour in am/pm (1-12)    (Number)         12
-    H        hour in day (0-23)      (Number)         0
-    m        minute in hour          (Number)         30
-    s        second in minute        (Number)         55
-    E        day in week             (Text)           Tuesday
-    D        day in year             (Number)         189
-    a        am/pm marker            (Text)           PM
-    e        epoch seconds           (Number)         1315011604
-
-    (Text): 4 or more pattern letters--use full form, < 4--use short or 
-            abbreviated form if one exists. 
-
-    (Number): the minimum number of digits. Shorter numbers are 
-              zero-padded to this amount. Year is handled 
-              specially; that is, if the count of 'y' is 2, the 
-              Year will be truncated to 2 digits. 
-
-    (Text & Number): 3 or over, use text, otherwise use number. 
-
-There's also a bunch of pre-defined formats:
-
-    %d{ABSOLUTE}   "HH:mm:ss,SSS"
-    %d{DATE}       "dd MMM yyyy HH:mm:ss,SSS"
-    %d{ISO8601}    "yyyy-MM-dd HH:mm:ss,SSS"
+For an exhaustive list of all supported date features, look at
+L<Log::Log4perl::DateFormat>.
 
 =head2 Custom cspecs
 

@@ -3,6 +3,9 @@
 ##################################################
 
 1.48 (not yet released)
+   *    (ms) [rt.cpan.org #117377] Moved PatternLayout's documentation of
+             DateFormat features to DateFormat.pm to avoid duplication 
+             and keep the two parts consistent, as suggested by Max Carey.
    *    (ms) [rt.cpan.org #114822] Split two lines with CVS-sensitive 
              $Log.. variables into two parts.
    *    (ms) Semaphore issue fixed in Synchronized (reported by 
