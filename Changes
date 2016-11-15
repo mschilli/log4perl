@@ -2,7 +2,7 @@
  Revision history for Log::Log4perl
 ##################################################
 
-1.48 (not yet released)
+1.48 (2016/11/14)
    *    (ms) [rt.cpan.org #117377] Moved PatternLayout's documentation of
              DateFormat features to DateFormat.pm to avoid duplication 
              and keep the two parts consistent, as suggested by Max Carey.
