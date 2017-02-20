@@ -2,6 +2,10 @@
  Revision history for Log::Log4perl
 ##################################################
 
+1.49 (not yet released)
+   *    (ms) Adapted to perl 5.24 which balks at syswrite/utf8:
+          https://github.com/mschilli/log4perl/issues/78
+
 1.48 (2016/11/14)
    *    (ms) [rt.cpan.org #117377] Moved PatternLayout's documentation of
              DateFormat features to DateFormat.pm to avoid duplication 
