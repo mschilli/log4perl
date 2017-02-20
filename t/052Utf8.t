@@ -22,7 +22,7 @@ BEGIN {
     if($] < 5.008) {
         plan skip_all => "utf-8 tests with perl >= 5.8 only";
     } else {
-        plan tests => 6;
+        plan tests => 7;
     }
 }
 
@@ -128,3 +128,26 @@ my $app = Log::Log4perl::Appender::TestBuffer->by_name("Ä1");
 ok defined $app, "app found";
 my $buf = $app->buffer();
 is $buf, "blech\n", "utf8 named appender";
+
+###########
+# utf8 + syswrite
+###########
+my $conf = <<EOT;
+    log4perl.logger = DEBUG, A1
+    log4perl.appender.A1=Log::Log4perl::Appender::File
+    log4perl.appender.A1.filename=$TMP_FILE
+    log4perl.appender.A1.mode=write
+    log4perl.appender.A1.syswrite=1
+    log4perl.appender.A1.utf8=1
+    log4perl.appender.A1.layout=PatternLayout
+    log4perl.appender.A1.layout.ConversionPattern=%d-%c %m%n
+EOT
+$DB::single = 1;
+Log::Log4perl->reset();
+Log::Log4perl->init(\$conf);
+
+DEBUG "quack \x{A4}";
+open FILE, "<:utf8", $TMP_FILE or die "Cannot open $TMP_FILE";
+my $data = join '', <FILE>;
+close FILE;
+like($data, qr/\x{A4}/, "conf: utf8-1");

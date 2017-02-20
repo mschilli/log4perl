@@ -61,6 +61,7 @@ sub new {
     };
 
     $@ and die "ERROR: can't load appenderclass '$appenderclass'\n$@";
+    print "Appender class $appenderclass loaded OK ($@)\n" if _INTERNAL_DEBUG;
 
     $params{name} = unique_name() unless exists $params{name};
 
@@ -72,6 +73,8 @@ sub new {
         $params{mode} = 'append';
     }
 
+    print "Calling $appenderclass new\n" if _INTERNAL_DEBUG;
+
     my $appender = $appenderclass->new(
             # Set min_level to the lowest setting. *we* are 
             # controlling this now, the appender should just
@@ -80,6 +83,8 @@ sub new {
             # Set 'name' and other parameters
         map { $_ => $params{$_} } keys %params,
     );
+
+    print "Calling $appenderclass new returned OK\n" if _INTERNAL_DEBUG;
 
     my $self = {
                  appender  => $appender,

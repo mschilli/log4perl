@@ -63,7 +63,11 @@ sub new {
         close FILE;
     }
 
+    print "Calling syswrite_encoder\n" if _INTERNAL_DEBUG;
+
     $self->{syswrite_encoder} = $self->syswrite_encoder();
+
+    print "syswrite_encoder returned\n" if _INTERNAL_DEBUG;
 
         # This will die() if it fails
     $self->file_open() unless $self->{create_at_logtime};
@@ -76,11 +80,15 @@ sub syswrite_encoder {
 ##################################################
     my($self) = @_;
 
-    if(!SYSWRITE_UTF8_OK and $self->{syswrite} and $self->{utf8}) {
-        if( eval { require Encode } ) {
-            return sub { Encode::encode_utf8($_[0]) };
-        } else {
+    if( !SYSWRITE_UTF8_OK and $self->{syswrite} and $self->{utf8} ) {
+        print "Requiring Encode\n" if _INTERNAL_DEBUG;
+        eval { require Encode };
+        print "Requiring Encode returned: $@\n" if _INTERNAL_DEBUG;
+
+        if( $@ ) {
             die "syswrite and utf8 requires Encode.pm";
+        } else {
+            return sub { Encode::encode_utf8($_[0]) };
         }
     }
 
