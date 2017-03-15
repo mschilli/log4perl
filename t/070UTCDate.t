@@ -14,7 +14,21 @@ use strict;
 
 use Test::More;
 
-BEGIN { plan tests => 2 }
+sub zero_offset { return( (join '-',gmtime) eq (join '-',localtime) ) }
+
+BEGIN {
+    my $zero_offset = zero_offset;
+    if ($zero_offset) {
+        $ENV{TZ}='UTC+3';
+        $zero_offset = zero_offset;
+    }
+    if ($zero_offset) {
+        plan skip_all => "gmtime and localtime are the same, can't test";
+    }
+    else {
+        plan tests => 2;
+    }
+}
 
 use Log::Log4perl qw(get_logger);
 use Log::Log4perl::Appender::TestBuffer;
