@@ -47,7 +47,7 @@ sub module_available {  # Check if a module is available
 
     local $SIG{__DIE__} = sub {};
 
-    eval "require $full_name";
+    eval "require $full_name; 1";
 
     if($@) {
         return 0;

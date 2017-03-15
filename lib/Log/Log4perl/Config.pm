@@ -261,7 +261,7 @@ sub _init {
                 # Filter class
                 die "Filter class '$type' doesn't exist" unless
                      Log::Log4perl::Util::module_available($type);
-                eval "require $type" or die "Require of $type failed ($!)";
+                eval "require $type; 1" or die "Require of $type failed ($!)";
 
                 # Invoke with all defined parameter
                 # key/values (except the key 'value' which is the entry 
@@ -517,7 +517,7 @@ sub add_layout_by_name {
         }
     }
 
-    eval "require $layout_class" or 
+    eval "require $layout_class; 1" or 
         die "Require to $layout_class failed ($!)";
 
     $appender->layout($layout_class->new(
