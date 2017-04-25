@@ -11,6 +11,7 @@ BEGIN {
 }
 
 use strict;
+use warnings;
 
 my $EG_DIR = "eg";
 $EG_DIR = "../eg" unless -d $EG_DIR;
@@ -22,7 +23,7 @@ BEGIN {
     if($] < 5.008) {
         plan skip_all => "utf-8 tests with perl >= 5.8 only";
     } else {
-        plan tests => 7;
+        plan tests => 8;
     }
 }
 
@@ -132,7 +133,7 @@ is $buf, "blech\n", "utf8 named appender";
 ###########
 # utf8 + syswrite
 ###########
-my $conf = <<EOT;
+$conf = <<EOT;
     log4perl.logger = DEBUG, A1
     log4perl.appender.A1=Log::Log4perl::Appender::File
     log4perl.appender.A1.filename=$TMP_FILE
@@ -142,12 +143,33 @@ my $conf = <<EOT;
     log4perl.appender.A1.layout=PatternLayout
     log4perl.appender.A1.layout.ConversionPattern=%d-%c %m%n
 EOT
-$DB::single = 1;
 Log::Log4perl->reset();
 Log::Log4perl->init(\$conf);
 
 DEBUG "quack \x{A4}";
 open FILE, "<:utf8", $TMP_FILE or die "Cannot open $TMP_FILE";
-my $data = join '', <FILE>;
+$data = join '', <FILE>;
 close FILE;
 like($data, qr/\x{A4}/, "conf: utf8-1");
+
+##################
+# syswrite 0 bytes
+##################
+$conf = <<EOT;
+    log4perl.logger = DEBUG, A1
+    log4perl.appender.A1=Log::Log4perl::Appender::File
+    log4perl.appender.A1.filename=$TMP_FILE
+    log4perl.appender.A1.mode=write
+    log4perl.appender.A1.syswrite=1
+    log4perl.appender.A1.utf8=1
+    log4perl.appender.A1.layout=PatternLayout
+    log4perl.appender.A1.layout.ConversionPattern=%m
+EOT
+Log::Log4perl->reset();
+Log::Log4perl->init(\$conf);
+
+eval {
+    DEBUG "";
+};
+
+is $@, "", "zero bytes syswrite [rt.cpan.org #121346]"

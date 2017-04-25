@@ -305,7 +305,7 @@ sub log {
                  $self->{ syswrite_encoder }->($params{message}) :
                  $params{message} );
 
-         if(!$rc) {
+         if(!defined $rc) {
              die "Cannot syswrite to '$self->{filename}': $!";
          }
     } else {
