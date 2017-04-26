@@ -6,7 +6,6 @@ use 5.006;
 use strict;
 use warnings;
 
-use Log::Log4perl::Config;
 use Log::Log4perl::Level;
 use Carp;
 
@@ -96,6 +95,11 @@ sub new {
 
         #whether to collapse arrays, etc.
     $self->{warp_message} = $params{warp_message};
+
+    if (!$INC{'Log/Log4perl/Config.pm'}) {
+        require Log::Log4perl::Config;
+    }
+
     if($self->{warp_message} and
        my $cref = 
        Log::Log4perl::Config::compile_if_perl($self->{warp_message})) {
