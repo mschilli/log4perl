@@ -401,7 +401,7 @@ Name of the log file.
 =item mode
 
 Messages will be append to the file if C<$mode> is set to the
-string C<"append">. Will clobber the file
+string C<"append">. Will truncate the file
 if set to C<"clobber">. If it is C<"pipe">, the file will be understood
 as executable to pipe output to. Default mode is C<"append">.
 
