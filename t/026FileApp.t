@@ -440,13 +440,14 @@ is($content, "This is a nice header.\n", "header_text");
 
 
 # same with syswrite
-unlink "${testfile}_5";
+unlink "${testfile}_5"; #will not delete file on Windows so use clobber mode
 $data = qq(
 log4perl.category         = DEBUG, Logfile
 log4perl.appender.Logfile          = Log::Log4perl::Appender::File
 log4perl.appender.Logfile.filename = ${testfile}_5
 log4perl.appender.Logfile.header_text = This is a nice header.
 log4perl.appender.Logfile.syswrite = 1
+log4perl.appender.Logfile.mode = clobber
 log4perl.appender.Logfile.layout   = Log::Log4perl::Layout::SimpleLayout
 );
 
@@ -456,7 +457,7 @@ open FILE, "<${testfile}_5" or die "Cannot open ${testfile}_5";
 $content = join '', <FILE>;
 close FILE;
 
-is($content, "This is a nice header.\nDEBUG - waah!\n", "header_text");
+is($content, "This is a nice header.\nDEBUG - waah!\n", "content correct with syswrite");
 
 ####################################################
 # Create path if it is not already created
