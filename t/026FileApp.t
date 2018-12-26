@@ -58,6 +58,7 @@ sub unlink_testfiles {
     unlink "${testfile}_3";
     unlink "${testfile}_4";
     unlink "${testfile}_5";
+    unlink "${testfile}_6";    
     remove_tree ($testpath, "${testpath}_1");
 }
 
@@ -444,7 +445,7 @@ unlink "${testfile}_5";
 $data = qq(
 log4perl.category         = DEBUG, Logfile
 log4perl.appender.Logfile          = Log::Log4perl::Appender::File
-log4perl.appender.Logfile.filename = ${testfile}_5
+log4perl.appender.Logfile.filename = ${testfile}_6
 log4perl.appender.Logfile.header_text = This is a nice header.
 log4perl.appender.Logfile.syswrite = 1
 log4perl.appender.Logfile.layout   = Log::Log4perl::Layout::SimpleLayout
@@ -452,7 +453,7 @@ log4perl.appender.Logfile.layout   = Log::Log4perl::Layout::SimpleLayout
 
 Log::Log4perl->init(\$data);
 Log::Log4perl->get_logger->debug( "waah!" );
-open FILE, "<${testfile}_5" or die "Cannot open ${testfile}_5";
+open FILE, "<${testfile}_6" or die "Cannot open ${testfile}_6";
 $content = join '', <FILE>;
 close FILE;
 
