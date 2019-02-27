@@ -194,7 +194,7 @@ __END__
 
 =head1 NAME
 
-    Log::Log4perl::Appender::Limit - Limit message delivery via block period
+Log::Log4perl::Appender::Limit - Limit message delivery via block period
 
 =head1 SYNOPSIS
 

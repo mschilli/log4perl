@@ -97,7 +97,7 @@ __END__
 
 =head1 NAME
 
-    Log::Log4perl::Appender::Synchronized - Synchronizing other appenders
+Log::Log4perl::Appender::Synchronized - Synchronizing other appenders
 
 =head1 SYNOPSIS
 
