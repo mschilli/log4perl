@@ -447,6 +447,7 @@ log4perl.appender.Logfile          = Log::Log4perl::Appender::File
 log4perl.appender.Logfile.filename = ${testfile}_5
 log4perl.appender.Logfile.header_text = This is a nice header.
 log4perl.appender.Logfile.syswrite = 1
+log4perl.appender.Logfile.mode=write
 log4perl.appender.Logfile.layout   = Log::Log4perl::Layout::SimpleLayout
 );
 
