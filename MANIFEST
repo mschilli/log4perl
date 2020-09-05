@@ -1,6 +1,5 @@
 .licensizer.yml
 Changes
-eg/5005it.pl
 eg/benchmarks/Makefile
 eg/benchmarks/simple
 eg/color

@@ -1,28 +1,4 @@
 use ExtUtils::MakeMaker;
-# See lib/ExtUtils/MakeMaker.pm for details of how to influence
-# the contents of the Makefile that is written.
-
-    # That's the minimum.
-use 5.00503;
-
-    # If we're not 5.6.0, there's some corrections we need to make: Use
-    # 'use vars' instead of 'our' variables, get rid of 'use warnings'
-    # and other stuff. The eg/5005it.pl script takes care of it.
-if($] < 5.006) {
-    require "eg/5005it.pl";
-
-    print <<EOT;
-########################################################
-# Hm, you're still using perl 5.005. Although I don't  #
-# condone that, I'll let it slip this time:            #
-# Changing distribution to be backwards compatible ... #
-EOT
-    mk5005("t", "lib");
-    print <<EOT;
-# Done. But do me a favour and upgrade soon.           # 
-########################################################
-EOT
-}
 
 # Check for Time::HiRes;
 eval { require Time::HiRes; };
@@ -47,9 +23,9 @@ WriteMakefile(
                              File::Spec    => 0.82,
                              File::Path    => 2.06_06,
                            }, # e.g., Module::Name => 1.1
-    ($] >= 5.005 ?    ## Add these new keywords supported since 5.005
-      (ABSTRACT_FROM => 'lib/Log/Log4perl.pm', # retrieve abstract from module
-       AUTHOR     => 'Mike Schilli <m@perlmeister.com>') : ()),
+    ABSTRACT_FROM => 'lib/Log/Log4perl.pm', # retrieve abstract from module
+    AUTHOR     => 'Mike Schilli <m@perlmeister.com>',
+    MIN_PERL_VERSION => '5.006',
     'clean'             => {FILES => "*.tar.gz *.ppd pod2htm*"},
     EXE_FILES           => ["eg/l4p-tmpl"],
     $ExtUtils::MakeMaker::VERSION >= 6.50 ? (%$meta_merge) : (),
