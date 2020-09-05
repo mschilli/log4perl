@@ -12,6 +12,8 @@ use strict;
 use warnings;
 use Data::Dumper;
 use File::Spec;
+use lib File::Spec->catdir(qw(t lib));
+use Log4perlInternalTest qw(Compare);
 $SIG{__WARN__} = sub { die @_; };
 
 our $no_XMLDOM;
@@ -157,9 +159,6 @@ my $dump_available;
 if (! $@) {
     $dump_available = 1;
 }
-
-
-require File::Spec->catfile('t','compare.pl');
 
 ok(Compare($xmldata, $propsdata)) || 
         do {

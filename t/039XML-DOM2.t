@@ -10,6 +10,8 @@ BEGIN {
 
 use Test::More;
 use Log::Log4perl;
+use lib File::Spec->catdir(qw(t lib));
+use Log4perlInternalTest qw(Compare);
 use strict;
 
 our $no_XMLDOM;
@@ -142,9 +144,6 @@ my $dump_available;
 if (! $@) {
     $dump_available = 1;
 }
-
-
-require 't/compare.pl';
 
 ok(Compare($xmldata, $propsdata)) || 
         do {

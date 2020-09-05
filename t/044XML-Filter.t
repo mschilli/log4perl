@@ -12,6 +12,8 @@ use Log::Log4perl;
 use strict;
 use Data::Dumper;
 use File::Spec;
+use lib File::Spec->catdir(qw(t lib));
+use Log4perlInternalTest qw(Compare);
 
 our $no_XMLDOM;
 
@@ -50,7 +52,6 @@ my $dump_available;
 if (! $@) {
     $dump_available = 1;
 }
-require File::Spec->catfile('t','compare.pl');
 
 # *****************************************************
 # first, test a very basic filter setup
