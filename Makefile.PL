@@ -9,9 +9,23 @@ if($@) {
 
 my $meta_merge = {
     META_MERGE => {
+        "meta-spec" => { version => 2 },
         resources => {
             repository  => 'http://github.com/mschilli/log4perl',
             MailingList => 'mailto:log4perl-devel@lists.sourceforge.net',
+        },
+        prereqs => {
+            runtime => {
+                recommends => {
+                    'Log::Dispatch' => 0,
+                    'DBI' => '1.607',
+                    'DBD::SQLite' => 0,
+                    'DBD::CSV' => '0.33',
+                    'SQL::Statement' => '1.20',
+                    'Log::Dispatch::FileRotate' => '1.10',
+                    'XML::DOM' => '1.29',
+                },
+            },
         },
     }
 };
