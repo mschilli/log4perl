@@ -17,29 +17,11 @@ use Log::Log4perl;
 use warnings;
 use strict;
 use lib File::Spec->catdir(qw(t lib));
-use Log4perlInternalTest qw(tmpdir);
+use Log4perlInternalTest qw(tmpdir min_version);
 
 BEGIN {
-    my $minversion = \%Log4perlInternalTest::MINVERSION;
-    eval {
-        require DBI;
-        die if $DBI::VERSION < $minversion->{ "DBI" };
-
-        require DBD::CSV;
-        die if $DBD::CSV::VERSION < $minversion->{ "DBD::CSV" };
-
-        require SQL::Statement;
-        die if $SQL::Statement::VERSION < $minversion->{ "SQL::Statement" };
-    };
-    if ($@) {
-        plan skip_all => 
-          "DBI $minversion->{ DBI } or " .
-          "DBD::CSV $minversion->{'DBD::CSV'} or " .
-          "SQL::Statement $minversion->{'SQL::Statement'} " .
-          "not installed, skipping tests\n";
-    }else{
-        plan tests => 33;
-    }
+    min_version(qw( DBI DBD::CSV SQL::Statement ));
+    plan tests => 33;
 }
 
 require DBI;

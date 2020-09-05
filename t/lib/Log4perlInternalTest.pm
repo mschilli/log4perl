@@ -8,17 +8,26 @@ our @EXPORT_OK = qw(
   is_like_windows
   Compare
   tmpdir
+  min_version
 );
 our @ISA    = qw( Exporter );
 
 # We don't require any of these modules for testing, but if they're 
 # installed, we require minimal versions.
 
-our %MINVERSION = qw(
+my %MINVERSION = qw(
     DBI            1.607
     DBD::CSV       0.33
     SQL::Statement 1.20
+    DBD::SQLite    0
+    Log::Dispatch  0
 );
+sub min_version {
+    my @missing = grep !eval "use $_ $MINVERSION{$_}; 1", @_;
+    return if !@missing;
+    Test::More::plan(skip_all =>
+        "Skipping as not got: " . join ', ', map "$_ $MINVERSION{$_}", @_);
+}
 
 # check if we're on non-unixy system
 sub is_like_windows {

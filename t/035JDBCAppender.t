@@ -19,22 +19,11 @@ use Test::More;
 
 use Log::Log4perl;
 use lib File::Spec->catdir(qw(t lib));
-use Log4perlInternalTest qw(tmpdir);
+use Log4perlInternalTest qw(tmpdir min_version);
 
 BEGIN {
-    my $minversion = \%Log4perlInternalTest::MINVERSION;
-    eval {
-        require DBD::CSV;
-        die if $DBD::CSV::VERSION < $minversion->{ "DBD::CSV" };
-
-	require Log::Dispatch;
-    };
-    if ($@) {
-        plan skip_all => 
-          "only with Log::Dispatch and DBD::CSV $minversion->{'DBD::CSV'}";
-    }else{
-        plan tests => 14;
-    }
+    min_version(qw( DBI DBD::CSV Log::Dispatch ));
+    plan tests => 14;
 }
 
 my $WORK_DIR = tmpdir();

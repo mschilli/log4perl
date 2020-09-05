@@ -17,23 +17,11 @@ use warnings;
 use strict;
 use File::Spec;
 use lib File::Spec->catdir(qw(t lib));
-use Log4perlInternalTest qw(tmpdir);
+use Log4perlInternalTest qw(tmpdir min_version);
 
 BEGIN {
-    my $minversion = \%Log4perlInternalTest::MINVERSION;
-    eval {
-        require DBI;
-        die if $DBI::VERSION < $minversion->{ "DBI" };
-
-        require DBD::SQLite;
-    };
-    if ($@) {
-        plan skip_all => 
-          "DBI $minversion->{ DBI } " .
-          "not installed, skipping tests\n";
-    }else{
-        plan tests => 3;
-    }
+    min_version(qw( DBI DBD::SQLite ));
+    plan tests => 3;
 }
 
 my $testdir = tmpdir();
