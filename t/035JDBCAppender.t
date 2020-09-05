@@ -18,12 +18,8 @@ BEGIN {
 use Test::More;
 
 use Log::Log4perl;
-
-BEGIN {
-    use FindBin qw($Bin);
-    use lib "$Bin/lib";
-    require Log4perlInternalTest;
-}
+use lib File::Spec->catdir(qw(t lib));
+use Log4perlInternalTest qw(tmpdir);
 
 BEGIN {
     my $minversion = \%Log4perlInternalTest::MINVERSION;
@@ -41,17 +37,9 @@ BEGIN {
     }
 }
 
-END {
-    unlink "t/tmp/$table_name";
-    rmdir "t/tmp";
-}
-
-mkdir "t/tmp" unless -d "t/tmp";
-
+my $WORK_DIR = tmpdir();
 require DBI;
-my $dbh = DBI->connect('DBI:CSV:f_dir=t/tmp','testuser','testpw',{ PrintError => 1 });
-
--e "t/tmp/$table_name" && $dbh->do("DROP TABLE $table_name");
+my $dbh = DBI->connect('DBI:CSV:f_dir='.$WORK_DIR,'testuser','testpw',{ PrintError => 1 });
 
 my $stmt = <<EOL;
     CREATE TABLE $table_name (
@@ -78,7 +66,7 @@ my $config = <<"EOT";
 #log4j.category = WARN, DBAppndr, console
 log4j.category = WARN, DBAppndr
 log4j.appender.DBAppndr             = org.apache.log4j.jdbc.JDBCAppender
-log4j.appender.DBAppndr.URL = jdbc:CSV:testdb://localhost:9999;f_dir=t/tmp
+log4j.appender.DBAppndr.URL = jdbc:CSV:testdb://localhost:9999;f_dir=$WORK_DIR
 log4j.appender.DBAppndr.user  = bobjones
 log4j.appender.DBAppndr.password = 12345
 log4j.appender.DBAppndr.sql = \\

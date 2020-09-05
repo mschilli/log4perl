@@ -13,22 +13,13 @@ use strict;
 use Test;
 use Log::Log4perl;
 use File::Spec;
+use lib File::Spec->catdir(qw(t lib));
+use Log4perlInternalTest qw(tmpdir);
 
-my $WORK_DIR = "tmp";
-if(-d "t") {
-    $WORK_DIR = File::Spec->catfile(qw(t tmp));
-}
-unless (-e "$WORK_DIR"){
-    mkdir("$WORK_DIR", 0755) || die "can't create $WORK_DIR ($!)";
-}
-
-my $TMP_FILE = File::Spec->catfile(qw(t tmp warnings));
-$TMP_FILE = "tmp/warnings" if ! -d "t";
+my $WORK_DIR = tmpdir();
+my $TMP_FILE = File::Spec->catfile($WORK_DIR, qw(warnings));
 
 BEGIN { plan tests => 2 }
-END   { close IN;
-        unlink $TMP_FILE;
-      }
 
 ok(1); # Initialized ok
 

@@ -82,7 +82,7 @@ my $ldapdata = Log::Log4perl::Config::config_read(
     $uri->as_string
 );
 
-
+my $WORK_DIR = tmpdir();
 my $propsconfig = <<EOL;
 log4j.appender.A1 = Log::Log4perl::Appender::TestBuffer
 log4j.appender.A1.layout = Log::Log4perl::Layout::SimpleLayout
@@ -98,13 +98,13 @@ log4j.appender.A2.layout = Log::Log4perl::Layout::SimpleLayout
  #log4j.appender.FileAppndr1 = org.apache.log4j.FileAppender
  #log4j.appender.FileAppndr1.layout = Log::Log4perl::Layout::PatternLayout
  #log4j.appender.FileAppndr1.layout.ConversionPattern = %d %4r [%t] %-5p %c %t - %m%n
- #log4j.appender.FileAppndr1.File = t/tmp/DOMtest
+ #log4j.appender.FileAppndr1.File = $WORK_DIR/DOMtest
  #log4j.appender.FileAppndr1.mode = append
  
  log4j.appender.FileAppndr1 = Log::Log4perl::Appender::FileAppender
  log4j.appender.FileAppndr1.layout = Log::Log4perl::Layout::PatternLayout 
  log4j.appender.FileAppndr1.layout.ConversionPattern = %d %4r [%t] %-5p %c %t - %m%n
- log4j.appender.FileAppndr1.filename = t/tmp/DOMtest
+ log4j.appender.FileAppndr1.filename = $WORK_DIR/DOMtest
  log4j.appender.FileAppndr1.mode = append
  log4j.appender.FileAppndr1.autoflush = 1
 #DEBUG todo log4j.appender.FileAppndr1.umask = 0222

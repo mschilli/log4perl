@@ -18,6 +18,9 @@ $EG_DIR = "../eg" unless -d $EG_DIR;
 
 use Test::More;
 use Log::Log4perl qw(:easy);
+use File::Spec;
+use lib File::Spec->catdir(qw(t lib));
+use Log4perlInternalTest qw(tmpdir);
 
 BEGIN {
     if($] < 5.008) {
@@ -27,21 +30,8 @@ BEGIN {
     }
 }
 
-my $WORK_DIR = "tmp";
-if(-d "t") {
-    $WORK_DIR = File::Spec->catfile(qw(t tmp));
-}
-unless (-e "$WORK_DIR"){
-    mkdir("$WORK_DIR", 0755) || die "can't create $WORK_DIR ($!)";
-}
-
-my $TMP_FILE = File::Spec->catfile(qw(t tmp utf8.out));
-$TMP_FILE = "tmp/utf8.out" if ! -d "t";
-
-END   {
-        unlink $TMP_FILE;
-        rmdir $WORK_DIR;
-      }
+my $WORK_DIR = tmpdir();
+my $TMP_FILE = File::Spec->catfile($WORK_DIR, qw(utf8.out));
 
 ###########
 # utf8 file appender

@@ -1,23 +1,10 @@
 #Testing if the file-appender appends in default mode
 
-END {
-    # Must be before enabling the Log4Perl stuff, or file will still
-    # be open and locked (under Win32) on program close.
-
-    unlink_testfiles();
-    }
-
 BEGIN {
     if($ENV{INTERNAL_DEBUG}) {
         require Log::Log4perl::InternalDebug;
         Log::Log4perl::InternalDebug->enable();
     }
-}
-
-BEGIN {
-    use FindBin qw($Bin);
-    use lib "$Bin/lib";
-    use Log4perlInternalTest qw( is_like_windows );
 }
 
 use Test::More;
@@ -27,7 +14,9 @@ use strict;
 
 use Log::Log4perl;
 use File::Spec;
-use File::Path qw(remove_tree);
+use FindBin qw($Bin);
+use lib "$Bin/lib";
+use Log4perlInternalTest qw( is_like_windows tmpdir );
 
 our $LOG_DISPATCH_PRESENT;
 
@@ -38,30 +27,11 @@ BEGIN {
     }
 };
 
-my $WORK_DIR = "tmp";
-if(-d "t") {
-    $WORK_DIR = File::Spec->catfile(qw(t tmp));
-}
-unless (-e "$WORK_DIR"){
-    mkdir("$WORK_DIR", 0755) || die "can't create $WORK_DIR ($!)";
-}
-
+my $WORK_DIR = tmpdir();
 my $testfile = File::Spec->catfile($WORK_DIR, "test26.log");
-my $testpath = File::Spec->catfile($WORK_DIR, "test26");
+my $testpath = File::Spec->catdir($WORK_DIR, "test26");
 
 BEGIN {plan tests => 27}
-
-sub unlink_testfiles {
-    unlink $testfile;
-    unlink "${testfile}_1";
-    unlink "${testfile}_2";
-    unlink "${testfile}_3";
-    unlink "${testfile}_4";
-    unlink "${testfile}_5";
-    remove_tree ($testpath, "${testpath}_1");
-}
-
-unlink_testfiles();
 
 ####################################################
 #  First, preset the log file with some content

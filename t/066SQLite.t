@@ -11,16 +11,13 @@ BEGIN {
     }
 }
 
-BEGIN {
-    use FindBin qw($Bin);
-    use lib "$Bin/lib";
-    require Log4perlInternalTest;
-}
-
 use Test::More;
 use Log::Log4perl;
 use warnings;
 use strict;
+use File::Spec;
+use lib File::Spec->catdir(qw(t lib));
+use Log4perlInternalTest qw(tmpdir);
 
 BEGIN {
     my $minversion = \%Log4perlInternalTest::MINVERSION;
@@ -39,19 +36,12 @@ BEGIN {
     }
 }
 
-my $testdir = "t/tmp";
-mkdir $testdir;
+my $testdir = tmpdir();
 
 my $dbfile = "$testdir/sqlite.dat";
 
-END {
-    unlink $dbfile;
-    rmdir $testdir;
-}
-
 require DBI;
 
-unlink $dbfile;
 my $dbh = DBI->connect("dbi:SQLite:dbname=$dbfile","","");
 
   # https://rt.cpan.org/Public/Bug/Display.html?id=79960

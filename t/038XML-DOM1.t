@@ -13,7 +13,7 @@ use warnings;
 use Data::Dumper;
 use File::Spec;
 use lib File::Spec->catdir(qw(t lib));
-use Log4perlInternalTest qw(Compare);
+use Log4perlInternalTest qw(Compare tmpdir);
 $SIG{__WARN__} = sub { die @_; };
 
 our $no_XMLDOM;
@@ -45,7 +45,7 @@ if ($no_XMLDOM){
     exit(0);
 }
 
-
+my $WORK_DIR = tmpdir();
 my $xmlconfig = <<EOL;
 <?xml version="1.0" encoding="UTF-8"?> 
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
@@ -68,7 +68,7 @@ my $xmlconfig = <<EOL;
                 <param name="ConversionPattern" 
                                       value="%d %4r [%t] %-5p %c %t - %m%n"/>
         </layout>
-        <param name="File" value="t/tmp/DOMtest"/>
+        <param name="File" value="$WORK_DIR/DOMtest"/>
         <param name="Append" value="false"/>                
    </appender>
    
@@ -128,7 +128,7 @@ log4j.appender.BUF0.Threshold = ERROR
 log4j.appender.FileAppndr1 = org.apache.log4j.FileAppender
 log4j.appender.FileAppndr1.layout = Log::Log4perl::Layout::PatternLayout
 log4j.appender.FileAppndr1.layout.ConversionPattern = %d %4r [%t] %-5p %c %t - %m%n
-log4j.appender.FileAppndr1.File = t/tmp/DOMtest
+log4j.appender.FileAppndr1.File = $WORK_DIR/DOMtest
 log4j.appender.FileAppndr1.Append = false
 
 log4j.category.a.b.c.d = WARN, A1
@@ -248,7 +248,7 @@ $ENV{appthreshlevel} = 'error';
 $ENV{convpatt} = 'ConversionPattern';
 $ENV{thepatt} = '%d %4r [%t] %-5p %c %t - %m%n';
 $ENV{pfile} = 'File';
-$ENV{pfileval} = 't/tmp/DOMtest';
+$ENV{pfileval} = "$WORK_DIR/DOMtest";
 $ENV{abcd} = 'a.b.c.d';
 $ENV{abcd_add} = 'false';
 $ENV{abcd_level} = 'warn';

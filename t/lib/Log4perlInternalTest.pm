@@ -3,9 +3,11 @@ use strict;
 use warnings;
 
 require Exporter;
+use File::Temp qw/ tempdir /;
 our @EXPORT_OK = qw(
   is_like_windows
   Compare
+  tmpdir
 );
 our @ISA    = qw( Exporter );
 
@@ -27,6 +29,10 @@ sub is_like_windows {
     }
 
     return 0;
+}
+
+sub tmpdir {
+    tempdir( CLEANUP => 1 );
 }
 
 #Lifted this code from Data::Compare by Fabien Tassin fta@sofaraway.org .

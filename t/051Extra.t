@@ -15,6 +15,9 @@ use strict;
 
 use Log::Log4perl qw(:easy :no_extra_logdie_message);
 use Test::More;
+use File::Spec;
+use lib File::Spec->catdir(qw(t lib));
+use Log4perlInternalTest qw(tmpdir);
 
 BEGIN {
     if ($] < 5.008) {
@@ -23,13 +26,6 @@ BEGIN {
         plan tests => 11;
     }
 }
-
-END {
-    unlink "t/tmp/easy";
-    rmdir "t/tmp";
-}
-
-mkdir "t/tmp" unless -d "t/tmp";
 
 use Log::Log4perl::Appender::TestBuffer;
 
@@ -49,8 +45,8 @@ Log::Log4perl->init(\$conf);
 #########################################################################
 # Capture STDERR to a temporary file and a filehandle to read from it
 
-my $TMP_FILE = File::Spec->catfile(qw(t tmp easy));
-$TMP_FILE = "tmp/easy" if ! -d "t";
+my $WORK_DIR = tmpdir();
+my $TMP_FILE = File::Spec->catfile($WORK_DIR, qw(easy));
 
 open STDERR, ">$TMP_FILE";
 select STDERR; $| = 1; #needed on win32

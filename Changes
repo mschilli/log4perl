@@ -1,6 +1,4 @@
-##################################################
- Revision history for Log::Log4perl
-##################################################
+- test improvements removing race conditions
 
 1.50 2020-07-22
    *    (ms) Fix for slow unlinking on Windows test - thanks @zhiyuan-lin

@@ -12,16 +12,12 @@ BEGIN {
     }
 }
 
-BEGIN {
-    use FindBin qw($Bin);
-    use lib "$Bin/lib";
-    require Log4perlInternalTest;
-}
-
 use Test::More;
 use Log::Log4perl;
 use warnings;
 use strict;
+use lib File::Spec->catdir(qw(t lib));
+use Log4perlInternalTest qw(tmpdir);
 
 BEGIN {
     my $minversion = \%Log4perlInternalTest::MINVERSION;
@@ -46,17 +42,9 @@ BEGIN {
     }
 }
 
-END {
-    unlink "t/tmp/$table_name";
-    rmdir "t/tmp";
-}
-
-mkdir "t/tmp" unless -d "t/tmp";
-
 require DBI;
-my $dbh = DBI->connect('DBI:CSV:f_dir=t/tmp','testuser','testpw',{ RaiseError => 1, PrintError => 1 });
-
-$dbh->do("DROP TABLE $table_name") if -e "t/tmp/$table_name";
+my $WORK_DIR = tmpdir();
+my $dbh = DBI->connect('DBI:CSV:f_dir='.$WORK_DIR,'testuser','testpw',{ RaiseError => 1, PrintError => 1 });
 
 my $stmt = <<EOL;
     CREATE TABLE $table_name (
@@ -82,7 +70,7 @@ my $config = <<"EOT";
 #log4j.category = WARN, DBAppndr, console
 log4j.category = WARN, DBAppndr
 log4j.appender.DBAppndr             = Log::Log4perl::Appender::DBI
-log4j.appender.DBAppndr.datasource = DBI:CSV:f_dir=t/tmp
+log4j.appender.DBAppndr.datasource = DBI:CSV:f_dir=$WORK_DIR
 log4j.appender.DBAppndr.username  = bobjones
 log4j.appender.DBAppndr.password = 12345
 log4j.appender.DBAppndr.sql = \\
@@ -124,7 +112,7 @@ $logger->fatal('fatal message',1234,'foo',{aaa => 'aaa'});
 #since we ARE buffering, that message shouldnt be there yet
 {
  local $/ = undef;
- open (F, "t/tmp/$table_name");
+ open (F, "$WORK_DIR/$table_name");
  my $got = <F>;
  close F;
  my $expected = <<EOL;
@@ -142,7 +130,7 @@ $logger->warn('warning message',3456,'foo','bar');
 #with buffersize == 2, now they should write
 {
  local $/ = undef;
- open (F, "t/tmp/$table_name");
+ open (F, "$WORK_DIR/$table_name");
  my $got = <F>;
  close F;
  my $expected = <<EOL;
@@ -215,10 +203,10 @@ $dbh->disconnect;
 # might as well give it a thorough check
 Log::Log4perl->reset;
 
-unlink "t/tmp/$table_name"
-    if -e "t/tmp/$table_name";
+unlink "$WORK_DIR/$table_name"
+    if -e "$WORK_DIR/$table_name";
 
-$dbh = DBI->connect('DBI:CSV:f_dir=t/tmp','testuser','testpw',{ PrintError => 1 });
+$dbh = DBI->connect('DBI:CSV:f_dir='.$WORK_DIR,'testuser','testpw',{ PrintError => 1 });
 
 $stmt = <<EOL;
     CREATE TABLE $table_name (
@@ -234,7 +222,7 @@ $dbh->do($stmt) || die "do failed on $stmt".$dbh->errstr;
 $config = <<"EOT";
 log4j.category = WARN, DBAppndr
 log4j.appender.DBAppndr             = Log::Log4perl::Appender::DBI
-log4j.appender.DBAppndr.datasource = DBI:CSV:f_dir=t/tmp
+log4j.appender.DBAppndr.datasource = DBI:CSV:f_dir=$WORK_DIR
 log4j.appender.DBAppndr.sql = \\
    insert into $table_name \\
    (loglevel, message) \\
@@ -259,7 +247,7 @@ $logger->fatal('warning message');
 #since we're not buffering, this message should show up immediately
 {
  local $/ = undef;
- open (F, "t/tmp/$table_name");
+ open (F, "$WORK_DIR/$table_name");
  my $got = <F>;
  close F;
  my $expected = <<EOL;
@@ -292,7 +280,7 @@ $dbh->do($stmt) || die "do failed on $stmt".$dbh->errstr;
 $config = <<"EOT";
 log4j.category = WARN, DBAppndr
 log4j.appender.DBAppndr             = Log::Log4perl::Appender::DBI
-log4j.appender.DBAppndr.datasource = DBI:CSV:f_dir=t/tmp
+log4j.appender.DBAppndr.datasource = DBI:CSV:f_dir=$WORK_DIR
 log4j.appender.DBAppndr.sql = \\
    insert into $table_name \\
    (loglevel, mdc, message) \\
@@ -314,7 +302,7 @@ Log::Log4perl::init(\$config);
 $logger = Log::Log4perl->get_logger();
 $logger->warn('test message');
 
-open (F, "t/tmp/$table_name");
+open (F, "$WORK_DIR/$table_name");
 my $got = join '', <F>;
 close F;
 

@@ -8,6 +8,8 @@ BEGIN {
 use Log::Log4perl;
 use Test::More;
 use File::Spec;
+use lib File::Spec->catdir(qw(t lib));
+use Log4perlInternalTest qw(tmpdir);
 
 BEGIN {
     eval {
@@ -20,21 +22,7 @@ BEGIN {
     }
 }
 
-my $WORK_DIR = "tmp";
-if(-d "t") {
-    $WORK_DIR = File::Spec->catfile(qw(t tmp));
-}
-unless (-e "$WORK_DIR"){
-    mkdir("$WORK_DIR", 0755) || die "can't create $WORK_DIR ($!)";
-}
-
-use vars qw(@outfiles); @outfiles = (File::Spec->catfile($WORK_DIR, 'rolltest.log'),
-                                     File::Spec->catfile($WORK_DIR, 'rolltest.log.1'),
-                                     File::Spec->catfile($WORK_DIR, 'rolltest.log.2'),);
-
-foreach my $f (@outfiles){
-    unlink $f if (-e $f);
-}
+my $WORK_DIR = tmpdir();
 
 my $conf = <<CONF;
 log4j.category.cat1      = INFO, myAppender
@@ -67,7 +55,3 @@ like($result, qr/^INFO  cat1 - x+info message 1/);
 
 #MaxBackupIndex is 2, so this file shouldn't exist
 ok(! -e File::Spec->catfile($WORK_DIR, 'rolltest.log.3'));
-
-foreach my $f (@outfiles){
-    unlink $f if (-e $f);
-}

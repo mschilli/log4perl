@@ -7,10 +7,12 @@ BEGIN {
 
 use Log::Log4perl;
 use Test::More;
+use File::Spec;
+use lib File::Spec->catdir(qw(t lib));
+use Log4perlInternalTest qw(tmpdir);
 
-$testfile = 't/tmp/test12.log';
-
-unlink $testfile if (-e $testfile);
+my $dir = tmpdir();
+my $testfile = File::Spec->catfile($dir, 'test12.log');
 
 # *****************************************************
 # nonexistent appender class
@@ -245,8 +247,3 @@ eval {
 like($@, qr/log4perl.logger.Foo.Bar redefined/);
 
 BEGIN { plan tests => 14, }
-
-END{   
-     unlink $testfile if (-e $testfile);
-}
-

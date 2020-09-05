@@ -12,9 +12,8 @@ use strict;
 
 use FindBin qw($Bin);
 use lib "$Bin/lib";
-use Log4perlInternalTest qw( is_like_windows );
+use Log4perlInternalTest qw( is_like_windows tmpdir );
 use Test::More;
-
 use Log::Log4perl;
 use File::Spec;
 
@@ -31,28 +30,10 @@ BEGIN {
     }
 }
 
-my $WORK_DIR = "tmp";
-if(-d "t") {
-    $WORK_DIR = File::Spec->catfile(qw(t tmp));
-}
-
-unless (-e "$WORK_DIR"){
-    mkdir("$WORK_DIR", 0755) || die "can't create $WORK_DIR ($!)";
-}
-
+my $WORK_DIR = tmpdir();
 my $testfile = File::Spec->catfile($WORK_DIR, "test17.log");
 my $testfile2 = File::Spec->catfile($WORK_DIR, "test17b.log");
 my $testconf = File::Spec->catfile($WORK_DIR, "test17.conf");
-
-END { 
-    unlink $testfile if (-e $testfile);
-    unlink $testfile2 if (-e $testfile2);
-    unlink $testconf if (-e $testconf);
-    rmdir $WORK_DIR;
-}
-
-trunc($testfile);
-trunc($testconf);
 
 my $conf1 = <<EOL;
 log4j.category.animal.dog   = INFO, myAppender

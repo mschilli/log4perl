@@ -11,7 +11,7 @@ BEGIN {
 use Test::More;
 use Log::Log4perl;
 use lib File::Spec->catdir(qw(t lib));
-use Log4perlInternalTest qw(Compare);
+use Log4perlInternalTest qw(Compare tmpdir);
 use strict;
 
 our $no_XMLDOM;
@@ -40,7 +40,7 @@ if ($no_XMLDOM){
     exit(0);
 }
 
-
+my $WORK_DIR = tmpdir();
 my $xmlconfig = <<EOL;
 <?xml version="1.0" encoding="UTF-8"?> 
 <!DOCTYPE log4perl:configuration SYSTEM "log4perl.dtd">
@@ -63,7 +63,7 @@ my $xmlconfig = <<EOL;
 </log4perl:appender>
 <log4perl:appender name="DBAppndr2" class="Log::Log4perl::Appender::DBI">
           <param name="warp_message" value="0"/>
-          <param name="datasource" value="DBI:CSV:f_dir=t/tmp"/>
+          <param name="datasource" value="DBI:CSV:f_dir=$WORK_DIR"/>
           <param name="bufferSize" value="2"/>
           <param name="password" value="sub { \$ENV{PWD} }"/>
            <param name="username" value="bobjones"/>
@@ -116,7 +116,7 @@ log4j.appender.jabbender.to = mary\@another.jabber.server
 
 log4j.appender.DBAppndr2             = Log::Log4perl::Appender::DBI
 log4j.appender.DBAppndr2.username  = bobjones
-log4j.appender.DBAppndr2.datasource = DBI:CSV:f_dir=t/tmp
+log4j.appender.DBAppndr2.datasource = DBI:CSV:f_dir=$WORK_DIR
 log4j.appender.DBAppndr2.password = sub { \$ENV{PWD} }
 log4j.appender.DBAppndr2.sql = insert into $table_name (loglevel, message, shortcaller, thingid, category, pkg, runtime1, runtime2) values (?,?,?,?,?,?,?,?)
 log4j.appender.DBAppndr2.params.1 = %p    
@@ -280,34 +280,34 @@ ok(Compare($xmldata, $propsdata)) ||
 
 #now we test variable substitution
 #brute force again
-my $varsubstconfig = <<'EOL';
+my $varsubstconfig = <<"EOL";
 <?xml version="1.0" encoding="UTF-8"?> 
 <!DOCTYPE log4perl:configuration SYSTEM "log4perl.dtd">
 
 <log4perl:configuration xmlns:log4perl="http://log4perl.sourceforge.net/"
-    threshold="debug" oneMessagePerAppender="${onemsgperappnder}">
+    threshold="debug" oneMessagePerAppender="\${onemsgperappnder}">
     
-<log4perl:appender name="jabbender" class="${jabberclass}">
-          <param-nested name="${paramnestedname}">
-                <param name="${hostname}" value="${hostnameval}"/>
-                <param name="${password}" value="${passwordval}"/>
+<log4perl:appender name="jabbender" class="\${jabberclass}">
+          <param-nested name="\${paramnestedname}">
+                <param name="\${hostname}" value="\${hostnameval}"/>
+                <param name="\${password}" value="\${passwordval}"/>
                 <param name="port" value="5222"/>
                 <param name="resource" value="logger"/>
                 <param name="username" value="bobjones"/>
          </param-nested>
-         <param name="to" value="bob@a.jabber.server"/>
-         <param-text name="to">${topcdata}</param-text>
+         <param name="to" value="bob\@a.jabber.server"/>
+         <param-text name="to">\${topcdata}</param-text>
           <layout class="Log::Log4perl::Layout::SimpleLayout"/>
          
 </log4perl:appender>
 <log4perl:appender name="DBAppndr2" class="Log::Log4perl::Appender::DBI">
           <param name="warp_message" value="0"/>
-          <param name="datasource" value="DBI:CSV:f_dir=t/tmp"/>
+          <param name="datasource" value="DBI:CSV:f_dir=$WORK_DIR"/>
           <param name="bufferSize" value="2"/>
-          <param name="password" value="sub { $ENV{PWD} }"/>
+          <param name="password" value="sub { \$ENV{PWD} }"/>
            <param name="username" value="bobjones"/>
           
-          <param-text name="sql">insert into ${tablename} (loglevel, message, shortcaller, thingid, category, pkg, runtime1, runtime2) values (?,?,?,?,?,?,?,?)</param-text> 
+          <param-text name="sql">insert into \${tablename} (loglevel, message, shortcaller, thingid, category, pkg, runtime1, runtime2) values (?,?,?,?,?,?,?,?)</param-text> 
            <param-nested name="params">
                 <param name="1" value="%p"/>
                 <param name="3" value="%5.5l"/>
@@ -324,7 +324,7 @@ my $varsubstconfig = <<'EOL';
 </category>
 
 <PatternLayout>
-    <cspec name="${cspecname}"><![CDATA[sub { ${perlcode} }]]></cspec>
+    <cspec name="\${cspecname}"><![CDATA[sub { \${perlcode} }]]></cspec>
 </PatternLayout>
 
 

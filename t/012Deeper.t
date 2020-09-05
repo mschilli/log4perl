@@ -2,7 +2,7 @@
 # `make test'. After `make install' it should work as `perl test.pl'
 
 
-BEGIN { 
+BEGIN {
     if($ENV{INTERNAL_DEBUG}) {
         require Log::Log4perl::InternalDebug;
         Log::Log4perl::InternalDebug->enable();
@@ -12,10 +12,12 @@ BEGIN {
 use Log::Log4perl;
 use Test::More;
 use File::Spec;
+use lib File::Spec->catdir(qw(t lib));
+use Log4perlInternalTest qw(tmpdir);
 
 our $LOG_DISPATCH_PRESENT = 0;
 
-BEGIN { 
+BEGIN {
     eval { require Log::Dispatch; };
     if($@) {
        plan skip_all => "only with Log::Dispatch";
@@ -25,26 +27,13 @@ BEGIN {
     }
 };
 
-my $WORK_DIR = "tmp";
-if(-d "t") {
-    $WORK_DIR = File::Spec->catfile(qw(t tmp));
-}
-unless (-e "$WORK_DIR"){
-    mkdir("$WORK_DIR", 0755) || die "can't create $WORK_DIR ($!)";
-}
+my $WORK_DIR = tmpdir();
 
 my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
 my $today = sprintf("%4.4d%2.2d%2.2d",$year+1900, $mon+1, $mday);
-use vars qw($logfile1 $logfile6 $logfile7);
-$logfile1 = File::Spec->catfile(qw(t tmp deeper1.log));
-$logfile6 = File::Spec->catfile(qw(t tmp deeper6.log));
-$logfile7 = File::Spec->catfile(qw(t tmp deeper7.log)); 
-our @outfiles = ($logfile1, $logfile6, $logfile7);
-
-foreach my $f (@outfiles){
-    unlink $f if (-e $f);
-}
-
+my $logfile1 = File::Spec->catfile($WORK_DIR, qw(deeper1.log));
+my $logfile6 = File::Spec->catfile($WORK_DIR, qw(deeper6.log));
+my $logfile7 = File::Spec->catfile($WORK_DIR, qw(deeper7.log));
 
 my $config = <<EOL;
 #specify LOGLEVEL, appender1, appender2, ...
@@ -99,9 +88,9 @@ my $logger = Log::Log4perl->get_logger('plant');
 
 #set to INFO
 $logger->debug("debugging message 1 ");
-$logger->info("info message 1 ");      
-$logger->warn("warning message 1 ");   
-$logger->fatal("fatal message 1 ");   
+$logger->info("info message 1 ");
+$logger->warn("warning message 1 ");
+$logger->fatal("fatal message 1 ");
 
 #set to DEBUG
 my $doglogger = Log::Log4perl->get_logger('animal.dog');
@@ -202,11 +191,3 @@ foreach my $l ($xla, $xlab, $xlabc, $xlabcd, $xlabcde){
 }
 
 is($result, $expected);
-
-
-   
-END{   
-    foreach my $f (@outfiles){
-        unlink $f if (-e $f);
-    }
-}

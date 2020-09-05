@@ -10,6 +10,8 @@ use Log::Log4perl::Appender::TestBuffer;
 use Log::Log4perl::Appender::File;
 use File::Spec;
 use Test::More;
+use lib File::Spec->catdir(qw(t lib));
+use Log4perlInternalTest qw(tmpdir);
 
 our $LOG_DISPATCH_PRESENT = 0;
 
@@ -23,20 +25,8 @@ BEGIN {
     }
 };
 
-my $WORK_DIR = "tmp";
-if(-d "t") {
-    $WORK_DIR = File::Spec->catfile(qw(t tmp));
-}
-unless (-e "$WORK_DIR"){
-    mkdir("$WORK_DIR", 0755) || die "can't create $WORK_DIR ($!)";
-}
-
-use vars qw(@outfiles $test_logfile); 
-$test_logfile = File::Spec->catfile($WORK_DIR,'test1.log');
-@outfiles = ($test_logfile,);
-foreach my $f (@outfiles){
-    unlink $f if (-e $f);
-}
+my $WORK_DIR = tmpdir();
+my $test_logfile = File::Spec->catfile($WORK_DIR,'test1.log');
 
 my $conf = <<CONF;
 log4j.category.cat1      = INFO, myAppender
@@ -52,7 +42,6 @@ Log::Log4perl->init(\$conf);
 my $logger = Log::Log4perl->get_logger('cat1');
 
 #hmm, I wonder how portable this is, maybe check $^O first?
-use vars qw($OLDOUT); #for -w
 open(OLDOUT, ">&STDOUT");
 open (TOUCH, ">>$test_logfile");# `touch $test_logfile`;
 close TOUCH;
@@ -84,8 +73,4 @@ my $rc = is ($result, $expected);
 
 if( !$rc ) {
     warn "Failed with Log::Dispatch $Log::Dispatch::VERSION";
-}
-
-foreach my $f (@outfiles){
-    unlink $f if (-e $f);
 }

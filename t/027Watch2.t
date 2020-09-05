@@ -17,6 +17,8 @@ use strict;
 use Log::Log4perl qw(:easy);
 use Log::Log4perl::Appender::TestBuffer;
 use File::Spec;
+use lib File::Spec->catdir(qw(t lib));
+use Log4perlInternalTest qw(tmpdir);
 
 BEGIN {
     if ($] < 5.006) {
@@ -26,16 +28,8 @@ BEGIN {
     }
 }
 
-my $WORK_DIR = "tmp";
-if(-d "t") {
-    $WORK_DIR = "t/tmp";
-}
-unless (-e "$WORK_DIR"){
-    mkdir("$WORK_DIR", 0755) || die "can't create $WORK_DIR ($!)";
-}
-
-my $testconf= "$WORK_DIR/test27.conf";
-unlink $testconf if (-e $testconf);
+my $WORK_DIR = tmpdir();
+my $testconf = File::Spec->catfile($WORK_DIR, "test27.conf");
 
 #goto NEW;
 Log::Log4perl::Appender::TestBuffer->reset();
@@ -57,7 +51,6 @@ EOL
 open (CONF, ">$testconf") || die "can't open $testconf $!";
 print CONF $conf1;
 close CONF;
-
 
 Log::Log4perl->init_and_watch($testconf, 1);
 
@@ -214,5 +207,3 @@ EOT
     close FILE;
 #print "Config written\n";
 }
-
-unlink $testconf;
