@@ -79,7 +79,7 @@ __END__
 
 =head1 NAME
 
-Log::Log4perl::Appender::ScreenColoredLevel - Colorize messages according to level
+Log::Log4perl::Appender::ScreenColoredLevels - Colorize messages according to level
 
 =head1 SYNOPSIS
 
