@@ -1,5 +1,7 @@
 - fix tests to work better on Windows
 - doc fixes - thanks @whosgonna, @plicease, @simon04, @willsheppard
+- improve detection of layout modules already available - thanks @KES777
+- remove circular dependency in Log::Log4perl::Appender - thanks @lharey
 
 1.51 2020-09-05
 - test improvements removing race conditions
