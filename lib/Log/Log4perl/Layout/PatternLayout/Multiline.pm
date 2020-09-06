@@ -30,7 +30,7 @@ __END__
 
 =head1 NAME
 
-    Log::Log4perl::Layout::PatternLayout::Multiline
+Log::Log4perl::Layout::PatternLayout::Multiline
 
 =head1 SYNOPSIS
 

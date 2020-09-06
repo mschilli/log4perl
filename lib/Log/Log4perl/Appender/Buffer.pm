@@ -140,7 +140,7 @@ __END__
 
 =head1 NAME
 
-    Log::Log4perl::Appender::Buffer - Buffering Appender
+Log::Log4perl::Appender::Buffer - Buffering Appender
 
 =head1 SYNOPSIS
 
