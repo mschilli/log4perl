@@ -11,8 +11,14 @@ use strict;
 use warnings;
 use Test::More;
 use Log::Log4perl::Config::Watch;
+use File::Spec;
+use lib File::Spec->catdir(qw(t lib));
+use Log4perlInternalTest qw(need_signals);
 
-plan tests => 4;
+BEGIN {
+    need_signals();
+    plan tests => 4;
+}
 
 my $EG_DIR = "eg";
 $EG_DIR = "../eg" unless -d $EG_DIR;

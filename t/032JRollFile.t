@@ -55,3 +55,10 @@ like($result, qr/^INFO  cat1 - x+info message 1/);
 
 #MaxBackupIndex is 2, so this file shouldn't exist
 ok(! -e File::Spec->catfile($WORK_DIR, 'rolltest.log.3'));
+
+reset_logger();
+
+sub reset_logger {
+  local $Log::Log4perl::Config::CONFIG_INTEGRITY_CHECK = 0; # to close handles and allow temp files to go
+  Log::Log4perl::init(\'');
+}

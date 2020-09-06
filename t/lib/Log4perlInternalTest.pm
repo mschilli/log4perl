@@ -9,6 +9,7 @@ our @EXPORT_OK = qw(
   Compare
   tmpdir
   min_version
+  need_signals
 );
 our @ISA    = qw( Exporter );
 
@@ -125,6 +126,25 @@ sub Compare {
       croak "Can't handle $type type.";
     }
   }
+}
+
+# Check if this platform supports signals
+sub need_signals {
+    require Config;
+    no warnings;
+    if (length $Config::Config{sig_name} and length $Config::Config{sig_num}) {
+        my $SIGNALS_AVAILABLE;
+        eval {
+            $SIG{USR1} = sub { $SIGNALS_AVAILABLE = 1 };
+            # From the Config.pm manpage
+            my(%sig_num);
+            my @names = split ' ', $Config::Config{sig_name};
+            @sig_num{@names} = split ' ', $Config::Config{sig_num};
+            kill $sig_num{USR1}, $$;
+        };
+        return if !$@ and $SIGNALS_AVAILABLE;
+    }
+    Test::More::plan(skip_all => "only on platforms supporting signals");
 }
 
 1;

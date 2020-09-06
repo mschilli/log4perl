@@ -1,6 +1,6 @@
 #Testing double-init
 
-BEGIN { 
+BEGIN {
     if($ENV{INTERNAL_DEBUG}) {
         require Log::Log4perl::InternalDebug;
         Log::Log4perl::InternalDebug->enable();
@@ -56,4 +56,11 @@ for my $file ($testfilea, $testfileb) {
     my $content = join '', <FILE>;
     close FILE;
     ok($content, "INFO - Shu-wa-chi!\n");
+}
+
+reset_logger();
+
+sub reset_logger {
+  local $Log::Log4perl::Config::CONFIG_INTEGRITY_CHECK = 0; # to close handles and allow temp files to go
+  Log::Log4perl::init(\'');
 }

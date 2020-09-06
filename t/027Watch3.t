@@ -11,36 +11,13 @@ BEGIN {
 use warnings;
 use strict;
 use Test::More;
-use Config;
 use File::Spec;
 use lib File::Spec->catdir(qw(t lib));
-use Log4perlInternalTest qw(tmpdir);
-
-our $SIGNALS_AVAILABLE = 0;
+use Log4perlInternalTest qw(tmpdir need_signals);
 
 BEGIN {
-    no warnings;
-    # Check if this platform supports signals
-    if (length $Config{sig_name} and length $Config{sig_num}) {
-        eval {
-            $SIG{USR1} = sub { $SIGNALS_AVAILABLE = 1 };
-            # From the Config.pm manpage
-            my(%sig_num);
-            my @names = split ' ', $Config{sig_name};
-            @sig_num{@names} = split ' ', $Config{sig_num};
-
-            kill $sig_num{USR1}, $$;
-        };
-        if($@) {
-            $SIGNALS_AVAILABLE = 0;
-        }
-    }
-        
-    if ($SIGNALS_AVAILABLE) {
-        plan tests => 15;
-    }else{
-        plan skip_all => "only on platforms supporting signals";
-    }
+    need_signals();
+    plan tests => 15;
 }
 
 use Log::Log4perl;

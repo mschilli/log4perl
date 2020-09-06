@@ -59,3 +59,10 @@ EOL
  close F;
 }
 is ($result, $expected);
+
+reset_logger();
+
+sub reset_logger {
+  local $Log::Log4perl::Config::CONFIG_INTEGRITY_CHECK = 0; # to close handles and allow temp files to go
+  Log::Log4perl::init(\'');
+}

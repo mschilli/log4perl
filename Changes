@@ -1,3 +1,5 @@
+- fix tests to work better on Windows
+
 1.51 2020-09-05
 - test improvements removing race conditions
 - minimum Perl 5.6
