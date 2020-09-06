@@ -575,8 +575,8 @@ How to use it
 
         Also, %d can be fine-tuned to display only certain characteristics
         of a date, according to the SimpleDateFormat in the Java World
-        (<http://java.sun.com/j2se/1.3/docs/api/java/text/SimpleDateFormat.h
-        tml>)
+        (<https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/
+        text/SimpleDateFormat.html>)
 
         In this way, %d{HH:mm} displays only hours and minutes of the
         current date, while %d{yy, EEEE} displays a two-digit year, followed
