@@ -568,7 +568,7 @@ replaced by the logging engine when it's time to log the message:
     %m{indent=n} Log message, multi-lines indented by n spaces
     %M Method or function where the logging request was issued
     %n Newline (OS-independent)
-    %p Priority of the logging event (%p{1} shows the first letter)
+    %p Priority/level of the logging event (%p{1} shows the first letter)
     %P pid of the current process
     %r Number of milliseconds elapsed from program start to logging 
        event
