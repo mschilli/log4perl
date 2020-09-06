@@ -11,8 +11,11 @@ my $meta_merge = {
     META_MERGE => {
         "meta-spec" => { version => 2 },
         resources => {
-            repository  => 'http://github.com/mschilli/log4perl',
+            repository  => 'https://github.com/mschilli/log4perl',
             MailingList => 'mailto:log4perl-devel@lists.sourceforge.net',
+            bugtracker  => {
+                web => 'https://github.com/mschilli/log4perl/issues',
+            },
         },
         prereqs => {
             runtime => {
