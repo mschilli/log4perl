@@ -259,9 +259,8 @@ sub _init {
             $filter = Log::Log4perl::Filter->new($filter_name, $type);
         } else {
                 # Filter class
-                die "Filter class '$type' doesn't exist" unless
+                die "Filter class '$type' doesn't exist ($!)" unless
                      Log::Log4perl::Util::module_available($type);
-                eval "require $type" or die "Require of $type failed ($!)";
 
                 # Invoke with all defined parameter
                 # key/values (except the key 'value' which is the entry 
@@ -513,12 +512,10 @@ sub add_layout_by_name {
             $layout_class = "Log::Log4perl::Layout::$layout_class";
         } else {
             die "ERROR: trying to set layout for $appender_name to " .
-                "'$layout_class' failed";
+                "'$layout_class' failed ($!)";
         }
     }
 
-    eval "require $layout_class" or 
-        die "Require to $layout_class failed ($!)";
 
     $appender->layout($layout_class->new(
         $data->{appender}->{$appender_name}->{layout},
