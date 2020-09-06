@@ -45,6 +45,7 @@ WriteMakefile(
     MIN_PERL_VERSION => '5.006',
     'clean'             => {FILES => "*.tar.gz *.ppd pod2htm*"},
     EXE_FILES           => ["eg/l4p-tmpl"],
+    LICENSE => 'perl_5',
     $ExtUtils::MakeMaker::VERSION >= 6.50 ? (%$meta_merge) : (),
     get_man3pods(), 
 );
