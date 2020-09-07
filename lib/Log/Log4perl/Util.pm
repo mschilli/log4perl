@@ -40,8 +40,7 @@ sub module_available {  # Check if a module is available
     my($full_name) = @_;
 
     # Proper way to check if a module is available or not
-    my $pkg =  "${full_name}::";
-    return 1   if defined *{ "${full_name}::" };
+    return 1   if keys %{ "${full_name}::" };
 
       # Weird cases like "strict;" (including the semicolon) would 
       # succeed with the eval below, so check those up front. 
