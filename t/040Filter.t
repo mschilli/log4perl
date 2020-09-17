@@ -16,7 +16,6 @@ use strict;
 use Test::More tests => 36;
 
 use Log::Log4perl;
-require Log::Log4perl::Filter::LevelMatch; # else module_available thinks is already loaded because stash created at compile-time by ::ok override
 
 #############################################
 # Use a pattern-matching subroutine as filter

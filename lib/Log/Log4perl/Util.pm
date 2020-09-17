@@ -38,28 +38,19 @@ sub params_check {
 sub module_available {  # Check if a module is available
 ##################################################
     my($full_name) = @_;
-
-    # Proper way to check if a module is available or not
-    return 1   if keys %{ "${full_name}::" };
-
       # Weird cases like "strict;" (including the semicolon) would 
       # succeed with the eval below, so check those up front. 
       # I can't believe Perl doesn't have a proper way to check if a 
       # module is available or not!
     return 0 if $full_name =~ /[^\w:]/;
-
-    # We can try to load it, if it is not avaiable yet
     $full_name =~ s#::#/#g;
+    $full_name .= '.pm';
+    return 1 if $INC{$full_name};
     eval {
-        local $SIG{__DIE__} =  sub {};
-        require "$full_name.pm";
+        local $SIG{__DIE__} = sub {};
+        require $full_name;
     };
-
-    if($@) {
-        return 0;
-    }
-
-    return 1;
+    return !$@;
 }
 
 ##################################################
