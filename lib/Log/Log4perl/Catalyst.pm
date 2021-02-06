@@ -4,7 +4,7 @@ use strict;
 use Log::Log4perl qw(:levels);
 use Log::Log4perl::Logger;
 
-our $VERSION                  = $Log::Log4perl::VERSION;
+our $VERSION                  = '1.53';
 our $CATALYST_APPENDER_SUFFIX = "catalyst_buffer";
 our $LOG_LEVEL_ADJUSTMENT     = 1;
 

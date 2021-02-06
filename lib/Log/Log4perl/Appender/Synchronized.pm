@@ -15,8 +15,7 @@ use Log::Log4perl::Util::Semaphore;
 
 our @ISA = qw(Log::Log4perl::Appender);
 
-our $CVSVERSION   = '$Revision: 1.12 $';
-our ($VERSION)    = ($CVSVERSION =~ /(\d+\.\d+)/);
+our $VERSION    = '1.53';
 
 ###########################################
 sub new {

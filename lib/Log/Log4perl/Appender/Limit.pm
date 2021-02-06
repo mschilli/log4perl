@@ -15,8 +15,7 @@ use Storable;
 
 our @ISA = qw(Log::Log4perl::Appender);
 
-our $CVSVERSION   = '$Revision: 1.7 $';
-our ($VERSION)    = ($CVSVERSION =~ /(\d+\.\d+)/);
+our $VERSION    = '1.53';
 
 ###########################################
 sub new {
