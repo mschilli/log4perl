@@ -175,8 +175,6 @@ sub log {
             if (ref $p->{message} eq "ARRAY") {
                 for my $i (0..$#{$p->{message}}) {
                     if( !defined $p->{message}->[ $i ] ) {
-                        local $Carp::CarpLevel =
-                        $Carp::CarpLevel + $Log::Log4perl::caller_depth + 1;
                         carp "Warning: Log message argument #" . 
                              ($i+1) . " undefined";
                     }
