@@ -63,12 +63,16 @@ sub log {
     if ( my $color = $self->{ 'color' }->{ $params{ 'log4p_level' } } ) {
         $msg = Term::ANSIColor::colored( $msg, $color );
     }
-    
-    if($self->{stderr}) {
-        print STDERR $msg;
-    } else {
-        print $msg;
+
+    my $fh = \*STDOUT;
+    if (ref $self->{stderr}) {
+        $fh = \*STDERR if $self->{stderr}{ $params{'log4p_level'} }
+                            || $self->{stderr}{ lc $params{'log4p_level'} };
+    } elsif ($self->{stderr}) {
+        $fh = \*STDERR;
     }
+
+    print $fh $msg;
 }
 
 1;
@@ -185,12 +189,27 @@ Red
 =back
 
 The constructor C<new()> takes an optional parameter C<stderr>,
-if set to a true value, the appender will log to STDERR. If C<stderr>
-is set to a false value, it will log to STDOUT. The default setting
-for C<stderr> is 1, so messages will be logged to STDERR by default.
-The constructor can also take an optional parameter C<color>, whose
-value is a  hashref of color configuration options, any levels that
-are not included in the hashref will be set to their default values.
+if set to a true value, the appender will log all levels to STDERR.
+If C<stderr> is set to a false value, it will log all levels to
+STDOUT. Otherwise, C<stderr> may be set to a hash, with a key for
+each C<log4p_level> and a truthy value to dynamically use stderr.
+The default setting for C<stderr> is 1, so all messages will be logged
+to STDERR by default.
+
+    # All messages/levels to STDERR
+    my $app = Log::Log4perl::Appender::Screen->new(
+        stderr  => 1,
+    );
+
+    # Only ERROR and FATAL to STDERR (case-sensitive)
+    my $app = Log::Log4perl::Appender::Screen->new(
+        stderr  => { ERROR => 1, FATAL => 1},
+    );
+
+The constructor can also take an optional
+parameter C<color>, whose value is a  hashref of color configuration
+options, any levels that are not included in the hashref will be set
+to their default values.
 
 =head2 Using ScreenColoredLevels on Windows
 

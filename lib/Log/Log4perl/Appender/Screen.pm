@@ -46,11 +46,15 @@ sub log {
 ##################################################
     my($self, %params) = @_;
 
-    if($self->{stderr}) {
-        print STDERR $params{message};
-    } else {
-        print $params{message};
+    my $fh = \*STDOUT;
+    if (ref $self->{stderr}) {
+        $fh = \*STDERR if $self->{stderr}{ $params{'log4p_level'} }
+                            || $self->{stderr}{ lc $params{'log4p_level'} };
+    } elsif ($self->{stderr}) {
+        $fh = \*STDERR;
     }
+
+    print $fh $params{message};
 }
 
 1;
@@ -79,14 +83,37 @@ Log::Log4perl::Appender::Screen - Log to STDOUT/STDERR
 
 This is a simple appender for writing to STDOUT or STDERR.
 
-The constructor C<new()> take an optional parameter C<stderr>,
-if set to a true value, the appender will log to STDERR.
-The default setting for C<stderr> is 1, so messages will be logged to
-STDERR by default.
+The constructor C<new()> takes an optional parameter C<stderr>:
 
-If C<stderr>
-is set to a false value, it will log to STDOUT (or, more accurately,
-whichever file handle is selected via C<select()>, STDOUT by default).
+=over
+
+=item *
+
+If set to a false value, it will log all levels to STDOUT (or, more
+accurately, whichever file handle is selected via C<select()>, STDOUT
+by default).
+
+=item *
+
+If set to a hash, then any C<log4p_level> with a truthy value will
+dynamically use STDERR, or STDOUT otherwise.
+
+=item *
+
+Otherwise, if a true value (the default setting is 1), messages will be
+logged to STDERR.
+
+=back
+
+    # All messages/levels to STDERR
+    my $app = Log::Log4perl::Appender::Screen->new(
+        stderr  => 1,
+    );
+
+    # Only ERROR and FATAL to STDERR (case-sensitive)
+    my $app = Log::Log4perl::Appender::Screen->new(
+        stderr  => { ERROR => 1, FATAL => 1},
+    );
 
 Design and implementation of this module has been greatly inspired by
 Dave Rolsky's C<Log::Dispatch> appender framework.

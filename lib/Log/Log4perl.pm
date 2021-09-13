@@ -2512,6 +2512,12 @@ in Perl, without using a configuration file at all:
                           name      => "screenlog",
                           stderr    => 0);
 
+     # Define a mixed stderr/stdout appender
+  my $mixed_stdout_stderr_appender = Log::Log4perl::Appender->new(
+                          "Log::Log4perl::Appender::Screen",
+                          name      => "screenlog",
+                          stderr    => { ERROR => 1, FATAL => 1 });
+
      # Have both appenders use the same layout (could be different)
   $stdout_appender->layout($layout);
   $file_appender->layout($layout);
