@@ -1,3 +1,4 @@
+1.55 2022-06-02
 - fix Appender::File bug on Windows when different volume
 - add autoflush option to Log::Log4perl::Appender::Screen - thanks @abraxxa
 - stderr option for Appender::Screen* can take hash - thanks @bmodotdev
