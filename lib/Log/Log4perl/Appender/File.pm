@@ -9,7 +9,7 @@ use strict;
 use Log::Log4perl::Config::Watch;
 use Fcntl;
 use File::Path;
-use File::Spec::Functions qw(splitpath);
+use File::Spec::Functions qw(splitpath catpath);
 use constant _INTERNAL_DEBUG => 0;
 use constant SYSWRITE_UTF8_OK => ( $] < 5.024 );
 
@@ -134,7 +134,7 @@ sub file_open {
                 $options->{$param} = $self->{$param} if defined $self->{$param};
             }
             eval {
-                mkpath($path,$options);
+                mkpath(catpath($volume, $path, ''),$options);
             };
             umask($old_umask) if defined $old_umask;
             die "Can't create path ${path} ($!)" if $@;

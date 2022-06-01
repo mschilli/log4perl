@@ -1,3 +1,5 @@
+- fix Appender::File bug on Windows when different volume
+
 1.54 2021-02-06
 - set real versions for some modules - thanks @eserte for report
 
