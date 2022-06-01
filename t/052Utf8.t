@@ -25,8 +25,6 @@ use Log4perlInternalTest qw(tmpdir);
 BEGIN {
     if($] < 5.008) {
         plan skip_all => "utf-8 tests with perl >= 5.8 only";
-    } else {
-        plan tests => 8;
     }
 }
 
@@ -162,4 +160,6 @@ eval {
     DEBUG "";
 };
 
-is $@, "", "zero bytes syswrite [rt.cpan.org #121346]"
+is $@, "", "zero bytes syswrite [rt.cpan.org #121346]";
+
+done_testing;

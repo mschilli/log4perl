@@ -6,20 +6,10 @@ BEGIN {
 }
 
 use Log::Log4perl;
-use Test;
-
-BEGIN {plan tests => 1}
-ok(1); #always succeed
+use Test::More;
 
 #skipping on win32 systems
-eval {
-	require Sys::Syslog;
-};
-if ($@){
-   print STDERR "Sys::Syslog not installed, skipping...\n";
-   exit;
-}
-
+eval { require Sys::Syslog; 1 } or plan skip_all => "Sys::Syslog not installed";
 
 print <<EOL;
 
@@ -64,5 +54,5 @@ eval {
 
 };
 
-
-
+ok 1;
+done_testing;

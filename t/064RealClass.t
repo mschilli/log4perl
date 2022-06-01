@@ -5,8 +5,6 @@ use strict;
 use Test::More;
 use Log::Log4perl::Appender::TestBuffer;
 
-plan tests => 1;
-
 package AppBaseClass;
 use Log::Log4perl qw(get_logger :easy);
 sub meth {
@@ -42,3 +40,5 @@ my $sub = AppSubClass->new();
 $sub->meth();
 
 is $buffer->buffer(), "in base class\n", "subclass logger in base class";
+
+done_testing;

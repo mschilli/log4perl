@@ -11,16 +11,10 @@ BEGIN {
     }
 }
 
-use warnings;
 use strict;
+use warnings;
 use Log::Log4perl::Appender::TestBuffer;
-
-#########################
-# change 'tests => 1' to 'tests => last_test_to_print';
-#########################
-use Test;
-BEGIN { plan tests => 16 };
-
+use Test::More;
 use Log::Log4perl qw(get_logger :levels);
 
 ok(1);
@@ -54,7 +48,7 @@ ok(2);
 my $log2 = get_logger("abc.def");
 $log2->debug("Is this it?");
 
-ok($app->buffer(), "DEBUG - Is this it?\n");
+is($app->buffer(), "DEBUG - Is this it?\n");
 $app->buffer("");
 
 ##################################################
@@ -63,7 +57,7 @@ $app->buffer("");
 my $log3 = get_logger("main");
 $log3->debug("Is this it?");
 
-ok($app->buffer(), "DEBUG - Is this it?\n");
+is($app->buffer(), "DEBUG - Is this it?\n");
 $app->buffer("");
 
 ##################################################
@@ -72,7 +66,7 @@ $app->buffer("");
 my $log4 = get_logger("main");
 $log4->debug("Is this it?");
 
-ok($app->buffer(), "DEBUG - Is this it?\n");
+is($app->buffer(), "DEBUG - Is this it?\n");
 $app->buffer("");
 
 ##################################################
@@ -81,7 +75,7 @@ $app->buffer("");
 my $log5 = get_logger("main");
 $log5->debug("Is this it?");
 
-ok($app->buffer(), "DEBUG - Is this it?\n");
+is($app->buffer(), "DEBUG - Is this it?\n");
 $app->buffer("");
 
 ##################################################
@@ -90,7 +84,7 @@ $app->buffer("");
 my $log6 = get_logger();
 $log6->debug("Is this it?");
 
-ok($app->buffer(), "DEBUG - Is this it?\n");
+is($app->buffer(), "DEBUG - Is this it?\n");
 $app->buffer("");
 
 ##################################################
@@ -99,7 +93,7 @@ $app->buffer("");
 my $log7 = Log::Log4perl->get_logger();
 $log7->debug("Is this it?");
 
-ok($app->buffer(), "DEBUG - Is this it?\n");
+is($app->buffer(), "DEBUG - Is this it?\n");
 $app->buffer("");
 
 ##################################################
@@ -108,7 +102,7 @@ $app->buffer("");
 my $log8 = Log::Log4perl::get_logger();
 $log8->debug("Is this it?");
 
-ok($app->buffer(), "DEBUG - Is this it?\n");
+is($app->buffer(), "DEBUG - Is this it?\n");
 $app->buffer("");
 
 ##################################################
@@ -120,7 +114,7 @@ $log8->debug("Is this it?");
 
 $app = Log::Log4perl->appenders()->{"A1"};
 
-ok($app->buffer(), "");
+is($app->buffer(), "");
 $app->buffer("");
 
 ##################################################
@@ -128,13 +122,15 @@ $app->buffer("");
 ##################################################
 $Log::Log4perl::Appender::TestBuffer::DESTROY_MESSAGE = "";
 Log::Log4perl->eradicate_appender("A1");
-ok($Log::Log4perl::Appender::TestBuffer::DESTROY_MESSAGE, "", 
+is($Log::Log4perl::Appender::TestBuffer::DESTROY_MESSAGE, "",
    "destroy message before");
 
 undef $app;
    # Special for TestBuffer: remove circ ref
 delete ${Log::Log4perl::Appender::TestBuffer::POPULATION}{A1};
 
-ok($Log::Log4perl::Appender::TestBuffer::DESTROY_MESSAGES, 
+is($Log::Log4perl::Appender::TestBuffer::DESTROY_MESSAGES,
    "Log::Log4perl::Appender::TestBuffer destroyed", 
    "destroy message after destruction");
+
+done_testing;

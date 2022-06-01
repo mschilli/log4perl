@@ -9,13 +9,9 @@ BEGIN {
     }
 }
 
-use warnings;
 use strict;
-
+use warnings;
 use Test::More;
-
-BEGIN { plan tests => 2 }
-
 use Log::Log4perl qw(get_logger);
 use Log::Log4perl::Appender::TestBuffer;
 
@@ -40,3 +36,5 @@ ok $Log::Log4perl::DateFormat::GMTIME, "init_with_utc";
 
 init_with_utc(0);
 ok ! $Log::Log4perl::DateFormat::GMTIME, "init_with_utc";
+
+done_testing;

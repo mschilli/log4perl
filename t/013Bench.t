@@ -5,16 +5,14 @@ BEGIN {
     }
 }
 
-use Test;
+use Test::More;
 use Benchmark qw/timeit timestr/;
 use Log::Log4perl;
 
 $count = 100_000;
 
 unless ($ENV{LOG4PERL_BENCH}) {
-    print "set \$ENV{LOG4PERL_BENCH} to a true value to run benchmarks, skipping...\n";
-    ok(1);
-    exit;
+    plan skip_all => "set \$ENV{LOG4PERL_BENCH} to a true value to run benchmarks, skipping...\n";
 }
 
 $conf = <<EOL;
@@ -131,14 +129,6 @@ print "same appenders, two levels of inheritance: \n";
 $t = timeit $count, sub {$multi3->info('info message')};
 print timestr($t),"\n\n";
 
-
-
-
-
-
-print
-
-
 ok(1);
 
-BEGIN { plan tests => 1, }
+done_testing;

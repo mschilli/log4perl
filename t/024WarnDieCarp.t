@@ -22,21 +22,12 @@ BEGIN {
     }
 }
 
-use warnings;
 use strict;
-
+use warnings;
 use Test::More;
 use Log::Log4perl qw(get_logger :easy);
 use Log::Log4perl::Level;
 use File::Spec; use Data::Dumper;
-
-BEGIN {
-    if ($] < 5.006) {
-        plan skip_all => "Only with perl >= 5.006";
-    } else {
-        plan tests => 73;
-    }
-}
 
 my $warnstr;
 
@@ -402,3 +393,5 @@ eval {
 };
 
 is $@->{ foo }, "bar", "die without stringify";
+
+done_testing;

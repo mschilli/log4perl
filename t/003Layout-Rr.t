@@ -10,7 +10,7 @@ BEGIN {
 use strict;
 use warnings;
 
-use Test::More tests => 2;
+use Test::More;
 use File::Spec;
 
 use Log::Log4perl;
@@ -86,6 +86,7 @@ is_deeply(
     ]
 );
 
+done_testing;
 
 #
 # Returns the elapsed times logged so far.
@@ -151,4 +152,3 @@ sub create_logger {
     
     return $logger;
 }
-

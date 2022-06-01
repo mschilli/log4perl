@@ -30,14 +30,7 @@ BEGIN {
     };
     if ($@) {
         plan skip_all => "only with XML::DOM > $dvrq";
-    }else{
-        plan tests => 4;
     }
-}
-
-if ($no_XMLDOM){
-    ok(1);
-    exit(0);
 }
 
 my $WORK_DIR = tmpdir();
@@ -345,8 +338,6 @@ $ENV{perlcode} = 'return "UID $< GID $(";';
 
 my $varsubstdata = Log::Log4perl::Config::config_read(\$varsubstconfig);
 
-
-
 ok(Compare($xmldata, $propsdata)) || 
         do {
           if ($dump_available) {
@@ -355,3 +346,4 @@ ok(Compare($xmldata, $propsdata)) ||
           }
         };
 
+done_testing;

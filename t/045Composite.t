@@ -10,9 +10,8 @@ BEGIN {
     }
 }
 
-use warnings;
 use strict;
-
+use warnings;
 use Test::More;
 
 BEGIN {
@@ -23,8 +22,6 @@ BEGIN {
         plan skip_all => "only with Storable"; # Limit.pm needs it and
                                                # early Perl versions dont
                                                # have it.
-    }else{
-        plan tests => 20;
     }
 }
 
@@ -370,3 +367,5 @@ $composite->flush();
 
 is $buffer->buffer(), "", 
    "appender threshold blocks message in composite appender";
+
+done_testing;

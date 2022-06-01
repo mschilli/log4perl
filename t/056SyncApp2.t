@@ -25,9 +25,7 @@ our $INTERNAL_DEBUG = 0;
 $| = 1;
 
 BEGIN {
-    if(exists $ENV{"L4P_ALL_TESTS"}) {
-        plan tests => 1;
-    } else {
+    if(!exists $ENV{"L4P_ALL_TESTS"}) {
         plan skip_all => "- only with L4P_ALL_TESTS";
     }
 }
@@ -86,3 +84,4 @@ unlink $logfile;
 Log::Log4perl->appender_by_name('Syncer')->DESTROY();
 ok(!$@, "Destroying appender");
 
+done_testing;

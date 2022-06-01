@@ -10,9 +10,8 @@ BEGIN {
     }
 }
 
-use warnings;
 use strict;
-
+use warnings;
 use Log::Log4perl qw(:easy :no_extra_logdie_message);
 use Test::More;
 use File::Spec;
@@ -22,8 +21,6 @@ use Log4perlInternalTest qw(tmpdir);
 BEGIN {
     if ($] < 5.008) {
         plan skip_all => "Only with perl >= 5.008";
-    } else {
-        plan tests => 11;
     }
 }
 
@@ -107,3 +104,5 @@ eval {
 $line_ref += 8;
 like($@, qr/logdie.*$line_ref/, "Output to stderr");
 like($buf->buffer(), qr/logdie/, "Appender output intact");
+
+done_testing;

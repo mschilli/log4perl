@@ -9,24 +9,14 @@ BEGIN {
     }
 }
 
-use Test::More;
-
-use warnings;
 use strict;
-
+use warnings;
+use Test::More;
 use Log::Log4perl qw(:easy);
 use Log::Log4perl::Appender::TestBuffer;
 use File::Spec;
 use lib File::Spec->catdir(qw(t lib));
 use Log4perlInternalTest qw(tmpdir);
-
-BEGIN {
-    if ($] < 5.006) {
-        plan skip_all => "Only with perl >= 5.006";
-    } else {
-        plan tests => 21;
-    }
-}
 
 my $WORK_DIR = tmpdir();
 my $testconf = File::Spec->catfile($WORK_DIR, "test27.conf");
@@ -189,6 +179,7 @@ sleep(2);
 ERROR("fourth");
 like $buf->buffer(), qr/main-main:: 027Watch2.t/, 
      "[rt.cpan.org #60386] caller level check";
+done_testing;
 
 ###########################################
 sub conf_file_write {

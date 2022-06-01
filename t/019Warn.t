@@ -7,10 +7,9 @@ BEGIN {
     }
 }
 
-use warnings;
 use strict;
-
-use Test;
+use warnings;
+use Test::More;
 use Log::Log4perl;
 use File::Spec;
 use lib File::Spec->catdir(qw(t lib));
@@ -18,8 +17,6 @@ use Log4perlInternalTest qw(tmpdir);
 
 my $WORK_DIR = tmpdir();
 my $TMP_FILE = File::Spec->catfile($WORK_DIR, qw(warnings));
-
-BEGIN { plan tests => 2 }
 
 ok(1); # Initialized ok
 
@@ -37,7 +34,8 @@ $log->debug("hey there");
 my $warn = readwarn();
 #print "'$warn'\n";
 
-ok($warn, 'm#Forgot#');
+like($warn, qr#Forgot#);
+done_testing;
 
 __END__
 

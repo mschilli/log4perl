@@ -14,14 +14,13 @@ BEGIN {
 
 use Test::More;
 use Log::Log4perl;
-use warnings;
 use strict;
+use warnings;
 use lib File::Spec->catdir(qw(t lib));
 use Log4perlInternalTest qw(tmpdir min_version);
 
 BEGIN {
     min_version(qw( DBI DBD::CSV SQL::Statement ));
-    plan tests => 11;
 }
 
 require DBI;
@@ -248,6 +247,7 @@ is_deeply $got, [ 'WARN', "test message", '' ], "dbi insert with NULL values" or
 }
 
 reset_logger();
+done_testing;
 
 sub reset_logger {
   local $Log::Log4perl::Config::CONFIG_INTEGRITY_CHECK = 0; # to close handles and allow temp files to go

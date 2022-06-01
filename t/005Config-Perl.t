@@ -10,12 +10,7 @@ BEGIN {
     }
 }
 
-#########################
-# change 'tests => 1' to 'tests => last_test_to_print';
-#########################
 use Test::More;
-BEGIN { plan tests => 3 };
-
 use Log::Log4perl;
 use Log::Log4perl::Appender::TestBuffer;
 use File::Spec;
@@ -56,3 +51,5 @@ $logger->debug("Gurgel");
 $data = <LOG>;
 
 is($data, "005Config-Perl.t $line DEBUG N/A  - Gurgel\n");
+
+done_testing;

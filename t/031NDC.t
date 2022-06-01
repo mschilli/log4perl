@@ -10,18 +10,14 @@ BEGIN {
     }
 }
 
-use warnings;
 use strict;
-
-use Test;
-
+use warnings;
+use Test::More;
 use Log::Log4perl qw(get_logger);
 use Log::Log4perl::Level;
 use Log::Log4perl::Appender::TestBuffer;
 use Log::Log4perl::NDC;
 use Log::Log4perl::MDC;
-
-BEGIN { plan tests => 3 }
 
 # Have TestBuffer log the Log::Dispatch priority
 Log::Log4perl::Appender::TestBuffer->reset();
@@ -57,7 +53,7 @@ $loga->warn("warn");
 Log::Log4perl::NDC->push("seventh");
 $loga->error("error");
 
-ok($app0->buffer(), 
+is($app0->buffer(),
    "debug <first>info <first second third fourth sixth>warn <[undef]>error <seventh>");
 
 Log::Log4perl::Appender::TestBuffer->reset();
@@ -80,7 +76,7 @@ my $logb = get_logger("b");
 
 $logb->debug("testmessage");
 
-ok($app1->buffer(), 
+is($app1->buffer(),
    "blah-host: testmessage blah-ip\n");
 
 # Check what happens if %X is used with an undef value
@@ -101,5 +97,7 @@ $logb = get_logger("b");
 
 $logb->debug("testmessage");
 
-ok($app1->buffer(), 
+is($app1->buffer(),
    "[undef]: testmessage blah-ip\n");
+
+done_testing;

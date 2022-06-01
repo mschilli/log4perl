@@ -1,4 +1,3 @@
-
 BEGIN { 
     if($ENV{INTERNAL_DEBUG}) {
         require Log::Log4perl::InternalDebug;
@@ -35,14 +34,7 @@ BEGIN {
     };
     if ($@) {
         plan skip_all => "only with XML::DOM > $dvrq";
-    }else{
-        plan tests => 2;
     }
-}
-
-if ($no_XMLDOM){
-    ok(1);
-    exit(0);
 }
 
 my $WORK_DIR = tmpdir();
@@ -284,3 +276,5 @@ my $logger = Log::Log4perl->get_logger();
  
 $logger->info("Info"); 
 $logger->debug("Debug"); 
+
+done_testing;

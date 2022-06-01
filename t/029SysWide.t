@@ -10,16 +10,12 @@ BEGIN {
     }
 }
 
-use warnings;
 use strict;
-
-use Test;
-
+use warnings;
+use Test::More;
 use Log::Log4perl qw(get_logger);
 use Log::Log4perl::Level;
 use Log::Log4perl::Appender::TestBuffer;
-
-BEGIN { plan tests => 6 }
 
 ok(1); # If we made it this far, we're ok.
 
@@ -45,7 +41,7 @@ my $loga = get_logger("a");
 $loga->info("Don't want to see this");
 $loga->error("Yeah, loga");
 
-ok($app0->buffer(), "ERROR - Yeah, loga\n");
+is($app0->buffer(), "ERROR - Yeah, loga\n");
 
 ##################################################
 # System-wide threshold with appender threshold
@@ -75,8 +71,8 @@ $loga = get_logger("a");
 $loga->info("Don't want to see this");
 $loga->error("Yeah, loga");
 
-ok($app0->buffer(), "ERROR - Yeah, loga\n");
-ok($app1->buffer(), "ERROR - Yeah, loga\n");
+is($app0->buffer(), "ERROR - Yeah, loga\n");
+is($app1->buffer(), "ERROR - Yeah, loga\n");
 
 ############################################################
 # System-wide threshold shouldn't lower appender thresholds
@@ -98,7 +94,7 @@ my $logger = get_logger();
 $logger->info("Blah");
 
 $app0 = Log::Log4perl::Appender::TestBuffer->by_name("BUF0");
-ok($app0->buffer(), "", "syswide threshold shouldn't lower app thresholds");
+is($app0->buffer(), "", "syswide threshold shouldn't lower app thresholds");
 
 ############################################################
 # System-wide threshold shouldn't lower appender thresholds
@@ -120,4 +116,6 @@ $logger = get_logger();
 $logger->warn("Blah");
 
 $app0 = Log::Log4perl::Appender::TestBuffer->by_name("BUF0");
-ok($app0->buffer(), "", "syswide threshold trumps thresholds");
+is($app0->buffer(), "", "syswide threshold trumps thresholds");
+
+done_testing;

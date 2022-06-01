@@ -23,7 +23,7 @@ use strict;
 
 use Test::More;
 
-plan tests => 1;
-
 my $logger = Mylogger->get_logger("Waah");
 is($logger->{category}, "Waah", "subclass category rt #32942");
+
+done_testing;

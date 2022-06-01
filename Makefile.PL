@@ -1,19 +1,18 @@
+use strict;
+use warnings;
 use ExtUtils::MakeMaker;
-
-# Check for Time::HiRes;
-eval { require Time::HiRes; };
-if($@) {
-    print "Warning: Time::HiRes not installed, but that's ok, " .
-          "%r will use full seconds\n";
-}
 
 my $meta_merge = {
     META_MERGE => {
         "meta-spec" => { version => 2 },
         resources => {
-            repository  => 'https://github.com/mschilli/log4perl',
+            repository => {
+              type => 'git',
+              url => 'git@github.com:github.com/mschilli/log4perl.git',
+              web => 'https://github.com/github.com/mschilli/log4perl',
+            },
             MailingList => 'mailto:log4perl-devel@lists.sourceforge.net',
-            bugtracker  => {
+            bugtracker => {
                 web => 'https://github.com/mschilli/log4perl/issues',
             },
         },
@@ -28,6 +27,15 @@ my $meta_merge = {
                     'Log::Dispatch::FileRotate' => '1.10',
                     'XML::DOM' => '1.29',
                 },
+                requires => {
+                    'File::Spec'    => '0.82',
+                    'File::Path'    => '2.07',
+                },
+            },
+            test => {
+                requires => {
+                    'Test::More'    => '0.88', # done_testing
+                },
             },
         },
     }
@@ -36,10 +44,6 @@ my $meta_merge = {
 WriteMakefile(
     'NAME'		=> 'Log::Log4perl',
     'VERSION_FROM'	=> 'lib/Log/Log4perl.pm', # finds $VERSION
-    'PREREQ_PM'		=> { Test::More    => 0.45,
-                             File::Spec    => 0.82,
-                             File::Path    => 2.07,
-                           }, # e.g., Module::Name => 1.1
     ABSTRACT_FROM => 'lib/Log/Log4perl.pm', # retrieve abstract from module
     AUTHOR     => 'Mike Schilli <m@perlmeister.com>',
     MIN_PERL_VERSION => '5.006',

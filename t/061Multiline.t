@@ -1,4 +1,3 @@
-
 # https://rt.cpan.org/Public/Bug/Display.html?id=60197
 
 use Log::Log4perl;
@@ -6,7 +5,7 @@ use Log::Log4perl::Appender;
 use Log::Log4perl::Appender::File;
 use Log::Log4perl::Layout::PatternLayout::Multiline;
 
-use Test::More tests => 1;
+use Test::More;
 
 my $logger = Log::Log4perl->get_logger("blah");
 
@@ -33,3 +32,5 @@ $appender->log({ level => 1, message => "\n\n" }, 'foo_category', 'INFO');
 ok(1, "no warnings should appear here");
 
 unlink $logfile;
+
+done_testing;

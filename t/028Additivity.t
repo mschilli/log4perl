@@ -10,12 +10,7 @@ BEGIN {
     }
 }
 
-#########################
-# change 'tests => 1' to 'tests => last_test_to_print';
-#########################
-use Test;
-BEGIN { plan tests => 9 };
-
+use Test::More;
 use Log::Log4perl qw(get_logger :levels);
 use Log::Log4perl::Appender::TestBuffer;
 
@@ -42,8 +37,8 @@ $logger->info("Percolate this!");
 my $buf1 = Log::Log4perl::Appender::TestBuffer->by_name("A1")->buffer();
 my $buf2 = Log::Log4perl::Appender::TestBuffer->by_name("A2")->buffer();
 
-ok($buf1, "INFO - Percolate this!\n");
-ok($buf2, "INFO - Percolate this!\n");
+is($buf1, "INFO - Percolate this!\n");
+is($buf2, "INFO - Percolate this!\n");
 
 Log::Log4perl::Appender::TestBuffer->reset();
 
@@ -66,8 +61,8 @@ $logger->info("Percolate this!");
 $buf1 = Log::Log4perl::Appender::TestBuffer->by_name("A1")->buffer();
 $buf2 = Log::Log4perl::Appender::TestBuffer->by_name("A2")->buffer();
 
-ok($buf1, ""); # Not supposed to show up in the root logger
-ok($buf2, "INFO - Percolate this!\n");
+is($buf1, ""); # Not supposed to show up in the root logger
+is($buf2, "INFO - Percolate this!\n");
 
 Log::Log4perl::Appender::TestBuffer->reset();
 
@@ -90,8 +85,8 @@ $logger->info("Percolate this!");
 $buf1 = Log::Log4perl::Appender::TestBuffer->by_name("A1")->buffer();
 $buf2 = Log::Log4perl::Appender::TestBuffer->by_name("A2")->buffer();
 
-ok($buf1, "INFO - Percolate this!\n");
-ok($buf2, "INFO - Percolate this!\n");
+is($buf1, "INFO - Percolate this!\n");
+is($buf2, "INFO - Percolate this!\n");
 
 Log::Log4perl::Appender::TestBuffer->reset();
 
@@ -118,7 +113,9 @@ $logger->info("Only for Twix");
 $buf1 = Log::Log4perl::Appender::TestBuffer->by_name("A1")->buffer();
 $buf2 = Log::Log4perl::Appender::TestBuffer->by_name("A2")->buffer();
 
-ok($buf1, "");
-ok($buf2, "INFO - Only for Twix\n");
+is($buf1, "");
+is($buf2, "INFO - Only for Twix\n");
 
 Log::Log4perl::Appender::TestBuffer->reset();
+
+done_testing;

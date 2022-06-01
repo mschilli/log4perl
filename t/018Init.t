@@ -7,11 +7,9 @@ BEGIN {
     }
 }
 
-use Test;
-
-use warnings;
 use strict;
-
+use warnings;
+use Test::More;
 use Log::Log4perl;
 use File::Spec;
 use lib File::Spec->catdir(qw(t lib));
@@ -20,8 +18,6 @@ use Log4perlInternalTest qw(tmpdir);
 my $WORK_DIR = tmpdir();
 my $testfilea = File::Spec->catfile($WORK_DIR, qw(test18a.log));
 my $testfileb = File::Spec->catfile($WORK_DIR, qw(test18b.log));
-
-BEGIN {plan tests => 2}
 
 ####################################################
 # Double-Init, 2nd time with different log file name
@@ -59,6 +55,7 @@ for my $file ($testfilea, $testfileb) {
 }
 
 reset_logger();
+done_testing;
 
 sub reset_logger {
   local $Log::Log4perl::Config::CONFIG_INTEGRITY_CHECK = 0; # to close handles and allow temp files to go

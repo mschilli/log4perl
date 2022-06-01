@@ -11,17 +11,14 @@ BEGIN {
     }
 }
 
-#########################
-# change 'tests => 1' to 'tests => last_test_to_print';
-#########################
-use Test;
+use strict;
+use warnings;
+use Test::More;
 
 #create a custom level "LITEWARN"
 use Log::Log4perl;
 use Log::Log4perl::Level;
 use Log::Log4perl::Appender::TestBuffer;
-# use strict;
-
 
 ok(1); # If we made it this far, we're ok.
 
@@ -32,7 +29,7 @@ Log::Log4perl::Logger::create_custom_level("DEBUG2", "DEBUG");
 # test insane creation of levels
 
 foreach (1 .. 14) {
-  ok(Log::Log4perl::Logger::create_custom_level("TEST$_", "INFO"), 0);
+  is(Log::Log4perl::Logger::create_custom_level("TEST$_", "INFO"), 0);
 }
 
 # 15th should fail.. this assumes that each level is 10000 apart from
@@ -64,14 +61,13 @@ my %btree = (
 foreach (8, 4, 2, 1, 3, 6, 5, 7, 12, 10, 9, 11, 14, 13, 15) {
   my $level = $btree{$_} eq "DEBUG" ? "DEBUG" : "BTREE$btree{$_}";
 #  warn("Creating BTREE$_ after $level");
-  ok(Log::Log4perl::Logger::create_custom_level("BTREE$_", $level), 0);
+  is(Log::Log4perl::Logger::create_custom_level("BTREE$_", $level), 0);
 #  warn("BTREE$_ is ", ${Log::Log4perl::Level::PRIORITY{"BTREE$_"}});
 }
 
 # foreach (1 .. 15) {
 #    warn("BTREE$_ is: ", ${Log::Log4perl::Level::PRIORITY{"BTREE$_"}});
 # }
-
 
 my $LOGFILE = "example$$.log";
 unlink $LOGFILE;
@@ -86,9 +82,7 @@ log4j.category.debug2test = DEBUG2, FileAppndr
 log4j.additivity.debug2test= 0
 EOT
 
-
 Log::Log4perl::init(\$config);
-
 
 # can't create a custom level after init... let's test that. Just look
 # for an undef (i.e. failure) from the eval
@@ -110,7 +104,7 @@ $/ = undef;
 my $data = <FILE>;
 close FILE;
 my $result1 = "WARN - this is a warning message\nLITEWARN - this is a LITE warning message (2/3 the calories)\n";
-ok($data, $result1);
+is($data, $result1);
 
 # *********************
 # check the root logger
@@ -124,11 +118,10 @@ $/ = undef;
 $data = <FILE>;
 close FILE;
 my $result2 = "WARN - this is a rootlevel warning message\nLITEWARN - this is a rootlevel  LITE warning message (2/3 the calories)\n";
-ok($data, "$result1$result2");
+is($data, "$result1$result2");
 
 $logger->log($WARN, "a warning message");
-$logger->log($LITEWARN, "a LITE warning message");
-die("lame hack to suppress warning") if ($LITEWARN != $LITEWARN);
+$logger->log(Log::Log4perl::Level::to_priority("LITEWARN"), "a LITE warning message");
 $logger->log($DEBUG, "an info message, should not log");
 
 open FILE, "<$LOGFILE" or die "Cannot open $LOGFILE";
@@ -148,7 +141,7 @@ $/ = undef;
 $data = <FILE>;
 close FILE;
 my $result4 = "DEBUG2 - this is a debug2 message\n";
-ok($data, "$result1$result2$result3$result4");
+is($data, "$result1$result2$result3$result4");
 
 #*********************
 #check the is_* methods
@@ -173,7 +166,7 @@ $/ = undef;
 $data = <FILE>;
 close FILE;
 my $result5 = "WARN - after bumping, warning message\n";
-ok($data, "$result1$result2$result3$result4$result5");
+is($data, "$result1$result2$result3$result4$result5");
 
 $logger->dec_level(2); #bump down from warn to litewarn to info
 
@@ -203,6 +196,6 @@ $logger->less_logging(150); # should be OFF now
 ok(!($logger->is_fatal() || $logger->is_error() || $logger->is_warn() ||
 	$logger->is_info() || $logger->is_debug()));
 
-BEGIN { plan tests => 51 };
-
 unlink $LOGFILE;
+
+done_testing;

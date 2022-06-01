@@ -21,7 +21,6 @@ use Log4perlInternalTest qw(tmpdir min_version);
 
 BEGIN {
     min_version(qw( DBI DBD::SQLite ));
-    plan tests => 1;
 }
 
 my $testdir = tmpdir();
@@ -73,3 +72,5 @@ is_deeply $ary_ref->[0], ["WARN", "test message", undef], "data logged in db";
 
 $Log::Log4perl::Config::CONFIG_INTEGRITY_CHECK = 0; # to close handles and allow temp files to go
 Log::Log4perl::init(\'');
+
+done_testing;

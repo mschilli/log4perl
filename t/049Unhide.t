@@ -16,19 +16,14 @@ use strict;
 use Test::More;
 use Log::Log4perl::Appender::TestBuffer;
 
-BEGIN {
-    eval {
-        require Filter::Util::Call;
-    };
-
-    if($@) {
-        plan skip_all => "Filter::Util::Call not available";
-    } else {
-        plan tests => 1;
-    }
-}
-
 use Log::Log4perl qw(:easy :resurrect);
+
+eval {
+    require Filter::Util::Call;
+};
+if($@) {
+    plan skip_all => "Filter::Util::Call not available";
+}
 
 Log::Log4perl->easy_init($DEBUG);
 
@@ -48,3 +43,5 @@ DEBUG "third";
 
 is(Log::Log4perl::Appender::TestBuffer->by_name("A1")->buffer(),
     "first \nsecond \nthird \n", "Hidden statements via ###l4p"); 
+
+done_testing;

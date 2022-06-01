@@ -61,6 +61,7 @@ EOL
 is ($result, $expected);
 
 reset_logger();
+done_testing;
 
 sub reset_logger {
   local $Log::Log4perl::Config::CONFIG_INTEGRITY_CHECK = 0; # to close handles and allow temp files to go

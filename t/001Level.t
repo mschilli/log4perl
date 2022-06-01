@@ -3,11 +3,8 @@
 # Mike Schilli, 2002 (m@perlmeister.com)
 ###########################################
 
-#########################
-# change 'tests => 1' to 'tests => last_test_to_print';
-#########################
-use Test;
 use strict;
+use Test::More;
 
 BEGIN { 
     if($ENV{INTERNAL_DEBUG}) {
@@ -16,7 +13,6 @@ BEGIN {
     }
 }
 
-BEGIN { plan tests => 34 };
 use Log::Log4perl::Level;
 BEGIN {
     Log::Log4perl::Level->import("Level");
@@ -59,3 +55,5 @@ ok(Log::Log4perl::Level::isGreaterOrEqual($My::Level::DEBUG, $My::Level::INFO));
 ok(Log::Log4perl::Level::isGreaterOrEqual($My::Level::INFO, $My::Level::WARN));
 ok(Log::Log4perl::Level::isGreaterOrEqual($My::Level::WARN, $My::Level::ERROR));
 ok(Log::Log4perl::Level::isGreaterOrEqual($My::Level::ERROR, $My::Level::FATAL));
+
+done_testing;

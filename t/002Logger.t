@@ -12,13 +12,9 @@ BEGIN {
     }
 }
 
-use warnings;
 use strict;
-
-#########################
-# used Test::Simple to help debug the test script
-use Test::More tests => 74;
-
+use warnings;
+use Test::More;
 use Log::Log4perl;
 use Log::Log4perl::Level;
 use Log::Log4perl::Util;
@@ -401,3 +397,4 @@ is($@, "", "Adding file appender");
 eval { $log10->add_appender($app_screen); };
 is($@, "", "Adding screen appender");
 
+done_testing;

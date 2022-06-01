@@ -41,13 +41,13 @@ log4perl.appender.SomeA.layout = Log::Log4perl::Layout::SimpleLayout
 
 Log::Log4perl->init(\$conf);
 
-plan tests => 1;
-
 my $logger = get_logger();
 $logger->debug("foo");
 
 Log::Log4perl::Logger->cleanup();
 
 END {
-    like $warnings, qr/Horrible Warning!/, "app destruction warning caught";
+    ok 1; # under Devel::Cover, $warnings can end up undef
+    like $warnings, qr/Horrible Warning!/, "app destruction warning caught" if defined $warnings;
+    done_testing;
 }

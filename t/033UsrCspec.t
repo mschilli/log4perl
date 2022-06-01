@@ -14,7 +14,6 @@ use File::Spec;
 
 Log::Log4perl::Appender::TestBuffer->reset();
 
-
 my $config = <<'EOL';
 log4j.category.plant    = DEBUG, appndr1
 log4j.category.animal   = DEBUG, appndr2
@@ -311,4 +310,4 @@ $somebuffer = Log::Log4perl::Appender::TestBuffer->by_name("appndr");
 
 is($somebuffer->buffer(), "main blah\n");
 
-BEGIN { plan tests => 17, }
+done_testing;

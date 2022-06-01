@@ -10,12 +10,9 @@ BEGIN {
     }
 }
 
-use warnings;
 use strict;
-
+use warnings;
 use Test::More;
-BEGIN { plan tests => 4 };
-
 use Log::Log4perl qw(:easy);
 
 #########################################################
@@ -86,3 +83,5 @@ $buf = Log::Log4perl::Appender::TestBuffer->by_name("Buffer");
 DEBUG "blah\n";
 DEBUG "blah\n";
 like($buf->buffer(), qr/blah foo /);
+
+done_testing;

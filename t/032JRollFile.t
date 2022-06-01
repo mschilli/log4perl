@@ -11,16 +11,10 @@ use File::Spec;
 use lib File::Spec->catdir(qw(t lib));
 use Log4perlInternalTest qw(tmpdir);
 
-BEGIN {
-    eval {
-        require Log::Dispatch::FileRotate;
-    };
-    if ($@ or $Log::Dispatch::FileRotate::VERSION < 1.10) {
-        plan skip_all => "only with Log::Dispatch::FileRotate 1.10";
-    } else {
-        plan tests => 2;
-    }
-}
+eval {
+    require Log::Dispatch::FileRotate;
+    Log::Dispatch::FileRotate->VERSION(1.10); 1
+} or plan skip_all => "only with Log::Dispatch::FileRotate 1.10";
 
 my $WORK_DIR = tmpdir();
 
@@ -57,6 +51,7 @@ like($result, qr/^INFO  cat1 - x+info message 1/);
 ok(! -e File::Spec->catfile($WORK_DIR, 'rolltest.log.3'));
 
 reset_logger();
+done_testing;
 
 sub reset_logger {
   local $Log::Log4perl::Config::CONFIG_INTEGRITY_CHECK = 0; # to close handles and allow temp files to go

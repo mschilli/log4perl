@@ -8,8 +8,8 @@ BEGIN {
     }
 }
 
-use warnings;
 use strict;
+use warnings;
 use Test::More;
 use File::Spec;
 use lib File::Spec->catdir(qw(t lib));
@@ -17,7 +17,6 @@ use Log4perlInternalTest qw(tmpdir need_signals);
 
 BEGIN {
     need_signals();
-    plan tests => 15;
 }
 
 use Log::Log4perl;
@@ -120,3 +119,5 @@ $logger = Log::Log4perl::get_logger('animal.cat');
 $logger->info('warning message to cat, should appear');
 
 like($app1->buffer(), qr/(WARN - warning message, should appear\n){2}INFO - warning message to cat, should appear/, "message output");
+
+done_testing;

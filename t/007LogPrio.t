@@ -10,13 +10,7 @@ BEGIN {
     }
 }
 
-#########################
-# change 'tests => 1' to 'tests => last_test_to_print';
-#########################
-use Test;
-BEGIN { plan tests => 2 };
-
-
+use Test::More;
 use Log::Log4perl;
 use Log::Log4perl::Appender::TestBuffer;
 use File::Spec;
@@ -64,4 +58,6 @@ $file $lines[4] FATAL N/A  - Gurgel
 EOT
 
 unlink $LOGFILE;
-ok($data, "$exp");
+is($data, $exp);
+
+done_testing;

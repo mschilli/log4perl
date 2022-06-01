@@ -118,4 +118,4 @@ is($row->[7], 'bar');
 
 $dbh->do("DROP TABLE $table_name");
 
-1;
+done_testing;

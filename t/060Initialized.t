@@ -5,11 +5,9 @@ BEGIN {
     }
 }
 
-use warnings;
 use strict;
-
-use Test::More tests => 3;
-
+use warnings;
+use Test::More;
 use Log::Log4perl;
 use Log::Log4perl::Appender::TestBuffer;
 
@@ -41,4 +39,4 @@ EOT
 
 ok(Log::Log4perl->initialized(), 'init flags initialized');
 
-1; # End of 060Initialized.t
+done_testing;

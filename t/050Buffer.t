@@ -10,12 +10,11 @@ BEGIN {
     }
 }
 
-use warnings;
 use strict;
+use warnings;
 
-use Test::More tests => 6;
+use Test::More;
 use Log::Log4perl::Appender::TestBuffer;
-
 use Log::Log4perl qw(:easy);
 
 my $conf = q(
@@ -74,3 +73,5 @@ is($buf2->buffer(), "", "Buffering INFO");
 
 $logger->error("This message triggers a buffer flush.");
 like($buf2->buffer(), qr/DEBUG.*?INFO.*?ERROR/s, "Flushing ERROR");
+
+done_testing;

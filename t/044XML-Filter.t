@@ -34,16 +34,8 @@ BEGIN {
     };
     if ($@) {
         plan skip_all => "only with XML::DOM > $dvrq";
-    }else{
-        plan tests => 3;
     }
 }
-
-if ($no_XMLDOM){
-    ok(1);
-    exit(0);
-}
-
 
 #brute force testing here, not very granular, but it is thorough
 
@@ -253,5 +245,4 @@ ok(Compare($xmldata, $propsdata)) ||
           }
         };
 
-
-
+done_testing;

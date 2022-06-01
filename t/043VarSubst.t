@@ -11,11 +11,9 @@ BEGIN {
     }
 }
 
-use warnings;
 use strict;
-
+use warnings;
 use Test::More;
-BEGIN { plan tests => 8 }
 use Log::Log4perl qw(get_logger);
 
 ########################################################
@@ -139,3 +137,5 @@ $buffer = Log::Log4perl::Appender::TestBuffer->by_name("Logfile");
 like($buffer->buffer, qr/foobar/);
 $buffer = Log::Log4perl::Appender::TestBuffer->by_name("Screen");
 like($buffer->buffer, qr/foobar/);
+
+done_testing;

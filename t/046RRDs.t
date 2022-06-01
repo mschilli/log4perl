@@ -10,11 +10,9 @@ BEGIN {
     }
 }
 
-use warnings;
 use strict;
-
+use warnings;
 use Test::More;
-
 use Log::Log4perl qw(get_logger);
     
 my $DB = "myrrddb.dat";
@@ -22,9 +20,6 @@ my $DB = "myrrddb.dat";
 BEGIN { eval 'require RRDs';
         if($@) {
             plan skip_all => "(RRDs not installed)";
-            exit 0;
-        } else {
-            plan tests => 1;
         }
       };
 END { unlink $DB };
@@ -58,3 +53,4 @@ $data = join ' - ', map { "@$_" } grep { defined $_->[0] } @$data;
 #print $data;
 
 like($data, qr/\d\d/); 
+done_testing;

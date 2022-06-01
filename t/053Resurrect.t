@@ -23,8 +23,6 @@ BEGIN {
 use Log::Log4perl::Resurrector;
 use L4pResurrectable;
 
-plan tests => 1;
-
 Log::Log4perl->init(\ <<'EOT');
   log4perl.logger = DEBUG, A1
   log4perl.appender.A1        = Log::Log4perl::Appender::TestBuffer
@@ -36,3 +34,5 @@ my $buffer = Log::Log4perl::Appender::TestBuffer->by_name("A1");
 L4pResurrectable::foo();
 is($buffer->buffer(), "DEBUG - foo was here\nINFO - bar was here\n", 
    "resurrected statement");
+
+done_testing;

@@ -10,8 +10,8 @@ BEGIN {
     }
 }
 
-use warnings;
 use strict;
+use warnings;
 
 use Test::More;
 
@@ -24,8 +24,6 @@ BEGIN {
 
     if($@) {
         plan skip_all => "Only with 2.0 < LWP::UserAgent < 5.822 ";
-    } else {
-        plan tests => 3;
     }
 }
 
@@ -96,3 +94,5 @@ $data = join('', <LOG>);
 close LOG;
 
 like($data, qr#LWP/UserAgent.pm-\d+#);
+
+done_testing;

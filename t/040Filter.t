@@ -10,11 +10,9 @@ BEGIN {
     }
 }
 
-use warnings;
 use strict;
-
-use Test::More tests => 36;
-
+use warnings;
+use Test::More;
 use Log::Log4perl;
 
 #############################################
@@ -514,3 +512,5 @@ Log::Log4perl->reset();
 $buffer->reset();
 
 *{ Log::Log4perl::Filter::LevelMatch::ok } = $old_level_match_ok;
+
+done_testing;

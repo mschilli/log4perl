@@ -10,13 +10,10 @@ BEGIN {
     }
 }
 
-use warnings;
 use strict;
-
+use warnings;
 use Test::More;
 use File::Basename;
-
-BEGIN { plan tests => 5 }
 
 ##################################################
 package Wrapper::Log4perl;
@@ -129,3 +126,5 @@ is $logger->{category}, "main", "cat on ->() is main";
 
 # use Data::Dumper;
 # print Dumper($logger);
+
+done_testing;

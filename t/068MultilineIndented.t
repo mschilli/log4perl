@@ -6,7 +6,7 @@ use Log::Log4perl::Appender;
 use Log::Log4perl::Appender::File;
 use Log::Log4perl::Layout::PatternLayout;
 
-use Test::More tests => 1;
+use Test::More;
 
 my $logger = Log::Log4perl->get_logger("blah");
 
@@ -46,6 +46,8 @@ $appender->log({ level => 1, message => $msg }, 'foo_category', 'INFO');
 my $err_str = check_log_file_format($logfile);
 my $test_name = 'log file has multiline intended format' . ($err_str ? " - reason : $err_str" : "");
 ok ( ! $err_str, $test_name );
+
+done_testing;
 
 # returns "" on success
 # returns non empty error string on failure

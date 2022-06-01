@@ -74,3 +74,5 @@ my $rc = is ($result, $expected);
 if( !$rc ) {
     warn "Failed with Log::Dispatch $Log::Dispatch::VERSION";
 }
+
+done_testing;

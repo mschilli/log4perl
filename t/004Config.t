@@ -10,11 +10,7 @@ BEGIN {
     }
 }
 
-#########################
-# change 'tests => 1' to 'tests => last_test_to_print';
-#########################
 use Test::More;
-BEGIN { plan tests => 28 };
 
 use Log::Log4perl;
 use Log::Log4perl::Appender::TestBuffer;
@@ -404,3 +400,4 @@ END_CONF
 eval { Log::Log4perl->init( \$conf ); };
 is $@, "", "support exclamation comment character [github.com #24]";
 
+done_testing;

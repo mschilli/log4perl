@@ -17,7 +17,6 @@ use Log4perlInternalTest qw(need_signals);
 
 BEGIN {
     need_signals();
-    plan tests => 4;
 }
 
 my $EG_DIR = "eg";
@@ -48,3 +47,5 @@ is($Log::Log4perl::Config::Watch::L4P_TEST_CHANGE_CHECKED,
    1, "change checked after force_next_check()");
 is($Log::Log4perl::Config::Watch::L4P_TEST_CHANGE_DETECTED,
    0, "no change detected after force_next_check()");
+
+done_testing;

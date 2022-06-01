@@ -13,24 +13,18 @@ BEGIN {
     }
 }
 
-use warnings;
 use strict;
-
+use warnings;
 use Test::More;
 use Log::Log4perl qw(:easy);
 Log::Log4perl->easy_init($DEBUG);
 use constant INTERNAL_DEBUG => 0;
-
 our $INTERNAL_DEBUG = 0;
 
 $| = 1;
 
 BEGIN {
-    if(exists $ENV{"L4P_ALL_TESTS"}) {
-        plan tests => 5;
-    } else {
-        plan skip_all => "- only with L4P_ALL_TESTS";
-    }
+plan skip_all => "- only with L4P_ALL_TESTS" if !exists $ENV{"L4P_ALL_TESTS"};
 }
 
 use Log::Log4perl::Util::Semaphore;
@@ -349,3 +343,5 @@ my $locker4 = Log::Log4perl::Util::Semaphore->new(
 
 $locker1->remove;
 $locker3->remove;
+
+done_testing;

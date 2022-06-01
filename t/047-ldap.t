@@ -48,15 +48,9 @@ use Test::More;
 
 use Log::Log4perl qw(get_logger);
 
-BEGIN { 
-    if ($ENV{L4P_DO_LDAP_TESTS}) {
-        require Net::LDAP;
-        require URI::ldap;
-        plan tests => 1;
-    }else{
-        plan skip_all => 'L4P_DO_LDAP_TESTS not set'
-    }
-}
+plan skip_all => 'L4P_DO_LDAP_TESTS not set' if !$ENV{L4P_DO_LDAP_TESTS};
+require Net::LDAP;
+require URI::ldap;
 
 Log::Log4perl->init(\qq{
   log4perl.category = INFO, LDAPapp
@@ -64,7 +58,6 @@ Log::Log4perl->init(\qq{
   log4perl.appender.LDAPapp.layout = Log::Log4perl::Layout::PatternLayout
   log4perl.appender.LDAPapp.layout.ConversionPattern = N:%m
 });
-
 
 my $uri = URI->new("ldap:");  # start empty
 
@@ -129,8 +122,8 @@ EOL
 
 my $propsdata = Log::Log4perl::Config::config_read(\$propsconfig);
 
-use Data::Dump qw(dump); #DEBUG
-dump $ldapdata;
+diag explain $ldapdata;
 print STDERR "\n--------------\n";
-dump $propsdata;
+diag explain $propsdata;
 is_deeply($ldapdata, $propsdata);
+done_testing;

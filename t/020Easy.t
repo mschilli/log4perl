@@ -7,9 +7,8 @@ BEGIN {
     }
 }
 
-use warnings;
 use strict;
-
+use warnings;
 use Test::More;
 use Log::Log4perl qw(:easy);
 use File::Spec;
@@ -233,3 +232,5 @@ like $@, qr/line $line/, "logdie with wrapper";
 # Finally close
 ############################################################
 close IN;
+
+done_testing;

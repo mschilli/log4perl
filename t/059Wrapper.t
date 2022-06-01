@@ -1,4 +1,7 @@
-#!/usr/local/bin/perl -w
+############################################
+# Tests for Log4perl used by a wrapper class
+# Mike Schilli, 2009 (m@perlmeister.com)
+###########################################
 
 BEGIN { 
     if($ENV{INTERNAL_DEBUG}) {
@@ -8,18 +11,9 @@ BEGIN {
 }
 
 use strict;
-use Log::Log4perl qw(:easy);
-
-############################################
-# Tests for Log4perl used by a wrapper class
-# Mike Schilli, 2009 (m@perlmeister.com)
-###########################################
 use warnings;
-use strict;
-
+use Log::Log4perl qw(:easy);
 use Test::More;
-
-BEGIN { plan tests => 12 }
 
 ###########################################
 package L4p::RelayWrapper;
@@ -92,3 +86,5 @@ for my $class (qw(Log::Log4perl
 
 # use Data::Dumper;
 # print Dumper($logger;
+
+done_testing;

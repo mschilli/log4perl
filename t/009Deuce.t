@@ -11,12 +11,7 @@ BEGIN {
     }
 }
 
-#########################
-# change 'tests => 1' to 'tests => last_test_to_print';
-#########################
-use Test;
-BEGIN { plan tests => 5 };
-
+use Test::More;
 use Log::Log4perl;
 use Log::Log4perl::Appender::TestBuffer;
 
@@ -53,3 +48,5 @@ ok(Log::Log4perl::Appender::TestBuffer->by_name("stdout")->buffer(),
    'm#^\S+\s+\[N/A\] \(\S+?:\d+\) - Gurgel$#'); 
 ok(Log::Log4perl::Appender::TestBuffer->by_name("R")->buffer(), 
     'm#^\S+\s+N/A \'foo\' - Gurgel$#'); 
+
+done_testing;

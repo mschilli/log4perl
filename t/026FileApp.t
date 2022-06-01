@@ -7,11 +7,9 @@ BEGIN {
     }
 }
 
-use Test::More;
-
-use warnings;
 use strict;
-
+use warnings;
+use Test::More;
 use Log::Log4perl;
 use File::Spec;
 use FindBin qw($Bin);
@@ -31,8 +29,6 @@ my $WORK_DIR = tmpdir();
 my $testfile = File::Spec->catfile($WORK_DIR, "test26.log");
 my $testpath = File::Spec->catdir($WORK_DIR, "test26");
 
-BEGIN {plan tests => 27}
-
 ####################################################
 #  First, preset the log file with some content
 ####################################################
@@ -42,7 +38,7 @@ close FILE;
 
 ####################################################
 # Append to a log file without specifying append mode
-# explicitely
+# explicitly
 ####################################################
 my $data = <<EOT;
 log4j.category = INFO, FileAppndr
@@ -408,7 +404,7 @@ close FILE;
 
 is($content, "This is a nice header.\n", "header_text");
 
-
+reset_logger();
 # same with syswrite
 unlink "${testfile}_5";
 $data = qq(
@@ -482,6 +478,8 @@ EOT
 };
 
 reset_logger();
+
+done_testing;
 
 sub reset_logger {
   local $Log::Log4perl::Config::CONFIG_INTEGRITY_CHECK = 0; # to close handles and allow temp files to go

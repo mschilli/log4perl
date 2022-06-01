@@ -5,8 +5,6 @@ use strict;
 use Test::More;
 use Log::Log4perl::Appender::TestBuffer;
 
-plan tests => 6;
-
 use Log::Log4perl qw(get_logger :easy);
 
 # $Log::Log4perl::CHATTY_DESTROY_METHODS = 1;
@@ -54,3 +52,5 @@ WARN "after";
 
 like($buffer->buffer, qr/before/, "log message before logger removal present");
 unlike($buffer->buffer, qr/after/, "log message after logger removal absent");
+
+done_testing;

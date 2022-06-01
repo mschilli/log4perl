@@ -10,16 +10,12 @@ BEGIN {
     }
 }
 
-use warnings;
 use strict;
-
-use Test;
-
+use warnings;
+use Test::More;
 use Log::Log4perl qw(get_logger);
 use Log::Log4perl::Level;
 use Log::Log4perl::Appender::TestBuffer;
-
-BEGIN { plan tests => 2 }
 
 ok(1); # If we made it this far, we're ok.
 
@@ -45,7 +41,7 @@ $loga->warn("warn");
 $loga->error("error");
 $loga->fatal("fatal");
 
-ok($app0->buffer(), 
+is($app0->buffer(),
    "[0]: DEBUG - debug\n" .
    "[1]: INFO - info\n" .
    "[3]: WARN - warn\n" .
@@ -53,3 +49,5 @@ ok($app0->buffer(),
    "[7]: FATAL - fatal\n" .
    ""
   );
+
+done_testing;

@@ -1,4 +1,3 @@
-
 # https://rt.cpan.org/Public/Bug/Display.html?id=68105
 
 my $logfile = "test.log";
@@ -8,7 +7,7 @@ use Log::Log4perl;
 use Log::Log4perl::Appender;
 use Log::Log4perl::Appender::File;
 
-use Test::More tests => 1;
+use Test::More;
 
 Log::Log4perl->init({
    'log4perl.rootLogger'                             => 'ALL, FILE',
@@ -25,3 +24,5 @@ my $data = join '', <FILE>;
 close FILE;
 
 is( $data, "DEBUG - yee haw\n", "hash-init with subref" );
+
+done_testing;

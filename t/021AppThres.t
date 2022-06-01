@@ -10,15 +10,11 @@ BEGIN {
     }
 }
 
-use warnings;
 use strict;
-
+use warnings;
 use Test::More;
-
 use Log::Log4perl qw(get_logger);
 use Log::Log4perl::Level;
-
-BEGIN { plan tests => 24 }
 
 ok(1); # If we made it this far, we're ok.
 
@@ -238,3 +234,4 @@ is($app0->buffer(), "INFO - Info\nWARN - Warning\nERROR - Error\n",
 is($app1->buffer(), "ERROR - Error\n", 
                     "appender threshold");
 
+done_testing;

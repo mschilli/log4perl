@@ -10,15 +10,10 @@ BEGIN {
     }
 }
 
-use warnings;
 use strict;
+use warnings;
 
-#########################
-# change 'tests => 1' to 'tests => last_test_to_print';
-#########################
 use Test::More;
-BEGIN { plan tests => 24 };
-
 use Log::Log4perl;
 use Log::Log4perl::Layout;
 
@@ -283,3 +278,4 @@ eval {
 };
 is($app->buffer(), "main::: Thats the\nmain::: multiline\nmain::: message\n"); 
 
+done_testing;

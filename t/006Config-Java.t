@@ -10,9 +10,6 @@ BEGIN {
     }
 }
 
-#########################
-# change 'tests => 1' to 'tests => last_test_to_print';
-#########################
 use Test::More;
 
 our $LOG_DISPATCH_PRESENT = 0;
@@ -72,3 +69,5 @@ $data =~ s#\\#/#g;
 
 unlink $LOGFILE;
 is($data, "$exp");
+
+done_testing;

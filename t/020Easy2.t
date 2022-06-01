@@ -10,8 +10,8 @@ BEGIN {
     }
 }
 
-use warnings;
 use strict;
+use warnings;
 use Log::Log4perl::Appender::TestBuffer;
 
 my $stderr = "";
@@ -21,8 +21,7 @@ $SIG{__WARN__} = sub {
     $stderr .= $_[0];
 };
 
-use Test::More tests => 3;
-
+use Test::More;
 use Log::Log4perl qw(:easy);
 
 Log::Log4perl->init(\ q{
@@ -61,3 +60,4 @@ my $log = Log::Log4perl::get_logger("");
 $log->trace("We don't want to see this");
 is($bufapp->buffer(), "", "Suppressed trace() check");
 
+done_testing;

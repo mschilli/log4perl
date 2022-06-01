@@ -10,13 +10,9 @@ BEGIN {
     }
 }
 
-use warnings;
 use strict;
-
+use warnings;
 use Test::More;
-
-BEGIN { plan tests => 36 }
-
 use Log::Log4perl qw(get_logger);
 use Log::Log4perl::DateFormat;
 use Log::Log4perl::Appender::TestBuffer;
@@ -182,3 +178,5 @@ while ( my ( $src, $expected ) = splice @tests, 0, 2 ) {
     my $got = $df->{fmt} || '(undef)';
     is($got, $expected, "literal $src");
 }
+
+done_testing;

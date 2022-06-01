@@ -1,6 +1,7 @@
 use strict;
-
 use File::Temp qw( tempfile );
+use Test::More;
+use Log::Log4perl qw( :easy );
 
 BEGIN { 
     if($ENV{INTERNAL_DEBUG}) {
@@ -10,10 +11,6 @@ BEGIN {
 }
 
 my($tmpfh, $tempfile) = tempfile( UNLINK => 1 );
-
-use Test::More;
-BEGIN { plan tests => 1 };
-use Log::Log4perl qw( :easy );
 
 Log::Log4perl->easy_init( { level => $DEBUG, file => $tempfile } );
 
@@ -26,3 +23,5 @@ $SIG{__WARN__} = sub {
 DEBUG "foo", undef, "bar";
 
 like $warnings, qr/Log message argument #2/, "warning for undef element issued";
+
+done_testing;

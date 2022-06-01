@@ -7,9 +7,8 @@ BEGIN {
     }
 }
 
-use warnings;
 use strict;
-
+use warnings;
 use FindBin qw($Bin);
 use lib "$Bin/lib";
 use Log4perlInternalTest qw( is_like_windows tmpdir );
@@ -20,14 +19,6 @@ use File::Spec;
 sub trunc {
     open FILE, ">$_[0]" or die "Cannot open $_[0]";
     close FILE;
-}
-
-BEGIN {
-    if ($] < 5.006) {
-        plan skip_all => "Only with perl >= 5.006";
-    } else {
-        plan tests => 34;
-    }
 }
 
 my $WORK_DIR = tmpdir();
@@ -364,3 +355,5 @@ EOL
 
     unlink "$testfile.old";
 };
+
+done_testing;

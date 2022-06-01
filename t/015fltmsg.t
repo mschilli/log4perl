@@ -11,10 +11,7 @@ BEGIN {
     }
 }
 
-#########################
-# change 'tests => 1' to 'tests => last_test_to_print';
-#########################
-use Test::More tests => 5;
+use Test::More;
 
 use Log::Log4perl;
 use Log::Log4perl::Appender::TestBuffer;
@@ -118,3 +115,5 @@ $logger->debug("Chunk1", "Chunk2", "Chunk3");
 
 is($app->buffer(), "[1,Chunk1,Chunk2,Chunk3]", 
    "warp_message = function (by name)");
+
+done_testing;

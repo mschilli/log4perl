@@ -8,8 +8,7 @@ use Log::Log4perl;
 use Log::Log4perl::Appender;
 use Log::Log4perl::Appender::TestBuffer;
 use Log::Log4perl::Layout::PatternLayout;
-
-use Test::More tests => 4;
+use Test::More;
 
 my $logger = Log::Log4perl->get_logger("blah");
 
@@ -52,3 +51,5 @@ $logit->();
 #print "[", $appender->buffer(), "]\n";
 is $appender->buffer(), "123line1\n   line2\n   line3", "indent,chomp";
 $appender->buffer("");
+
+done_testing;

@@ -246,4 +246,4 @@ eval {
 };
 like($@, qr/log4perl.logger.Foo.Bar redefined/);
 
-BEGIN { plan tests => 14, }
+done_testing;
