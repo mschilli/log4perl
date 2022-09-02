@@ -8,8 +8,8 @@ my $meta_merge = {
         resources => {
             repository => {
               type => 'git',
-              url => 'git@github.com:github.com/mschilli/log4perl.git',
-              web => 'https://github.com/github.com/mschilli/log4perl',
+              url => 'git@github.com:mschilli/log4perl.git',
+              web => 'https://github.com/mschilli/log4perl',
             },
             MailingList => 'mailto:log4perl-devel@lists.sourceforge.net',
             bugtracker => {

@@ -1,3 +1,5 @@
+- fix repo metadata - thanks @mschilli for report
+
 1.55 2022-06-02
 - fix Appender::File bug on Windows when different volume
 - add autoflush option to Log::Log4perl::Appender::Screen - thanks @abraxxa
