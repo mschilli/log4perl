@@ -34,8 +34,8 @@ open STDOUT, '>', $TMP_FILE_STDOUT;
 open STDERR, '>', $TMP_FILE_STDERR;
 open IN_STDOUT, '<', $TMP_FILE_STDOUT or die "Cannot open $TMP_FILE_STDOUT"; binmode IN_STDOUT, ":utf8";
 open IN_STDERR, '<', $TMP_FILE_STDERR or die "Cannot open $TMP_FILE_STDERR"; binmode IN_STDERR, ":utf8";
-sub readstdout { return join("", <IN_STDOUT>); }
-sub readstderr { return join("", <IN_STDERR>); }
+sub readstdout { IN_STDOUT->clearerr(); return join("", <IN_STDOUT>); }
+sub readstderr { IN_STDERR->clearerr(); return join("", <IN_STDERR>); }
 
 END   { unlink $TMP_FILE_STDOUT;
         unlink $TMP_FILE_STDERR;

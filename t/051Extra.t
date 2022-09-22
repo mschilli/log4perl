@@ -48,7 +48,7 @@ my $TMP_FILE = File::Spec->catfile($WORK_DIR, qw(easy));
 open STDERR, ">$TMP_FILE";
 select STDERR; $| = 1; #needed on win32
 open IN, "<$TMP_FILE" or die "Cannot open $TMP_FILE"; binmode IN, ":utf8";
-sub readstderr { return join("", <IN>); }
+sub readstderr { IN->clearerr(); return join("", <IN>); }
 
 END   { unlink $TMP_FILE;
         close IN;
