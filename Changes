@@ -1,3 +1,6 @@
+1.57 2022-10-21
+- fix tests so work on Perl 5.37.3 - thanks @tonycoz
+
 1.56 2022-09-02
 - fix repo metadata - thanks @mschilli for report
 
