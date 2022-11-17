@@ -1,4 +1,5 @@
-name: perl
+name: ci
+
 on:
   push:
     branches:
@@ -6,28 +7,68 @@ on:
     tags-ignore:
       - '*'
   pull_request:
+
 jobs:
+
   ubuntu:
-    runs-on: ${{ matrix.os }}
+    env:
+      PERL_USE_UNSAFE_INC: 0
+      AUTHOR_TESTING: 1
+      AUTOMATED_TESTING: 1
+      RELEASE_TESTING: 1
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - run: perl -V
+      - name: Install dependencies
+        uses: perl-actions/install-with-cpanm@stable
+        with:
+          args: --with-develop --with-recommends .
+      - run: sudo perl Makefile.PL
+      - run: sudo make
+      - run: make test
+      - run: sudo make install
+
+  linux:
+    name: "linux ${{ matrix.perl-version }}"
+    needs: [ubuntu]
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        perl-version: ['5.10', '5.14', '5.28']
+        perl-version: [
+            "5.36",
+            "5.34",
+            "5.30",
+            "5.14",
+            "5.10"
+        ]
         include:
           - perl-version: '5.32'
             os: ubuntu-latest
             more-test: true
             coverage: true
-    container: perl:${{ matrix.perl-version }}
+
+    container:
+      image: perldocker/perl-tester:${{ matrix.perl-version }}
+
     steps:
-      - uses: actions/checkout@v2
-      - run: cpanm -n --installdeps .
+      - uses: actions/checkout@v3
+      - name: Install deps
+        uses: perl-actions/install-with-cpanm@stable
+        with:
+          args: --installdeps .
+          sudo: false
       - run: perl -V
-      - name: Run extended tests
+      - name: Install extra deps
         if: ${{ matrix.more-test }}
-        run: |
-          cpanm -n --installdeps --with-develop --with-recommends .
+        uses: perl-actions/install-with-cpanm@stable
+        with:
+          args: --with-develop --with-recommends .
+          sudo: false
       - name: Run tests
         if: ${{ !matrix.coverage }}
         run: prove -l -j4 t
@@ -38,20 +79,22 @@ jobs:
         run: |
           cpanm -n Devel::Cover::Report::Coveralls
           HARNESS_OPTIONS='j4' cover -test -report Coveralls
+
   non-linux:
     runs-on: ${{ matrix.os }}
+    needs: [ubuntu]
     strategy:
       fail-fast: false
       matrix:
         os: [macos-latest, windows-latest]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: shogo82148/actions-setup-perl@v1
         with:
           distribution: strawberry # ignored non-windows
-      - uses: perl-actions/install-with-cpanm@v1
+      - uses: perl-actions/install-with-cpanm@stable
         with:
-          args: -n --installdeps .
+          args: --installdeps .
       - run: perl -V
       - name: Run tests
         run: prove -l -j4 t
