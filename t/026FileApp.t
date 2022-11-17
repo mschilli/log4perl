@@ -32,7 +32,7 @@ my $testpath = File::Spec->catdir($WORK_DIR, "test26");
 ####################################################
 #  First, preset the log file with some content
 ####################################################
-open FILE, ">$testfile" or die "Cannot create $testfile";
+open FILE, ">", "$testfile" or die "Cannot create $testfile";
 print FILE "previous content\n";
 close FILE;
 
@@ -51,7 +51,7 @@ Log::Log4perl::init(\$data);
 my $log = Log::Log4perl::get_logger("");
 $log->info("Shu-wa-chi!");
 
-open FILE, "<$testfile" or die "Cannot create $testfile";
+open FILE, "<", "$testfile" or die "Cannot create $testfile";
 my $content = join '', <FILE>;
 close FILE;
 
@@ -72,7 +72,7 @@ Log::Log4perl::init(\$data);
 $log = Log::Log4perl::get_logger("");
 $log->info("Shu-wa-chi!");
 
-open FILE, "<$testfile" or die "Cannot create $testfile";
+open FILE, "<", "$testfile" or die "Cannot create $testfile";
 $content = join '', <FILE>;
 close FILE;
 
@@ -93,7 +93,7 @@ Log::Log4perl::init(\$data);
 $log = Log::Log4perl::get_logger("");
 $log->info("Shu-wa-chi!");
 
-open FILE, "<$testfile" or die "Cannot create $testfile";
+open FILE, "<", "$testfile" or die "Cannot create $testfile";
 $content = join '', <FILE>;
 close FILE;
 
@@ -123,7 +123,7 @@ $log = Log::Log4perl::get_logger("");
 $log->info("Shu-wa-chi!");
 
 for(qw(1 2)) {
-    open FILE, "<${testfile}_$_" or die "Cannot open ${testfile}_$_";
+    open FILE, "<", "${testfile}_$_" or die "Cannot open ${testfile}_$_";
     $content = join '', <FILE>;
     close FILE;
 
@@ -154,7 +154,7 @@ $log = Log::Log4perl::get_logger("");
 $log->info("Shu-wa-chi!");
 
 for(qw(1 2)) {
-    open FILE, "<${testfile}_$_" or die "Cannot open ${testfile}_$_";
+    open FILE, "<", "${testfile}_$_" or die "Cannot open ${testfile}_$_";
     $content = join '', <FILE>;
     close FILE;
 
@@ -181,7 +181,7 @@ $app->file_switch("${testfile}_2");
 $log->info("File2");
 
 for(qw(1 2)) {
-    open FILE, "<${testfile}_$_" or die "Cannot open ${testfile}_$_";
+    open FILE, "<", "${testfile}_$_" or die "Cannot open ${testfile}_$_";
     $content = join '', <FILE>;
     close FILE;
 
@@ -206,7 +206,7 @@ Log::Log4perl::init(\$data);
 $log = Log::Log4perl::get_logger("");
 $log->info("File1");
 
-open FILE, "<${testfile}_1" or die "Cannot open ${testfile}_1";
+open FILE, "<", "${testfile}_1" or die "Cannot open ${testfile}_1";
 $content = join '', <FILE>;
 close FILE;
 
@@ -215,7 +215,7 @@ is($content, "INFO - File1\n");
 Log::Log4perl::init(\$data);
 $log->info("File1");
 
-open FILE, "<${testfile}_1" or die "Cannot open ${testfile}_1";
+open FILE, "<", "${testfile}_1" or die "Cannot open ${testfile}_1";
 $content = join '', <FILE>;
 close FILE;
 
@@ -237,7 +237,7 @@ Log::Log4perl::init(\$data);
 $log = Log::Log4perl::get_logger("");
 $log->info("File1");
 
-open FILE, "<${testfile}_1" or die "Cannot open ${testfile}_1";
+open FILE, "<", "${testfile}_1" or die "Cannot open ${testfile}_1";
 $content = join '', <FILE>;
 close FILE;
 
@@ -267,7 +267,7 @@ unlink "${testfile}_1";
 
 $log->info("File1-1");
 
-open FILE, "<${testfile}_1" or die "Cannot open ${testfile}_1";
+open FILE, "<", "${testfile}_1" or die "Cannot open ${testfile}_1";
 $content = join '', <FILE>;
 close FILE;
 
@@ -323,7 +323,7 @@ unlink "${testfile}_1";
 is(kill('USR1', $$), 1, "sending signal");
 $log->info("File1");
 
-open FILE, "<${testfile}_1" or die "Cannot open ${testfile}_1";
+open FILE, "<", "${testfile}_1" or die "Cannot open ${testfile}_1";
 $content = join '', <FILE>;
 close FILE;
 
@@ -349,7 +349,7 @@ ok(! -f "${testfile}_3");
 $log = Log::Log4perl::get_logger("");
 $log->info("File1");
 
-open FILE, "<${testfile}_3" or die "Cannot open ${testfile}_3";
+open FILE, "<", "${testfile}_3" or die "Cannot open ${testfile}_3";
 $content = join '', <FILE>;
 close FILE;
 
@@ -378,7 +378,7 @@ ok(! -f "${testfile}_4");
 $log = Log::Log4perl::get_logger("");
 $log->info("File1");
 
-open FILE, "<${testfile}_4" or die "Cannot open ${testfile}_4";
+open FILE, "<", "${testfile}_4" or die "Cannot open ${testfile}_4";
 $content = join '', <FILE>;
 close FILE;
 
@@ -398,7 +398,7 @@ log4perl.appender.Logfile.layout   = Log::Log4perl::Layout::SimpleLayout
 );
 
 Log::Log4perl->init(\$data);
-open FILE, "<${testfile}_5" or die "Cannot open ${testfile}_5";
+open FILE, "<", "${testfile}_5" or die "Cannot open ${testfile}_5";
 $content = join '', <FILE>;
 close FILE;
 
@@ -442,7 +442,7 @@ Log::Log4perl::init(\$data);
 $log = Log::Log4perl::get_logger("");
 $log->info("Shu-wa-chi!");
 
-open FILE, "<$testmkpathfile" or die "Cannot create $testmkpathfile";
+open FILE, "<", "$testmkpathfile" or die "Cannot create $testmkpathfile";
 $content = join '', <FILE>;
 close FILE;
 

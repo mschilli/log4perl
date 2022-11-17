@@ -99,7 +99,7 @@ print "Done waiting for pid $pid\n" if $INTERNAL_DEBUG;
 
 my $clashes_found = 0;
 
-open FILE, "<$logfile" or die "Cannot open $logfile";
+open FILE, "<", "$logfile" or die "Cannot open $logfile";
 while(<FILE>) {
     if(/XY/ || /YX/) {
         $clashes_found = 1;
@@ -206,7 +206,7 @@ if($pid) {
 
    my $nof_messages = 2;
 
-   open FILE, ">$logfile" or die "Cannot open $logfile";
+   open FILE, ">", "$logfile" or die "Cannot open $logfile";
    while(my $client = $sock->accept()) {
        #print "Client connected\n";
        while(<$client>) {
@@ -225,7 +225,7 @@ print "Waiting for pid $pid\n" if $INTERNAL_DEBUG;
 waitpid($pid, 0);
 print "Done waiting for pid $pid\n" if $INTERNAL_DEBUG;
 
-open FILE, "<$logfile" or die "Cannot open $logfile";
+open FILE, "<", "$logfile" or die "Cannot open $logfile";
 my $data = join '', <FILE>;
 close FILE;
 
@@ -243,8 +243,8 @@ our $TMP_FILE = "warnings.txt";
 END { unlink $TMP_FILE if defined $TMP_FILE; }
 
 # Capture STDERR to a temporary file and a filehandle to read from it
-open STDERR, ">$TMP_FILE";
-open IN, "<$TMP_FILE" or die "Cannot open $TMP_FILE";
+open STDERR, ">", "$TMP_FILE";
+open IN, "<", "$TMP_FILE" or die "Cannot open $TMP_FILE";
 sub readwarn { return scalar <IN>; }
 
 $conf = q{
@@ -301,7 +301,7 @@ if($pid) {
 
    my $nof_messages = 1;
 
-   open FILE, ">$logfile" or die "Cannot open $logfile";
+   open FILE, ">", "$logfile" or die "Cannot open $logfile";
    while(my $client = $sock->accept()) {
        #print "Client connected\n";
        while(<$client>) {
@@ -321,7 +321,7 @@ print "Waiting for pid $pid\n" if $INTERNAL_DEBUG;
 waitpid($pid, 0);
 print "Done waiting for pid $pid\n" if $INTERNAL_DEBUG;
 
-open FILE, "<$logfile" or die "Cannot open $logfile";
+open FILE, "<", "$logfile" or die "Cannot open $logfile";
 $data = join '', <FILE>;
 close FILE;
 

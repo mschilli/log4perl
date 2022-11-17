@@ -43,7 +43,7 @@ push @lines, $line++; $logger->warn("Gurgel");
 push @lines, $line++; $logger->error("Gurgel");
 push @lines, $line++; $logger->fatal("Gurgel");
 
-open FILE, "<$LOGFILE" or die "Cannot open $LOGFILE";
+open FILE, "<", "$LOGFILE" or die "Cannot open $LOGFILE";
 my $data = join '', <FILE>;
 close FILE;
 

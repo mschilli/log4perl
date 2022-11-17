@@ -10,7 +10,7 @@ die "usage: $0 version" unless $version =~ /^[\d.]+\w+$/;
 
 system "git checkout gh-pages" and die $!;
 
-open FILE, "<$IDX" or die "Cannot open $IDX";
+open FILE, "<", "$IDX" or die "Cannot open $IDX";
 my $data = join '', <FILE>;
 close FILE;
 
@@ -26,7 +26,7 @@ if(defined $devprod and $devprod =~ /(dev)|(alpha)|(beta)/) {
     $data =~ s@<!--DEV-->.*?<!--/DEV-->@<!--DEV-->\n<!--/DEV-->@s;
 }
 
-open FILE, ">$IDX" or die "Cannot open $IDX";
+open FILE, ">", "$IDX" or die "Cannot open $IDX";
 print FILE $data;
 close FILE;
 

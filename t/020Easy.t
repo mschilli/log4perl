@@ -40,9 +40,9 @@ ok(1); # Initialized ok
 unlink $TMP_FILE;
 
 # Capture STDOUT to a temporary file and a filehandle to read from it
-open STDERR, ">$TMP_FILE";
+open STDERR, ">", "$TMP_FILE";
 select STDERR; $| = 1; #needed on win32
-open IN, "<$TMP_FILE" or die "Cannot open $TMP_FILE";
+open IN, "<", "$TMP_FILE" or die "Cannot open $TMP_FILE";
 sub readstderr { IN->clearerr(); return join("", <IN>); }
 
 ############################################################
@@ -66,7 +66,7 @@ like($stderr, qr/this also/);
 Log::Log4perl->reset();
 close IN;
     # Reopen stderr
-open STDERR, ">&1";
+open STDERR, ">", "&1";
 unlink $TMP_FILE;
 
 package Bar::Twix;
@@ -97,7 +97,7 @@ Log::Log4perl->easy_init(
 Bar::Mars::crunch();
 Bar::Twix::crunch();
 
-open FILE, "<$TMP_FILE" or die "Cannot open $TMP_FILE";
+open FILE, "<", "$TMP_FILE" or die "Cannot open $TMP_FILE";
 my $data = join '', <FILE>;
 close FILE;
 
@@ -107,9 +107,9 @@ is($data, "020Easy.t-$line-Bar::Mars::crunch: Mars mjam\nTwix mjam\n");
 # LOGDIE and LOGWARN
 ############################################################
 # redir STDERR again
-open STDERR, ">$TMP_FILE";
+open STDERR, ">", "$TMP_FILE";
 select STDERR; $| = 1; #needed on win32
-open IN, "<$TMP_FILE" or die "Cannot open $TMP_FILE";
+open IN, "<", "$TMP_FILE" or die "Cannot open $TMP_FILE";
 
 Log::Log4perl->easy_init($INFO);
 $log = get_logger();
@@ -172,9 +172,9 @@ close IN;
 # LOGCARP and LOGCROAK
 ############################################################
 # redir STDERR again
-open STDERR, ">$TMP_FILE";
+open STDERR, ">", "$TMP_FILE";
 select STDERR; $| = 1; #needed on win32
-open IN, "<$TMP_FILE" or die "Cannot open $TMP_FILE";
+open IN, "<", "$TMP_FILE" or die "Cannot open $TMP_FILE";
 
 package Whack;
 use Log::Log4perl qw(:easy);

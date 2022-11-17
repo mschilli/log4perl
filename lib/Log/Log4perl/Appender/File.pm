@@ -57,7 +57,7 @@ sub new {
     if($self->{recreate_pid_write}) {
         print "Creating pid file",
               " $self->{recreate_pid_write}\n" if _INTERNAL_DEBUG;
-        open FILE, ">$self->{recreate_pid_write}" or
+        open FILE, ">", "$self->{recreate_pid_write}" or
             die "Cannot open $self->{recreate_pid_write}";
         print FILE "$$\n";
         close FILE;
@@ -148,7 +148,7 @@ sub file_open {
             sysopen $fh, "$self->{filename}", $sysmode or
                 die "Can't sysopen $self->{filename} ($!)";
         } else {
-            open $fh, "$arrows$self->{filename}" or
+            open $fh, $arrows, "$self->{filename}" or
                 die "Can't open $self->{filename} ($!)";
         }
     };

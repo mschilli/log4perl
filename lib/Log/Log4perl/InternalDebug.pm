@@ -19,7 +19,7 @@ sub internal_debug_fh {
     my($file) = @_;
 
     local($/) = undef;
-    open FILE, "<$file" or die "Cannot open $file";
+    open FILE, "<", "$file" or die "Cannot open $file";
     my $text = <FILE>;
     close FILE;
 

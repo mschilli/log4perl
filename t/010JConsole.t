@@ -42,10 +42,10 @@ Log::Log4perl->init(\$conf);
 my $logger = Log::Log4perl->get_logger('cat1');
 
 #hmm, I wonder how portable this is, maybe check $^O first?
-open(OLDOUT, ">&STDOUT");
-open (TOUCH, ">>$test_logfile");# `touch $test_logfile`;
+open(OLDOUT, ">&", STDOUT) or die;
+open (TOUCH, ">>", $test_logfile);# `touch $test_logfile`;
 close TOUCH;
-open(STDOUT, ">$test_logfile") || die "Can't redirect stdout $test_logfile $!";
+open(STDOUT, ">", $test_logfile) or die "Can't redirect stdout $test_logfile $!";
 select(STDOUT); $| = 1;     # make unbuffered
 
 $logger->debug("debugging message 1 ");
@@ -54,7 +54,7 @@ $logger->warn("warning message 1 ");
 $logger->fatal("fatal message 1 ");   
 
 close(STDOUT);
-open(STDOUT, ">&OLDOUT");
+open(STDOUT, ">&", OLDOUT);
 
 my ($result, $expected);
 
