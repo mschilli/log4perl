@@ -21,8 +21,8 @@ my $TMP_FILE = File::Spec->catfile($WORK_DIR, qw(warnings));
 ok(1); # Initialized ok
 
 # Capture STDERR to a temporary file and a filehandle to read from it
-open STDERR, ">$TMP_FILE";
-open IN, "<$TMP_FILE" or die "Cannot open $TMP_FILE";
+open STDERR, ">", "$TMP_FILE";
+open IN, "<", "$TMP_FILE" or die "Cannot open $TMP_FILE";
 sub readwarn { return scalar <IN>; }
 
 ############################################################

@@ -19,7 +19,7 @@ Log::Log4perl->init({
 
 Log::Log4perl->get_logger->debug('yee haw');
 
-open FILE, "<$logfile" or die $!;
+open FILE, "<", "$logfile" or die $!;
 my $data = join '', <FILE>;
 close FILE;
 

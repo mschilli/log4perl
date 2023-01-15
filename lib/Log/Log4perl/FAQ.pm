@@ -304,12 +304,12 @@ for details. Have fun!
 Whenever you encounter a fatal error in your application, instead of saying
 something like
 
-    open FILE, "<blah" or die "Can't open blah -- bailing out!";
+    open FILE, "<", "blah" or die "Can't open blah -- bailing out!";
 
 just use Log::Log4perl's fatal functions instead:
 
     my $log = get_logger("Some::Package");
-    open FILE, "<blah" or $log->logdie("Can't open blah -- bailing out!");
+    open FILE, "<", "blah" or $log->logdie("Can't open blah -- bailing out!");
 
 This will both log the message with priority FATAL according to your current
 Log::Log4perl configuration and then call Perl's C<die()>
@@ -318,7 +318,7 @@ stealth loggers (see L<Log::Log4perl/"Stealth Loggers">),
 all you need to do is call
 
     use Log::Log4perl qw(:easy);
-    open FILE, "<blah" or LOGDIE "Can't open blah -- bailing out!";
+    open FILE, "<", "blah" or LOGDIE "Can't open blah -- bailing out!";
 
 What can you do if you're using some library which doesn't use Log::Log4perl
 and calls C<die()> internally if something goes wrong? Use a

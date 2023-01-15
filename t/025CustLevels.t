@@ -99,7 +99,7 @@ $logger->litewarn("this is a LITE warning message (2/3 the calories)");
 $logger->info("this info message should not log");
 
 
-open FILE, "<$LOGFILE" or die "Cannot open $LOGFILE";
+open FILE, "<", "$LOGFILE" or die "Cannot open $LOGFILE";
 $/ = undef;
 my $data = <FILE>;
 close FILE;
@@ -113,7 +113,7 @@ $logger->warn("this is a rootlevel warning message");
 $logger->litewarn("this is a rootlevel  LITE warning message (2/3 the calories)");
 $logger->info("this rootlevel  info message should not log");
 
-open FILE, "<$LOGFILE" or die "Cannot open $LOGFILE";
+open FILE, "<", "$LOGFILE" or die "Cannot open $LOGFILE";
 $/ = undef;
 $data = <FILE>;
 close FILE;
@@ -124,7 +124,7 @@ $logger->log($WARN, "a warning message");
 $logger->log(Log::Log4perl::Level::to_priority("LITEWARN"), "a LITE warning message");
 $logger->log($DEBUG, "an info message, should not log");
 
-open FILE, "<$LOGFILE" or die "Cannot open $LOGFILE";
+open FILE, "<", "$LOGFILE" or die "Cannot open $LOGFILE";
 $/ = undef;
 $data = <FILE>;
 close FILE;
@@ -136,7 +136,7 @@ ok($data, "$result1$result2$result3");
 my $debug2 = Log::Log4perl->get_logger("debug2test");
 $debug2->debug2("this is a debug2 message");
 
-open FILE, "<$LOGFILE" or die "Cannot open $LOGFILE";
+open FILE, "<", "$LOGFILE" or die "Cannot open $LOGFILE";
 $/ = undef;
 $data = <FILE>;
 close FILE;
@@ -161,7 +161,7 @@ ok(!$logger->is_litewarn);
 ok(!$logger->is_info);
 $logger->warn("after bumping, warning message");
 $logger->litewarn("after bumping, lite warning message, should not log");
-open FILE, "<$LOGFILE" or die "Cannot open $LOGFILE";
+open FILE, "<", "$LOGFILE" or die "Cannot open $LOGFILE";
 $/ = undef;
 $data = <FILE>;
 close FILE;
