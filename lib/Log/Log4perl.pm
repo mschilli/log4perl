@@ -933,7 +933,7 @@ actually having it log it.
 
 =head2 Log and die or warn
 
-Often, when you croak / carp / warn / die, you want to log those messages.
+Often, when you C<croak>, C<carp>, C<warn>, or C<die>, you want to log those messages.
 Rather than doing the following:
 
     $logger->fatal($err) && die($err);
@@ -942,25 +942,25 @@ you can use the following:
 
     $logger->logdie($err);
 
-And if instead of using
+And if instead using:
 
     warn($message);
     $logger->warn($message);
 
-to both issue a warning via Perl's warn() mechanism and make sure you have
+to both issue a warning via Perl's C<warn()> mechanism and make sure you have
 the same message in the log file as well, use:
 
     $logger->logwarn($message);
 
 Since there is
-an ERROR level between WARN and FATAL, there are two additional helper
-functions in case you'd like to use ERROR for either warn() or die():
+an C<ERROR> level between C<WARN> and C<FATAL>, there are two additional helper
+functions in case you'd like to use C<ERROR> for either C<warn()> or C<die()>:
 
     $logger->error_warn();
     $logger->error_die();
 
-Finally, there's the Carp functions that, in addition to logging,
-also pass the stringified message to their companions in the Carp package:
+Finally, there's the L<Carp> functions that, in addition to logging,
+also pass the stringified message to their companions in the L<Carp> package:
 
     $logger->logcarp();        # warn w/ 1-level stack trace
     $logger->logcluck();       # warn w/ full stack trace
