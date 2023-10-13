@@ -28,15 +28,20 @@ sub get {
 ###########################################
 sub put {
 ###########################################
-    my($class, $key, $value) = @_;
-
-    if($class ne __PACKAGE__) {
-        # Somebody called us with Log::Log4perl::MDC::put($key, $value)
-        $value = $key;
-        $key   = $class;
+	if( $_[0] eq __PACKAGE__ ) {
+        # Somebody called us with Log::Log4perl::MDC->put(...);
+        shift( @_ );
     }
 
-    $MDC_HASH{$key} = $value;
+    my %values = (ref $_[0] eq 'HASH') ?
+                        # called with hashref argument
+                        %{ $_[0] } :
+                        # called with list of key value pairs
+                        @_;
+
+    foreach my $key( keys %values ) {
+        $MDC_HASH{$key} = $values{$key};
+    }
 }
 
 ###########################################
@@ -79,6 +84,15 @@ C<Log::Log4perl::Layout::PatternLayout>s.
 =item Log::Log4perl::MDC->put($key, $value);
 
 Store a value C<$value> under key C<$key> in the map.
+
+=item Log::Log4perl::MDC->put($key1 => $value1, $key2 => $value2);
+
+=item Log::Log4perl::MDC->put({$key1 => $value1, $key2 => $value2});
+
+Store multiple key C<$key#>/value C<$value#> pairs in the map.
+
+NOTE: This diverges from the log4j implementation where only one key/value
+pair can be added at a time.
 
 =item my $value = Log::Log4perl::MDC->get($key);
 
