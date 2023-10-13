@@ -42,6 +42,12 @@ is( Log::Log4perl::MDC->get('test-four') . Log::Log4perl::MDC->get('test-four-pa
 
 is( Log::Log4perl::MDC->get('test-five'), undef, 'Calling get on unknown key returns undef');
 
+Log::Log4perl::MDC->delete('test-three');
+is( Log::Log4perl::MDC->get('test-three'),
+    undef,
+    'Calling delete on a key removes from context'
+);
+
 Log::Log4perl::MDC->remove();
 is_deeply(Log::Log4perl::MDC->get_context(), {}, 'Calling remove deletes all entries');
 
