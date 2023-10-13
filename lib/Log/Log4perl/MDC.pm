@@ -28,7 +28,7 @@ sub get {
 ###########################################
 sub put {
 ###########################################
-	if( $_[0] eq __PACKAGE__ ) {
+    if( $_[0] eq __PACKAGE__ ) {
         # Somebody called us with Log::Log4perl::MDC->put(...);
         shift( @_ );
     }
@@ -42,6 +42,18 @@ sub put {
     foreach my $key( keys %values ) {
         $MDC_HASH{$key} = $values{$key};
     }
+}
+
+###########################################
+sub delete {
+###########################################
+    my( $class, $key ) = @_;
+
+    if( $class ne __PACKAGE__ ) {
+        $key = $class;
+    }
+
+    delete( $MDC_HASH{$key} );
 }
 
 ###########################################
@@ -101,11 +113,19 @@ Typically done by C<%X{key}> in
 C<Log::Log4perl::Layout::PatternLayout>.
 If no value exists to the given key, C<undef> is returned.
 
-=item my $text = Log::Log4perl::MDC->remove();
+=item Log::Log4perl::MDC->delete($key);
+
+Deletes the C<$key> in the context map.
+
+NOTE: In log4j, this is the 'remove' method.
+
+=item Log::Log4perl::MDC->remove();
 
 Delete all entries from the map.
 
-=item Log::Log4perl::MDC->get_context();
+NOTE: In log4j, this is the 'clear' method.
+
+=item my $context = Log::Log4perl::MDC->get_context();
 
 Returns a reference to the hash table.
 
@@ -147,4 +167,3 @@ Grundman, Paul Harrington, Alexander Hartmaier  David Hull,
 Robert Jacobson, Jason Kohles, Jeff Macdonald, Markus Peter, 
 Brett Rann, Peter Rabbitson, Erik Selberg, Aaron Straup Cope, 
 Lars Thegler, David Viner, Mac Yang.
-
