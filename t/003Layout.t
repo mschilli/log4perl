@@ -178,7 +178,7 @@ $layout = Log::Log4perl::Layout::PatternLayout->new("%H:%m");
 $app->layout($layout);
 $logger->debug("That's the message\n");
 
-like($app->buffer(), qr/^[^:]+:That's the message$/);
+like($app->buffer(), qr/^\S+:That's the message$/);
 
 ############################################################
 # Test max width in the format specifiers
