@@ -7,8 +7,10 @@ use 5.006;
 use strict;
 use warnings;
 
-use ExtUtils::Manifest qw(filecheck manicheck);
+use ExtUtils::Manifest qw(filecheck manicheck maniread);
+use File::Find qw(find);
 use Getopt::Long qw(GetOptions);
+use Pod::Text;
 
 my $upload     = 0;
 my $skip_tests = 0;
@@ -30,12 +32,16 @@ my $version = distribution_version();
 my $ball = "Log-Log4perl-$version.tar.gz";
 my $tar  = "Log-Log4perl-$version.tar";
 check_changes($version);
+update_license_info();
+update_readme($version);
 
 my @missing = manicheck();
 die "MANIFEST check failed; missing: @missing\n" if @missing;
 
 my @unlisted = grep { $_ ne $ball && $_ ne $tar } filecheck();
 die "MANIFEST check failed; not listed: @unlisted\n" if @unlisted;
+
+check_copyrights();
 
 run($^X, 'Makefile.PL');
 
@@ -90,6 +96,149 @@ sub check_changes {
     }
 
     die "Changes is empty\n";
+}
+
+sub update_readme {
+    my ($version) = @_;
+
+    open my $readme, '>', 'README' or die "Can't write README: $!\n";
+    print $readme "#" x 70, "\n";
+    print $readme "    Log::Log4perl $version\n";
+    print $readme "#" x 70, "\n\n";
+
+    my $parser = Pod::Text->new();
+    $parser->parse_from_file('lib/Log/Log4perl.pm', $readme);
+    close $readme or die "Can't finish README: $!\n";
+
+    print "Generated README from lib/Log/Log4perl.pm\n";
+}
+
+sub update_license_info {
+    my %config = read_licensizer_config();
+    my $main_module = 'lib/Log/Log4perl.pm';
+    my %files = %{ maniread() };
+
+    find(sub {
+        $files{$File::Find::name} = 1 if -f $_;
+    }, grep { -d $_ } qw(lib eg t adm));
+
+    for my $file (sort keys %files) {
+        open my $input, '<', $file or die "Can't read $file: $!\n";
+        local $/;
+        my $content = <$input>;
+        close $input or die "Can't finish reading $file: $!\n";
+
+        my $replacement;
+        my $changed;
+
+        if ($file eq $main_module) {
+            $replacement = "=head1 AUTHORS\n\n$config{author}\n\n" .
+                           "=head1 LICENSE\n\n$config{license}\n";
+            $changed = $content =~ s/^=head1 AUTHORS?\s*\n.*\z/$replacement/ms;
+        } elsif ($file eq 'LICENSE') {
+            $replacement = "=head1 COPYRIGHT AND LICENSE\n\n" .
+                           "$config{license}\n\n";
+            $changed = $content =~ s/\A.*?(?=^=cut[ \t]*$)/$replacement/ms;
+            $changed or die "LICENSE is missing its '=cut' delimiter\n";
+        } else {
+            $replacement = "=head1 LICENSE\n\n$config{license}\n";
+            $changed = $content =~ s/^=head1 (?:AUTHORS?|LICENSE|COPYRIGHT(?: AND LICENSE)?)\s*\n.*\z/$replacement/ms;
+        }
+
+        next unless $changed;
+
+        my $mode = (stat $file)[2] & 07777;
+        my $temporary = "$file.licensizer";
+        open my $output, '>', $temporary
+            or die "Can't write $temporary: $!\n";
+        print $output $content;
+        close $output or die "Can't finish $temporary: $!\n";
+        chmod $mode, $temporary
+            or die "Can't set permissions on $temporary: $!\n";
+        rename $temporary, $file
+            or die "Can't replace $file: $!\n";
+    }
+
+    print "Updated license information from .licensizer.yml\n";
+}
+
+sub read_licensizer_config {
+    open my $input, '<', '.licensizer.yml'
+        or die "Can't read .licensizer.yml: $!\n";
+
+    my %lines;
+    my $block;
+
+    while (my $line = <$input>) {
+        if ($line =~ /^(author|license):\s*\|\s*$/) {
+            $block = $1;
+            next;
+        }
+
+        if (defined $block && $line =~ /^\s*$/) {
+            push @{ $lines{$block} }, $line;
+            next;
+        }
+
+        if (defined $block && $line =~ /^([ \t]+)\S/) {
+            push @{ $lines{$block} }, $line;
+            next;
+        }
+
+        undef $block;
+    }
+
+    my %config;
+    for my $name (qw(author license)) {
+        my $block_lines = $lines{$name}
+            or die ".licensizer.yml is missing '$name: |'\n";
+        my $indent;
+
+        for my $line (@$block_lines) {
+            next if $line =~ /^\s*$/;
+            $line =~ /^(\s*)/;
+            my $length = length $1;
+            $indent = $length
+                if !defined $indent || $length < $indent;
+        }
+
+        defined $indent
+            or die ".licensizer.yml has an empty '$name' block\n";
+
+        my @content = @$block_lines;
+        for my $line (@content) {
+            $line =~ s/^[ \t]{0,$indent}//;
+            $line =~ s/[ \t]+$//;
+        }
+
+        $config{$name} = join '', @content;
+        $config{$name} =~ s/\s+\z//;
+    }
+
+    return %config;
+}
+
+sub check_copyrights {
+    my $current_year = (localtime)[5] + 1900;
+    my @stale;
+
+    for my $file (sort keys %{ maniread() }) {
+        open my $input, '<', $file or die "Can't read $file: $!\n";
+        my $line_number = 0;
+
+        while (my $line = <$input>) {
+            ++$line_number;
+            while ($line =~ /Copyright\b[^\r\n]*?\b(\d{4})
+                             (?:\s*-\s*(\d{4}))?/gx) {
+                my $copyright_year = defined $2 ? $2 : $1;
+                push @stale, "$file:$line_number ($copyright_year)"
+                    if $copyright_year != $current_year;
+            }
+        }
+    }
+
+    die "Copyright notices must end in $current_year; stale: @stale\n"
+        if @stale;
 }
 
 sub make_command {

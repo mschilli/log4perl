@@ -891,7 +891,6 @@ the same values. These are of the format C<isI<Level>Enabled()>,
 so C<$logger-E<gt>isDebugEnabled()> is synonymous to 
 C<$logger-E<gt>is_debug()>.
 
-
 These level checking functions
 will come in handy later, when we want to block unnecessary
 expensive parameter construction in case the logging level is too
@@ -2943,31 +2942,29 @@ L<Log::Log4perl::NDC|Log::Log4perl::NDC>,
 
 Please contribute patches to the project on Github:
 
-    http://github.com/mschilli/log4perl
+    https://github.com/mschilli/log4perl
 
-Send bug reports or requests for enhancements to the authors via our
+Please submit bug reports or requests for enhancements on
+the project's Github issues above.
 
-MAILING LIST (questions, bug reports, suggestions/patches): 
-log4perl-devel@lists.sourceforge.net
-
-Authors (please contact them via the list above, not directly):
+Authors (please contact them via Github, not directly):
 Mike Schilli <m@perlmeister.com>,
 Kevin Goess <cpan@goess.org>
 
 Contributors (in alphabetical order):
-Ateeq Altaf, Cory Bennett, Jens Berthold, Jeremy Bopp, Hutton
-Davidson, Chris R. Donnelly, Matisse Enzer, Hugh Esco, Anthony
-Foiani, James FitzGibbon, Carl Franks, Dennis Gregorovic, Andy
-Grundman, Paul Harrington, Alexander Hartmaier, David Hull, 
-Robert Jacobson, Jason Kohles, Jeff Macdonald, Markus Peter, 
-Brett Rann, Peter Rabbitson, Erik Selberg, Aaron Straup Cope, 
-Lars Thegler, David Viner, Mac Yang.
+Ateeq Altaf, Cory Bennett, Jens Berthold, Jeremy Bopp, Tony Cook,
+Hutton Davidson, Chris R. Donnelly, Matisse Enzer, Hugh Esco,
+James FitzGibbon, Anthony Foiani, Carl Franks, Dennis Gregorovic,
+Andy Grundman, Paul Harrington, Alexander Hartmaier, David Hull,
+Ed J, Robert Jacobson, Jason Kohles, William E Little Jr,
+Jeff Macdonald, Markus Peter, Nicolas R, Peter Rabbitson,
+Brett Rann, Erik Selberg, Aaron Straup Cope, Lars Thegler,
+David Viner, Mike Whitaker, Mac Yang.
 
 =head1 LICENSE
 
-Copyright 2002-2013 by Mike Schilli E<lt>m@perlmeister.comE<gt> 
+Copyright 2002-2026 by Mike Schilli E<lt>m@perlmeister.comE<gt>
 and Kevin Goess E<lt>cpan@goess.orgE<gt>.
 
 This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself. 
-
+it under the same terms as Perl itself.

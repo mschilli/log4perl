@@ -238,7 +238,6 @@ sub parse_category {
     my $parser = $PARSER_CLASS->new;
     my $doc = $parser->parse (join('',@$text));
 
-
     my $l4p_tree = {};
     
     my $config = $doc->getElementsByTagName("$LOG4J_PREFIX:configuration")->item(0)||
@@ -319,7 +318,6 @@ sub parse_patternlayout {
     $l4p_tree->{PatternLayout}{cspec} = $l4p_branch;
 }
 
-
 #for parsing the root logger, if any
 sub parse_root {
     my ($l4p_tree, $node) = @_;
@@ -331,7 +329,6 @@ sub parse_root {
     $l4p_tree->{category}{value} = $l4p_branch->{value};
 
 }
-
 
 #this parses a custom log4perl-specific filter set up under
 #the root element, as opposed to children of the appenders
@@ -376,7 +373,6 @@ sub parse_l4p_filter {
     $l4p_tree->{filter}{$name} = $l4p_branch;
 }
 
-   
 #for parsing a category/logger element
 sub parse_category {
     my ($l4p_tree, $node) = @_;
@@ -447,7 +443,6 @@ sub parse_children_of_logger_element {
     return;
 }
 
-
 sub parse_level {
     my $node = shift;
 
@@ -458,8 +453,6 @@ sub parse_level {
 
     return $level;
 }
-
-
 
 sub parse_appender {
     my ($l4p_tree, $node) = @_;
@@ -639,8 +632,6 @@ sub parse_filter_ref {
     return $filter_tree;
 }
 
-
-
 sub parse_layout {
     my $node = shift;
 
@@ -691,7 +682,7 @@ sub parse_boolean {
     }
 }
 
-=cut 
+=cut
 
 #this handles variable substitution
 sub subst {
@@ -717,13 +708,11 @@ Log::Log4perl::Config::LDAPConfigurator - configures log4perl via LDAP
 
 =head1 SYNOPSIS
 
-
 =head1 DESCRIPTION
 
 This module implements 
 
 =head1 WHY
-
 
 =head1 HOW
 
@@ -751,40 +740,14 @@ for that name, its value is substituted. So you can do stuff like
 
 t/047-ldap.t
 
-
 ldap/log4perl.schema DEBUG
 
 Log::Log4perl::Config
 
 =head1 LICENSE
 
-Copyright 2002-2013 by Mike Schilli E<lt>m@perlmeister.comE<gt> 
+Copyright 2002-2026 by Mike Schilli E<lt>m@perlmeister.comE<gt>
 and Kevin Goess E<lt>cpan@goess.orgE<gt>.
 
 This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself. 
-
-=head1 AUTHOR
-
-Please contribute patches to the project on Github:
-
-    http://github.com/mschilli/log4perl
-
-Send bug reports or requests for enhancements to the authors via our
-
-MAILING LIST (questions, bug reports, suggestions/patches): 
-log4perl-devel@lists.sourceforge.net
-
-Authors (please contact them via the list above, not directly):
-Mike Schilli <m@perlmeister.com>,
-Kevin Goess <cpan@goess.org>
-
-Contributors (in alphabetical order):
-Ateeq Altaf, Cory Bennett, Jens Berthold, Jeremy Bopp, Hutton
-Davidson, Chris R. Donnelly, Matisse Enzer, Hugh Esco, Anthony
-Foiani, James FitzGibbon, Carl Franks, Dennis Gregorovic, Andy
-Grundman, Paul Harrington, Alexander Hartmaier  David Hull, 
-Robert Jacobson, Jason Kohles, Jeff Macdonald, Markus Peter, 
-Brett Rann, Peter Rabbitson, Erik Selberg, Aaron Straup Cope, 
-Lars Thegler, David Viner, Mac Yang.
-
+it under the same terms as Perl itself.
