@@ -1,67 +1,134 @@
-#!/usr/local/bin/perl
+#!/usr/bin/env perl
 ###########################################
-# release -- Release this module
-# Mike Schilli, 2002 (m@perlmeister.com)
-###########################################
-# RELEASE checklist:
-# * Update log4perl project download page
-#   Upload to upload.sourceforge.net
-#   https://sourceforge.net/project/admin/newrelease.php?package_id=52323&group_id=56939
-# * Notify log4perl-devel
-# * Check 5.00503 compatibility
+# release -- build and optionally upload a CPAN distribution
 ###########################################
 
-use warnings;
+use 5.006;
 use strict;
+use warnings;
 
-    # Available at http://perlmeister.com/scripts
-use lib "$ENV{HOME}/perl-modules";
-use ModDevUtils;
-use ExtUtils::Manifest;
-use Test::Pod;
-use Test::More;
-use File::Find;
-use Test::Harness;
+use ExtUtils::Manifest qw(filecheck manicheck);
+use Getopt::Long qw(GetOptions);
 
-my($devprod) = @ARGV;
+my $upload     = 0;
+my $skip_tests = 0;
+my $help       = 0;
 
-# system("adm/cvskwexp") and die "\$Log... detected";
+GetOptions(
+    'upload!'     => \$upload,
+    'skip-tests!' => \$skip_tests,
+    'help|h'      => \$help,
+) or usage(2);
 
-    # Check if all the POD complies with the standard
-my $admdir = ".";
-$admdir = "adm" if -d "lib";
-runtests("$admdir/podok");
+usage(0) if $help;
+@ARGV and usage(2);
 
-{
-    no strict;
-    no warnings 'redefine';
-    *ModDevUtils::main_pm_file = sub { "lib/Log/Log4perl.pm" };
+-f 'Makefile.PL' && -f 'lib/Log/Log4perl.pm'
+    or die "Run $0 from the distribution root\n";
+
+my $version = distribution_version();
+my $ball = "Log-Log4perl-$version.tar.gz";
+my $tar  = "Log-Log4perl-$version.tar";
+check_changes($version);
+
+my @missing = manicheck();
+die "MANIFEST check failed; missing: @missing\n" if @missing;
+
+my @unlisted = grep { $_ ne $ball && $_ ne $tar } filecheck();
+die "MANIFEST check failed; not listed: @unlisted\n" if @unlisted;
+
+run($^X, 'Makefile.PL');
+
+if (!$skip_tests) {
+    run($^X, 'adm/podok');
+    run(make_command(), 'test');
+    run(make_command(), 'disttest');
 }
 
-ModDevUtils::release(0) or exit 0;
-
-my @missing = ExtUtils::Manifest::manicheck();
-
-if(@missing) {
-    die "Manifest check failed, missing files: @missing";
+for my $old_distribution ($tar, $ball) {
+    next unless -e $old_distribution;
+    unlink $old_distribution
+        or die "Can't remove old distribution $old_distribution: $!\n";
 }
 
-my $ball = ModDevUtils::tarball_name();
+run(make_command(), 'dist');
+-f $ball or die "Expected distribution $ball was not created\n";
 
-my $target = "mschilli,log4perl\@web.sourceforge.net:htdocs";
+print "CPAN distribution ready: $ball\n";
 
-# now on CPAN
-# system("scp $ball $target/releases/$ball");
+if ($upload) {
+    my $uploader = find_in_path('cpan-upload')
+        or die "--upload requires cpan-upload (CPAN::Uploader) in PATH\n";
+    run($uploader, $ball);
+    print "Uploaded $ball to CPAN\n";
+} else {
+    print "Review the archive, then run $0 --upload to upload it to CPAN.\n";
+}
 
-    # Win32 package
-print "Building Win32 ppm distribution ...\n";
-system("cd adm; ./mkppm; tar zcfv ppm.tgz ppm");
+exit 0;
 
-print "Copying ppm to log4perl.sourceforge.net ...\n";
-system("scp adm/ppm/* $target/ppm");
+sub distribution_version {
+    open my $pm, '<', 'lib/Log/Log4perl.pm'
+        or die "Can't read lib/Log/Log4perl.pm: $!\n";
 
-system("adm/sourceforge/updindex $ball");
+    while (my $line = <$pm>) {
+        return $1 if $line =~ /^our \$VERSION\s*=\s*['"]([0-9._]+)['"]/;
+    }
 
-system("scp adm/sourceforge/www/index.html $target");
+    die "Can't find \$VERSION in lib/Log/Log4perl.pm\n";
+}
 
-__END__
+sub check_changes {
+    my ($version) = @_;
+
+    open my $changes, '<', 'Changes' or die "Can't read Changes: $!\n";
+    while (my $line = <$changes>) {
+        next if $line =~ /^\s*$/;
+        $line =~ /^\Q$version\E(?:\s|$)/
+            or die "Changes must start with an entry for version $version\n";
+        return;
+    }
+
+    die "Changes is empty\n";
+}
+
+sub make_command {
+    return $ENV{MAKE} if defined $ENV{MAKE} && length $ENV{MAKE};
+    return 'make';
+}
+
+sub run {
+    my (@command) = @_;
+    print '+ ', join(' ', @command), "\n";
+    system @command;
+
+    return if $? == 0;
+    die "$command[0] failed: " . ($? == -1
+        ? "$!\n"
+        : sprintf("exit status %d\n", $? >> 8));
+}
+
+sub find_in_path {
+    my ($program) = @_;
+    my $separator = $^O eq 'MSWin32' ? ';' : ':';
+
+    for my $directory (split /\Q$separator\E/, $ENV{PATH} || '') {
+        my $candidate = "$directory/$program";
+        return $candidate if -f $candidate && -x _;
+    }
+
+    return;
+}
+
+sub usage {
+    my ($status) = @_;
+    my $output = $status ? *STDERR : *STDOUT;
+
+    print $output <<'USAGE';
+Usage: adm/release [--skip-tests] [--upload]
+
+Build and test the CPAN distribution. By default the resulting tarball is
+left in the current directory. --upload sends it to CPAN using cpan-upload.
+USAGE
+    exit $status;
+}
