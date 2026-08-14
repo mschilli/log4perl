@@ -1,3 +1,6 @@
+- fix Log::Log4perl::Catalyst losing log messages when two Catalyst apps
+  share a process - thanks @fleetfootmike
+
 1.57 2022-10-21
 - fix tests so work on Perl 5.37.3 - thanks @tonycoz
 

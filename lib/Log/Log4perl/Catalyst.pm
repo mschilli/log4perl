@@ -88,6 +88,17 @@ sub new {
 
             my $buf_app_name = "$appender->{name}_$CATALYST_APPENDER_SUFFIX";
 
+            # Somebody's already given this appender a buffer, so leave it
+            # alone. Building a second one here would drop it into the
+            # registry on top of the first, but the loggers already writing to
+            # the first one never get moved across, because the loop below
+            # only picks up loggers still on the raw appender. They'd carry on
+            # filling a buffer that _flush() can no longer see, and their
+            # messages would never come out. Happens as soon as two Catalyst
+            # apps share a process and a config.
+            next if exists
+                $Log::Log4perl::Logger::APPENDER_BY_NAME{ $buf_app_name };
+
             my $buf_app = Log::Log4perl::Appender->new(
                 'Log::Log4perl::Appender::Buffer',
                 name       => $buf_app_name,
