@@ -29,7 +29,7 @@ my $logger = Log::Log4perl->get_logger("");
 my $line = __LINE__ + 1;
 $logger->debug("Gurgel");
 
-open LOG, "<$LOGFILE" or die "Cannot open $LOGFILE";
+open LOG, "<", "$LOGFILE" or die "Cannot open $LOGFILE";
 my $data = <LOG>;
 
 END { close LOG; unlink $LOGFILE; }

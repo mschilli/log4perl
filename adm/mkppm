@@ -98,12 +98,12 @@ sub fix_ppd {
 ###########################################
     my($ppd_file) = @_;
 
-    open FILE, "<$ppd_file" or die "Cannot open $ppd_file";
+    open FILE, '<', "$ppd_file" or die "Cannot open $ppd_file";
     my $data = join '', <FILE>;
     $data =~ s/-\d+\.\d+//g;
     close FILE;
 
-    open FILE, ">$ppd_file" or die "Cannot open $ppd_file";
+    open FILE, '>', "$ppd_file" or die "Cannot open $ppd_file";
     print FILE $data;
     close FILE;
 }
@@ -114,7 +114,7 @@ sub patch_log_dispatch {
 
     # Get rid of Log::Dispatch's annoying user prompting
 
-    open FILE, "<Makefile.PL" or die "Cannot open Makefile.PL";
+    open FILE, '<', "Makefile.PL" or die "Cannot open Makefile.PL";
     my $data = join '', <FILE>;
     close FILE;
 
@@ -124,7 +124,7 @@ sub patch_log_dispatch {
               /;
     $data =~ s/while\s*\(\s*1\s*\)/while(0)/;
 
-    open FILE, ">Makefile.PL" or die "Cannot open Makefile.PL (w)";
+    open FILE, '>', "Makefile.PL" or die "Cannot open Makefile.PL (w)";
     print FILE $data;
     close FILE;
 }

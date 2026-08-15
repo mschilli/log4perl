@@ -16,7 +16,7 @@ my($y, $m, $d);
 
 my $last_time = undef;
 
-open FILE, "<Changes";
+open FILE, "<", "Changes";
 while(<FILE>) {
     chomp;
 

@@ -44,7 +44,7 @@ my $tmpfile = Log::Log4perl::Util::tmpfile_name();
 END { unlink $tmpfile };
 $ua->get("file:$tmpfile");
 
-open LOG, "<lwpout.txt" or die "Cannot open lwpout.txt";
+open LOG, "<", "lwpout.txt" or die "Cannot open lwpout.txt";
 my $data = join('', <LOG>);
 close LOG;
 
@@ -67,7 +67,7 @@ Log::Log4perl->infiltrate_lwp();
 $ua = LWP::UserAgent->new();
 $ua->get("file:$tmpfile");
 
-open LOG, "<lwpout.txt" or die "Cannot open lwpout.txt";
+open LOG, "<", "lwpout.txt" or die "Cannot open lwpout.txt";
 $data = join('', <LOG>);
 close LOG;
 
@@ -89,7 +89,7 @@ Log::Log4perl->infiltrate_lwp();
 $ua = LWP::UserAgent->new();
 $ua->get("file:$tmpfile");
 
-open LOG, "<lwpout.txt" or die "Cannot open lwpout.txt";
+open LOG, "<", "lwpout.txt" or die "Cannot open lwpout.txt";
 $data = join('', <LOG>);
 close LOG;
 

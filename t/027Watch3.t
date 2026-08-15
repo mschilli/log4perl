@@ -42,7 +42,7 @@ log4j.appender.goneAppender.layout   = Log::Log4perl::Layout::SimpleLayout
 log4j.category.animal.cat = INFO, myAppender
 
 EOL
-open (CONF, ">$testconf") || die "can't open $testconf $!";
+open (CONF, ">", "$testconf") || die "can't open $testconf $!";
 print CONF $conf1;
 close CONF;
 
@@ -80,7 +80,7 @@ log4j.appender.myAppender.layout   = Log::Log4perl::Layout::SimpleLayout
 log4j.category.animal.cat = INFO, myAppender
 
 EOL
-open (CONF, ">$testconf") || die "can't open $testconf $!";
+open (CONF, ">", "$testconf") || die "can't open $testconf $!";
 print CONF $conf1;
 close CONF;
 

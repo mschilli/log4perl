@@ -17,7 +17,7 @@ use Log::Log4perl;
 use File::Spec;
 
 sub trunc {
-    open FILE, ">$_[0]" or die "Cannot open $_[0]";
+    open FILE, ">", "$_[0]" or die "Cannot open $_[0]";
     close FILE;
 }
 
@@ -35,7 +35,7 @@ log4j.appender.myAppender.filename = $testfile
 log4j.appender.myAppender.mode     = append
 
 EOL
-open (CONF, ">$testconf") || die "can't open $testconf $!";
+open (CONF, ">", "$testconf") || die "can't open $testconf $!";
 print CONF $conf1;
 close CONF;
 
@@ -83,7 +83,7 @@ log4j.appender.myAppender.filename = $testfile
 log4j.appender.myAppender.mode     = append
 EOL
 
-open (CONF, ">$testconf") || die "can't open $testconf $!";
+open (CONF, ">", "$testconf") || die "can't open $testconf $!";
 print CONF $conf2;
 close CONF;
 
@@ -129,7 +129,7 @@ log4j.appender.myAppender.layout   = Log::Log4perl::Layout::SimpleLayout
 log4j.appender.myAppender.filename = $testfile
 log4j.appender.myAppender.mode     = append
 EOL
-open (CONF, ">$testconf") || die "can't open $testconf $!";
+open (CONF, ">", "$testconf") || die "can't open $testconf $!";
 print CONF $conf2;
 close CONF;
 

@@ -38,7 +38,7 @@ log4j.appender.goneAppender.layout   = Log::Log4perl::Layout::SimpleLayout
 log4j.category.animal.cat = INFO, myAppender
 
 EOL
-open (CONF, ">$testconf") || die "can't open $testconf $!";
+open (CONF, ">", "$testconf") || die "can't open $testconf $!";
 print CONF $conf1;
 close CONF;
 
@@ -79,7 +79,7 @@ log4j.appender.myAppender.layout   = Log::Log4perl::Layout::SimpleLayout
 log4j.category.animal.cat = INFO, myAppender
 
 EOL
-open (CONF, ">$testconf") || die "can't open $testconf $!";
+open (CONF, ">", "$testconf") || die "can't open $testconf $!";
 print CONF $conf1;
 close CONF;
 
@@ -188,7 +188,7 @@ sub conf_file_write {
 
     $level = "DEBUG" unless defined $level;
 
-    open FILE, ">$testconf" or die $!;
+    open FILE, ">", "$testconf" or die $!;
     print FILE <<EOT;
 log4perl.category.main = $level, Testbuffer
 log4perl.appender.Testbuffer        = Log::Log4perl::Appender::TestBuffer

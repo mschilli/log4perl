@@ -203,8 +203,8 @@ is(Log::Log4perl::Appender::TestBuffer->by_name("A1")->buffer(),
 ######################################################################
 # Test integrity check
 ######################################################################
-open STDERR, ">$TMP_FILE";
-open IN, "<$TMP_FILE" or die "Cannot open $TMP_FILE";
+open STDERR, ">", "$TMP_FILE";
+open IN, "<", "$TMP_FILE" or die "Cannot open $TMP_FILE";
 sub readwarn { return (scalar <IN>) || ''; }
 END { close IN }
 
@@ -222,8 +222,8 @@ unlink $TMP_FILE;
 ######################################################################
 # Misspelled 'rootlogger' (needs to be rootLogger)
 ######################################################################
-open STDERR, ">$TMP_FILE";
-open IN, "<$TMP_FILE" or die "Cannot open $TMP_FILE";
+open STDERR, ">", "$TMP_FILE";
+open IN, "<", "$TMP_FILE" or die "Cannot open $TMP_FILE";
 
 Log::Log4perl->reset();
 $Log::Log4perl::Logger::LOGGERS_BY_NAME = {};
@@ -245,8 +245,8 @@ unlink $TMP_FILE;
 ######################################################################
 # Totally misspelled rootLogger
 ######################################################################
-open STDERR, ">$TMP_FILE";
-open IN, "<$TMP_FILE" or die "Cannot open $TMP_FILE";
+open STDERR, ">", "$TMP_FILE";
+open IN, "<", "$TMP_FILE" or die "Cannot open $TMP_FILE";
 
 Log::Log4perl->reset();
 $Log::Log4perl::Logger::LOGGERS_BY_NAME = {};

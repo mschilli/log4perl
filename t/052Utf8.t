@@ -85,10 +85,10 @@ like($data, qr/\x{30B8}/, "easy: utf8-1");
 # Easy mode with utf8 setting
 ###########
 
-open STDERR, ">$TMP_FILE";
+open STDERR, ">", "$TMP_FILE";
 select STDERR; $| = 1; #needed on win32
 select STDOUT;
-open IN, "<$TMP_FILE" or die "Cannot open $TMP_FILE"; binmode IN, ":utf8";
+open IN, "<", "$TMP_FILE" or die "Cannot open $TMP_FILE"; binmode IN, ":utf8";
 sub readstderr { return join("", <IN>); }
 
 END   { unlink $TMP_FILE;

@@ -48,7 +48,7 @@ $log->info("Shu-wa-chi!");
 
 # Check if both files contain one message each
 for my $file ($testfilea, $testfileb) {
-    open FILE, "<$file" or die "Cannot open $file";
+    open FILE, "<", "$file" or die "Cannot open $file";
     my $content = join '', <FILE>;
     close FILE;
     ok($content, "INFO - Shu-wa-chi!\n");
